@@ -4,6 +4,8 @@
     <!-- This fills the remaining space of the current row -->
     <span class="example-fill-remaining-space"></span>
   
+    <div>{{ 'HELLO' | translate:param }}</div>
+
   </mat-toolbar>
 <div id="content-form">
     
@@ -15,13 +17,14 @@
         <hr>
       
         <div class="row">
-          <mat-form-field class="full form-field ">
+          <mat-form-field class="full form-field" appearance="outline" >
             <input matInput placeholder="Username" formControlName="account_name">
-      
+            <mat-label>Username</mat-label>
             <mat-error *ngIf="account_name.invalid && account_name.touched">
               Cannot be blank!
             </mat-error>
           </mat-form-field>
+
           <mat-form-field class="full form-field ">
               <input matInput placeholder="PRI" formControlName="apri">
         
@@ -102,7 +105,7 @@
       
         </div>
       
-        <mat-checkbox formControlName="agree" color="primary" class="form-field ">Are you sure?</mat-checkbox>
+        <mat-checkbox formControlName="agree" color="primary" class="form-field ">Are you sure all fields are correct?</mat-checkbox>
         <hr>
       
         <div class="row">
