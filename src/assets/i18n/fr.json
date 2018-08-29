@@ -1,0 +1,11 @@
+{
+    "HOME": {
+      "TITLE": "Bonjour Angular avec ngx-translate !",
+      "SELECT": "Changer la langue"
+    },
+    "QUESTION_ONE": {
+        "QUESTION": "Aimes-tu les gauffres?",
+        "EXPLAINATION": "Les gaufres sont un petit-déjeuner apprécié en Occident."
+    }
+  }
+  

@@ -10,15 +10,16 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./forms.component.css']
 })
 export class FormsComponent implements OnInit {
-  myForm: FormGroup;
-  param = { value: 'world' };
 
-  constructor(private fb: FormBuilder, translate: TranslateService) {
-    // this language will be used as a fallback when a translation isn't found in the current language
+  myForm: FormGroup;
+  langVar: string;
+  langArray: string[];
+  constructor(private fb: FormBuilder, public translate: TranslateService) {
+    translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('en');
 
-    // the lang to use, if the lang isn't available, it will use the current loader to get them
-    translate.use('en');
+    const browserLang = translate.getBrowserLang();
+    translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
   }
 
   ngOnInit() {

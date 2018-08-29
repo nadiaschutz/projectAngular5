@@ -1,116 +1,117 @@
 <mat-toolbar color="primary">
-    <span>NOHIS Employee Creation</span>
-  
-    <!-- This fills the remaining space of the current row -->
-    <span class="example-fill-remaining-space"></span>
-  
-    <div>{{ 'HELLO' | translate:param }}</div>
+  <span> {{'HOME.TITLE' | translate }} </span>
 
-  </mat-toolbar>
+  <!-- This fills the remaining space of the current row -->
+  <span class="example-fill-remaining-space"></span>
+
+
+</mat-toolbar>
 <div id="content-form">
-    
-      <form [formGroup]="myForm" [hidden]="success" (ngSubmit)="submitHandler()">
-      
-        <!-- Value: {{myForm.value | json}} -->
-      
-        <h2 mat-subheader>Employee Creation</h2>
-        <hr>
-      
-        <div class="row">
-          <mat-form-field class="full form-field" appearance="outline" >
-            <input matInput placeholder="Username" formControlName="account_name">
-            <mat-label>Username</mat-label>
-            <mat-error *ngIf="account_name.invalid && account_name.touched">
-              Cannot be blank!
-            </mat-error>
+  
+  <select #langSelect (change)="translate.use(langSelect.value)">
+    <option *ngFor="let lang of translate.getLangs()" [value]="lang" [selected]="lang === translate.currentLang">{{ lang }}</option>
+  </select>
+
+  <!-- [hidden]="success" (ngSubmit)="submitHandler()" -->
+  <form [formGroup]="myForm" >
+
+    <h2 mat-subheader>Employee Creation</h2>
+    <hr>
+
+    <div class="row">
+      <mat-form-field class="full form-field" appearance="outline">
+        <input matInput placeholder="Username" formControlName="account_name">
+        <mat-label>Username</mat-label>
+        <mat-error *ngIf="account_name.invalid && account_name.touched">
+          Cannot be blank!
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="full form-field ">
+        <input matInput placeholder="PRI" formControlName="pri">
+
+        <mat-error *ngIf="account_name.invalid && account_name.touched">
+          Cannot be blank!
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field class="full form-field ">
+        <input matInput placeholder="First Name" formControlName="first_name">
+
+        <mat-error *ngIf="first_name.invalid && first_name.touched">
+          Cannot be blank!
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="full form-field ">
+        <input matInput placeholder="Last Name" formControlName="last_name">
+
+        <mat-error *ngIf="last_name.invalid && last_name.touched">
+          Cannot be blank!
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <!-- <div> -->
+      <mat-form-field class="full form-field ">
+        <input matInput placeholder="Email" formControlName="email">
+
+        <mat-error *ngIf="email.invalid && email.touched">
+          Email is incorrect
+        </mat-error>
+      </mat-form-field>
+      <!-- </div> -->
+
+
+      <mat-form-field class="form-field">
+        <input matInput placeholder="Password" formControlName="password">
+
+        <mat-error *ngIf="password.invalid && password.touched">
+          <p>Your password is no bueno...</p>
+        </mat-error>
+      </mat-form-field>
+      <mat-icon matTooltip="Must have one letter, and one number" matTooltipPosition='right'>
+        info</mat-icon>
+
+    </div>
+
+
+
+    <div class="row">
+      <div formArrayName="phones">
+        <div *ngFor="let phone of phoneForms.controls; let i=index" [formGroupName]="i">
+
+          <mat-form-field class="form-field">
+            <input matInput placeholder="area" formControlName="area">
           </mat-form-field>
 
-          <mat-form-field class="full form-field ">
-              <input matInput placeholder="PRI" formControlName="apri">
-        
-              <mat-error *ngIf="account_name.invalid && account_name.touched">
-                Cannot be blank!
-              </mat-error>
-            </mat-form-field>
-        </div>
-      
-        <div class="row">
-          <mat-form-field class="full form-field ">
-            <input matInput placeholder="First Name" formControlName="first_name">
-      
-            <mat-error *ngIf="first_name.invalid && first_name.touched">
-              Cannot be blank!
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field class="full form-field ">
-            <input matInput placeholder="Last Name" formControlName="last_name">
-      
-            <mat-error *ngIf="last_name.invalid && last_name.touched">
-              Cannot be blank!
-            </mat-error>
-          </mat-form-field>
-        </div>
-      
-        <div class="row">
-          <!-- <div> -->
-          <mat-form-field class="full form-field ">
-            <input matInput placeholder="Email" formControlName="email">
-      
-            <mat-error *ngIf="email.invalid && email.touched">
-              Email is incorrect
-            </mat-error>
-          </mat-form-field>
-          <!-- </div> -->
-      
-      
           <mat-form-field class="form-field">
-              <input matInput placeholder="Password" formControlName="password">
-              
-            <mat-error *ngIf="password.invalid && password.touched">
-              <p>Your password is no bueno...</p>
-            </mat-error>
-          </mat-form-field><mat-icon
-          matTooltip="Must have one letter, and one number"
-            matTooltipPosition='right'>
-            info</mat-icon>
-      
+            <input matInput placeholder="prefix" formControlName="prefix">
+          </mat-form-field>
+
+          <mat-form-field class="form-field">
+            <input matInput placeholder="line" formControlName="line">
+          </mat-form-field>
+
+
+          <button mat-raised-button color="warn" (click)="deletePhone(i)">Delete</button>
+
         </div>
-      
-      
-      
-        <div class="row">
-          <div formArrayName="phones">
-            <div *ngFor="let phone of phoneForms.controls; let i=index" [formGroupName]="i">
-      
-              <mat-form-field class="form-field">
-                <input matInput placeholder="area" formControlName="area">
-              </mat-form-field>
-      
-              <mat-form-field class="form-field">
-                <input matInput placeholder="prefix" formControlName="prefix">
-              </mat-form-field>
-      
-              <mat-form-field class="form-field">
-                <input matInput placeholder="line" formControlName="line">
-              </mat-form-field>
-      
-      
-              <button mat-raised-button color="warn" (click)="deletePhone(i)">Delete</button>
-      
-            </div>
-      
-          </div>
-      
-          <button mat-raised-button color="primary" (click)="addPhone()" class="">Add Phone</button>
-      
-        </div>
-      
-        <mat-checkbox formControlName="agree" color="primary" class="form-field ">Are you sure all fields are correct?</mat-checkbox>
-        <hr>
-      
-        <div class="row">
-          <button mat-raised-button [disabled]="myForm.invalid" color="primary">Submit</button>
-        </div>
-      
-      </form>
+
+      </div>
+
+      <button mat-raised-button color="primary" (click)="addPhone()" class="">Add Phone</button>
+
+    </div>
+
+    <mat-checkbox formControlName="agree" color="primary" class="form-field ">Are you sure all fields are correct?</mat-checkbox>
+    <hr>
+
+    <div class="row">
+      <button mat-raised-button [disabled]="myForm.invalid" color="primary">Submit</button>
+    </div>
+
+  </form>
 </div>

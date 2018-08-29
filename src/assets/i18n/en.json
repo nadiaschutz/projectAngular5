@@ -1,3 +1,10 @@
 {
-    "HELLO": "hello {{value}}"
-}
+    "HOME": {
+      "TITLE": "NOHIS Employee Creation",
+      "SELECT": "Change language"
+    },
+    "QUESTION_ONE": {
+        "QUESTION": "Do you like waffles?",
+        "EXPLAINATION": "Waffles are a beloved breakfast in the West."
+    }
+  }
