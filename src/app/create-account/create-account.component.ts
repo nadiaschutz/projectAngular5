@@ -1,18 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { tap, first } from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
-import { HttpClient,HttpParams } from '@angular/common/http';
+// import { Observable } from 'rxjs/Observable';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
+
 
 @Component({
-  selector: 'app-create-account', 
+  selector: 'app-create-account',
   templateUrl: './create-account.component.html',
   styleUrls: ['./create-account.component.css']
 })
 export class CreateAccountComponent implements OnInit {
   accountForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, public translate: TranslateService) {
+    translate.addLangs(['en', 'fr']);
+    translate.setDefaultLang('fr');
+
+    const browserLang = translate.getBrowserLang();
+    translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
+  }
 
   ngOnInit() {
     this.accountForm = this.fb.group({
@@ -21,7 +29,8 @@ export class CreateAccountComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$')
+          Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
+          Validators.minLength(6)
         ]
       ],
       email: ['', [Validators.required, Validators.email]],
@@ -50,6 +59,5 @@ export class CreateAccountComponent implements OnInit {
   get familyName() {
     return this.accountForm.get('familyName');
   }
-
 
 }
