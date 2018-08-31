@@ -60,4 +60,8 @@ export class CreateAccountComponent implements OnInit {
     return this.accountForm.get('familyName');
   }
 
+  get agree() {
+    return this.accountForm.get('agree');
+  }
+
 }

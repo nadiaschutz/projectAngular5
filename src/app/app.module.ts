@@ -1,3 +1,4 @@
+import { UserService } from './service/user.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -11,8 +12,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { FormsComponent } from './forms/forms.component';
 import { IndexComponent } from './index/index.component';
 
-import { FHIRService } from './fhir.service';
-import { QuestionLoaderService } from './question-loader.service';
+import { FHIRService } from './service/fhir.service';
+import { QuestionLoaderService } from './service/question-loader.service';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -64,7 +65,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatIconModule,
     MatSlideToggleModule
   ],
-  providers: [],
+  providers: [
+    UserService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
