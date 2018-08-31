@@ -33,6 +33,10 @@ export class CreateAccountComponent implements OnInit {
           Validators.minLength(6)
         ]
       ],
+      address_street: ['', Validators.required],
+      address_city: ['', Validators.required],
+      address_prov: ['', Validators.required],
+      address_pcode: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       familyName: ['', [Validators.required]],
       givenName: ['', [Validators.required]],
