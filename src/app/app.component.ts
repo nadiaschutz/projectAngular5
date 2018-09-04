@@ -22,7 +22,7 @@ export class AppComponent {
       redirectUri: 'http://localhost:4200/dashboard',
       scope: 'openid profile launch/patient patient/*.read'
     });
-    this.oauthService.loadDiscoveryDocumentAndLogin();
+    this.oauthService.loadDiscoveryDocumentAndTryLogin();
 
   }
 

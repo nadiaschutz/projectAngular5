@@ -29,11 +29,11 @@ export class AuthComponent implements OnInit {
   login() {
     this.oauthService.initImplicitFlow('/dashboard');
 
-    // if (navigator.onLine) {
-    //   this.oauthService.initImplicitFlow('/dashboard');
-    // } else {
-    //   alert('Not connected to Internet.');
-    // }
+    if (navigator.onLine) {
+      this.oauthService.initImplicitFlow('/dashboard');
+    } else {
+      alert('Not connected to Internet.');
+    }
   }
 
   logout() {
