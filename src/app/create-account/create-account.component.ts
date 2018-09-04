@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { tap, first } from 'rxjs/operators';
 // import { Observable } from 'rxjs/Observable';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -14,13 +15,15 @@ import { TranslateService } from '@ngx-translate/core';
 export class CreateAccountComponent implements OnInit {
   accountForm: FormGroup;
 
-  constructor(private fb: FormBuilder, public translate: TranslateService) {
+  constructor(private fb: FormBuilder, private httpClient:HttpClient, public translate: TranslateService) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
 
     const browserLang = translate.getBrowserLang();
     translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
   }
+
+
 
   ngOnInit() {
     this.accountForm = this.fb.group({
@@ -42,6 +45,19 @@ export class CreateAccountComponent implements OnInit {
       givenName: ['', [Validators.required]],
       agree: [false, [Validators.requiredTrue]]
     });
+
+
+    const observable = new Observable();
+
+  
+
+    const headers = new HttpHeaders();
+    headers.set('Authorization', 'Basic ' + btoa('admin:password'))
+
+    this.httpClient.get('localhost:8000/Patient').subscribe(
+      data => console.log(data),
+      err => console.log(err)
+    )
   }
 
   get userName () {

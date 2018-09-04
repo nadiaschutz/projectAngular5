@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -14,16 +13,16 @@ export class UserService {
     return this._http.get(environment.queryURI + '/Patient/' + pid, { headers: this.getHeaders() });
   }
 
-  // logout() {
-  //   const header = this.getHeaders();
+  logout() {
+    const header = this.getHeaders();
 
-  //   this._http.post(environment.logoutURI + '/logout?cb=none&revoke=token', {}, { headers: header, withCredentials: true })
-  //     .subscribe(item => {
-  //       console.log(item);
-  //     }, err => {
-  //       console.log(err);
-  //     });
-  // }
+    this._http.post(environment.logoutURI + '/logout?cb=none&revoke=token', {}, { headers: header, withCredentials: true })
+      .subscribe(item => {
+        console.log(item);
+      }, err => {
+        console.log(err);
+      });
+  }
 
   getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -31,11 +30,3 @@ export class UserService {
     });
   }
 }
-
-
-// import { Injectable } from '@angular/core';
-
-// export class UserService {
-
-//   constructor() { }
-// }

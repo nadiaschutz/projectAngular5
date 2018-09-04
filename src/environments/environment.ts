@@ -4,8 +4,15 @@
 
 export const environment = {
   production: false,
-  domain: 'http://localhost:4200/',
-  queryURI: 'http://localhost:8000'
+  base_href: '',
+  domain: 'http://localhost:4200',
+  issuer: 'https://try.smilecdr.com:9200',
+  queryURI: 'https://try.smilecdr.com:8000',
+  logoutURI: 'https://try.smilecdr.com:9200',
+  redirectUri: 'http://localhost:4200',
+  clientId: 'moh_dhdr_test',
+  scope: 'launch/patient openid patient/*.read profile',
+
 };
 
 /*

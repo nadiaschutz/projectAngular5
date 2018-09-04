@@ -29,3 +29,8 @@
     width: 40%;
 
 }
+
+.formButton {
+    border-radius: 4px;
+    border: 1px solid transparent;
+}

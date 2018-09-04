@@ -6,14 +6,23 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
+import { OAuthModule } from 'angular-oauth2-oidc';
+
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FormsComponent } from './forms/forms.component';
 import { IndexComponent } from './index/index.component';
+import { CreateAccountComponent } from './create-account/create-account.component';
+import { AuthComponent } from './auth/auth.component';
 
 import { FHIRService } from './service/fhir.service';
 import { QuestionLoaderService } from './service/question-loader.service';
+import { AuthGuardService } from '../app/service/auth-guard.service';
+
+import { environment } from '../environments/environment';
+
+
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -27,7 +36,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { CreateAccountComponent } from './create-account/create-account.component';
+
+const routes: Routes = [
+  {path: 'dashboard', component: DashboardComponent},
+  {path: '', component: AuthComponent}
+];
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -40,9 +53,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     DashboardComponent,
     FormsComponent,
     IndexComponent,
-    CreateAccountComponent
+    CreateAccountComponent,
+    AuthComponent
   ],
   imports: [
+    RouterModule.forRoot(routes),
+    OAuthModule.forRoot(),
     HttpClientModule,
     BrowserModule,
     BrowserAnimationsModule,
@@ -66,6 +82,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatSlideToggleModule
   ],
   providers: [
+    AuthGuardService,
     UserService
   ],
   bootstrap: [AppComponent]
