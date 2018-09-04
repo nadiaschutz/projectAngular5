@@ -24,7 +24,7 @@ export class AuthComponent implements OnInit {
     this.oauthService.configure({
       loginUrl: 'http://localhost:4200',
       issuer: 'https://try.smilecdr.com:9200',
-      clientId: 'moh_dhdr_test';
+      clientId: 'moh_dhdr_test',
       redirectUri: 'http://localhost:4200',
     });
   }
@@ -36,11 +36,11 @@ export class AuthComponent implements OnInit {
   login() {
     // this.oauthService.initImplicitFlow('/dashboard');
 
-    // if (navigator.onLine) {
-    //   this.oauthService.initImplicitFlow('/dashboard');
-    // } else {
-    //   alert('Not connected to Internet.');
-    // }
+    if (navigator.onLine) {
+      this.oauthService.initImplicitFlow('/dashboard');
+    } else {
+      alert('Not connected to Internet.');
+    }
   }
 
   logout() {
