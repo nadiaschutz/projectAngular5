@@ -20,6 +20,13 @@ export class AuthComponent implements OnInit {
         sessionStorage.setItem('patient', patient);
       }
     });
+
+    this.oauthService.configure({
+      loginUrl: 'http://localhost:4200',
+      issuer: 'https://try.smilecdr.com:9200',
+      clientId: 'moh_dhdr_test';
+      redirectUri: 'http://localhost:4200',
+    });
   }
 
   goToIndex() {
@@ -27,7 +34,7 @@ export class AuthComponent implements OnInit {
   }
 
   login() {
-      this.oauthService.initImplicitFlow('/dashboard');
+    // this.oauthService.initImplicitFlow('/dashboard');
 
     // if (navigator.onLine) {
     //   this.oauthService.initImplicitFlow('/dashboard');
@@ -52,10 +59,10 @@ export class AuthComponent implements OnInit {
     const vars = query.split('&');
 
     for (let i = 0; i < vars.length; i++) {
-        const pair = vars[i].split('=');
-        if (decodeURIComponent(pair[0]) == variable) {
-          return decodeURIComponent(pair[1]);
-        }
+      const pair = vars[i].split('=');
+      if (decodeURIComponent(pair[0]) == variable) {
+        return decodeURIComponent(pair[1]);
+      }
     }
 
     return null;

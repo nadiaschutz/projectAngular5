@@ -8,6 +8,7 @@ export class AuthGuardService {
   constructor(private oauthService: OAuthService, private router: Router) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    console.log(this.oauthService.hasValidAccessToken());
     if (this.oauthService.hasValidAccessToken()) {
       return true;
     }
