@@ -1,21 +1,46 @@
+<div class="row">
+  <img src="../../assets/goc.jpg" id="goc" alt="Government of Canada" srcset="">
+</div>
+<div class="toolbar-row">
+  <mat-toolbar color="primary" class="toolbar">
+    <span> National Occuptational Health Information System</span>
+    <span class="example-fill-remaining-space"></span>
+  </mat-toolbar>
+</div>
+
+
 <div class="center-align outer-container" role="main">
   <div class="container">
+    <div class="row login-row">
 
-    <div class="row">
-        <div class="card-content white-text">
-
-          <h1 class="header-style">Welcome to NOHIS</h1>
-
-          <p>Please log in to continue</p>
-        </div>
+      <mat-card id="login-box">
         <div class="card-action">
-          <button mat-button id="logbtn" (click)="login()">
-           Click me!
-          </button>
-        </div>
-      </div>
+          <h2>Welcome back!</h2>
+          <div class="row">
+            <mat-form-field class="full form-field  " appearance="outline">
+              <input matInput placeholder="Email" formControlName="email">
+              <mat-error *ngIf="email.invalid && email.touched">
+                Email is incorrect
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="row">
+            <mat-form-field class="full form-field  " appearance="outline">
+              <input type="password" matInput placeholder="Password" formControlName="password">
+              <mat-error *ngIf="password.invalid && password.touched">
+                <p>Your password should be at leasat 6 characters long, with at least one number</p>
+              </mat-error>
+            </mat-form-field>
 
+          </div>
+          <div class="row">
+            <button mat-raised-button color="primary" id="logbtn" (click)="login()">
+              Log in via Smile CDR
+            </button>
+          </div>
+        </div>
+      </mat-card>
     </div>
   </div>
+</div>
 <!-- </div> -->
-

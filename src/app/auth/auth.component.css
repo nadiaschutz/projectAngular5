@@ -29,9 +29,69 @@ padding: 50px;
   background-color: #293999 !important;
 }
 
+
+
 @media screen and (max-width: 600px) {
   .card {
     margin: 0 28px 0 28px;
   }
 
+}
+
+.toolbar {
+    background-color: #335075;
+}
+
+#content-form {
+
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 50px;
+    text-align: center;
+    justify-content: center;
+    
+}
+.form-field {
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.row {
+    padding: 10px;
+}
+
+.toolbar-row {
+    padding-top: 10px;
+}
+
+#goc {
+    width: 40%;
+
+}
+
+#login-box { 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* max-width: 50%; */
+    text-align: center;
+    width: 50%
+}
+
+#logbtn {
+    background-color: #335075;
+    border-radius: 4px;
+
+}
+
+.login-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.formButton {
+    border-radius: 4px;
+    border: 1px solid transparent;
 }

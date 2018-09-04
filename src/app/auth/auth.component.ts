@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../environments/environment';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-auth',
@@ -11,9 +12,23 @@ import { environment } from '../../environments/environment';
 })
 export class AuthComponent implements OnInit {
 
-  constructor(private oauthService: OAuthService, private router: Router, private route: ActivatedRoute) { }
+  constructor(private fb: FormBuilder, private oauthService: OAuthService, private router: Router, private route: ActivatedRoute) { }
+  logInForm: FormGroup;
 
   ngOnInit() {
+
+
+    this.logInForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
+          Validators.minLength(6)
+        ]
+      ]
+    });
     this.route.fragment.subscribe(params => {
       if (params) {
         const patient = this.getQueryVariable(params, 'patient');
@@ -61,6 +76,15 @@ export class AuthComponent implements OnInit {
     return null;
   }
 
+
+  get email() {
+    return this.logInForm.get('email');
+  }
+
+
+  get password() {
+    return this.logInForm.get('password');
+  }
 
 
 }

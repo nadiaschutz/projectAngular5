@@ -3,9 +3,11 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { tap, first } from 'rxjs/operators';
 // import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
+
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-
+import { environment } from '../../environments/environment'
 
 @Component({
   selector: 'app-create-account',
@@ -15,7 +17,7 @@ import { Observable } from 'rxjs';
 export class CreateAccountComponent implements OnInit {
   accountForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private httpClient:HttpClient, public translate: TranslateService) {
+  constructor(private fb: FormBuilder, private httpClient: HttpClient, public translate: TranslateService, private oauthService: OAuthService) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
 
@@ -49,10 +51,10 @@ export class CreateAccountComponent implements OnInit {
 
     const observable = new Observable();
 
-  
 
-    const headers = new HttpHeaders();
-    headers.set('Authorization', 'Basic ' + btoa('admin:password'))
+    const access_token = this.oauthService.getAccessToken();
+    const header = new HttpHeaders().set('Authorization', 'Bearer ' + access_token);
+    this.httpClient.get<JSON>(environment.queryURI + '/Patient' + pid, { headers: header }).catch(this.handleError);
 
     this.httpClient.get('localhost:8000/Patient').subscribe(
       data => console.log(data),
@@ -60,7 +62,7 @@ export class CreateAccountComponent implements OnInit {
     )
   }
 
-  get userName () {
+  get userName() {
     return this.accountForm.get('userName');
   }
 

@@ -1,3 +1,28 @@
-<p>
-  dashboard works!
-</p>
+<div class="row">
+  <img src="../../assets/goc.jpg" id="goc" alt="Government of Canada" srcset="">
+</div>
+<div class="toolbar-row">
+  <mat-toolbar color="primary" class="toolbar">
+
+    <span> Dashboard </span>
+
+    <span class="example-fill-remaining-space"></span>
+
+
+  </mat-toolbar>
+
+</div>
+
+<div class="row">
+  <mat-card class="table-row">
+    <mat-tab-group>
+      <mat-tab label="All Accounts"> All accounts content </mat-tab>
+      <mat-tab label="PSOHP Regional Office Account"> Content 2 </mat-tab>
+      <mat-tab label="PSOHP District Office Account"> Content 2 </mat-tab>
+      <mat-tab label="Client Department Account"> Content 3 </mat-tab>
+      <mat-tab label="NOHIS User Account"> Content 3 </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>
+
+<button mat-raised-button color="primary" id="new-account-btn" (click)="newAccountButton()">Create an account</button>

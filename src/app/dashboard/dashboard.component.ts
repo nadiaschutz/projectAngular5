@@ -1,9 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../service/user.service';
-// import { subscription } from 'rxjs/subscription';
+import { Observable, of } from 'rxjs';
+import { map, catchError, tap } from 'rxjs/operators';
+
 import { environment } from '../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,16 +21,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(
     private oauthService: OAuthService,
     private userService: UserService,
+    private httpClient: HttpClient,
     private router: Router
-
-
   ) { }
 
   ngOnInit() {
+    const endpoint = 'https://try.smilecdr.com:8000/Patient'
   }
 
   ngOnDestroy() {
     // this.patientSubscription.unsubscribe();
+  }
+
+  newAccountButton() {
+    this.router.navigate(['/newaccount']);
   }
 
 }

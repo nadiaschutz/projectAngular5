@@ -30,20 +30,18 @@
           Cannot be blank!
         </mat-error>
       </mat-form-field>
-
     </div>
 
     <div class="row">
-      <mat-form-field class="full form-field ">
+      <mat-form-field class="full form-field " appearance="outline">
         <input matInput placeholder="First Name" formControlName="givenName">
-
         <mat-error *ngIf="givenName.invalid && givenName.touched">
           Cannot be blank!
         </mat-error>
       </mat-form-field>
-      <mat-form-field class="full form-field ">
-        <input matInput placeholder="Last Name" formControlName="familyName">
 
+      <mat-form-field class="full form-field  " appearance="outline">
+        <input matInput placeholder="Last Name" formControlName="familyName">
         <mat-error *ngIf="familyName.invalid && familyName.touched">
           Cannot be blank!
         </mat-error>
@@ -52,7 +50,7 @@
 
     <div class="row">
       <!-- <div> -->
-      <mat-form-field class="full form-field ">
+      <mat-form-field class="full form-field  " appearance="outline">
         <input matInput placeholder="Email" formControlName="email">
 
         <mat-error *ngIf="email.invalid && email.touched">
@@ -62,9 +60,8 @@
       <!-- </div> -->
 
 
-      <mat-form-field class="form-field">
-        <input matInput placeholder="Password" formControlName="password">
-
+      <mat-form-field class="full form-field  "appearance="outline">
+        <input type="password" matInput placeholder="Password" formControlName="password">
         <mat-error *ngIf="password.invalid && password.touched">
           <p>Your password should be at leasat 6 characters long, with at least one number</p>
         </mat-error>

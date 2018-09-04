@@ -18,7 +18,7 @@ export class AppComponent {
     this.oauthService.configure({
       loginUrl: 'http://localhost:4200',
       issuer: 'https://try.smilecdr.com:9200',
-      clientId: 'moh_dhdr_test',
+      clientId: 'NOHIS',
       redirectUri: 'http://localhost:4200/dashboard',
       scope: 'openid profile launch/patient patient/*.read'
     });

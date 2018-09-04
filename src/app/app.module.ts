@@ -20,10 +20,6 @@ import { FHIRService } from './service/fhir.service';
 import { QuestionLoaderService } from './service/question-loader.service';
 import { AuthGuardService } from '../app/service/auth-guard.service';
 
-import { environment } from '../environments/environment';
-
-
-
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,13 +29,18 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+// import {MatButtonModule} from '@angular/material/button';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 const routes: Routes = [
-  {path: 'dashboard', component: DashboardComponent},
-  {path: '', component: AuthComponent}
+  { path: 'forms', component: FormsComponent },
+  { path: 'newaccount', component: CreateAccountComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: '', component: AuthComponent }
 ];
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -79,7 +80,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatToolbarModule,
     MatTooltipModule,
     MatIconModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatCardModule,
+    MatTabsModule
   ],
   providers: [
     AuthGuardService,
@@ -87,4 +90,4 @@ export function HttpLoaderFactory(http: HttpClient) {
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
