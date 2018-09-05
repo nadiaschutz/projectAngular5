@@ -33,14 +33,16 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
-
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule}from '@angular/material';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-// import { AccountDetailsComponent } from './account-details/account-details.component';
 import { EmployeeFormComponent } from './employee-form/employee-form.component';
 import { EmployeeComponent} from './employee/employee.component';
 const routes: Routes = [
+  { path: 'employeeform', component: EmployeeComponent},
   { path: 'forms', component: FormsComponent },
   { path: 'newaccount', component: CreateAccountComponent },
   { path: 'dashboard', component: DashboardComponent },
@@ -61,7 +63,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     EmployeeComponent,
     CreateAccountComponent,
     AuthComponent,
-    // AccountDetailsComponent,
     EmployeeFormComponent
   ],
   imports: [
@@ -91,7 +92,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatCardModule,
     MatTabsModule,
     MatTableModule,
-    MatSortModule
+    MatSortModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatGridListModule
   ],
   providers: [
     AuthGuardService,

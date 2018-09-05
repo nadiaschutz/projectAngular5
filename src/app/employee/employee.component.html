@@ -1,3 +1,91 @@
-<p>
-  account-details works!
-</p>
+<div class="row">
+    <img src="../../assets/goc.jpg" id="goc" alt="Government of Canada" srcset="">
+  </div>
+  <div class="toolbar-row">
+    <mat-toolbar color="primary" class="toolbar">
+  
+      <span> Create Employee & Dependent Records </span>
+  
+      <span class="example-fill-remaining-space"></span>
+  
+  
+    </mat-toolbar>
+  
+  </div>
+  
+  <mat-card>
+      <div id="content-form">
+          <!-- [hidden]="success" (ngSubmit)="submitHandler()" -->
+          <form [formGroup]="accountForm">
+        
+            <!-- <h2 mat-subheader>Account Creation</h2> -->
+        
+            <!-- <hr> -->
+        
+            {{accountForm.value | json}}
+            <div class="row">
+                <mat-grid-list cols="4" rowHeight="2:">
+                    <mat-form-field class="full form-field"  appearance="outline">
+                        <mat-select placeholder="Client Type"  formControlName="type">
+                          <mat-option *ngFor="let type of accountTypes" [value]="type.value" >
+                            {{type.viewValue}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field class="full form-field  " appearance="outline">
+                        <input matInput placeholder="Last Name" formControlName="familyName">
+                        <mat-error *ngIf="familyName.invalid && familyName.touched">
+                          Cannot be blank!
+                        </mat-error>
+                      </mat-form-field>
+                </mat-grid-list>      
+            </div>
+        
+            <div class="row">
+                <mat-grid-list cols="2" rowHeight="2:1">
+
+              <mat-form-field class="full form-field " appearance="outline">
+                <input matInput placeholder="First Name" formControlName="givenName">
+                <mat-error *ngIf="givenName.invalid && givenName.touched">
+                  Cannot be blank!
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field class="full form-field"  appearance="outline">
+                  <input matInput [matDatepicker]="picker" placeholder="Choose a date" formControlName="dob">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+        
+              </mat-grid-list>      
+        
+            </div>
+        
+            <div class="row">
+              <!-- <div> -->
+              <mat-form-field class="full form-field  " appearance="outline">
+                <input matInput placeholder="Email" formControlName="email">
+                <mat-error *ngIf="email.invalid && email.touched">
+                  Email is incorrect
+                </mat-error>
+              </mat-form-field>
+              <!-- </div> -->
+              <mat-form-field class="full form-field  " appearance="outline">
+                  <input matInput placeholder="Phone Number" formControlName="phoneNumber">
+                  <!-- <mat-error *ngIf="phoneNumber.invalid && familyName.touched">
+                    Cannot be blank!
+                  </mat-error> -->
+                </mat-form-field>
+        
+            
+        
+            </div>
+       
+            <hr>
+        
+            <div class="row">
+              <button mat-raised-button [disabled]="accountForm.invalid" color="primary">Submit</button>
+            </div>
+          </form>
+        </div>
+  </mat-card>
+  
