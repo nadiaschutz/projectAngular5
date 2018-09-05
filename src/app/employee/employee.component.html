@@ -1,91 +1,166 @@
 <div class="row">
-    <img src="../../assets/goc.jpg" id="goc" alt="Government of Canada" srcset="">
-  </div>
-  <div class="toolbar-row">
-    <mat-toolbar color="primary" class="toolbar">
-  
-      <span> Create Employee & Dependent Records </span>
-  
-      <span class="example-fill-remaining-space"></span>
-  
-  
-    </mat-toolbar>
-  
-  </div>
-  
-  <mat-card>
-      <div id="content-form">
-          <!-- [hidden]="success" (ngSubmit)="submitHandler()" -->
-          <form [formGroup]="accountForm">
-        
-            <!-- <h2 mat-subheader>Account Creation</h2> -->
-        
-            <!-- <hr> -->
-        
-            {{accountForm.value | json}}
-            <div class="row">
-                <mat-grid-list cols="4" rowHeight="2:">
-                    <mat-form-field class="full form-field"  appearance="outline">
-                        <mat-select placeholder="Client Type"  formControlName="type">
-                          <mat-option *ngFor="let type of accountTypes" [value]="type.value" >
-                            {{type.viewValue}}
-                          </mat-option>
-                        </mat-select>
-                      </mat-form-field>
-                      <mat-form-field class="full form-field  " appearance="outline">
-                        <input matInput placeholder="Last Name" formControlName="familyName">
-                        <mat-error *ngIf="familyName.invalid && familyName.touched">
-                          Cannot be blank!
-                        </mat-error>
-                      </mat-form-field>
-                </mat-grid-list>      
-            </div>
-        
-            <div class="row">
-                <mat-grid-list cols="2" rowHeight="2:1">
+  <img src="../../assets/goc.jpg" id="goc" alt="Government of Canada" srcset="">
+</div>
+<div class="toolbar-row">
+  <mat-toolbar color="primary" class="toolbar">
 
-              <mat-form-field class="full form-field " appearance="outline">
-                <input matInput placeholder="First Name" formControlName="givenName">
-                <mat-error *ngIf="givenName.invalid && givenName.touched">
-                  Cannot be blank!
-                </mat-error>
-              </mat-form-field>
-              <mat-form-field class="full form-field"  appearance="outline">
-                  <input matInput [matDatepicker]="picker" placeholder="Choose a date" formControlName="dob">
-                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                  <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-        
-              </mat-grid-list>      
-        
-            </div>
-        
-            <div class="row">
-              <!-- <div> -->
-              <mat-form-field class="full form-field  " appearance="outline">
-                <input matInput placeholder="Email" formControlName="email">
-                <mat-error *ngIf="email.invalid && email.touched">
-                  Email is incorrect
-                </mat-error>
-              </mat-form-field>
-              <!-- </div> -->
-              <mat-form-field class="full form-field  " appearance="outline">
-                  <input matInput placeholder="Phone Number" formControlName="phoneNumber">
-                  <!-- <mat-error *ngIf="phoneNumber.invalid && familyName.touched">
-                    Cannot be blank!
-                  </mat-error> -->
-                </mat-form-field>
-        
-            
-        
-            </div>
-       
-            <hr>
-        
-            <div class="row">
-              <button mat-raised-button [disabled]="accountForm.invalid" color="primary">Submit</button>
-            </div>
+    <span> National Occuptational Health Information System</span>
+    
+    <span class="example-fill-remaining-space"></span>
+
+
+  </mat-toolbar>
+
+</div>
+
+<mat-card>
+  <div id="content-form">
+    <!-- [hidden]="success" (ngSubmit)="submitHandler()" -->
+    <form [formGroup]="accountForm">
+
+      <h2 mat-subheader>Create Employee & Dependent Records</h2>
+
+      <mat-horizontal-stepper [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="firstFormGroup">
+          <form [formGroup]="firstFormGroup">
+            <ng-template matStepLabel>Personal Information</ng-template>
+            <!-- <mat-form-field>
+              <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperNext>Next</button>
+            </div> -->
           </form>
-        </div>
-  </mat-card>
-  
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup">
+          <form [formGroup]="secondFormGroup">
+            <ng-template matStepLabel>Job Description</ng-template>
+            <!-- <mat-form-field>
+              <input matInput placeholder="Address" formControlName="secondCtrl" required>
+            </mat-form-field>
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div> -->
+          </form>
+        </mat-step>
+        <mat-step>
+          <ng-template matStepLabel>Additional Information</ng-template>
+          <!-- You are now done.
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="stepper.reset()">Reset</button>
+          </div> -->
+        </mat-step>
+        <mat-step>
+          <ng-template matStepLabel>Dependent</ng-template>
+          <!-- You are now done.
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="stepper.reset()">Reset</button>
+          </div> -->
+        </mat-step>
+        <mat-step>
+          <ng-template matStepLabel>Summary</ng-template>
+          <!-- You are now done.
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="stepper.reset()">Reset</button>
+          </div> -->
+        </mat-step>
+      </mat-horizontal-stepper>
+      <!-- <hr> -->
+
+      {{accountForm.value | json}}
+      <div class="row">
+        <mat-grid-list cols="4" rowHeight="2:">
+          <mat-form-field class="full form-field" appearance="outline">
+            <mat-select placeholder="Client Type" formControlName="type">
+              <mat-option *ngFor="let type of accountTypes" [value]="type.value">
+                {{type.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="full form-field  " appearance="outline">
+            <input matInput placeholder="Last Name" formControlName="familyName">
+            <mat-error *ngIf="familyName.invalid && familyName.touched">
+              Cannot be blank!
+            </mat-error>
+          </mat-form-field>
+        </mat-grid-list>
+      </div>
+
+      <div class="row">
+        <mat-grid-list cols="2" rowHeight="2:1">
+
+          <mat-form-field class="full form-field " appearance="outline">
+            <input matInput placeholder="First Name" formControlName="givenName">
+            <mat-error *ngIf="givenName.invalid && givenName.touched">
+              Cannot be blank!
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="full form-field" appearance="outline">
+            <input matInput [matDatepicker]="picker" placeholder="Choose a date" formControlName="dob">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+        </mat-grid-list>
+
+      </div>
+
+      <div class="row">
+        <!-- <div> -->
+        <mat-form-field class="full form-field  " appearance="outline">
+          <input matInput placeholder="Email" formControlName="email">
+          <mat-error *ngIf="email.invalid && email.touched">
+            Email is incorrect
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full form-field  " appearance="outline">
+          <input matInput placeholder="Phone Number" formControlName="phoneNumber">
+        </mat-form-field>
+      </div>
+
+      <div class="row">
+        <!-- <div> -->
+        <mat-form-field class="full street  " appearance="outline">
+          <input matInput placeholder="Address" formControlName="addressStreet">
+        </mat-form-field>
+        <mat-form-field class="full unit " appearance="outline">
+          <input matInput placeholder="Unit" formControlName="addressUnit">
+        </mat-form-field>
+        <mat-form-field class="full form-field  " appearance="outline">
+          <input matInput placeholder="City" formControlName="addressCity">
+        </mat-form-field>
+        
+      </div>
+
+      <div class="row">
+        <mat-grid-list cols="2" rowHeight="2:1">
+          <mat-form-field class="full form-field " appearance="outline">
+            <input matInput placeholder="Province" formControlName="addressProv">
+          </mat-form-field>
+          <mat-form-field class="full form-field " appearance="outline">
+            <input matInput placeholder="Postal Code" formControlName="addressPcode">
+          </mat-form-field>
+        </mat-grid-list>
+      </div>
+
+      <div class="row">
+        <mat-grid-list cols="2" rowHeight="2:1">
+          <mat-form-field class="full form-field " appearance="outline">
+            <input matInput placeholder="Country" formControlName="addressCountry">
+          </mat-form-field>
+          <mat-form-field class="full form-field " appearance="outline">
+            <input matInput placeholder="Language" formControlName="language">
+          </mat-form-field>
+        </mat-grid-list>
+      </div>
+
+      <div class="row">
+        <button mat-raised-button class="formButton" color="primary">Submit</button>
+      </div>
+    </form>
+  </div>
+</mat-card>

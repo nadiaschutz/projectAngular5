@@ -36,6 +36,7 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule}from '@angular/material';
 import {MatGridListModule} from '@angular/material/grid-list';
+import {MatStepperModule} from '@angular/material/stepper';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -95,7 +96,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatSortModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatGridListModule
+    MatGridListModule,
+    MatStepperModule
   ],
   providers: [
     AuthGuardService,

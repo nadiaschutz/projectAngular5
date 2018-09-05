@@ -103,6 +103,7 @@ export class EmployeeComponent implements OnInit {
       //   ]
       // ],
       addressStreet: [''],
+      addressUnit: [''],
       addressCity: [''],
       addressProv: [''],
       addressPcode: [''],
@@ -158,7 +159,9 @@ export class EmployeeComponent implements OnInit {
   get addressCity() {
     return this.accountForm.get('addressCity');
   }
-
+  get addressUnit() {
+    return this.accountForm.get('addressUnit');
+  }
   get addressStreet() {
     return this.accountForm.get('addressStreet');
   }
