@@ -31,11 +31,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
-// import {MatButtonModule} from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import {MatSortModule} from '@angular/material/sort';
+
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-
+// import { AccountDetailsComponent } from './account-details/account-details.component';
+import { EmployeeFormComponent } from './employee-form/employee-form.component';
+import { EmployeeComponent} from './employee/employee.component';
 const routes: Routes = [
   { path: 'forms', component: FormsComponent },
   { path: 'newaccount', component: CreateAccountComponent },
@@ -54,8 +58,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     DashboardComponent,
     FormsComponent,
     IndexComponent,
+    EmployeeComponent,
     CreateAccountComponent,
-    AuthComponent
+    AuthComponent,
+    // AccountDetailsComponent,
+    EmployeeFormComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -82,7 +89,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatIconModule,
     MatSlideToggleModule,
     MatCardModule,
-    MatTabsModule
+    MatTabsModule,
+    MatTableModule,
+    MatSortModule
   ],
   providers: [
     AuthGuardService,

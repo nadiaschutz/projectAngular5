@@ -19,14 +19,19 @@
 
 .row {
     padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .table-row {
-    padding: 10px;
+    /* padding: 10px; */
     display: flex;
-    /* align-items: center; */
+    align-items: center;
     justify-content: center;
     /* max-width: 90%; */
+    background-color: #f9f9f9;
+
 }
 
 .toolbar-row {
@@ -45,5 +50,10 @@
 
 #new-account-btn {
     background-color: #335075;
-    border-radius: 4px;
+    /* border-radius: 4px; */
+}
+
+
+td {
+    width: 200px
 }

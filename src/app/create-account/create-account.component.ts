@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { tap, first } from 'rxjs/operators';
+import { tap, first, catchError } from 'rxjs/operators';
 // import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
@@ -52,9 +52,9 @@ export class CreateAccountComponent implements OnInit {
     const observable = new Observable();
 
 
-    const access_token = this.oauthService.getAccessToken();
-    const header = new HttpHeaders().set('Authorization', 'Bearer ' + access_token);
-    this.httpClient.get<JSON>(environment.queryURI + '/Patient' + pid, { headers: header }).catch(this.handleError);
+    // const access_token = this.oauthService.getAccessToken();
+    // const header = new HttpHeaders().set('Authorization', 'Bearer ' + access_token);
+    // this.httpClient.get<JSON>(environment.queryURI + '/Patient', { headers: header }).catchError(this.handleError);
 
     this.httpClient.get('localhost:8000/Patient').subscribe(
       data => console.log(data),
@@ -86,4 +86,6 @@ export class CreateAccountComponent implements OnInit {
     return this.accountForm.get('agree');
   }
 
+
+  // get 
 }
