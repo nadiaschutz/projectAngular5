@@ -48,8 +48,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 
 const routes: Routes = [
-  { path: 'employee-summary', component: EmployeeSummaryComponent }
-  { path: 'region-summary', component: PsohpRegionalComponent }
+  { path: 'employee-summary', component: EmployeeSummaryComponent },
+  { path: 'region-summary', component: PsohpRegionalComponent },
   { path: 'employeeform', component: EmployeeComponent },
   { path: 'forms', component: FormsComponent },
   { path: 'newaccount', component: CreateAccountComponent },
