@@ -13,7 +13,7 @@ export interface RootObject {
   resourceType: string;
   id: string;
   active: boolean;
-  name: Name[];
+  name: Name[]; 
   gender: string;
   contact: Contact[];
   managingOrganization: Organization;
@@ -29,10 +29,10 @@ export interface Other {
   reference: string;
 }
 
-export interface Contact {
-  relationship: Relationship[];
-  organization: Organization;
-}
+// export interface Contact {
+//   relationship: Relationship[];
+//   organization: Organization;
+// }
 
 export interface Organization {
   reference: string;

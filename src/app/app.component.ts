@@ -17,7 +17,7 @@ export class AppComponent {
     // this.configureWithNewConfigApi();
     this.oauthService.configure({
       loginUrl: 'http://localhost:4200',
-      issuer: 'https://try.smilecdr.com:9200',
+      issuer: 'https://bcip.smilecdr.com:9200',
       clientId: 'NOHIS',
       redirectUri: 'http://localhost:4200/dashboard',
       scope: 'openid profile launch/patient patient/*.read'
