@@ -13,7 +13,6 @@
 
 </div>
 
-
 <div id="content-form">
   <!-- [hidden]="success" (ngSubmit)="submitHandler()" -->
   <form [formGroup]="accountForm">
@@ -21,56 +20,65 @@
     <h2 mat-subheader>Account Creation</h2>
 
     <hr>
-
     <div class="row">
-      <mat-form-field class="full form-field  " appearance="outline">
-        <input matInput placeholder="Username" formControlName="userName" class="formButton">
-        <mat-label>Username</mat-label>
-        <mat-error *ngIf="userName.invalid && userName.touched">
-          Cannot be blank!
-        </mat-error>
-      </mat-form-field>
+      <mat-grid-list cols="4" rowHeight="2:">
+        <mat-form-field class="full form-field  " appearance="outline">
+          <input matInput placeholder="PSOHP Region Office" formControlName="type">
+          <mat-error *ngIf="type.invalid && type.touched">
+            Cannot be blank!
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full form-field  " appearance="outline">
+          <input matInput placeholder="Email" formControlName="email">
+          <mat-error *ngIf="email.invalid && email.touched">
+            Email is incorrect
+          </mat-error>
+        </mat-form-field>
+      </mat-grid-list>
     </div>
 
     <div class="row">
-      <mat-form-field class="full form-field " appearance="outline">
-        <input matInput placeholder="First Name" formControlName="givenName">
-        <mat-error *ngIf="givenName.invalid && givenName.touched">
-          Cannot be blank!
-        </mat-error>
-      </mat-form-field>
+      <mat-grid-list cols="2" rowHeight="2:1">
 
-      <mat-form-field class="full form-field  " appearance="outline">
-        <input matInput placeholder="Last Name" formControlName="familyName">
-        <mat-error *ngIf="familyName.invalid && familyName.touched">
-          Cannot be blank!
-        </mat-error>
-      </mat-form-field>
+        <mat-form-field class="full form-field  " appearance="outline">
+          <input matInput placeholder="Phone Number" formControlName="phoneNumber">
+        </mat-form-field>
+        <mat-form-field class="full form-field  " appearance="outline">
+          <input matInput placeholder="Fax Number" formControlName="fax">
+        </mat-form-field>
+
+      </mat-grid-list>
+
     </div>
 
     <div class="row">
       <!-- <div> -->
+      <mat-form-field class="full street  " appearance="outline">
+        <input matInput placeholder="Address" formControlName="addressStreet">
+      </mat-form-field>
+      <mat-form-field class="full unit " appearance="outline">
+        <input matInput placeholder="Unit" formControlName="addressUnit">
+      </mat-form-field>
       <mat-form-field class="full form-field  " appearance="outline">
-        <input matInput placeholder="Email" formControlName="email">
-
-        <mat-error *ngIf="email.invalid && email.touched">
-          Email is incorrect
-        </mat-error>
+        <input matInput placeholder="City" formControlName="addressCity">
       </mat-form-field>
-      <!-- </div> -->
-
-
-      <mat-form-field class="full form-field  "appearance="outline">
-        <input type="password" matInput placeholder="Password" formControlName="password">
-        <mat-error *ngIf="password.invalid && password.touched">
-          <p>Your password should be at leasat 6 characters long, with at least one number</p>
-        </mat-error>
-      </mat-form-field>
-      <mat-icon matTooltip="Must have one letter, and one number" matTooltipPosition='right'>
-        info</mat-icon>
 
     </div>
+
     <div class="row">
+      <mat-grid-list cols="2" rowHeight="2:1">
+        <mat-form-field class="full form-field " appearance="outline">
+          <input matInput placeholder="Province" formControlName="addressProv">
+        </mat-form-field>
+        <mat-form-field class="full form-field " appearance="outline">
+          <input matInput placeholder="Postal Code" formControlName="addressPcode">
+        </mat-form-field>
+      </mat-grid-list>
+    </div>
+
+
+    
+    <div>
       <mat-checkbox formControlName="agree" color="primary" class="form-field ">Are you sure all fields are correct?</mat-checkbox>
     </div>
     <hr>

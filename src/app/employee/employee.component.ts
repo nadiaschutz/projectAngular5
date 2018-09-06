@@ -66,7 +66,9 @@ export interface accountType {
 })
 export class EmployeeComponent implements OnInit {
   accountForm: FormGroup;
-
+  isLinear = false;
+  firstFormGroup: FormGroup;
+  secondFormGroup: FormGroup;
 
 
   constructor(private fb: FormBuilder, private httpClient: HttpClient, public translate: TranslateService, private oauthService: OAuthService) {
@@ -85,7 +87,12 @@ export class EmployeeComponent implements OnInit {
 
   ngOnInit() {
 
-
+    this.firstFormGroup = this.fb.group({
+      firstCtrl: ['', Validators.required]
+    });
+    this.secondFormGroup = this.fb.group({
+      secondCtrl: ['', Validators.required]
+    });
     // name: Name.user;
     this.accountForm = this.fb.group({
       type: ['', [Validators.required]],

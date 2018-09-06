@@ -15,6 +15,11 @@ import { FormsComponent } from './forms/forms.component';
 import { IndexComponent } from './index/index.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { AuthComponent } from './auth/auth.component';
+import { EmployeeFormComponent } from './employee-form/employee-form.component';
+import { EmployeeComponent } from './employee/employee.component';
+import { PsohpRegionalComponent } from './psohp-regional/psohp-regional.component'
+import { EmployeeSummaryComponent } from './employee-summary/employee-summary.component';
+
 
 import { FHIRService } from './service/fhir.service';
 import { QuestionLoaderService } from './service/question-loader.service';
@@ -32,18 +37,20 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
-import {MatSortModule} from '@angular/material/sort';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatNativeDateModule}from '@angular/material';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatStepperModule} from '@angular/material/stepper';
+import { MatSortModule } from '@angular/material/sort';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatStepperModule } from '@angular/material/stepper';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { EmployeeFormComponent } from './employee-form/employee-form.component';
-import { EmployeeComponent} from './employee/employee.component';
+
+
 const routes: Routes = [
-  { path: 'employeeform', component: EmployeeComponent},
+  { path: 'employee-summary', component: EmployeeSummaryComponent }
+  { path: 'region-summary', component: PsohpRegionalComponent }
+  { path: 'employeeform', component: EmployeeComponent },
   { path: 'forms', component: FormsComponent },
   { path: 'newaccount', component: CreateAccountComponent },
   { path: 'dashboard', component: DashboardComponent },
@@ -64,7 +71,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     EmployeeComponent,
     CreateAccountComponent,
     AuthComponent,
-    EmployeeFormComponent
+    EmployeeFormComponent,
+    PsohpRegionalComponent,
+    EmployeeSummaryComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
