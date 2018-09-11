@@ -30,7 +30,7 @@ const ACCOUNT_DATA: AccountElement[] = [
 ]
 
 
-const EMPLOYEE_RECORD_DATA: 
+// const EMPLOYEE_RECORD_DATA: 
 
 @Component({
   selector: 'app-psohp-regional',
