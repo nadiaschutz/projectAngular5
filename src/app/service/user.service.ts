@@ -7,16 +7,23 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class UserService {
 
-  constructor(private _http: HttpClient, private oauthService: OAuthService) { }
+  constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
   getPatientData(pid) {
-    return this._http.get(environment.queryURI + '/Patient/' + pid, { headers: this.getHeaders() });
+   return this.httpClient.get<JSON>(environment.queryURI + '/Patient/' + pid, { headers: this.getHeaders() }).subscribe(data => console.log(data));
+
+    // return this._http.get(environment.queryURI + '/Patient/' + pid, { headers: this.getHeaders() });
+  }
+
+  getAllPatientData() {
+   return this.httpClient.get<JSON>(environment.queryURI + '/Patient/', { headers: this.getHeaders() }).subscribe(data => console.log(data));
+
   }
 
   logout() {
     const header = this.getHeaders();
 
-    this._http.post(environment.logoutURI + '/logout?cb=none&revoke=token', {}, { headers: header, withCredentials: true })
+    this.httpClient.post(environment.logoutURI + '/logout?cb=none&revoke=token', {}, { headers: header, withCredentials: true })
       .subscribe(item => {
         console.log(item);
       }, err => {
@@ -25,8 +32,9 @@ export class UserService {
   }
 
   getHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      'Authorization': this.oauthService.authorizationHeader()
+    const headers = new HttpHeaders({
+      "Authorization": "Bearer " + this.oauthService.getAccessToken()
     });
+    return headers;
   }
 }
