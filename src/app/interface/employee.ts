@@ -3,6 +3,19 @@
         profile: string[];
     }
 
+    export interface Other {
+        reference: string;
+    }
+
+    export interface Link {
+        other: Other;
+        type: string;
+    }
+
+    export interface RootObject {
+        link: Link[];
+    }
+
     export interface Text {
         status: string;
         div: string;
@@ -88,6 +101,7 @@
 
     export interface Address {
         extension: Extension3[];
+        use: string;
         line: string[];
         city: string;
         state: string;

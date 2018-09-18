@@ -14,6 +14,8 @@ import { Meta, Telecom, Text, ValueCoding, Extension2, ValueAddress, ValueHumanN
   Extension, Coding, Type, Identifier, Name, Extension4, Extension3, Address, Coding2, MaritalStatus,
 Coding3, Language,Communication,Resource, RootObject  } from '../interface/employee'
 
+
+
 export interface accountType {
   value: string;
   viewValue: string;
@@ -48,9 +50,12 @@ export class EmployeeComponent implements OnInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ]
 
+  address: Address[] 
+  resource: Resource['resourceType'] = 'test';
+  
 
   ngOnInit() {
-
+    console.log(this.resource);
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
     });
