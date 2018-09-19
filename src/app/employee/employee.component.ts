@@ -1,3 +1,7 @@
+///<referencepath="../../../node_modules/@types/fhir/index.d.ts"/>
+
+// declare const fhir: any;
+
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { tap, first, catchError } from 'rxjs/operators';
@@ -10,9 +14,22 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment'
 // import { access } from 'fs';
-import { Meta, Telecom, Text, ValueCoding, Extension2, ValueAddress, ValueHumanName, ValueReference, 
-  Extension, Coding, Type, Identifier, Name, Extension4, Extension3, Address, Coding2, MaritalStatus,
-Coding3, Language,Communication,Resource, RootObject  } from '../interface/employee'
+// import { Meta, Telecom, Text, ValueCoding, Extension2, ValueAddress, ValueHumanName, ValueReference, 
+//   Extension, Coding, Type, Identifier, Name, Extension4, Extension3, Address, Coding2, MaritalStatus,
+// Coding3, Language,Communication,Resource, RootObject  } from '../interface/employee'
+
+import { Employee } from  '../interface/employee.d';
+
+import * as ASD from '../interface/Patient';
+// import fhir from 'fhir';
+// import {Fhir} from 'fhir';
+// import * as fhir from 'fhir';
+// import * as fhir from 'fhir';
+
+// import Medication = fhir.Medication;
+// import Patient = fhir.Patient;
+// import Observation = fhir.Observation;
+// import Bundle = fhir.Bundle;
 
 
 
@@ -37,7 +54,10 @@ export class EmployeeComponent implements OnInit {
     private httpClient: HttpClient, 
     public translate: TranslateService, 
     private oauthService: OAuthService,
-    private userService: UserService) {
+    private userService: UserService
+    // ,private patient: Employee
+    
+    ) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
 
@@ -50,12 +70,30 @@ export class EmployeeComponent implements OnInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ]
 
-  address: Address[] 
-  resource: Resource['resourceType'] = 'test';
+  // address: Patient.Address;
   
 
+  
+
+
   ngOnInit() {
-    console.log(this.resource);
+
+    let model = <Employee.Resource>{};
+    let modelname = <Employee.Name>{};
+    modelname.family = 'Fam';
+    modelname.given = ['Test'];
+    model.resourceType='Patient';
+    model.id='1';
+
+ 
+ 
+    console.log(model.valueOf())
+    console.log(modelname.valueOf())
+
+    // this.resource.id = 'asd';
+
+
+  
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
     });
@@ -64,6 +102,7 @@ export class EmployeeComponent implements OnInit {
     });
     // name: Name.user;
     this.accountForm = this.fb.group({
+      resourceType: 'Patient',
       type: ['', [Validators.required]],
       familyName: ['', [Validators.required]],
       givenName: ['', [Validators.required]],
@@ -96,6 +135,15 @@ export class EmployeeComponent implements OnInit {
     // )
 
     this.userService.getAllPatientData();
+
+
+  }
+
+
+  
+  
+  get resourceType () {
+    return this.accountForm.get('resourceType');
   }
 
   get type() {
@@ -159,6 +207,7 @@ export class EmployeeComponent implements OnInit {
   }
 
 
+  
   // private handleError(error: HttpErrorResponse) {
   //   if (error.error instanceof ErrorEvent) {
   //     // A client-side or network error is handled accordingly.
