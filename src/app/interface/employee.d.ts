@@ -142,7 +142,7 @@ export namespace Employee {
             text: Text;
             extension: Extension[];
             identifier: Identifier[];
-            name: Name[];
+            name: Name;
             telecom: Telecom[];
             gender: string;
             birthDate: string;
