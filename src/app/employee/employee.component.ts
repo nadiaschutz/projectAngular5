@@ -1,6 +1,6 @@
 
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { Component, OnInit, AfterContentInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { tap, first, catchError } from 'rxjs/operators';
 // import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
@@ -10,14 +10,16 @@ import { UserService } from '../service/user.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-// import { access } from 'fs';
-// import { Meta, Telecom, Text, ValueCoding, Extension2, ValueAddress, ValueHumanName, ValueReference,
-//   Extension, Coding, Type, Identifier, Name, Extension4, Extension3, Address, Coding2, MaritalStatus,
-// Coding3, Language,Communication,Resource, RootObject  } from '../interface/employee'
+// import { fhir } from '../interface/employee.d';
+import { resource } from 'selenium-webdriver/http';
 
-import { Employee } from '../interface/employee.d';
 
-export interface accountType {
+// const typer = require('fhir');
+
+import * as FHIR from 'fhir';
+
+
+export interface AccountType {
   value: string;
   viewValue: string;
 }
@@ -27,21 +29,31 @@ export interface accountType {
   styleUrls: ['./employee.component.css']
 })
 
-export class EmployeeComponent implements OnInit {
-  accountForm: FormGroup;
+export class EmployeeComponent implements OnInit, AfterContentInit {
+  group: FormGroup;
   isLinear = false;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
+  patient: FHIR.Patient;
+  name: FHIR.HumanName;
+  // FHIR: 'fhir';
 
+
+  // model = <Employee.Resource>{};
+  // modelname = <Employee.Name>{};
+  // modellanguage = <Employee.Language>{};
+  // modelidentifier = <Employee.Identifier>{};
+  // modeltelecom = <Employee.Telecom>{};
+  // modeltext = <Employee.Text>{};
 
   constructor(private fb: FormBuilder,
     private httpClient: HttpClient,
     public translate: TranslateService,
     private oauthService: OAuthService,
-    private userService: UserService
+    private userService: UserService,
     // ,private patient: Employee
 
-    ) {
+  ) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
 
@@ -49,35 +61,21 @@ export class EmployeeComponent implements OnInit {
     translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
   }
 
-  accountTypes: accountType[] = [
+  accountTypes: AccountType[] = [
     { value: 'Employee', viewValue: 'Employee' },
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
-  // address: Patient.Address;
-
-
-
-
-
   ngOnInit() {
 
-    const model = <Employee.Resource>{};
-    const modelname = <Employee.Name>{};
-    modelname.family = 'Fam';
-    modelname.given = ['Test', 'Tester'];
-    model.name = modelname;
-    model.resourceType = 'Patient';
+    this.name.family = 'asdf';
 
+    // this.name[0].family = 'asdf';
+    // this.patient.name = this.name;
 
-    const a = model.valueOf();
+    // patient.id = '2';
 
-    console.log(model.valueOf());
-    console.log(modelname.valueOf());
-
-    // this.resource.id = 'asd';
-
-
+    console.log(this.patient.name);
 
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
@@ -86,7 +84,7 @@ export class EmployeeComponent implements OnInit {
       secondCtrl: ['', Validators.required]
     });
     // name: Name.user;
-    this.accountForm = this.fb.group({
+    this.group = this.fb.group({
       resourceType: 'Patient',
       type: ['', [Validators.required]],
       familyName: ['', [Validators.required]],
@@ -94,14 +92,6 @@ export class EmployeeComponent implements OnInit {
       dob: [Date],
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: [''],
-      // password: [
-      //   '',
-      //   [
-      //     Validators.required,
-      //     Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-      //     Validators.minLength(6)
-      //   ]
-      // ],
       addressStreet: [''],
       addressUnit: [''],
       addressCity: [''],
@@ -110,89 +100,97 @@ export class EmployeeComponent implements OnInit {
       addressCountry: [''],
       language: [''],
       id: '1',
-
-      // agree: [false, [Validators.requiredTrue]]
     });
+    // const a = this.model.valueOf();
 
-    // this.httpClient.get('localhost:8000/Patient').subscribe(
-    //   data => console.log(data),
-    //   err => console.log(err)
-    // )
-
+    // console.log(model.valueOf());
+    // console.log(this.modelname.valueOf());
     this.userService.getAllPatientData();
-
 
   }
 
+  ngAfterContentInit() {
+    // this.modelname.family = this.group.get('familyName').toString();
+    // this.modelname.given = ['Test', 'Tester'];
+    // this.model.name = this.modelname;
+    // this.model.resourceType = 'Patient';
+  }
+  // setResourceType(x) {
+  //   x.resourceType = this.resourceType();
+  // }
 
+  // model = <Employee.Resource>{};
+  // modelname = <Employee.Name>{};
+  // modellanguage = <Employee.Language>{};
+  // modelidentifier = <Employee.Identifier>{};
+  // modeltelecom = <Employee.Telecom>{};
+  // modeltext = <Employee.Text>{};
 
+  // setModel(employee: Employee.Resource, name: Employee.Name,
+  //   language: Employee.Language, identifier: Employee.Identifier,
+  //   telecom: Employee.Telecom, text: Employee.Text ) {
+  //     this.modelname = name;
 
-  get resourceType () {
-    return this.accountForm.get('resourceType');
+  //   }
+  get resourceType() {
+    return this.group.get('resourceType');
   }
 
   get type() {
-    return this.accountForm.get('type');
+    return this.group.get('type');
   }
 
   get dob() {
-    return this.accountForm.get('dob');
+    return this.group.get('dob');
   }
 
   get phoneNumber() {
-    return this.accountForm.get('phoneNumber');
+    return this.group.get('phoneNumber');
   }
 
   get password() {
-    return this.accountForm.get('password');
+    return this.group.get('password');
   }
 
   get email() {
-    return this.accountForm.get('email');
+    return this.group.get('email');
   }
 
   get givenName() {
-    return this.accountForm.get('givenName');
+    return this.group.get('givenName');
   }
 
   get familyName() {
-    return this.accountForm.get('familyName');
+    return this.group.get('familyName');
   }
 
   get addressCity() {
-    return this.accountForm.get('addressCity');
+    return this.group.get('addressCity');
   }
   get addressUnit() {
-    return this.accountForm.get('addressUnit');
+    return this.group.get('addressUnit');
   }
   get addressStreet() {
-    return this.accountForm.get('addressStreet');
+    return this.group.get('addressStreet');
   }
   get addressProv() {
-    return this.accountForm.get('addressProv');
+    return this.group.get('addressProv');
   }
   get addressPcode() {
-    return this.accountForm.get('addressPcode');
+    return this.group.get('addressPcode');
   }
   get addressCountry() {
-    return this.accountForm.get('addressCountry');
+    return this.group.get('addressCountry');
   }
   get language() {
-    return this.accountForm.get('language');
+    return this.group.get('language');
   }
-
-
   get userName() {
-    return this.accountForm.get('userName');
+    return this.group.get('userName');
   }
-
-
   get agree() {
-    return this.accountForm.get('agree');
+    return this.group.get('agree');
   }
-
-
-
   // private handleError(error: HttpErrorResponse) {
   //   if (error.error instanceof ErrorEvent) {
   //     // A client-side or network error is handled accordingly.

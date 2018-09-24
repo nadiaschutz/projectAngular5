@@ -4,21 +4,19 @@ import { OAuthService } from 'angular-oauth2-oidc';
 
 import { environment } from '../../environments/environment';
 
-@Injectable()
-export class UserService {
+export class QuestionnaireService {
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
-
-  getPatientData(pid) {
-   return this.httpClient.get<JSON>(environment.queryURI +
-    '/Patient/' + pid, { headers: this.getHeaders() }).subscribe(data => console.log(data));
+  getQuestionnaireData(pid) {
+    return this.httpClient.get<JSON>(environment.queryURI +
+      '/Quesntionnaire/' + pid, { headers: this.getHeaders() }).subscribe(data => console.log(data));
 
     // return this._http.get(environment.queryURI + '/Patient/' + pid, { headers: this.getHeaders() });
   }
 
   getAllPatientData() {
-   return this.httpClient.get<JSON>(environment.queryURI +
-    '/Patient/', { headers: this.getHeaders() }).subscribe(data => console.log(data));
+    return this.httpClient.get<JSON>(environment.queryURI +
+      '/Questionnaire/', { headers: this.getHeaders() }).subscribe(data => console.log(data));
 
   }
 
@@ -40,3 +38,4 @@ export class UserService {
     return headers;
   }
 }
+

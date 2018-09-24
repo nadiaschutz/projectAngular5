@@ -19,7 +19,7 @@ import { EmployeeFormComponent } from './employee-form/employee-form.component';
 import { EmployeeComponent } from './employee/employee.component';
 import { PsohpRegionalComponent } from './psohp-regional/psohp-regional.component'
 import { EmployeeSummaryComponent } from './employee-summary/employee-summary.component';
-
+// import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
 import { QuestionLoaderService } from './service/question-loader.service';
@@ -90,6 +90,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
+    // fhir,
     MatButtonModule,
     MatInputModule,
     MatSelectModule,

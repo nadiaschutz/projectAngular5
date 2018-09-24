@@ -17,7 +17,12 @@ import { environment } from '../../environments/environment'
 export class CreateAccountComponent implements OnInit {
   accountForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private httpClient: HttpClient, public translate: TranslateService, private oauthService: OAuthService) {
+  constructor(
+    private fb: FormBuilder, 
+    private httpClient: HttpClient, 
+    public translate: TranslateService,
+    private oauthService: OAuthService
+    ) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
 

@@ -28,7 +28,7 @@
     "angular-oauth2-oidc": "^4.0.2",
     "angular-oauth2-oidc-b2c": "^1.0.26",
     "core-js": "^2.5.4",
-    "fhir": "^4.3.6",
+    "fhir": "^0.0.30",
     "ng-fhir": "^2.3.0",
     "rxjs": "^6.0.0",
     "zone.js": "~0.8.26"
@@ -41,7 +41,6 @@
     "@types/jasmine": "~2.8.6",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
-    "@types/fhir": "*",
     "codelyzer": "~4.2.1",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
