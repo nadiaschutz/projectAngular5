@@ -28,12 +28,6 @@ export namespace Employee {
         display: string;
     }
     
-    export class Extension2 {
-        url: string;
-        valueCoding: ValueCoding;
-        valueString: string;
-    }
-    
     export class ValueAddress {
         city: string;
         state: string;
@@ -50,13 +44,13 @@ export namespace Employee {
     
     export class Extension {
         url: string;
-        extension: Extension2[];
         valueString: string;
         valueCode: string;
         valueAddress: ValueAddress;
         valueBoolean?: boolean;
         valueHumanName: ValueHumanName;
         valueReference: ValueReference;
+        valueIdentifier: string;
         valueDecimal?: number;
     }
     
@@ -90,23 +84,14 @@ export namespace Employee {
         use: string;
     }
     
-    export class Extension4 {
-        url: string;
-        valueDecimal: number;
-    }
-    
-    export class Extension3 {
-        url: string;
-        extension: Extension4[];
-    }
     
     export class Address {
-        extension: Extension3[];
         use: string;
         line: string[];
         city: string;
         state: string;
         country: string;
+        postalcode: string;
     }
     
     export class Coding2 {

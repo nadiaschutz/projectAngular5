@@ -17,6 +17,8 @@ import { environment } from '../../environments/environment';
 
 import { Employee } from '../interface/employee.d';
 
+const uuidv4 = require('uuid/v4');
+
 export interface AccountType {
   value: string;
   viewValue: string;
@@ -54,31 +56,11 @@ export class EmployeeComponent implements OnInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
-  // address: Patient.Address;
-
-
-
-
-
   employee = <Employee.Resource>{};
   employeename = <Employee.Name>{};
   employeeaddress = <Employee.Address>{};
+  employee_extension = <Employee.Extension>{};
   ngOnInit() {
-
-    // this.employeename.family = 'Fam';
-    // this.employeename.given = ['Test', 'Tester'];
-    // this.employee.name = this.employeename;
-    // this.employee.resourceType = 'Patient';
-
-
-    // const a = this.employee.valueOf();
-
-    // console.log(this.employee.valueOf());
-    // console.log(this.employeename.valueOf());
-
-    // this.resource.id = 'asd';
-
-
 
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
@@ -92,7 +74,7 @@ export class EmployeeComponent implements OnInit {
       type: ['', [Validators.required]],
       familyName: ['', [Validators.required]],
       givenName: ['', [Validators.required]],
-      dob: [Date],
+      dob: [''],
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: [''],
       // password: [
@@ -121,15 +103,32 @@ export class EmployeeComponent implements OnInit {
     // )
 
     this.userService.getAllPatientData();
+
   }
 
-  setEmployee (resourceType: string, given: string, family: string ) {
-    this.employeename.family = family;
-    this.employeename.given.push(given);
+  setEmployee () {
 
-    this.employee.resourceType = resourceType;
+    this.employeeaddress.city = this.group.get('addressCity').value;
+    this.employeeaddress.line  = [this.group.get('addressUnit').value + ' ' + this.group.get('addressStreet').value];
+    this.employeeaddress.postalcode = this.group.get('addressPcode').value;
+    this.employeeaddress.country = this.group.get('addressCountry').value;
+    this.employeeaddress.state = this.group.get('addressProv').value;
+    this.employeename.family = this.group.get('familyName').value;
+    this.employeename.given = [this.group.get('givenName').value];
+    this.employee_extension.url = 'Patient/1';
+    this.employee_extension.valueReference = uuidv4();
+    this.employee_extension.valueHumanName = this.group.get('type').value;
+    this.employee.extension = [this.employee_extension];
+
+    this.employee.birthDate = this.group.get('dob').value;
+    this.employee.resourceType = 'Patient';
+    this.employee.name = this.employeename;
+    this.employee.address = [this.employeeaddress];
+    const finalJSON = JSON.stringify(this.employee);
+    console.log(finalJSON);
+
   }
-  
+
   get resourceType () {
     return this.group.get('resourceType');
   }
@@ -184,11 +183,9 @@ export class EmployeeComponent implements OnInit {
     return this.group.get('language');
   }
 
-
   get userName() {
     return this.group.get('userName');
   }
-
 
   get agree() {
     return this.group.get('agree');
