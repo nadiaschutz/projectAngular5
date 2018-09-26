@@ -1,6 +1,6 @@
 
-import { Component, OnInit, AfterContentInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { tap, first, catchError } from 'rxjs/operators';
 // import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
@@ -10,14 +10,12 @@ import { UserService } from '../service/user.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-// import { fhir } from '../interface/employee.d';
-import { resource } from 'selenium-webdriver/http';
+// import { access } from 'fs';
+// import { Meta, Telecom, Text, ValueCoding, Extension2, ValueAddress, ValueHumanName, ValueReference,
+//   Extension, Coding, Type, Identifier, Name, Extension4, Extension3, Address, Coding2, MaritalStatus,
+// Coding3, Language,Communication,Resource, RootObject  } from '../interface/employee'
 
-
-// const typer = require('fhir');
-
-import * as FHIR from 'fhir';
-
+import { Employee } from '../interface/employee.d';
 
 export interface AccountType {
   value: string;
@@ -29,31 +27,21 @@ export interface AccountType {
   styleUrls: ['./employee.component.css']
 })
 
-export class EmployeeComponent implements OnInit, AfterContentInit {
+export class EmployeeComponent implements OnInit {
   group: FormGroup;
   isLinear = false;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
-  patient: FHIR.Patient;
-  name: FHIR.HumanName;
-  // FHIR: 'fhir';
 
-
-  // model = <Employee.Resource>{};
-  // modelname = <Employee.Name>{};
-  // modellanguage = <Employee.Language>{};
-  // modelidentifier = <Employee.Identifier>{};
-  // modeltelecom = <Employee.Telecom>{};
-  // modeltext = <Employee.Text>{};
 
   constructor(private fb: FormBuilder,
     private httpClient: HttpClient,
     public translate: TranslateService,
     private oauthService: OAuthService,
-    private userService: UserService,
+    private userService: UserService
     // ,private patient: Employee
 
-  ) {
+    ) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
 
@@ -66,16 +54,31 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
+  // address: Patient.Address;
+
+
+
+
+
+  employee = <Employee.Resource>{};
+  employeename = <Employee.Name>{};
+  employeeaddress = <Employee.Address>{};
   ngOnInit() {
 
-    this.name.family = 'asdf';
+    // this.employeename.family = 'Fam';
+    // this.employeename.given = ['Test', 'Tester'];
+    // this.employee.name = this.employeename;
+    // this.employee.resourceType = 'Patient';
 
-    // this.name[0].family = 'asdf';
-    // this.patient.name = this.name;
 
-    // patient.id = '2';
+    // const a = this.employee.valueOf();
 
-    console.log(this.patient.name);
+    // console.log(this.employee.valueOf());
+    // console.log(this.employeename.valueOf());
+
+    // this.resource.id = 'asd';
+
+
 
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
@@ -92,6 +95,14 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       dob: [Date],
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: [''],
+      // password: [
+      //   '',
+      //   [
+      //     Validators.required,
+      //     Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
+      //     Validators.minLength(6)
+      //   ]
+      // ],
       addressStreet: [''],
       addressUnit: [''],
       addressCity: [''],
@@ -100,39 +111,26 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       addressCountry: [''],
       language: [''],
       id: '1',
+
+      // agree: [false, [Validators.requiredTrue]]
     });
-    // const a = this.model.valueOf();
 
-    // console.log(model.valueOf());
-    // console.log(this.modelname.valueOf());
+    // this.httpClient.get('localhost:8000/Patient').subscribe(
+    //   data => console.log(data),
+    //   err => console.log(err)
+    // )
+
     this.userService.getAllPatientData();
-
   }
 
-  ngAfterContentInit() {
-    // this.modelname.family = this.group.get('familyName').toString();
-    // this.modelname.given = ['Test', 'Tester'];
-    // this.model.name = this.modelname;
-    // this.model.resourceType = 'Patient';
+  setEmployee (resourceType: string, given: string, family: string ) {
+    this.employeename.family = family;
+    this.employeename.given.push(given);
+
+    this.employee.resourceType = resourceType;
   }
-  // setResourceType(x) {
-  //   x.resourceType = this.resourceType();
-  // }
-
-  // model = <Employee.Resource>{};
-  // modelname = <Employee.Name>{};
-  // modellanguage = <Employee.Language>{};
-  // modelidentifier = <Employee.Identifier>{};
-  // modeltelecom = <Employee.Telecom>{};
-  // modeltext = <Employee.Text>{};
-
-  // setModel(employee: Employee.Resource, name: Employee.Name,
-  //   language: Employee.Language, identifier: Employee.Identifier,
-  //   telecom: Employee.Telecom, text: Employee.Text ) {
-  //     this.modelname = name;
-
-  //   }
-  get resourceType() {
+  
+  get resourceType () {
     return this.group.get('resourceType');
   }
 
@@ -185,12 +183,19 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   get language() {
     return this.group.get('language');
   }
+
+
   get userName() {
     return this.group.get('userName');
   }
+
+
   get agree() {
     return this.group.get('agree');
   }
+
+
+
   // private handleError(error: HttpErrorResponse) {
   //   if (error.error instanceof ErrorEvent) {
   //     // A client-side or network error is handled accordingly.
