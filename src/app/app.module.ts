@@ -15,9 +15,8 @@ import { FormsComponent } from './forms/forms.component';
 import { IndexComponent } from './index/index.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { AuthComponent } from './auth/auth.component';
-import { EmployeeFormComponent } from './employee-form/employee-form.component';
 import { EmployeeComponent } from './employee/employee.component';
-import { PsohpRegionalComponent } from './psohp-regional/psohp-regional.component'
+import { PsohpRegionalComponent } from './psohp-regional/psohp-regional.component';
 import { EmployeeSummaryComponent } from './employee-summary/employee-summary.component';
 // import {fhir} from './interface/employee.d';
 
@@ -72,7 +71,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     EmployeeComponent,
     CreateAccountComponent,
     AuthComponent,
-    EmployeeFormComponent,
     PsohpRegionalComponent,
     EmployeeSummaryComponent
   ],
