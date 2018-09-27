@@ -57,9 +57,12 @@ export class EmployeeComponent implements OnInit {
   ];
 
   employee = <Employee.Resource>{};
-  employeename = <Employee.Name>{};
-  employeeaddress = <Employee.Address>{};
+  employee_name = <Employee.Name>{};
+  employee_address = <Employee.Address>{};
   employee_extension = <Employee.Extension>{};
+  employee_language = <Employee.Language>{};
+  employee_language_coding = <Employee.Coding>{};
+  employee_communication = <Employee.Communication>{};
   ngOnInit() {
 
     this.firstFormGroup = this.fb.group({
@@ -108,22 +111,33 @@ export class EmployeeComponent implements OnInit {
 
   setEmployee () {
 
-    this.employeeaddress.city = this.group.get('addressCity').value;
-    this.employeeaddress.line  = [this.group.get('addressUnit').value + ' ' + this.group.get('addressStreet').value];
-    this.employeeaddress.postalcode = this.group.get('addressPcode').value;
-    this.employeeaddress.country = this.group.get('addressCountry').value;
-    this.employeeaddress.state = this.group.get('addressProv').value;
-    this.employeename.family = this.group.get('familyName').value;
-    this.employeename.given = [this.group.get('givenName').value];
-    this.employee_extension.url = 'Patient/1';
-    this.employee_extension.valueReference = uuidv4();
-    this.employee_extension.valueHumanName = this.group.get('type').value;
-    this.employee.extension = [this.employee_extension];
+    this.employee_address.city = this.group.get('addressCity').value;
+    this.employee_address.line  = [this.group.get('addressUnit').value + ' ' + this.group.get('addressStreet').value];
+    this.employee_address.postalcode = this.group.get('addressPcode').value;
+    this.employee_address.country = this.group.get('addressCountry').value;
+    this.employee_address.state = this.group.get('addressProv').value;
+    this.employee_name.family = this.group.get('familyName').value;
+    this.employee_name.given = [this.group.get('givenName').value];
 
+    if (this.group.get('language').value === 'English' || this.group.get('language').value === 'english') {
+      this.employee_language_coding.code = 'en';
+      this.employee_language_coding.system = 'urn:ietf:bcp:47';
+      this.employee_language_coding.display = this.group.get('language').value;
+    }
+
+    this.employee_language.coding = [this.employee_language_coding];
+    this.employee_communication.language = this.employee_language;
+    this.employee_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso-21090-name-use';
+    this.employee_extension.valueString = uuidv4();
+    // this.employee_extension.valueHumanName = this.group.get('type').value;
+
+    this.employee.communication = [this.employee_communication];
+    this.employee.extension = [this.employee_extension];
     this.employee.birthDate = this.group.get('dob').value;
     this.employee.resourceType = 'Patient';
-    this.employee.name = this.employeename;
-    this.employee.address = [this.employeeaddress];
+    this.employee.name = this.employee_name;
+    this.employee.address = [this.employee_address];
+
     const finalJSON = JSON.stringify(this.employee);
     console.log(finalJSON);
 

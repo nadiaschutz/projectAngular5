@@ -105,15 +105,9 @@ export namespace Employee {
         text: string;
     }
     
-    export class Coding3 {
-        system: string;
-        code: string;
-        display: string;
-    }
     
     export class Language {
-        coding: Coding3[];
-        text: string;
+        coding: Coding[];
     }
     
     export class Communication {
