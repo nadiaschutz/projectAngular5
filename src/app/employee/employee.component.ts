@@ -6,7 +6,7 @@ import { tap, first, catchError } from 'rxjs/operators';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { UserService } from '../service/user.service';
-
+import { W } from '../service/questionnaire.service'
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -17,7 +17,8 @@ import { environment } from '../../environments/environment';
 
 import { Employee } from '../interface/employee.d';
 
-const uuidv4 = require('uuid/v4');
+// const uuidv4 = require('uuid/v4');
+// import { uuidv4 } from ('uui')
 
 export interface AccountType {
   value: string;
@@ -105,7 +106,7 @@ export class EmployeeComponent implements OnInit {
     //   err => console.log(err)
     // )
 
-    this.userService.getAllPatientData();
+    // this.userService.getAllPatientData();
 
   }
 
@@ -128,9 +129,8 @@ export class EmployeeComponent implements OnInit {
     this.employee_language.coding = [this.employee_language_coding];
     this.employee_communication.language = this.employee_language;
     this.employee_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso-21090-name-use';
-    this.employee_extension.valueString = uuidv4();
-    // this.employee_extension.valueHumanName = this.group.get('type').value;
-
+    // this.employee_extension.valueString = uuidv4();
+    this.employee_extension.valueString = 'uuidv4()';
     this.employee.communication = [this.employee_communication];
     this.employee.extension = [this.employee_extension];
     this.employee.birthDate = this.group.get('dob').value;
@@ -139,8 +139,10 @@ export class EmployeeComponent implements OnInit {
     this.employee.address = [this.employee_address];
 
     const finalJSON = JSON.stringify(this.employee);
+
     console.log(finalJSON);
 
+    this.userService.postPatientData(finalJSON);
   }
 
   get resourceType () {

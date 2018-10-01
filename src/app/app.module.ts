@@ -21,7 +21,6 @@ import { EmployeeSummaryComponent } from './employee-summary/employee-summary.co
 // import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
-import { QuestionLoaderService } from './service/question-loader.service';
 import { AuthGuardService } from '../app/service/auth-guard.service';
 import { QuestionnaireService } from './service/questionnaire.service';
 

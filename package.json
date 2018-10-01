@@ -28,7 +28,6 @@
     "angular-oauth2-oidc": "^4.0.2",
     "angular-oauth2-oidc-b2c": "^1.0.26",
     "core-js": "^2.5.4",
-    "fhir": "^0.0.30",
     "ng-fhir": "^2.3.0",
     "rxjs": "^6.0.0",
     "uuid": "^3.3.2",
