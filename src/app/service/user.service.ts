@@ -59,8 +59,9 @@ export class UserService {
 
   postFHIRHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
-      'Authorization': 'Bearer ' + this.oauthService.getAccessToken(),
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
+
       // 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
       // 'Access-Control-Allow-Origin': '*'
     });

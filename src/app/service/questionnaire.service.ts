@@ -18,18 +18,18 @@ export class Code {
   display: string;
 }
 
-export class RootObject {
-  resourceType: string;
-  id: string;
-  text: Text;
-  url: string;
-  status: string;
-  date: string;
-  code?: Code[];
-  subjectType: string[];
+// export class RootObject {
+//   resourceType: string;
+//   id: string;
+//   text: Text;
+//   url: string;
+//   status: string;
+//   date: string;
+//   code?: Code[];
+//   subjectType: string[];
 
-  item: Item[];
-}
+//   item: Item[];
+// }
 
 export class Item {
   private linkId: string; private text: string; private type: string;
@@ -129,6 +129,7 @@ class Question {
 
 }
 
+// fix this to not return a list 
 export class Questionnaire {
   private questions: Question[];
 
@@ -219,13 +220,12 @@ export class QuestionnaireService {
   // rootObject: RootObject;
   questionnaireData = new BehaviorSubject<any>(null);
 
-
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
-  getQuestionnaireData(pid) {
-    return this.httpClient.get(environment.queryURI +
+  getQuestionnaireData(qid) {
+    return this.httpClient.get<JSON>(environment.queryURI +
       // '/Quesntionnaire/' + pid, { headers: this.getHeaders() }).subscribe(res => this.questionnaireData.next(res));
-      '/Questionnaire/' + pid, { headers: this.getHeaders() }).subscribe(res => this.questionnaireData.next(res));
+      '/Questionnaire/' + qid, { headers: this.getHeaders() }).subscribe(res => this.questionnaireData.next(res));
 
   }
 
@@ -241,10 +241,17 @@ export class QuestionnaireService {
   }
 
 
-  initQuestionnaire() {
-    const tester = new Question().getCode();
-    const testtew = new Questionnaire();
+  returnQuestionnaire() {
+    return this.questionnaireData.asObservable();
+  }
 
+  initQuestionnaire() {
+    return new Questionnaire();
+  }
+
+  getQuestions(qid) {
+    const item = new Item();
+    this.getQuestionnaireData(qid);
   }
 
   logout() {

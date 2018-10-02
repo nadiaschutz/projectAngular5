@@ -1,12 +1,12 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterContentInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { tap, first, catchError } from 'rxjs/operators';
 // import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { UserService } from '../service/user.service';
-import { W } from '../service/questionnaire.service'
+import { QuestionnaireService } from '../service/questionnaire.service'
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -16,9 +16,11 @@ import { environment } from '../../environments/environment';
 // Coding3, Language,Communication,Resource, RootObject  } from '../interface/employee'
 
 import { Employee } from '../interface/employee.d';
+import { JsonPipe } from '@angular/common';
 
 // const uuidv4 = require('uuid/v4');
-// import { uuidv4 } from ('uui')
+// import _ = require('uuid/v4');
+// import * as uuidv4 from ('uuid/v4');
 
 export interface AccountType {
   value: string;
@@ -30,21 +32,23 @@ export interface AccountType {
   styleUrls: ['./employee.component.css']
 })
 
-export class EmployeeComponent implements OnInit {
+export class EmployeeComponent implements OnInit, AfterContentInit {
   group: FormGroup;
   isLinear = false;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
 
+  tester: JSON[];
 
   constructor(private fb: FormBuilder,
     private httpClient: HttpClient,
     public translate: TranslateService,
     private oauthService: OAuthService,
-    private userService: UserService
+    private userService: UserService,
+    private questionnaireService: QuestionnaireService
     // ,private patient: Employee
 
-    ) {
+  ) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
 
@@ -108,12 +112,23 @@ export class EmployeeComponent implements OnInit {
 
     // this.userService.getAllPatientData();
 
+    console.log(this.questionnaireService.getQuestionnaireData('1849'));
+  }
+  ngAfterContentInit() {
+
+    
+    this.questionnaireService.returnQuestionnaire().subscribe(data => {
+      if (data) {
+        this.tester = data;
+        console.log(this.tester['item']);
+      }
+    });
   }
 
-  setEmployee () {
+  setEmployee() {
 
     this.employee_address.city = this.group.get('addressCity').value;
-    this.employee_address.line  = [this.group.get('addressUnit').value + ' ' + this.group.get('addressStreet').value];
+    this.employee_address.line = [this.group.get('addressUnit').value + ' ' + this.group.get('addressStreet').value];
     this.employee_address.postalcode = this.group.get('addressPcode').value;
     this.employee_address.country = this.group.get('addressCountry').value;
     this.employee_address.state = this.group.get('addressProv').value;
@@ -145,7 +160,7 @@ export class EmployeeComponent implements OnInit {
     this.userService.postPatientData(finalJSON);
   }
 
-  get resourceType () {
+  get resourceType() {
     return this.group.get('resourceType');
   }
 

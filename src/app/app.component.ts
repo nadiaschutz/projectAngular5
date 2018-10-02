@@ -19,8 +19,10 @@ export class AppComponent {
       loginUrl: 'http://localhost:4200',
       issuer: 'https://bcip.smilecdr.com:9200',
       clientId: 'NOHIS',
+      // redirectUri: 'https://nohis.smilecdr.com/dashboard',
       redirectUri: 'http://localhost:4200/dashboard',
-      scope: 'openid profile launch/patient patient/*.read'
+
+      scope: 'launch/patient openid patient/*.read patient/*.write profile'
     });
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
 
