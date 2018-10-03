@@ -222,18 +222,15 @@ export class QuestionnaireService {
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
-  getQuestionnaireData(qid) {
+  getQuestionnaireData(name) {
     return this.httpClient.get<JSON>(environment.queryURI +
-      // '/Quesntionnaire/' + pid, { headers: this.getHeaders() }).subscribe(res => this.questionnaireData.next(res));
-      '/Questionnaire/' + qid, { headers: this.getHeaders() }).subscribe(res => this.questionnaireData.next(res));
+      '/Questionnaire?name=' + name, { headers: this.getHeaders() }).subscribe(res => this.questionnaireData.next(res));
 
   }
 
   getAllQuestionnaireData() {
     return this.httpClient.get(environment.queryURI +
-      // '/Questionnaire/', { headers: this.getHeaders() }).subscribe(data => console.log(data));
     '/Questionnaire', { headers: this.getHeaders() }).subscribe(res => this.questionnaireData.next(res));
-
   }
 
   getQuestionnaireFromSource (source, headers) {

@@ -39,7 +39,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   secondFormGroup: FormGroup;
 
   tester: JSON[];
-
+  testerPersistent: JSON[];
   constructor(private fb: FormBuilder,
     private httpClient: HttpClient,
     public translate: TranslateService,
@@ -85,14 +85,6 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       dob: [''],
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: [''],
-      // password: [
-      //   '',
-      //   [
-      //     Validators.required,
-      //     Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-      //     Validators.minLength(6)
-      //   ]
-      // ],
       addressStreet: [''],
       addressUnit: [''],
       addressCity: [''],
@@ -112,17 +104,18 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
 
     // this.userService.getAllPatientData();
 
-    console.log(this.questionnaireService.getQuestionnaireData('1849'));
+    console.log(this.questionnaireService.getQuestionnaireData('servicerequest'));
   }
   ngAfterContentInit() {
 
-    
     this.questionnaireService.returnQuestionnaire().subscribe(data => {
       if (data) {
         this.tester = data;
+        // this.testerPersistent.push(data);
         console.log(this.tester['item']);
       }
     });
+
   }
 
   setEmployee() {
