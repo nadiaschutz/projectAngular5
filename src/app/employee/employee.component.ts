@@ -152,7 +152,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
 
     console.log(finalJSON);
 
-    this.userService.postPatientData(finalJSON);
+    this.patientService.postPatientData(finalJSON);
   }
 
   get resourceType() {
