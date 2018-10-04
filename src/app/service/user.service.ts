@@ -11,32 +11,10 @@ export class UserService {
 
 
   // TODO Move all calls to FHIR resources into fhir.service.ts
-  getPatientData(pid) {
-    return this.httpClient.get<JSON>(environment.queryURI +
-      '/Patient/' + pid, { headers: this.getHeaders() }).subscribe(data => console.log(data));
-
-    // return this._http.get(environment.queryURI + '/Patient/' + pid, { headers: this.getHeaders() });
-  }
-
-  getAllPatientData() {
-    return this.httpClient.get<JSON>(environment.queryURI +
-      '/Patient/', { headers: this.getHeaders() }).subscribe(data => console.log(data));
-
-  }
-
-  postPatientData(patient) {
-    this.httpClient.post(environment.queryURI + '/Patient/', patient, { headers: this.postFHIRHeaders() }).subscribe(
-      data => {
-        console.log('POST Request is successful ', data);
-      },
-      error => {
-        console.log('Error', error);
-      }
-    );
-  }
+ 
 
   createUserAccount(type: string) {
-    
+ 
   }
 
   logout() {

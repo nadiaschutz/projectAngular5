@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 // import * as Rx from 'rxjs';
@@ -218,14 +218,13 @@ export class QuestionnaireResposne {
 export class QuestionnaireService {
 
   // rootObject: RootObject;
-  questionnaireData = new Subject();
+  questionnaireData = new BehaviorSubject<any>(null);
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
   getQuestionnaireData(name) {
     return this.httpClient.get<JSON>(environment.queryURI +
       '/Questionnaire?name=' + name, { headers: this.getHeaders() }).subscribe(res => this.questionnaireData.next(res));
-
   }
 
   getAllQuestionnaireData() {

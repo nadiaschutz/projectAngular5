@@ -23,7 +23,7 @@ import { EmployeeSummaryComponent } from './employee-summary/employee-summary.co
 import { FHIRService } from './service/fhir.service';
 import { AuthGuardService } from '../app/service/auth-guard.service';
 import { QuestionnaireService } from './service/questionnaire.service';
-
+import { PatientService } from './service/patient.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
@@ -110,7 +110,8 @@ export function HttpLoaderFactory(http: HttpClient) {
   providers: [
     AuthGuardService,
     UserService,
-    QuestionnaireService
+    QuestionnaireService,
+    PatientService
   ],
   bootstrap: [AppComponent]
 })

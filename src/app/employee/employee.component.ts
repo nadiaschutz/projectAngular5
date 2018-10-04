@@ -6,7 +6,8 @@ import { tap, first, catchError } from 'rxjs/operators';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { UserService } from '../service/user.service';
-import { QuestionnaireService } from '../service/questionnaire.service'
+import { QuestionnaireService } from '../service/questionnaire.service';
+import { PatientService } from '../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -45,6 +46,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     public translate: TranslateService,
     private oauthService: OAuthService,
     private userService: UserService,
+    private patientService: PatientService,
     private questionnaireService: QuestionnaireService
     // ,private patient: Employee
 
