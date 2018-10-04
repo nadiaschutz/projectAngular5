@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 // import * as Rx from 'rxjs';
@@ -218,7 +218,7 @@ export class QuestionnaireResposne {
 export class QuestionnaireService {
 
   // rootObject: RootObject;
-  questionnaireData = new BehaviorSubject<any>(null);
+  questionnaireData = new Subject();
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
