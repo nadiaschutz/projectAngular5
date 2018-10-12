@@ -14,7 +14,18 @@
 </div>
 
 
-<!-- {{group.value | json }} -->
+<div>
+
+
+    <button (click)="clickMe()">Click me!</button>
+    {{temp.returnQuestion()['item']}}
+
+  <!-- <div *ngIf="_newquestionnaire"> -->
+    <!-- <span *ngFor="let q of _newquestionnaire"> -->
+    <!-- </span> -->
+  <!-- </div> -->
+
+</div>
 
 <div id="content-form">
   <!-- [hidden]="success" (ngSubmit)="submitHandler()" -->
@@ -25,7 +36,7 @@
     <mat-horizontal-stepper [linear]="isLinear" #stepper style="background-color: #f9f9f9;">
       <mat-step [stepControl]="firstFormGroup">
         <form [formGroup]="firstFormGroup">
-            <!-- <br> -->
+          <!-- <br> -->
           <ng-template matStepLabel>Personal Information</ng-template>
           <!-- <mat-form-field>
               <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
@@ -161,7 +172,7 @@
       </mat-grid-list>
     </div>
     <div class="row">
-      <mat-checkbox  color="primary" class="form-field ">Are there any dependents?</mat-checkbox>
+      <mat-checkbox color="primary" class="form-field ">Are there any dependents?</mat-checkbox>
     </div>
     <div class="row">
       <button mat-raised-button class="formButton" (click)="setEmployee()" color="primary">Submit</button>
@@ -170,5 +181,4 @@
 
 
 </div>
-<br/>
-
+<br />

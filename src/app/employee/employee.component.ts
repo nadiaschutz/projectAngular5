@@ -1,12 +1,14 @@
 
-import { Component, OnInit, AfterContentInit } from '@angular/core';
+import { Component, OnInit, AfterContentInit, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { tap, first, catchError } from 'rxjs/operators';
 // import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { UserService } from '../service/user.service';
-import { QuestionnaireService } from '../service/questionnaire.service';
+
+import { QuestionnaireService, Context, newQuestionnaire } from '../service/questionnaire.service';
+
 import { PatientService } from '../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
@@ -18,6 +20,7 @@ import { environment } from '../../environments/environment';
 
 import { Employee } from '../interface/employee.d';
 import { JsonPipe } from '@angular/common';
+
 
 // const uuidv4 = require('uuid/v4');
 // import _ = require('uuid/v4');
@@ -38,16 +41,20 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   isLinear = false;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
+  _newquestionnaire;
+  tester = [];
+  context: Context;
+  temp;
 
-  tester: JSON[];
-  testerPersistent: JSON[];
   constructor(private fb: FormBuilder,
     private httpClient: HttpClient,
     public translate: TranslateService,
     private oauthService: OAuthService,
     private userService: UserService,
     private patientService: PatientService,
-    private questionnaireService: QuestionnaireService
+    private questionnaireService: QuestionnaireService,
+    // private context: Context,
+    // private _newquestionnaire: newQuestionnaire
     // ,private patient: Employee
 
   ) {
@@ -70,6 +77,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   employee_language = <Employee.Language>{};
   employee_language_coding = <Employee.Coding>{};
   employee_communication = <Employee.Communication>{};
+
   ngOnInit() {
 
     this.firstFormGroup = this.fb.group({
@@ -99,24 +107,25 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       // agree: [false, [Validators.requiredTrue]]
     });
 
-    // this.httpClient.get('localhost:8000/Patient').subscribe(
-    //   data => console.log(data),
-    //   err => console.log(err)
-    // )
+    this.context = new Context('https://bcip.smilecdr.com/fhir-request');
 
-    // this.userService.getAllPatientData();
+  }
 
-    console.log(this.questionnaireService.getQuestionnaireData('servicerequest'));
+  clickMe() {
+    this.temp = new newQuestionnaire(this.context, '1849');
+
+   console.log(this.temp.returnQuestion()['item']);
   }
   ngAfterContentInit() {
 
-    this.questionnaireService.returnQuestionnaire().subscribe(data => {
-      if (data) {
-        this.tester = data;
-        // this.testerPersistent.push(data);
-        console.log(this.tester['item']);
-      }
-    });
+    // console.log (this.temp.returnQuestion());
+    // this.questionnaireService.returnQuestionnaire().subscribe(data => {
+    //   if (data) {
+    //     this.tester = data;
+    //     // this.testerPersistent.push(data);
+    //     console.log(this.tester['item']);
+    //   }
+    // });
 
   }
 
