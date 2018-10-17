@@ -16,14 +16,19 @@
 
 <div>
 
+  
 
-    <button (click)="clickMe()">Click me!</button>
-    {{temp.returnQuestion()['item']}}
 
-  <!-- <div *ngIf="_newquestionnaire"> -->
-    <!-- <span *ngFor="let q of _newquestionnaire"> -->
-    <!-- </span> -->
-  <!-- </div> -->
+  <div *ngFor="let value of temp.returnQuestionObject().item">
+    {{value.text}}
+    <mat-form-field>
+      <mat-select>
+        <mat-option *ngFor="let object of value.option" [value]="object.valueCoding.code">
+      {{object.valueCoding.code}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 
 </div>
 

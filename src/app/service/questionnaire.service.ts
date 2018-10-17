@@ -8,148 +8,12 @@ import { delay } from 'rxjs/operators';
 
 import * as $ from 'jquery';
 
+import { v4 } from 'uuid';
 
 // import * as FHIR from 'fhir';
 
 // Maintains a reference
 // Auth (headers should have auth conetext, established by oauth 2)
-//
-
-
-// export class Text {
-//   status: string;
-//   div: string;
-// }
-
-// export class Code {
-//   system: string;
-//   code: string;
-//   display: string;
-// }
-
-// export class RootObject {
-//   resourceType: string;
-//   id: string;
-//   text: Text;
-//   url: string;
-//   status: string;
-//   date: string;
-//   code?: Code[];
-//   subjectType: string[];
-
-//   item: Item[];
-// }
-
-// export class Item {
-//   private linkId: string; private text: string; private type: string;
-//   get LinkId(): string {
-//     return this.linkId;
-//   }
-
-//   getText(): string {
-//     return this.text;
-//   }
-
-//   getType(): string {
-//     return this.type;
-//   }
-
-//   setLinkId(linkId: string) {
-//     this.linkId = linkId;
-//   }
-
-//   setText(text: string) {
-//     this.text = text;
-//   }
-
-//   setType(type: string) {
-//     this.type = type;
-//   }
-// }
-
-
-// Query FHIR server for questionnaire
-// Parse response object into dictionary
-// walk dictionary populating fields
-// create a private method (called mapVersion)
-// getVersion -> call mapper with this
-// setVersion
-
-// class Question {
-
-//   constructor(
-//     public resourceType: string,
-//     public id: string,
-//     public url: string,
-//     public date: string,
-//     public code?: Code,
-//     public subjectType: string[],
-//     public item?: Item[],
-//   ) { }
-
-//   getResourceType() {
-//     return this.resourceType;
-//   }
-
-//   setResourceType(resourceType: string) {
-//     this.resourceType = resourceType;
-//   }
-
-//   getId() {
-//     return this.id;
-//   }
-
-//   setId(id: string) {
-//     this.id = id;
-//   }
-
-//   getUrl() {
-//     return this.url;
-//   }
-
-//   setUrl(url: string) {
-//     this.url = url;
-//   }
-
-//   getDate() {
-//     return this.date;
-//   }
-
-//   setDate(date: Date) {
-//     this.date = date;
-//   }
-
-//   getCode() {
-//     return this.code;
-//   }
-
-//   setCode(code: Code) {
-//     this.code = code;
-//   }
-
-//   getSubjectType() {
-//     for (const i of this.subjectType) {
-//       return i;
-//     }
-//   }
-
-//   setSubjectType(subjectType: string) {
-//     this.subjectType.push(subjectType);
-//   }
-
-//   getItem() {
-//     for (const i of this.item) {
-//       return i;
-//     }
-//   }
-
-//   setItem(item: Item) {
-//     this.item.push(item);
-//   }
-
-// }
-
-let array = {};
 
 export class Context {
 
@@ -160,41 +24,38 @@ export class Context {
   resource: string;
 }
 
-export class newQuestionnaire {
+let tempobject = {};
+
+export class NewQuestionnaire {
   theQuestionnaire: Object;
   version: string;
-  // private id: string;
   myContext: Context;
-  private httpClient: HttpClient;
-  private oauthService: OAuthService;
+  questionarray = tempobject;
 
-  question;
-  questionarray = array;
-
-  returnQuestion() {
-    return this.questionarray;
+  returnQuestionObject() {
+    return this.theQuestionnaire;
   }
 
   setQuestion(res) {
-    this.questionarray = res;
+    this.theQuestionnaire = res;
   }
-  constructor(context?: Context, id?: string, resource?: string) {
+
+  constructor(context?: Context, id?: string, resource?: string, query?: string) {
 
     if (context) {
       this.myContext = context;
-      // console.log('this has context!');
     } if (id) {
+      // console.log('id call was attempted');
       this.populateQuestionsById(id, context);
-      console.log('this has an id!');
-    } if (resource) {
-      this.populateQuestionsByResource(resource, context);
+    } if (!id) {
+      // console.log('resource call was attempted');
+      this.populateQuestionsByResource(resource, query, context);
       // console.log('this has a resource!');
     }
   }
 
 
   populateQuestionsById(id?: string, context?: Context) {
-
 
     const temp = $.ajax({
       type: 'GET',
@@ -204,43 +65,33 @@ export class newQuestionnaire {
         'Authorization': 'Basic ' + btoa('admin:smilecanada')
       },
       success: function (data) {
-        array = data;
+        tempobject = data;
       },
-    })
-    
-    // this.questionarray = this.question;
-
-    // temp.done(function (res) {
-    //   return JSON.parse(this.theQuestionnaire);
-    // });
+    }).done((response: any) => {
+      this.setQuestion(response);
+    });
 
   }
 
 
 
-  populateQuestionsByResource(resource?: string, context?: Context) {
-    $.ajax({
-      type: 'get',
-      url: context.fhirserver + resource + '?_format=json',
+  populateQuestionsByResource(resource?: string, query?: string, context?: Context) {
+
+    const temp = $.ajax({
+      type: 'GET',
+      url: context.fhirserver + '/' + resource + query + '?_format=json',
       contentType: 'fhir+json',
       headers: {
         'Authorization': 'Basic ' + btoa('admin:smilecanada')
       },
       success: function (data) {
-        setTimeout(function () {
-          this.questionarray = data;
-        }, 2000);
+        tempobject = data;
       },
-    }).done(function (res) {
-      this.questionarray = res;
+    }).done((response: any) => {
+      this.setQuestion(response);
     });
-    // this.questionarray = this.question;
 
-    // temp.done(function (res) {
-    //   return JSON.parse(this.theQuestionnaire);
-    // });
   }
-
 
 }
 

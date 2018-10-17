@@ -7,7 +7,7 @@ import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { UserService } from '../service/user.service';
 
-import { QuestionnaireService, Context, newQuestionnaire } from '../service/questionnaire.service';
+import { QuestionnaireService, Context, NewQuestionnaire } from '../service/questionnaire.service';
 
 import { PatientService } from '../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -20,11 +20,12 @@ import { environment } from '../../environments/environment';
 
 import { Employee } from '../interface/employee.d';
 import { JsonPipe } from '@angular/common';
+import { Pipe, PipeTransform } from '@angular/core';
 
 
 // const uuidv4 = require('uuid/v4');
 // import _ = require('uuid/v4');
-// import * as uuidv4 from ('uuid/v4');
+// import * as _ from ('uuid/v4');
 
 export interface AccountType {
   value: string;
@@ -108,16 +109,18 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     });
 
     this.context = new Context('https://bcip.smilecdr.com/fhir-request');
+    this.temp = new NewQuestionnaire(this.context, '1896');
+
+    // this.temp = new NewQuestionnaire(this.context, null, 'Questionnaire', '?name=servicerequest');
+
 
   }
 
-  clickMe() {
-    this.temp = new newQuestionnaire(this.context, '1849');
 
-   console.log(this.temp.returnQuestion()['item']);
-  }
   ngAfterContentInit() {
 
+
+    // console.log(this.temp);
     // console.log (this.temp.returnQuestion());
     // this.questionnaireService.returnQuestionnaire().subscribe(data => {
     //   if (data) {
@@ -128,6 +131,20 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     // });
 
   }
+
+  getQuestionItem(temp) {
+    const tempquestion = [];
+    for (const value of temp.returnQuestionObject().item) {
+      tempquestion.push(value.text);
+      for(const object of value.option) {
+        tempquestion.push(object.valueCoding.code);
+      }
+    }
+    return tempquestion;
+  }
+  // keys(): Array<string> {
+  //   return Object.keys(this.temp.returnQuestionObject());
+  // }
 
   setEmployee() {
 
