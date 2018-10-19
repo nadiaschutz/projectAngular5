@@ -34,7 +34,9 @@ export interface EmployeeElement {
 }
 
 const ACCOUNT_DATA: AccountElement[] = [
-  { type: 'PSOHP Regional Office', id: 'Atlatntic', name: 'Name', number: '00333', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
+  { type: 'PSOHP Regional Office', 
+  id: 'Atlatntic', name: 'Name', 
+  number: '00333', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
   { type: 'PSOHP District Office', id: 'Halifax', name: 'Name', number: '00343', dateCreated: 'Mar 12, 2010', dateModified: 'Jan 15, 2012' },
   { type: 'Client Department Account ', id: 'Agriculture and Agri-Foods', name: 'Name', number: '00393', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
   { type: 'NOHIS User Account', id: 'Administrative Officer', name: 'Name', number: '00489', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' }
