@@ -9,15 +9,15 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { OAuthModule } from 'angular-oauth2-oidc';
 
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { FormsComponent } from './forms/forms.component';
-import { IndexComponent } from './index/index.component';
-import { CreateAccountComponent } from './create-account/create-account.component';
-import { AuthComponent } from './auth/auth.component';
-import { EmployeeComponent } from './employee/employee.component';
-import { PsohpRegionalComponent } from './psohp-regional/psohp-regional.component';
-import { EmployeeSummaryComponent } from './employee-summary/employee-summary.component';
+import { LoginComponent } from './components/login/login.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { FormsComponent } from './components/forms/forms.component';
+import { IndexComponent } from './components/index/index.component';
+import { CreateAccountComponent } from './components/create-account/create-account.component';
+import { AuthComponent } from './components/auth/auth.component';
+import { EmployeeComponent } from './components/employee/employee.component';
+import { PsohpRegionalComponent } from './components/psohp-regional/psohp-regional.component';
+import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
 // import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
@@ -44,6 +44,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { ServiceRequestComponent } from './components/service-request/service-request.component';
 
 
 const routes: Routes = [
@@ -53,6 +54,8 @@ const routes: Routes = [
   { path: 'forms', component: FormsComponent },
   { path: 'newaccount', component: CreateAccountComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'servicerequest', component: ServiceRequestComponent },
+
   { path: '', component: AuthComponent }
 ];
 
@@ -71,7 +74,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CreateAccountComponent,
     AuthComponent,
     PsohpRegionalComponent,
-    EmployeeSummaryComponent
+    EmployeeSummaryComponent,
+    ServiceRequestComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

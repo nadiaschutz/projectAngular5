@@ -22,6 +22,7 @@ export class Context {
   }
   fhirserver: string;
   resource: string;
+
 }
 
 let tempobject = {};
@@ -73,8 +74,6 @@ export class NewQuestionnaire {
 
   }
 
-
-
   populateQuestionsByResource(resource?: string, query?: string, context?: Context) {
 
     const temp = $.ajax({
@@ -95,6 +94,21 @@ export class NewQuestionnaire {
 
 }
 
+export class QuestionnaireResponse {
+  resourceType = 'QuestionnaireResponse';
+  id;
+  item: string[];
+
+
+
+  getId() {
+    return this.id;
+  }
+
+  setId(id) {
+    this.id = id;
+  }
+}
 
 
 //  constructor (name?: string) {

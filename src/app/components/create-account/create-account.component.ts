@@ -7,7 +7,7 @@ import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment'
+import { environment } from '../../../environments/environment'
 
 @Component({
   selector: 'app-create-account',

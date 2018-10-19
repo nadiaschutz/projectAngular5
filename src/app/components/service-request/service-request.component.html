@@ -1,0 +1,20 @@
+
+  <div>
+
+    <!-- THIS PART RENDERS THE FORM  -->
+    <div *ngIf="temp.returnQuestionObject()">
+      <div *ngFor="let value of temp.returnQuestionObject().item">
+        {{value.text}}
+        <mat-form-field>
+          <mat-select>
+            <mat-option *ngFor="let object of value.option" [value]="object.valueCoding.code">
+              {{object.valueCoding.code}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+      </div>
+    </div>
+    <button mat-button (click)="deserializethis(object.valueCoding.code)">Click me!</button>
+    <!-- THIS PART RENDERS THE FORM  -->
+  </div>

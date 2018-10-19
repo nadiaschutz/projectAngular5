@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { UserService } from '../service/user.service';
+import { UserService } from '../../service/user.service';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { MatSort, MatTableDataSource } from '@angular/material';
 
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
@@ -47,6 +47,7 @@ export class EmployeeSummaryComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
+  // tslint:disable-next-line:member-ordering
   @ViewChild(MatSort) sort: MatSort;
 
   constructor(

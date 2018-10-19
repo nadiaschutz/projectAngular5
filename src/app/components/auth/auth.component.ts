@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 //  trigger, style, state, transition, animate
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { Router, ActivatedRoute } from '@angular/router';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 
 @Component({
