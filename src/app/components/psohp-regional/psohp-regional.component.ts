@@ -47,7 +47,7 @@ export class PsohpRegionalComponent implements OnInit, OnDestroy {
   dataSource = new MatTableDataSource(ACCOUNT_DATA);
   psohpFormGroup: FormGroup;
   offices: Object;
-  
+
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -85,7 +85,6 @@ export class PsohpRegionalComponent implements OnInit, OnDestroy {
       fax: [''],
       phoneNumber: [''],
       addressStreet: [''],
-      addressUnit: [''],
       addressCity: [''],
       addressProv: [''],
       addressPcode: [''],
@@ -128,9 +127,7 @@ export class PsohpRegionalComponent implements OnInit, OnDestroy {
   get addressCity() {
     return this.psohpFormGroup.get('addressCity');
   }
-  get addressUnit() {
-    return this.psohpFormGroup.get('addressUnit');
-  }
+
   get addressStreet() {
     return this.psohpFormGroup.get('addressStreet');
   }
