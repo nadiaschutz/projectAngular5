@@ -34,21 +34,21 @@ export interface EmployeeElement {
 }
 
 const ACCOUNT_DATA: AccountElement[] = [
-  { type: 'PSOHP Regional Office', 
-  id: 'Atlatntic', name: 'Name', 
+  { type: 'PSOHP Regional Office',
+  id: 'Atlatntic', name: 'Name',
   number: '00333', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
   { type: 'PSOHP District Office', id: 'Halifax', name: 'Name', number: '00343', dateCreated: 'Mar 12, 2010', dateModified: 'Jan 15, 2012' },
   { type: 'Client Department Account ', id: 'Agriculture and Agri-Foods', name: 'Name', number: '00393', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
   { type: 'NOHIS User Account', id: 'Administrative Officer', name: 'Name', number: '00489', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' }
-]
+];
 
 
 const EMPLOYEE_RECORD_DATA: EmployeeElement[] = [
   { name: 'John Smith', id: '0001', dependent: true, department: 'Canadian Coast Guard', dateCreated: 'Feb 25, 2009', dateModified: 'Jan 15, 2018' },
-]
+];
 
 // const DEPEDENT_RECORD_DATA: EmployeeElement[] = [
-//   { name: 'Jane Smith',  id: '0001', dependent: true, department: 'Canadian Coast Guard', dateCreated: 'Feb 25, 2009', dateModified: 'Jan 15, 2018' }, 
+//   { name: 'Jane Smith',  id: '0001', dependent: true, department: 'Canadian Coast Guard', dateCreated: 'Feb 25, 2009', dateModified: 'Jan 15, 2018' },
 // ]
 
 
@@ -59,10 +59,13 @@ const EMPLOYEE_RECORD_DATA: EmployeeElement[] = [
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
+  @ViewChild(MatSort) sort: MatSort;
+
   // patientSubscription: subscription;
   displayedColumns: string[] = ['type', 'id', 'name', 'number', 'dateCreated', 'dateModified'];
 
   displayedColumnsTwo: string[] = ['name', 'id', 'dependent', 'department', 'dateCreated', 'dateModified'];
+
 
   dataSource = new MatTableDataSource(ACCOUNT_DATA);
   dataSourceTwo = new MatTableDataSource(EMPLOYEE_RECORD_DATA);
@@ -74,7 +77,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.dataSourceTwo.filter = filterValue.trim().toLowerCase();
   }
 
-  @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private oauthService: OAuthService,
@@ -92,6 +94,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // this.patientSubscription.unsubscribe();
+  }
+
+  newPSOHPButton() {
+    this.router.navigate(['/psohpform']);
   }
 
   newAccountButton() {

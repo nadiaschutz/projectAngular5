@@ -12,18 +12,19 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FormsComponent } from './components/forms/forms.component';
-import { IndexComponent } from './components/index/index.component';
 import { CreateAccountComponent } from './components/create-account/create-account.component';
 import { AuthComponent } from './components/auth/auth.component';
 import { EmployeeComponent } from './components/employee/employee.component';
 import { PsohpRegionalComponent } from './components/psohp-regional/psohp-regional.component';
 import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
+import { ServiceRequestComponent } from './components/service-request/service-request.component';
 // import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
 import { AuthGuardService } from '../app/service/auth-guard.service';
 import { QuestionnaireService } from './service/questionnaire.service';
 import { PatientService } from './service/patient.service';
+
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,17 +45,16 @@ import { MatStepperModule } from '@angular/material/stepper';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { ServiceRequestComponent } from './components/service-request/service-request.component';
 
 
 const routes: Routes = [
   { path: 'employee-summary', component: EmployeeSummaryComponent },
-  { path: 'region-summary', component: PsohpRegionalComponent },
   { path: 'employeeform', component: EmployeeComponent },
   { path: 'forms', component: FormsComponent },
   { path: 'newaccount', component: CreateAccountComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'servicerequest', component: ServiceRequestComponent },
+  { path: 'psohpform', component: PsohpRegionalComponent },
 
   { path: '', component: AuthComponent }
 ];
@@ -69,7 +69,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     LoginComponent,
     DashboardComponent,
     FormsComponent,
-    IndexComponent,
     EmployeeComponent,
     CreateAccountComponent,
     AuthComponent,

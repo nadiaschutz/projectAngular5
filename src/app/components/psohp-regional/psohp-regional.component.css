@@ -2,15 +2,15 @@
     background-color: #335075;
 }
 
-
 #content-form {
+
     padding-left: 50px;
     padding-right: 50px;
     padding-top: 50px;
     text-align: center;
     justify-content: center;
+    
 }
-
 .form-field {
     padding-top: 5px;
     padding-left: 10px;
@@ -31,18 +31,17 @@
     justify-content: center;
     /* max-width: 90%; */
     background-color: #f9f9f9;
+
 }
 
 .toolbar-row {
     padding-top: 10px;
 }
 
-
 #goc {
     width: 40%;
     padding: 10px
 }
-
 
 .formButton {
     border-radius: 4px;
@@ -54,33 +53,7 @@
     /* border-radius: 4px; */
 }
 
-.table {
-    border-radius: 4px;
-    /* width: 90%; */
-}
 
 td {
     width: 200px
 }
-
-mat-grid-tile {
-    background: lightblue;
-}
-
-.data-header {
-    display: flex;
-    align-items: left;
-    
-    /* justify-content: center; */
-    /* text-decoration: underline; */
-}
-
-.data-cell {
-    padding-right: 5px;
-    padding-left: 5px;
-    padding-top: 20px;
-    width: 150px;
-    
-}
-
-

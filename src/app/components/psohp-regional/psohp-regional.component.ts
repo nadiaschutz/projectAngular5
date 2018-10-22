@@ -3,6 +3,7 @@ import { UserService } from '../../service/user.service';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { MatSort, MatTableDataSource } from '@angular/material';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 
 import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -39,18 +40,21 @@ const ACCOUNT_DATA: AccountElement[] = [
 })
 export class PsohpRegionalComponent implements OnInit, OnDestroy {
 
+  @ViewChild(MatSort) sort: MatSort;
 
   // patientSubscription: subscription;
   displayedColumns: string[] = ['type', 'id', 'name', 'number'];
   dataSource = new MatTableDataSource(ACCOUNT_DATA);
+  psohpFormGroup: FormGroup;
+  offices: Object;
+  
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-  
-  @ViewChild(MatSort) sort: MatSort;
 
   constructor(
+    private fb: FormBuilder,
     private oauthService: OAuthService,
     private userService: UserService,
     private httpClient: HttpClient,
@@ -58,9 +62,42 @@ export class PsohpRegionalComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+
+    this.offices = {
+      'regional': [
+        'Atlantic', 'Quebec', 'NCR', 'Ontario', 'Prairies', 'BC'
+      ],
+      'district': [
+        'Halifax', 'Moncton', 'St-John',
+        'Montreal', 'Quebec City',
+        'NCR',
+        'Toronto', 'Kingston',
+        'Winnipeg', 'Regina', 'Calgary', 'Edmonton',
+        'Vancouver', 'Victoria'
+      ]
+    };
+
+    this.psohpFormGroup = this.fb.group({
+      districtOffice: [''],
+      regionalOffice: [''],
+      email: [''],
+      phone: [''],
+      fax: [''],
+      phoneNumber: [''],
+      addressStreet: [''],
+      addressUnit: [''],
+      addressCity: [''],
+      addressProv: [''],
+      addressPcode: [''],
+      addressCountry: ['']
+    });
     // const endpoint = 'https://try.smilecdr.com:8000/Patient'
     this.dataSource.sort = this.sort;
 
+  }
+
+  setOrganization() {
+    //
   }
 
   ngOnDestroy() {
@@ -75,4 +112,35 @@ export class PsohpRegionalComponent implements OnInit, OnDestroy {
     this.router.navigate(['/employeeform']);
   }
 
+
+  get districtOffice() {
+    return this.psohpFormGroup.get('districtOffice');
+  }
+  get regionalOffice(){
+    return this.psohpFormGroup.get('regionalOffice');
+  }
+  get fax() {
+    return this.psohpFormGroup.get('fax');
+  }
+  get email() {
+    return this.psohpFormGroup.get('email');
+  }
+  get addressCity() {
+    return this.psohpFormGroup.get('addressCity');
+  }
+  get addressUnit() {
+    return this.psohpFormGroup.get('addressUnit');
+  }
+  get addressStreet() {
+    return this.psohpFormGroup.get('addressStreet');
+  }
+  get addressProv() {
+    return this.psohpFormGroup.get('addressProv');
+  }
+  get addressPcode() {
+    return this.psohpFormGroup.get('addressPcode');
+  }
+  get addressCountry() {
+    return this.psohpFormGroup.get('addressCountry');
+  }
 }
