@@ -25,6 +25,7 @@
                   Email is incorrect
                 </mat-error>
               </mat-form-field>
+
             </div>
             <div class="row">
               <mat-form-field class="full form-field  " appearance="outline">
@@ -36,7 +37,7 @@
 
             </div>
             <div class="row">
-              <button mat-raised-button color="primary" id="logbtn" (click)="login()">
+              <button mat-raised-button color="primary" id="logbtn" (click)="login(email, password)">
                 Log in via Smile CDR
               </button>
             </div>

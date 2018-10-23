@@ -152,6 +152,18 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     this.patientService.postPatientData(finalJSON);
   }
 
+  resetData() {
+    this.employee = this.employee_name = this.employee_address = this.employee_extension
+    = this.employee_language = this.employee_language_coding = this.employee_communication = null;
+    this.employee = <Employee.Resource>{};
+    this.employee_name = <Employee.Name>{};
+    this.employee_address = <Employee.Address>{};
+    this.employee_extension = <Employee.Extension>{};
+    this.employee_language = <Employee.Language>{};
+    this.employee_language_coding = <Employee.Coding>{};
+    this.employee_communication = <Employee.Communication>{};
+
+  }
   get resourceType() {
     return this.employeeFormGroup.get('resourceType');
   }

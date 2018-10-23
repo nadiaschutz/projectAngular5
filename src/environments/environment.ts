@@ -7,6 +7,7 @@ export const environment = {
   base_href: '',
   domain: 'http://localhost:4200',
   issuer: 'https://bcip.smilecdr.com/smartauth',
+  loginUrl: 'http://localhost:4200',
   queryURI: 'https://bcip.smilecdr.com/fhir-request',
   logoutURI: 'https://bcip.smilecdr.com/smartauth',
   redirectUri: 'http://localhost:4200',

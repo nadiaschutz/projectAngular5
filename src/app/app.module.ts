@@ -17,12 +17,14 @@ import { AuthComponent } from './components/auth/auth.component';
 import { EmployeeComponent } from './components/employee/employee.component';
 import { PsohpRegionalComponent } from './components/psohp-regional/psohp-regional.component';
 import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
+import { ServiceRequestComponent } from './components/service-request/service-request.component';
 // import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
 import { AuthGuardService } from '../app/service/auth-guard.service';
 import { QuestionnaireService } from './service/questionnaire.service';
 import { PatientService } from './service/patient.service';
+
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
@@ -52,14 +54,13 @@ import { NewServiceRequestNoClientComponent } from './components/new-service-req
 
 const routes: Routes = [
   { path: 'employee-summary', component: EmployeeSummaryComponent },
-  { path: 'region-summary', component: PsohpRegionalComponent },
   { path: 'employeeform', component: EmployeeComponent },
   { path: 'forms', component: FormsComponent },
   { path: 'newaccount', component: CreateAccountComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'servicerequest', component: ServiceRequestComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
-
+  { path: 'psohpform', component: PsohpRegionalComponent },
   { path: '', component: AuthComponent }
 ];
 
