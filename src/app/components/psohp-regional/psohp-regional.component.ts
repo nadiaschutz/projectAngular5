@@ -9,29 +9,31 @@ import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { Organization } from '../../interface/organization';
+
+// export interface AccountElement {
+//   type: string;
+//   id: string;
+//   name: string;
+//   number: string;
+//   dateCreated: string;
+//   dateModified: string;
+// }
 
 
-export interface AccountElement {
-  type: string,
-  id: string,
-  name: string,
-  number: string,
-  dateCreated: string;
-  dateModified: string
-
-  // TODO change date variables to date type
-}
-
-
-const ACCOUNT_DATA: AccountElement[] = [
-  { type: 'PSOHP Regional Office', id: 'Atlatntic', name: 'Name', number: '00333', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
-  { type: 'PSOHP District Office', id: 'Halifax', name: 'Name', number: '00343', dateCreated: 'Mar 12, 2010', dateModified: 'Jan 15, 2012' },
-  { type: 'Client Department Account ', id: 'Agriculture and Agri-Foods', name: 'Name', number: '00393', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
-  { type: 'NOHIS User Account', id: 'Administrative Officer', name: 'Name', number: '00489', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' }
-]
+// const ACCOUNT_DATA: AccountElement[] = [
+// tslint:disable-next-line:max-line-length
+//   { type: 'PSOHP Regional Office', id: 'Atlatntic', name: 'Name', number: '00333', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
+// tslint:disable-next-line:max-line-length
+//   { type: 'PSOHP District Office', id: 'Halifax', name: 'Name', number: '00343', dateCreated: 'Mar 12, 2010', dateModified: 'Jan 15, 2012' },
+// tslint:disable-next-line:max-line-length
+//   { type: 'Client Department Account ', id: 'Agriculture and Agri-Foods', name: 'Name', number: '00393', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
+// tslint:disable-next-line:max-line-length
+//   { type: 'NOHIS User Account', id: 'Administrative Officer', name: 'Name', number: '00489', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' }
+// ]
 
 
-// const EMPLOYEE_RECORD_DATA: 
+// const EMPLOYEE_RECORD_DATA:
 
 @Component({
   selector: 'app-psohp-regional',
@@ -43,15 +45,15 @@ export class PsohpRegionalComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort) sort: MatSort;
 
   // patientSubscription: subscription;
-  displayedColumns: string[] = ['type', 'id', 'name', 'number'];
-  dataSource = new MatTableDataSource(ACCOUNT_DATA);
+  // displayedColumns: string[] = ['type', 'id', 'name', 'number'];
+  // dataSource = new MatTableDataSource(ACCOUNT_DATA);
   psohpFormGroup: FormGroup;
   offices: Object;
 
 
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
+  // applyFilter(filterValue: string) {
+  //   this.dataSource.filter = filterValue.trim().toLowerCase();
+  // }
 
   constructor(
     private fb: FormBuilder,
@@ -91,7 +93,7 @@ export class PsohpRegionalComponent implements OnInit, OnDestroy {
       addressCountry: ['']
     });
     // const endpoint = 'https://try.smilecdr.com:8000/Patient'
-    this.dataSource.sort = this.sort;
+    // this.dataSource.sort = this.sort;
 
   }
 
@@ -115,7 +117,7 @@ export class PsohpRegionalComponent implements OnInit, OnDestroy {
   get districtOffice() {
     return this.psohpFormGroup.get('districtOffice');
   }
-  get regionalOffice(){
+  get regionalOffice() {
     return this.psohpFormGroup.get('regionalOffice');
   }
   get fax() {
@@ -127,7 +129,6 @@ export class PsohpRegionalComponent implements OnInit, OnDestroy {
   get addressCity() {
     return this.psohpFormGroup.get('addressCity');
   }
-
   get addressStreet() {
     return this.psohpFormGroup.get('addressStreet');
   }
