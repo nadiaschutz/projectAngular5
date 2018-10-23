@@ -1,4 +1,3 @@
-import { UserService } from './service/user.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -18,12 +17,17 @@ import { EmployeeComponent } from './components/employee/employee.component';
 import { PsohpRegionalComponent } from './components/psohp-regional/psohp-regional.component';
 import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
 import { ServiceRequestComponent } from './components/service-request/service-request.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { NewServiceRequestComponent } from './components/new-service-request/new-service-request.component';
+import { NewServiceRequestNoClientComponent } from './components/new-service-request-no-client/new-service-request-no-client.component';
 // import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
 import { AuthGuardService } from '../app/service/auth-guard.service';
 import { QuestionnaireService } from './service/questionnaire.service';
 import { PatientService } from './service/patient.service';
+import { UserService } from './service/user.service';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -45,11 +49,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { ServiceRequestComponent } from './components/service-request/service-request.component';
-import { NavbarComponent } from './components/navbar/navbar.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { NewServiceRequestComponent } from './components/new-service-request/new-service-request.component';
-import { NewServiceRequestNoClientComponent } from './components/new-service-request-no-client/new-service-request-no-client.component';
+
 
 
 const routes: Routes = [
