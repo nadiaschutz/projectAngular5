@@ -8,9 +8,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { OAuthModule } from 'angular-oauth2-oidc';
 
 import { AppComponent } from './app.component';
-import { LoginComponent } from './components/login/login.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { FormsComponent } from './components/forms/forms.component';
 import { CreateAccountComponent } from './components/create-account/create-account.component';
 import { AuthComponent } from './components/auth/auth.component';
 import { EmployeeComponent } from './components/employee/employee.component';
@@ -55,7 +53,6 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 const routes: Routes = [
   { path: 'employee-summary', component: EmployeeSummaryComponent },
   { path: 'employeeform', component: EmployeeComponent },
-  { path: 'forms', component: FormsComponent },
   { path: 'newaccount', component: CreateAccountComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'servicerequest', component: ServiceRequestComponent },
@@ -71,9 +68,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
     DashboardComponent,
-    FormsComponent,
     EmployeeComponent,
     CreateAccountComponent,
     AuthComponent,

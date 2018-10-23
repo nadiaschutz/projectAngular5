@@ -7,7 +7,7 @@ import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 
 import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment'
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-create-account',
@@ -18,8 +18,8 @@ export class CreateAccountComponent implements OnInit {
   accountForm: FormGroup;
 
   constructor(
-    private fb: FormBuilder, 
-    private httpClient: HttpClient, 
+    private fb: FormBuilder,
+    private httpClient: HttpClient,
     public translate: TranslateService,
     private oauthService: OAuthService
     ) {
@@ -135,6 +135,4 @@ export class CreateAccountComponent implements OnInit {
     return this.accountForm.get('agree');
   }
 
-
-  // get 
 }

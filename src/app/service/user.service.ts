@@ -11,10 +11,9 @@ export class UserService {
 
 
   // TODO Move all calls to FHIR resources into fhir.service.ts
- 
 
   createUserAccount(type: string) {
- 
+
   }
 
   logout() {
