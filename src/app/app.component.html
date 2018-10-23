@@ -1,6 +1,13 @@
-<div id="content-wrapper">
+<app-navbar></app-navbar>
+<div id="container">
     <div class="row">
+        <div class="col-1 col-lg-2 col-md-3">
+            <app-sidebar></app-sidebar>
+        </div>
         <!-- <app-create-account></app-create-account> -->
-        <router-outlet></router-outlet>
+
+        <div class="col-11 col-lg-10 col-md-9">
+            <router-outlet></router-outlet>
+        </div>
     </div>
 </div>
