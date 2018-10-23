@@ -9,17 +9,12 @@ export class UserService {
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
-  getPatientData(pid) {
-   return this.httpClient.get<JSON>(environment.queryURI +
-    '/Patient/' + pid, { headers: this.getHeaders() }).subscribe(data => console.log(data));
 
-    // return this._http.get(environment.queryURI + '/Patient/' + pid, { headers: this.getHeaders() });
-  }
+  // TODO Move all calls to FHIR resources into fhir.service.ts
+ 
 
-  getAllPatientData() {
-   return this.httpClient.get<JSON>(environment.queryURI +
-    '/Patient/', { headers: this.getHeaders() }).subscribe(data => console.log(data));
-
+  createUserAccount(type: string) {
+ 
   }
 
   logout() {
@@ -36,6 +31,17 @@ export class UserService {
   getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
+  }
+
+  postFHIRHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
+
+      // 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+      // 'Access-Control-Allow-Origin': '*'
     });
     return headers;
   }
