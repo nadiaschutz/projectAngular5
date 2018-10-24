@@ -38,15 +38,6 @@ export class CreateAccountComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['',  [Validators.required]],
       fax: ['', [Validators.required]],
-
-      // password: [
-      //   '',
-      //   [
-      //     Validators.required,
-      //     Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
-      //     Validators.minLength(6)
-      //   ]
-      // ],
       addressStreet: [''],
       addressUnit: [''],
       addressCity: [''],
@@ -61,15 +52,6 @@ export class CreateAccountComponent implements OnInit {
 
     const observable = new Observable();
 
-
-    // const access_token = this.oauthService.getAccessToken();
-    // const header = new HttpHeaders().set('Authorization', 'Bearer ' + access_token);
-    // this.httpClient.get<JSON>(environment.queryURI + '/Patient', { headers: header }).catchError(this.handleError);
-
-    // this.httpClient.get('localhost:8000/Patient').subscribe(
-    //   data => console.log(data),
-    //   err => console.log(err)
-    // )
   }
 
   get type() {
