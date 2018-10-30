@@ -13,6 +13,8 @@ export const environment = {
   redirectUri: 'http://localhost:4200',
   clientId: 'NOHIS',
   scope: 'launch/patient openid patient/*.read profile',
+  scopeUrl: 'launch%2Fpatient%20openid%20patient%2F*.read%20patient%2F*.write%20profile',
+  loginLink: 'https://bcip.smilecdr.com/smartauth/oauth/token'
 
 };
 

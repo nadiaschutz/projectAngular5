@@ -3,7 +3,7 @@ import { UserService } from '../../service/user.service';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { MatSort, MatTableDataSource } from '@angular/material';
-
+import {PatientService} from '../../service/patient.service';
 import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
@@ -82,6 +82,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private oauthService: OAuthService,
     private userService: UserService,
     private httpClient: HttpClient,
+    private patient: PatientService,
     private router: Router
   ) { }
 
@@ -90,6 +91,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.dataSource.sort = this.sort;
     this.dataSourceTwo.sort = this.sort;
 
+    // this.patient.getAllPatientData();
+      if (this.oauthService.hasValidAccessToken()) {
+          this.router.navigate(['/dashboard']);
+      }
   }
 
   ngOnDestroy() {

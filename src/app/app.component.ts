@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { OAuthService, AuthConfig, JwksValidationHandler } from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
 import { TranslateService } from '@ngx-translate/core';
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   title = 'nohis';
   constructor(private oauthService: OAuthService,
     private router: Router) {
@@ -28,6 +28,15 @@ export class AppComponent {
 
   }
 
+    returnTokenStatus() {
+        return this.oauthService.hasValidAccessToken();
+    }
+
+    ngOnInit() {
+        if (this.oauthService.hasValidAccessToken()) {
+            this.oauthService.silentRefresh(  this.router.navigate(['/dashboard']));
+        }
+  }
 
   private configureWithNewConfigApi() {
     this.oauthService.redirectUri = environment.redirectUri;
@@ -39,5 +48,4 @@ export class AppComponent {
 
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
   }
-
 }

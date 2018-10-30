@@ -33,8 +33,6 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   isLinear = false;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
-  _newquestionnaire;
-  tester = [];
 
   constructor(private fb: FormBuilder,
     private httpClient: HttpClient,

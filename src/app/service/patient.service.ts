@@ -16,8 +16,9 @@ export class PatientService {
   }
 
   getAllPatientData() {
+    console.log(this.oauthService.getAccessToken())
     return this.httpClient.get<JSON>(environment.queryURI +
-      '/Patient/', { headers: this.getHeaders() }).subscribe(data => console.log(data));
+      '/Patient/', { headers: this.postFHIRHeaders() }).subscribe(data => console.log(data));
   }
 
   postPatientData(patient) {

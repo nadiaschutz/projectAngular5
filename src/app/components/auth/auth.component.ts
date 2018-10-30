@@ -4,6 +4,8 @@ import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { UserService} from '../../service/user.service';
+import { PatientService} from '../../service/patient.service';
 
 @Component({
   selector: 'app-auth',
@@ -12,14 +14,19 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 })
 export class AuthComponent implements OnInit {
 
-  constructor(private fb: FormBuilder, private oauthService: OAuthService, private router: Router, private route: ActivatedRoute) { }
+  constructor(private fb: FormBuilder,
+              private oauthService: OAuthService,
+              private router: Router,
+              private userService: UserService,
+              private route: ActivatedRoute,
+              private patient: PatientService) { }
   logInForm: FormGroup;
 
   ngOnInit() {
 
 
     this.logInForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+        username: ['', [Validators.required]],
       password: [
         '',
         [
@@ -29,31 +36,19 @@ export class AuthComponent implements OnInit {
         ]
       ]
     });
-    this.route.fragment.subscribe(params => {
-      if (params) {
-        const patient = this.getQueryVariable(params, 'patient');
-        sessionStorage.setItem('patient', patient);
-      }
-    });
-  }
 
-  goToIndex() {
-    this.router.navigate(['/dashboard']);
+    // If the user has a valid token, redirect them to the dashboard, hiding them from the login
+    // page until their token is invalid
+      if (this.oauthService.hasValidAccessToken()) {
+          this.router.navigate(['/dashboard']);
+      }
   }
 
   login() {
-    this.oauthService.initImplicitFlow('/dashboard');
-
-    if (navigator.onLine) {
-      this.oauthService.initImplicitFlow('/dashboard');
-    } else {
-      alert('Not connected to Internet.');
-    }
+      this.userService.login(this.logInForm.get('username').value.toString(), this.logInForm.get('password').value.toString());
   }
 
-  logout() {
-    this.oauthService.logOut();
-  }
+
 
   get givenName() {
     const claims = this.oauthService.getIdentityClaims();
@@ -72,13 +67,12 @@ export class AuthComponent implements OnInit {
         return decodeURIComponent(pair[1]);
       }
     }
-
     return null;
   }
 
 
-  get email() {
-    return this.logInForm.get('email');
+  get username() {
+    return this.logInForm.get('username');
   }
 
 
