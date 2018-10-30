@@ -18,17 +18,8 @@ p {
 
 .outer-container {
   /* background-image: url('../../../assets/qualitycare.jpg'); */
-padding: 50px;
+/*padding: 50px;*/
 }
-
-.card {
-  margin: 0 200px 0 200px;
-}
-
-.btn {
-  background-color: #293999 !important;
-}
-
 
 
 @media screen and (max-width: 600px) {
@@ -38,31 +29,24 @@ padding: 50px;
 
 }
 
-.toolbar {
-    background-color: #335075;
-}
 
-#content-form {
-
-    padding-left: 50px;
-    padding-right: 50px;
-    padding-top: 50px;
-    text-align: center;
-    justify-content: center;
-    
-}
 .form-field {
-    padding-top: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
+    width: 587px;
+
+    height: 45px;
+
+    border-radius: 3px;
+
+    border: solid 0.7px;
+
+    margin: 15px;
+    /*background-color: #ffffff;*/
 }
 
 .row {
-    padding: 10px;
-}
-
-.toolbar-row {
-    padding-top: 10px;
+    text-align: center;
+    justify-content: center;
+    /*padding: 10px;*/
 }
 
 #goc {
@@ -70,18 +54,23 @@ padding: 50px;
 
 }
 
-#login-box { 
+#login-box {
     display: flex;
     align-items: center;
     justify-content: center;
     /* max-width: 50%; */
     text-align: center;
-    width: 50%
+    width: 50%;
 }
 
 #logbtn {
-    background-color: #335075;
-    border-radius: 4px;
+    background-color: #334f75;
+    color: white;
+    border-radius: 2px;
+    /*border: solid 0.7px;*/
+    width: 100px;
+    height: 35px;
+
 
 }
 

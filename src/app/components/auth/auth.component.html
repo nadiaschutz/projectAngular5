@@ -1,48 +1,27 @@
-<div class="row">
-  <img src="../../assets/goc.jpg" id="goc" alt="Government of Canada" srcset="">
-</div>
-<div class="toolbar-row">
-  <mat-toolbar color="primary" class="toolbar">
-    <span> National Occuptational Health Information System</span>
-    <span class="example-fill-remaining-space"></span>
-  </mat-toolbar>
-</div>
 
-
-<div class="center-align outer-container" role="main">  
+<div class="center-align" role="main">
   <div class="container">
-    <form [formGroup]="logInForm">
+    <form #form="ngForm" novalidate [formGroup]="logInForm">
+      <div class="login-row">
+        <div id="login-box">
+            <div class="form-group">
+              <h2>Welcome</h2>
 
-      <div class="row login-row">
+              <input type="text" class="form-control form-field"  placeholder="Username" formControlName="username">
+                <!--<mat-error *ngIf="username.invalid && username.touched">-->
+                  <!--Username is incorrect-->
+                <!--</mat-error>-->
 
-        <mat-card id="login-box">
-          <div class="card-action">
-            <h2>Welcome back!</h2>
-            <div class="row">
-              <mat-form-field class="full form-field  " appearance="outline">
-                <input matInput placeholder="Email" formControlName="email">
-                <mat-error *ngIf="email.invalid && email.touched">
-                  Email is incorrect
-                </mat-error>
-              </mat-form-field>
-
-            </div>
-            <div class="row">
-              <mat-form-field class="full form-field  " appearance="outline">
-                <input type="password" matInput placeholder="Password" formControlName="password">
-                <mat-error *ngIf="password.invalid && password.touched">
-                  <p>Your password should be at leasat 6 characters long, with at least one number</p>
-                </mat-error>
-              </mat-form-field>
-
-            </div>
-            <div class="row">
-              <button mat-raised-button color="primary" id="logbtn" (click)="login(email, password)">
-                Log in via Smile CDR
+                <input type="password" class="form-control form-field" placeholder="Password" formControlName="password">
+                <!--<mat-error *ngIf="password.invalid && password.touched">-->
+                  <!--<p>Your password should be at leasat 6 characters long, with at least one number</p>-->
+                <!--</mat-error>-->
+              <button class="btn" id="logbtn" (click)="login()">
+                Log in
               </button>
             </div>
-          </div>
-        </mat-card>
+
+        </div>
       </div>
     </form>
   </div>
