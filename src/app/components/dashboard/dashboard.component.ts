@@ -65,6 +65,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     //     this.router.navigate(['/dashboard']);
     // }
 
+    return this.patientService.getAllPatientData().subscribe(
+      data => this.handleSuccess(data),
+      error => this.handleError(error)
+    );
 
 
   }
