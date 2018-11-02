@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { UserService } from '../../service/user.service';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
-import { MatSort, MatTableDataSource } from '@angular/material';
 import {PatientService} from '../../service/patient.service';
 import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -33,24 +32,6 @@ export interface EmployeeElement {
 
 }
 
-const ACCOUNT_DATA: AccountElement[] = [
-  { type: 'PSOHP Regional Office',
-  id: 'Atlatntic', name: 'Name',
-  number: '00333', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
-  { type: 'PSOHP District Office', id: 'Halifax', name: 'Name', number: '00343', dateCreated: 'Mar 12, 2010', dateModified: 'Jan 15, 2012' },
-  { type: 'Client Department Account ', id: 'Agriculture and Agri-Foods', name: 'Name', number: '00393', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' },
-  { type: 'NOHIS User Account', id: 'Administrative Officer', name: 'Name', number: '00489', dateCreated: 'Jan 13, 2009', dateModified: 'Jan 15, 2012' }
-];
-
-
-const EMPLOYEE_RECORD_DATA: EmployeeElement[] = [
-  { name: 'John Smith', id: '0001', dependent: true, department: 'Canadian Coast Guard', dateCreated: 'Feb 25, 2009', dateModified: 'Jan 15, 2018' },
-];
-
-// const DEPEDENT_RECORD_DATA: EmployeeElement[] = [
-//   { name: 'Jane Smith',  id: '0001', dependent: true, department: 'Canadian Coast Guard', dateCreated: 'Feb 25, 2009', dateModified: 'Jan 15, 2018' },
-// ]
-
 
 @Component({
   selector: 'app-dashboard',
@@ -59,42 +40,46 @@ const EMPLOYEE_RECORD_DATA: EmployeeElement[] = [
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
-  @ViewChild(MatSort) sort: MatSort;
 
   // patientSubscription: subscription;
   displayedColumns: string[] = ['type', 'id', 'name', 'number', 'dateCreated', 'dateModified'];
 
   displayedColumnsTwo: string[] = ['name', 'id', 'dependent', 'department', 'dateCreated', 'dateModified'];
 
-
-  dataSource = new MatTableDataSource(ACCOUNT_DATA);
-  dataSourceTwo = new MatTableDataSource(EMPLOYEE_RECORD_DATA);
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-  applyFilterTwo(filterValue: string) {
-    this.dataSourceTwo.filter = filterValue.trim().toLowerCase();
-  }
-
+  qrequest: any;
 
   constructor(
     private oauthService: OAuthService,
     private userService: UserService,
     private httpClient: HttpClient,
-    private patient: PatientService,
+    private patientService: PatientService,
     private router: Router
   ) { }
 
   ngOnInit() {
     // const endpoint = 'https://try.smilecdr.com:8000/Patient'
-    this.dataSource.sort = this.sort;
-    this.dataSourceTwo.sort = this.sort;
+  
 
     // this.patient.getAllPatientData();
-      if (this.oauthService.hasValidAccessToken()) {
-          this.router.navigate(['/dashboard']);
-      }
+      // if (this.oauthService.hasValidAccessToken()) {
+      //     this.router.navigate(['/dashboard']);
+      // }
+
+     return this.patientService.getAllPatientData().subscribe(
+        data => this.handleSuccess(data),
+        error => this.handleError(error)
+      );
+
+  }
+
+  handleSuccess(data) {
+    this.qrequest = data.entry;
+    console.log(this.qrequest);
+
+  }
+
+  handleError (error) {
+    console.log(error);
   }
 
   ngOnDestroy() {

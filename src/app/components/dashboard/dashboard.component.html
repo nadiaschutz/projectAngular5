@@ -1,325 +1,79 @@
-<div class="header-row">
-  <img src="../../assets/goc.jpg" id="goc" alt="Government of Canada" srcset="">
+<br />
+<h3>Search Client</h3>
+<br />
+<div class="search-box">
+  <form class="center-align">
+    <div class="form-group">
+      <div class="row ">
+        <div class="col">
+          <label for="firstname" class="label-name">First Name</label>
+          <input type="text" name="firstname" id="firstname" class="form-control field-box" placeholder="Enter">
+        </div>
+        <div class="col">
+          <label for="lastname" class="label-name">Last Name</label>
+          <input type="text" name="lastname" id="lastname" class="form-control field-box" placeholder="Enter">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="clientid" class="label-name">Client ID</label>
+          <input type="text" name="clientid" id="clientid" class="form-control field-box" placeholder="Enter">
+        </div>
+        <div class="col">
+          <label for="dob" class="label-name">Date of Birth</label>
+          <input type="text" name="dob" id="dob" class="form-control field-box" placeholder="Enter">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="region" class="label-name">Region</label>
+          <input type="text" name="region" id="region" class="form-control field-box" placeholder="Enter">
+        </div>
+        <div class="col">
+          <label for="department" class="label-name">Client Department</label>
+          <input type="text" name="department" id="department" class="form-control field-box" placeholder="Enter">
+        </div>
+      </div>
+      <button type="button" class="btn search-button">Search</button>
+
+    </div>
+  </form>
 </div>
-<div class="toolbar-row">
-  <mat-toolbar color="primary" class="toolbar">
-    <span>NOHIS - Dashboard </span>
-    <span class="example-fill-remaining-space"></span>
+<!-- List of Clients  -->
+<br />
+<h3>Clients</h3>
+<br />
+<button type="button" class="btn employee-button" (click)="newEmployeeButton()"> + New Employee Record</button>
+<br />
 
-  </mat-toolbar>
+<table class="table col-12">
+  <thead class="header-table">
+    <tr>
+      <th scope="col">Employee #ID</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Date of Birth</th>
+      <th scope="col">Dependents</th>
+      <th scope="col">Client Type</th>
+      <th scope="col">Department</th>
 
-</div>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let q of qrequest ">
+      <td>{{q.resource.id}}</td>
+      <td>{{q.resource.name[0].given}}</td>
+      <td>{{q.resource.name[0].family}}</td>
+      <td>{{q.resource.birthDate | date: 'dd/MM/yyyy'}}</td>
+      <!-- <td>Employee</td> -->
+      <td *ngIf="q.resource.link">
+        1
+      </td>
+      <!-- <td>{{q.}}</td>
+      <td>{{q.}}</td>
+      <td>{{q.}}</td>
+      <td>{{q.}}</td> -->
 
-<div class="row">
-  <mat-tab-group>
-    <mat-tab label="All Accounts">
-      <div class="row">
-        <mat-form-field>
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-        </mat-form-field>
-        <button mat-icon-button (click)="newAccountButton()">
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-      <mat-card class="table-row">
-
-        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-            <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Name </th>
-            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="number">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Number </th>
-            <td mat-cell *matCellDef="let element">
-              <a href="http://localhost:4200/region-summary">
-                {{element.number}}
-              </a>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateCreated">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateCreated}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateModified">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Modified </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateModified}} </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-
-      </mat-card>
-    </mat-tab>
-    <mat-tab label="PSOHP Regional Office Account">
-      <div class="row">
-        <mat-form-field>
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-        </mat-form-field>
-        <button mat-icon-button (click)="newAccountButton()">
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-      <mat-card class="table-row">
-
-        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-            <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Name </th>
-            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="number">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Number </th>
-            <td mat-cell *matCellDef="let element">
-              <a href="http://localhost:4200/region-summary">
-                {{element.number}}
-              </a>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateCreated">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateCreated}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateModified">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Modified </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateModified}} </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-
-      </mat-card>
-    </mat-tab>
-    <mat-tab label="PSOHP District Office Account">
-      <mat-card class="table-row">
-
-        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-            <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Name </th>
-            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="number">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Number </th>
-            <td mat-cell *matCellDef="let element"> {{element.number}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateCreated">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateCreated}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateModified">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Modified </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateModified}} </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-
-      </mat-card>
-    </mat-tab>
-    <mat-tab label="Client Department Account">
-      <div class="row">
-        <mat-form-field>
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-        </mat-form-field>
-        <button mat-icon-button (click)="newAccountButton()">
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-      <mat-card class="table-row">
-
-        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-            <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Name </th>
-            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="number">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Number </th>
-            <td mat-cell *matCellDef="let element"> {{element.number}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateCreated">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateCreated}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateModified">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Modified </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateModified}} </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-
-      </mat-card>
-    </mat-tab>
-    <mat-tab label="NOHIS User Account">
-      <div class="row">
-        <mat-form-field>
-          <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-        </mat-form-field>
-        <button mat-icon-button (click)="newAccountButton()">
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-      <mat-card class="table-row">
-
-        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
-
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-            <td mat-cell *matCellDef="let element"> {{element.type}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Name </th>
-            <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="number">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Account Number </th>
-            <td mat-cell *matCellDef="let element"> {{element.number}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateCreated">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateCreated}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateModified">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Modified </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateModified}} </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
-
-      </mat-card>
-    </mat-tab>
-    <mat-tab label="Employee User Account">
-      <div class="row">
-        <mat-form-field>
-          <input matInput (keyup)="applyFilterTwo($event.target.value)" placeholder="Filter">
-        </mat-form-field>
-        <button mat-icon-button (click)="newEmployeeButton()">
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-      <mat-card class="table-row">
-
-        <table mat-table [dataSource]="dataSourceTwo" matSort class="mat-elevation-z8">
-
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-            <td mat-cell *matCellDef="let element">
-              <a href="http://localhost:4200/employee-summary">
-                {{element.name}}
-              </a>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dependent">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Dependent? </th>
-            <td mat-cell *matCellDef="let element"> {{element.dependent}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="department">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Department </th>
-            <td mat-cell *matCellDef="let element">
-              <!-- <a href="http://localhost:4200/newaccount"> -->
-              {{element.department}}
-              <!-- </a> -->
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateCreated">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Created </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateCreated}} </td>
-          </ng-container>
-
-          <ng-container matColumnDef="dateModified">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date Modified </th>
-            <td mat-cell *matCellDef="let element"> {{element.dateModified}} </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumnsTwo"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumnsTwo;"></tr>
-        </table>
-
-      </mat-card>
-    </mat-tab>
-  </mat-tab-group>
-
-
-</div>
-
-<div class="row">
-  <button mat-flat-button color="primary" (click)="newPSOHPButton()">New PSOHP Record</button>
-</div>
-
+    </tr>
+  </tbody>
+</table>
