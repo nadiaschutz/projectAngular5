@@ -7,11 +7,11 @@
       <div class="row ">
         <div class="col">
           <label for="firstname" class="label-name">First Name</label>
-          <input type="text" name="firstname" id="firstname" class="form-control field-box" placeholder="Enter">
+          <input type="text" (keypress)="nameSearch($event)"  name="firstname" id="firstname" class="form-control field-box" placeholder="Enter">
         </div>
         <div class="col">
           <label for="lastname" class="label-name">Last Name</label>
-          <input type="text" name="lastname" id="lastname" class="form-control field-box" placeholder="Enter">
+          <input type="text" (keypress)="firstNameSearch($event)" name="lastname" id="lastname" class="form-control field-box" placeholder="Enter">
         </div>
       </div>
       <div class="row">
@@ -21,7 +21,7 @@
         </div>
         <div class="col">
           <label for="dob" class="label-name">Date of Birth</label>
-          <input type="text" name="dob" id="dob" class="form-control field-box" placeholder="Enter">
+          <input type="text" (keypress)="dateSearch($event)" name="dob" id="dob" class="form-control field-box" placeholder="Enter">
         </div>
       </div>
       <div class="row">

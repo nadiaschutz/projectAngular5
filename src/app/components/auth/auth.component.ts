@@ -39,14 +39,15 @@ export class AuthComponent implements OnInit {
 
     // If the user has a valid token, redirect them to the dashboard, hiding them from the login
     // page until their token is invalid
-      // if (this.oauthService.hasValidAccessToken()) {
-      //     this.router.navigate(['/dashboard']);
-      // }
+      if (this.oauthService.hasValidAccessToken()) {
+          this.router.navigate(['/dashboard']);
+      }
+
   }
 
   login() {
       this.userService.login(this.logInForm.get('username').value.toString(), this.logInForm.get('password').value.toString());
-      
+
   }
 
 

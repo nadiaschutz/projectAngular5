@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { UserService } from '../../service/user.service';
 import { Observable, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
-import {PatientService} from '../../service/patient.service';
+import { PatientService } from '../../service/patient.service';
 import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
@@ -58,19 +58,37 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // const endpoint = 'https://try.smilecdr.com:8000/Patient'
-  
+
 
     // this.patient.getAllPatientData();
-      // if (this.oauthService.hasValidAccessToken()) {
-      //     this.router.navigate(['/dashboard']);
-      // }
+    // if (this.oauthService.hasValidAccessToken()) {
+    //     this.router.navigate(['/dashboard']);
+    // }
 
-     return this.patientService.getAllPatientData().subscribe(
-        data => this.handleSuccess(data),
-        error => this.handleError(error)
-      );
+
 
   }
+
+  nameSearch(e) {
+    return this.patientService.getPatientDataByName(e.target.value).subscribe(
+      data => this.handleSuccess(data),
+      error => this.handleError(error)
+    );
+  }
+
+  dateSearch(e) {
+    return this.patientService.getPatientDataByDOB(e.target.value).subscribe(
+      data => this.handleSuccess(data),
+      error => this.handleError(error)
+    );
+  }
+  // lastNameSearch(e) {
+  //   return this.patientService.getPatientDataSearch(e.target.value).subscribe(
+  //     data => this.handleSuccess(data),
+  //     error => this.handleError(error)
+  //   );
+  // }
+
 
   handleSuccess(data) {
     this.qrequest = data.entry;
@@ -78,7 +96,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   }
 
-  handleError (error) {
+  handleError(error) {
     console.log(error);
   }
 

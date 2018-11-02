@@ -15,6 +15,16 @@ export class PatientService {
     // return this._http.get(environment.queryURI + '/Patient/' + pid, { headers: this.getHeaders() });
   }
 
+  getPatientDataByName(name) {
+    return this.httpClient.get(environment.queryURI +
+      '/Patient?name=' + name, { headers: this.getHeaders() });
+  }
+
+  getPatientDataByDOB(dob) {
+    return this.httpClient.get(environment.queryURI +
+      '/Patient?birthdate=' + dob, { headers: this.getHeaders() });
+  }
+
   getAllPatientData() {
     return this.httpClient.get<JSON>(environment.queryURI +
       '/Patient/', { headers: this.postFHIRHeaders() });
