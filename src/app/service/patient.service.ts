@@ -9,16 +9,25 @@ export class PatientService {
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
   getPatientData(pid) {
-    return this.httpClient.get<JSON>(environment.queryURI +
-      '/Patient/' + pid, { headers: this.getHeaders() }).subscribe(data => console.log(data));
+    return this.httpClient.get(environment.queryURI +
+      '/Patient/' + pid, { headers: this.getHeaders() });
 
     // return this._http.get(environment.queryURI + '/Patient/' + pid, { headers: this.getHeaders() });
   }
 
+  getPatientDataByName(name) {
+    return this.httpClient.get(environment.queryURI +
+      '/Patient?name=' + name, { headers: this.getHeaders() });
+  }
+
+  getPatientDataByDOB(dob) {
+    return this.httpClient.get(environment.queryURI +
+      '/Patient?birthdate=' + dob, { headers: this.getHeaders() });
+  }
+
   getAllPatientData() {
-    console.log(this.oauthService.getAccessToken())
     return this.httpClient.get<JSON>(environment.queryURI +
-      '/Patient/', { headers: this.postFHIRHeaders() }).subscribe(data => console.log(data));
+      '/Patient/', { headers: this.postFHIRHeaders() });
   }
 
   postPatientData(patient) {

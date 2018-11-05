@@ -33,9 +33,9 @@ export class AppComponent implements OnInit{
     }
 
     ngOnInit() {
-        if (this.oauthService.hasValidAccessToken()) {
-            this.oauthService.silentRefresh(  this.router.navigate(['/dashboard']));
-        }
+        // if (this.oauthService.hasValidAccessToken()) {
+        //    this.router.navigate(['/dashboard']);
+        // }
   }
 
   private configureWithNewConfigApi() {

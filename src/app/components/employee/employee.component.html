@@ -1,28 +1,10 @@
-<div class="row">
-  <img src="../../assets/goc.jpg" id="goc" alt="Government of Canada" srcset="">
-</div>
-<div class="toolbar-row">
-  <mat-toolbar color="primary" class="toolbar">
-
-    <span> National Occuptational Health Information System</span>
-
-    <span class="example-fill-remaining-space"></span>
-
-
-  </mat-toolbar>
-
-</div>
-
-
-
-
 <div id="content-form">
   <!-- [hidden]="success" (ngSubmit)="submitHandler()" -->
 
 
   <h2 mat-subheader>Create Employee & Dependent Records</h2>
 
-  <mat-horizontal-stepper [linear]="isLinear" #stepper style="background-color: #f9f9f9;">
+  <mat-horizontal-stepper [linear]="isLinear">
     <mat-step [stepControl]="firstFormGroup">
       <form [formGroup]="firstFormGroup">
         <!-- <br> -->

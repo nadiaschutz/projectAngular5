@@ -8,7 +8,7 @@
 
         <!-- Show the dashboard if there is a valid token-->
         <div class="col-11 col-lg-10 col-md-9" *ngIf="returnTokenStatus()">
-            <app-dashboard></app-dashboard>
+            <router-outlet></router-outlet>
         </div>
 
         <!-- Show the Auth component if there's no valid token (aka, user is not logged in or token's expired-->
