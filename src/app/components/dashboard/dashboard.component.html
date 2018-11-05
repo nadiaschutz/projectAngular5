@@ -5,13 +5,9 @@
   <form class="center-align">
     <div class="form-group">
       <div class="row ">
-        <div class="col">
+        <div class="col-12">
           <label for="firstname" class="label-name">First Name</label>
-          <input type="text" (keypress)="nameSearch($event)"  name="firstname" id="firstname" class="form-control field-box" placeholder="Enter">
-        </div>
-        <div class="col">
-          <label for="lastname" class="label-name">Last Name</label>
-          <input type="text" (keypress)="firstNameSearch($event)" name="lastname" id="lastname" class="form-control field-box" placeholder="Enter">
+          <input type="text" (keypress)="nameSearch($event)"  name="firstname" id="firstname" class="form-control field-box-name" placeholder="Enter">
         </div>
       </div>
       <div class="row">
@@ -46,8 +42,8 @@
 <button type="button" class="btn employee-button" (click)="newEmployeeButton()"> + New Employee Record</button>
 <br />
 
-<table class="table col-12">
-  <thead class="header-table">
+<table class="table ">
+  <thead >
     <tr>
       <th scope="col">Employee #ID</th>
       <th scope="col">First</th>

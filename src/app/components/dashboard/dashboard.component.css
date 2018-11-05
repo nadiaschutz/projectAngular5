@@ -54,7 +54,7 @@ td {
 .table {
     width: 1208px;
 
-    height: 242px;
+    /* height: 242px; */
   
     border-radius: 2px;
   
@@ -62,7 +62,7 @@ td {
 }
 
 .header-table {
-    background-color: #c4c4c4
+    background-color: #c4c4c4;
 }
 
 .search-box {  
@@ -90,6 +90,20 @@ td {
     background-color: rgba(0, 0, 0, 0.11);
 
     margin-top: 40px;
+
+}
+
+.field-box {
+    
+    width: 490px;
+
+    height: 45px;
+  
+    border-radius: 2px;
+  
+    background-color: #f8f8f8;
+
+    border: solid 0.7px ;
 
 }
 

@@ -1,7 +1,5 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../service/user.service';
-import { Observable, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
 import { PatientService } from '../../service/patient.service';
 import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -57,18 +55,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // const endpoint = 'https://try.smilecdr.com:8000/Patient'
-
-
     // this.patient.getAllPatientData();
     // if (this.oauthService.hasValidAccessToken()) {
     //     this.router.navigate(['/dashboard']);
     // }
 
-    return this.patientService.getAllPatientData().subscribe(
+     this.patientService.getAllPatientData().subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
+
 
 
   }
@@ -86,12 +82,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       error => this.handleError(error)
     );
   }
-  // lastNameSearch(e) {
-  //   return this.patientService.getPatientDataSearch(e.target.value).subscribe(
-  //     data => this.handleSuccess(data),
-  //     error => this.handleError(error)
-  //   );
-  // }
 
 
   handleSuccess(data) {
@@ -104,9 +94,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     console.log(error);
   }
 
-  ngOnDestroy() {
-    // this.patientSubscription.unsubscribe();
-  }
+  // ngOnDestroy() {
+  //   this.patientService.unsubscribe();
+  // }
 
   newPSOHPButton() {
     this.router.navigate(['/psohpform']);
