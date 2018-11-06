@@ -9,8 +9,6 @@
   
     <h2 mat-subheader>Create Employee & Dependent Records</h2>
   
-    <mat-horizontal-stepper [linear]="isLinear" #stepper style="background-color: #f9f9f9;">
-      <mat-step [stepControl]="firstFormGroup">
         <form [formGroup]="firstFormGroup">
           <!-- <br> -->
           <ng-template matStepLabel>Employee Information</ng-template>
@@ -102,8 +100,6 @@
           </form>
         </form>
   
-      </mat-step>
-      <mat-step [stepControl]="secondFormGroup">
         <form [formGroup]="secondFormGroup">
           <ng-template matStepLabel>Job Description</ng-template>
           <!-- <mat-form-field>
@@ -114,32 +110,7 @@
                 <button mat-button matStepperNext>Next</button>
               </div> -->
         </form>
-      </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Additional Information</ng-template>
-        <!-- You are now done.
-            <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button (click)="stepper.reset()">Reset</button>
-            </div> -->
-      </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Dependent</ng-template>
-        <!-- You are now done.
-            <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button (click)="stepper.reset()">Reset</button>
-            </div> -->
-      </mat-step>
-      <mat-step>
-        <ng-template matStepLabel>Summary</ng-template>
-        <!-- You are now done.
-            <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button (click)="stepper.reset()">Reset</button>
-            </div> -->
-      </mat-step>
-    </mat-horizontal-stepper>
+      
     <!-- <hr> -->
   
     <!-- {{accountForm.value | json}} -->
