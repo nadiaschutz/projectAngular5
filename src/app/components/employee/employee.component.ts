@@ -8,7 +8,7 @@ import { UserService } from '../../service/user.service';
 
 import { PatientService } from '../../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Employee } from '../../interface/employee.d';
+import { Resource } from '../../interface/employee.d';
 
 
 
@@ -57,15 +57,17 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
-  employee = <Employee.Resource>{};
-  employee_name = <Employee.Name>{};
-  employee_address = <Employee.Address>{};
-  employee_extension = <Employee.Extension>{};
-  employee_language = <Employee.Language>{};
-  employee_language_coding = <Employee.Coding>{};
-  employee_communication = <Employee.Communication>{};
+  // employee = new Resource();
+  // employee_name = new Employee.Name();
+  // employee_address = new Employee.Address();
+  // employee_extension = new Employee.Extension();
+  // employee_language = new Employee.Language();
+  // employee_language_coding = new Employee.Coding();
+  // employee_communication = new Employee.Communication();
 
   ngOnInit() {
+
+    // const employee = new Resource();
 
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
@@ -78,16 +80,16 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       type: ['', [Validators.required]],
       familyName: ['', [Validators.required]],
       givenName: ['', [Validators.required]],
-      dob: [''],
+      dob: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: [''],
-      addressStreet: [''],
-      addressUnit: [''],
-      addressCity: [''],
-      addressProv: [''],
-      addressPcode: [''],
-      addressCountry: [''],
-      language: [''],
+      phoneNumber: ['', [Validators.required]],
+      addressStreet: ['', [Validators.required]],
+      addressUnit: ['', [Validators.required]],
+      addressCity: ['', [Validators.required]],
+      addressProv: ['', [Validators.required]],
+      addressPcode: ['', [Validators.required]],
+      addressCountry: ['', [Validators.required]],
+      language: ['', [Validators.required]],
       id: '1',
 
     });
@@ -103,65 +105,65 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     console.log(temparray);
   }
 
-  getQuestionItem(temp) {
-    const tempquestion = [];
-    for (const value of temp.returnQuestionObject().item) {
-      tempquestion.push(value.text);
-      for (const object of value.option) {
-        tempquestion.push(object.valueCoding.code);
-      }
-    }
-    return tempquestion;
-  }
+  // getQuestionItem(temp) {
+  //   const tempquestion = [];
+  //   for (const value of temp.returnQuestionObject().item) {
+  //     tempquestion.push(value.text);
+  //     for (const object of value.option) {
+  //       tempquestion.push(object.valueCoding.code);
+  //     }
+  //   }
+  //   return tempquestion;
+  // }
 
-  setEmployee() {
+  // setEmployee() {
 
-    this.employee_address.city = this.employeeFormGroup.get('addressCity').value;
-    this.employee_address.line = [this.employeeFormGroup.get('addressUnit').value + ' '
-      + this.employeeFormGroup.get('addressStreet').value];
-    this.employee_address.postalcode = this.employeeFormGroup.get('addressPcode').value;
-    this.employee_address.country = this.employeeFormGroup.get('addressCountry').value;
-    this.employee_address.state = this.employeeFormGroup.get('addressProv').value;
-    this.employee_name.family = this.employeeFormGroup.get('familyName').value;
-    this.employee_name.given = [this.employeeFormGroup.get('givenName').value];
+  //   this.employee_address.city = this.employeeFormGroup.get('addressCity').value;
+  //   this.employee_address.line = [this.employeeFormGroup.get('addressUnit').value + ' '
+  //     + this.employeeFormGroup.get('addressStreet').value];
+  //   this.employee_address.postalcode = this.employeeFormGroup.get('addressPcode').value;
+  //   this.employee_address.country = this.employeeFormGroup.get('addressCountry').value;
+  //   this.employee_address.state = this.employeeFormGroup.get('addressProv').value;
+  //   this.employee_name.family = this.employeeFormGroup.get('familyName').value;
+  //   this.employee_name.given = [this.employeeFormGroup.get('givenName').value];
 
-    if (this.employeeFormGroup.get('language').value === 'English' || this.employeeFormGroup.get('language').value === 'english') {
-      this.employee_language_coding.code = 'en';
-      this.employee_language_coding.system = 'urn:ietf:bcp:47';
-      this.employee_language_coding.display = this.employeeFormGroup.get('language').value;
-    }
+  //   if (this.employeeFormGroup.get('language').value === 'English' || this.employeeFormGroup.get('language').value === 'english') {
+  //     this.employee_language_coding.code = 'en';
+  //     this.employee_language_coding.system = 'urn:ietf:bcp:47';
+  //     this.employee_language_coding.display = this.employeeFormGroup.get('language').value;
+  //   }
 
-    this.employee_language.coding = [this.employee_language_coding];
-    this.employee_communication.language = this.employee_language;
-    this.employee_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso-21090-name-use';
-    // this.employee_extension.valueString = uuidv4();
-    this.employee_extension.valueString = 'uuidv4()';
-    this.employee.communication = [this.employee_communication];
-    this.employee.extension = [this.employee_extension];
-    this.employee.birthDate = this.employeeFormGroup.get('dob').value;
-    this.employee.resourceType = 'Patient';
-    this.employee.name = this.employee_name;
-    this.employee.address = [this.employee_address];
+  //   this.employee_language.coding = [this.employee_language_coding];
+  //   this.employee_communication.language = this.employee_language;
+  //   this.employee_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso-21090-name-use';
+  //   // this.employee_extension.valueString = uuidv4();
+  //   this.employee_extension.valueString = 'uuidv4()';
+  //   this.employee.communication = [this.employee_communication];
+  //   this.employee.extension = [this.employee_extension];
+  //   this.employee.birthDate = this.employeeFormGroup.get('dob').value;
+  //   this.employee.resourceType = 'Patient';
+  //   this.employee.name = this.employee_name;
+  //   this.employee.address = [this.employee_address];
 
-    const finalJSON = JSON.stringify(this.employee);
+  //   const finalJSON = JSON.stringify(this.employee);
 
-    console.log(finalJSON);
+  //   console.log(finalJSON);
 
-    this.patientService.postPatientData(finalJSON);
-  }
+  //   this.patientService.postPatientData(finalJSON);
+  // }
 
-  resetData() {
-    this.employee = this.employee_name = this.employee_address = this.employee_extension
-    = this.employee_language = this.employee_language_coding = this.employee_communication = null;
-    this.employee = <Employee.Resource>{};
-    this.employee_name = <Employee.Name>{};
-    this.employee_address = <Employee.Address>{};
-    this.employee_extension = <Employee.Extension>{};
-    this.employee_language = <Employee.Language>{};
-    this.employee_language_coding = <Employee.Coding>{};
-    this.employee_communication = <Employee.Communication>{};
+  // resetData() {
+  //   this.employee = this.employee_name = this.employee_address = this.employee_extension
+  //   = this.employee_language = this.employee_language_coding = this.employee_communication = null;
+  //     this.employee = new Employee.Resource;
+  //     this.employee_name = new Employee.Name;
+  //     this.employee_address = new Employee.Address;
+  //     this.employee_extension = new Employee.Extension;
+  //     this.employee_language = new Employee.Language;
+  //     this.employee_language_coding = new Employee.Coding;
+  //     this.employee_communication = new Employee.Communication;
 
-  }
+  // }
   get resourceType() {
     return this.employeeFormGroup.get('resourceType');
   }

@@ -36,7 +36,7 @@ export interface EmployeeElement {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
 
 
   // patientSubscription: subscription;
