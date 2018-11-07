@@ -27,24 +27,6 @@ import { QuestionnaireService } from './service/questionnaire.service';
 import { PatientService } from './service/patient.service';
 import { UserService } from './service/user.service';
 
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatCardModule } from '@angular/material/card';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableModule } from '@angular/material/table';
-import { MatSortModule } from '@angular/material/sort';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatStepperModule } from '@angular/material/stepper';
-
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
@@ -94,25 +76,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    }),
-    // fhir,
-    MatButtonModule,
-    MatInputModule,
-    MatSelectModule,
-    MatCheckboxModule,
-    MatChipsModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    MatIconModule,
-    MatSlideToggleModule,
-    MatCardModule,
-    MatTabsModule,
-    MatTableModule,
-    MatSortModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatGridListModule,
-    MatStepperModule
+    })
   ],
   providers: [
     AuthGuardService,

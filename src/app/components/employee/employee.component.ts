@@ -10,7 +10,7 @@ import { PatientService } from '../../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
 import * as Employee from '../../interface/employee';
 
-
+import * as uuid from 'uuid';
 
 // const uuidv4 = require('uuid/v4');
 // import _ = require('uuid/v4');
@@ -57,15 +57,26 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
-    employee = new Employee.Resource;
-    employee_name = new Employee.Name;
-    employee_address = new Employee.Address;
-    employee_extension = new Employee.Extension;
-    employee_language = new Employee.Language;
-    employee_language_coding = new Employee.Coding;
-    employee_communication = new Employee.Communication;
+    employee;
+    employee_name;
+    employee_address;
+    employee_extension;
+    employee_language;
+    employee_language_coding;
+    employee_communication;
 
+    // Links a Depdendent(s) to an Employee. Variable to store UUID generated
+    linkId;
   ngOnInit() {
+
+
+    this.employee = new Employee.Resource;
+    this.employee_name = new Employee.Name;
+    this.employee_address = new Employee.Address;
+    this.employee_extension = new Employee.Extension;
+    this.employee_language = new Employee.Language;
+    this.employee_language_coding = new Employee.Coding;
+    this.employee_communication = new Employee.Communication;
 
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
@@ -91,6 +102,9 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       id: '1',
 
     });
+
+    this.linkId = uuid();
+
   }
 
 
@@ -160,8 +174,6 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       this.employee_language = new Employee.Language;
       this.employee_language_coding = new Employee.Coding;
       this.employee_communication = new Employee.Communication;
-
-      
 
   }
   get resourceType() {
