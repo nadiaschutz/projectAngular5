@@ -9,7 +9,7 @@ import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
 import * as Employee from '../../interface/employee';
-
+import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
 
 // const uuidv4 = require('uuid/v4');
@@ -69,6 +69,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     linkId;
   ngOnInit() {
 
+    // const picker = datepicker('#dob');
 
     this.employee = new Employee.Resource;
     this.employee_name = new Employee.Name;
@@ -99,7 +100,12 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       addressPcode: ['', [Validators.required]],
       addressCountry: ['', [Validators.required]],
       language: ['', [Validators.required]],
-      id: '1',
+      id: ['', [Validators.required]],
+      jobTitle: ['', [Validators.required]],
+      departmentName: ['', [Validators.required]],
+      departmentBranch: ['', [Validators.required]],
+      referenceOne: [''],
+      referenceTwo: [''],
 
     });
 
@@ -236,6 +242,30 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
 
   get agree() {
     return this.employeeFormGroup.get('agree');
+  }
+
+  get id() {
+    return this.employeeFormGroup.get('id');
+  }
+
+  get jobTitle() {
+    return this.employeeFormGroup.get('jobTitle');
+  }
+
+  get departmentName() {
+    return this.employeeFormGroup.get('departmentName');
+  }
+
+  get departmentBranch() {
+    return this.employeeFormGroup.get('departmentBranch');
+  }
+
+  get referenceOne() {
+    return this.employeeFormGroup.get('referenceOne');
+  }
+
+  get referenceTwo() {
+    return this.employeeFormGroup.get('referenceTwo');
   }
 
 }

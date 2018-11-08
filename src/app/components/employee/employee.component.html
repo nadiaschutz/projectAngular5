@@ -1,21 +1,99 @@
+<h1>Create Employee & Dependent Records</h1>
+
 <div id="content-form">
   <!-- [hidden]="success" (ngSubmit)="submitHandler()" -->
-
-
-  <h2>Create Employee & Dependent Records</h2>
-
   <!-- <br> -->
-  <form [formGroup]="employeeFormGroup">
-    <div class="row">
-        <label for="type">Client Type</label>
-      <select class="form-control" formControlName="type" id="type">
-        <option *ngFor="let type of accountTypes" [value]="type.value">
-          {{type.viewValue}}
-        </option>
-      </select>
-      <input placeholder="Last Name" formControlName="familyName">
 
+
+
+  <form [formGroup]="employeeFormGroup">
+    <h4>
+      Client Information
+    </h4>
+    <div class="row">
+      <div class="col-6">
+        <label for="type">Client Type</label>
+        <select class="form-control" formControlName="type" id="type">
+          <option *ngFor="let type of accountTypes" [value]="type.value">
+            {{type.viewValue}}
+          </option>
+        </select>
+      </div>
     </div>
+
+    <div class="row">
+      <div class="col">
+        <label for="givenName">First Name</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName">
+      </div>
+      <div class="col">
+        <label for="familyName">Last Name Name</label>
+        <input type="text" class="form-control" placeholder="Enter formControlName="familyName" id="familyName">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label for="dob">Date of Birth</label>
+        <input type="date" class="form-control" placeholder="Enter" formControlName="dob" id="dob">
+      </div>
+      <div class="col">
+        <label for="language">Preferred Language</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="language" id="language">
+      </div>
+    </div>
+
+    <h4>
+      Contact & Address Information
+    </h4>
+    <div class="row">
+      <div class="col">
+        <label for="email">Email</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="email" id="email">
+      </div>
+      <div class="col">
+        <label for="phoneNumber">Phone Number</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="phoneNumber" id="phoneNumber">
+      </div>
+    </div>
+
+    <h4>
+      Employment Information
+    </h4>
+
+    <div class="row">
+      <div class="col">
+        <label for="jobTitle">Job Title</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle">
+      </div>
+      <div class="col">
+        <label for="id">Associated Employee PRI</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label for="departmentName">Derpartment Name</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="departmentName" id="departmentName">
+      </div>
+      <div class="col">
+        <label for="departmentBranch">Department Branch</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="departmentBranch" id="departmentBranch">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label for="referenceOne">Cross-reference No. 1</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne">
+      </div>
+      <div class="col">
+        <label for="referenceTwo">Cross-reference No. 2</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
+      </div>
+    </div>
+
     <!-- <div class="row">
       <mat-grid-list cols="2" rowHeight="2:1">
 
@@ -83,6 +161,12 @@
     <div class="row">
       <button mat-raised-button class="formButton" (click)="setEmployee()" color="primary">Submit</button>
     </div> -->
+
+
+    <!-- save for later -->
+
+    <!-- <label for="exampleFormControlFile1">Example file input</label>
+    <input type="file" class="form-control-file" id="exampleFormControlFile1"> -->
   </form>
 
 

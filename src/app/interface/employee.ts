@@ -91,6 +91,7 @@ export class Address {
     state: string;
     country: string;
     postalcode: string;
+    text: string;
 }
 
 export class Coding2 {
