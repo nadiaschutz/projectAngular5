@@ -119,7 +119,7 @@ export class Resource {
     id: string;
     meta: Meta;
     text: Text;
-    extension: Extension[];
+    _employment: Extension[];
     identifier: Identifier[];
     name: Name;
     telecom: Telecom[];

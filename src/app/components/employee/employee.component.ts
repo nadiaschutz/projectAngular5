@@ -21,6 +21,11 @@ export interface AccountType {
   viewValue: string;
 }
 
+export interface Province {
+  value: string;
+  viewValue: string;
+}
+
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',
@@ -94,7 +99,6 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required]],
       addressStreet: ['', [Validators.required]],
-      addressUnit: ['', [Validators.required]],
       addressCity: ['', [Validators.required]],
       addressProv: ['', [Validators.required]],
       addressPcode: ['', [Validators.required]],
@@ -137,8 +141,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   setEmployee() {
 
     this.employee_address.city = this.employeeFormGroup.get('addressCity').value;
-    this.employee_address.line = [this.employeeFormGroup.get('addressUnit').value + ' '
-      + this.employeeFormGroup.get('addressStreet').value];
+    this.employee_address.line = [this.employeeFormGroup.get('addressStreet').value];
     this.employee_address.postalcode = this.employeeFormGroup.get('addressPcode').value;
     this.employee_address.country = this.employeeFormGroup.get('addressCountry').value;
     this.employee_address.state = this.employeeFormGroup.get('addressProv').value;
@@ -217,9 +220,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   get addressCity() {
     return this.employeeFormGroup.get('addressCity');
   }
-  get addressUnit() {
-    return this.employeeFormGroup.get('addressUnit');
-  }
+
   get addressStreet() {
     return this.employeeFormGroup.get('addressStreet');
   }
