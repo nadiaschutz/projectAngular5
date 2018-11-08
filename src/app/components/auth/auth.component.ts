@@ -38,17 +38,15 @@ export class AuthComponent implements OnInit {
     });
 
     this.oauthService.redirectUri = environment.redirectUri;
-    //   if (this.oauthService.hasValidAccessToken()) {
-    //   this.router.navigate(['/dashboard']);
-    // }
+    if (this.oauthService.hasValidAccessToken()) {
+      this.router.navigate(['/dashboard']);
+    }
 
   }
 
   login() {
     this.userService.login(this.logInForm.get('username').value.toString(), this.logInForm.get('password').value.toString());
-    // if (this.oauthService.hasValidAccessToken()) {
-      this.router.navigate(['/dashboard']);
-    // }
+    this.router.navigate(['/dashboard']);
   }
 
 

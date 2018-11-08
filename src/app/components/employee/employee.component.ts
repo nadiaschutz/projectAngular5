@@ -69,6 +69,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     employee_language;
     employee_language_coding;
     employee_communication;
+    employee_identifier;
 
     // Links a Depdendent(s) to an Employee. Variable to store UUID generated
     linkId;
@@ -83,6 +84,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     this.employee_language = new Employee.Language;
     this.employee_language_coding = new Employee.Coding;
     this.employee_communication = new Employee.Communication;
+    this.employee_identifier = new Employee.Identifier;
 
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
@@ -165,7 +167,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     this.employee.resourceType = 'Patient';
     this.employee.name = this.employee_name;
     this.employee.address = [this.employee_address];
-
+    this.employee_identifier.use = 'home';
     const finalJSON = JSON.stringify(this.employee);
 
     console.log(finalJSON);

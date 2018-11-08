@@ -5,11 +5,15 @@
   <!-- <br> -->
 
 
+  {{ employeeFormGroup.value | json }}
+
 
   <form [formGroup]="employeeFormGroup">
-    <h4>
-      Client Information
-    </h4>
+    <div class="row">
+      <h4>
+        Client Information
+      </h4>
+    </div>
     <div class="row">
       <div class="col-6">
         <label for="type">Client Type</label>
@@ -43,9 +47,12 @@
       </div>
     </div>
 
-    <h4>
-      Contact & Address Information
-    </h4>
+    <div class="row">
+      <h4>
+        Contact & Address Information
+      </h4>
+    </div>
+
     <div class="row">
       <div class="col">
         <label for="email">Email</label>
@@ -69,23 +76,25 @@
     </div>
 
     <div class="row">
-        <div class="col-3">
-            <label for="addressProv">Province</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="addressProv" id="addressProv">
-          </div>
-          <div class="col-3">
-              <label for="addressPcode">Postal Code</label>
-              <input type="text" class="form-control" placeholder="Enter" formControlName="addressPcode" id="addressPcode">
-            </div>
-            <div class="col-6">
-                <label for="addressCountry">Country</label>
-                <input type="text" class="form-control" placeholder="Enter" formControlName="addressCountry" id="addressCountry">
-              </div>
+      <div class="col-3">
+        <label for="addressProv">Province</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="addressProv" id="addressProv">
+      </div>
+      <div class="col-3">
+        <label for="addressPcode">Postal Code</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="addressPcode" id="addressPcode">
+      </div>
+      <div class="col-6">
+        <label for="addressCountry">Country</label>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="addressCountry" id="addressCountry">
+      </div>
     </div>
 
-    <h4>
-      Employment Information
-    </h4>
+    <div class="row">
+      <h4>
+        Employment Information
+      </h4>
+    </div>
 
     <div class="row">
       <div class="col">
