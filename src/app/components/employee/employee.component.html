@@ -118,7 +118,11 @@
       </div>
       <div class="col">
         <label for="departmentBranch">Department Branch</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="departmentBranch" id="departmentBranch">
+        <select class="form-control" formControlName="departmentBranch" id="departmentBranch">
+          <option *ngFor="let branch of branches" [value]="branch">
+            {{branch}}
+          </option>
+        </select>
       </div>
     </div>
 

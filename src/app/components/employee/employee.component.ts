@@ -41,6 +41,7 @@ export class EmployeeComponent implements OnInit {
   employee_identifier;
   dependents: any[];
   department: any;
+  branches: any;
   // Links a Depdendent(s) to an Employee. Variable to store UUID generated
   linkId;
   constructor(private fb: FormBuilder,
@@ -69,8 +70,17 @@ export class EmployeeComponent implements OnInit {
 
   ngOnInit() {
 
+    // Set Department List
+
     this.userService.getDepartmentList().subscribe(
       data => this.setDepartments(data),
+      error => this.handleError(error)
+    );
+
+    // Set Branch List
+
+    this.userService.getBranchList().subscribe(
+      data => this.setBranchList(data),
       error => this.handleError(error)
     );
 
@@ -107,6 +117,10 @@ export class EmployeeComponent implements OnInit {
     const parsedObject = JSON.parse( retrievedObject);
     console.log(parsedObject.extension[0].valueString);
 
+  }
+
+  setBranchList(data) {
+    this.branches = data.branchlist;
   }
 
   setDepartments(data) {
