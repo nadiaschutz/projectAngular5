@@ -101,9 +101,9 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
 
     });
 
-    console.log(this.linkId);
     const retrievedObject = localStorage.getItem('employee');
-    console.log('object from storage', JSON.parse( retrievedObject));
+    const parsedObject = JSON.parse( retrievedObject);
+    console.log(parsedObject.extension[0].valueString);
 
   }
 
@@ -124,6 +124,8 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   // }
 
   setEmployee() {
+
+    this.linkId = uuid();
 
     this.employee = new Employee.Resource;
     this.employee_name = new Employee.Name;
@@ -153,7 +155,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     this.employee_communication.language = this.employee_language;
     this.employee_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso-21090-name-use';
     // this.employee_extension.valueString = uuidv4();
-    this.employee_extension.valueString = 'uuidv4()';
+    this.employee_extension.valueString = this.linkId;
     this.employee.communication = [this.employee_communication];
     this.employee.extension = [this.employee_extension];
     this.employee.birthDate = this.employeeFormGroup.get('dob').value;
@@ -184,7 +186,6 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       this.employee_language = new Employee.Language;
       this.employee_language_coding = new Employee.Coding;
       this.employee_communication = new Employee.Communication;
-
   }
 
   get resourceType() {
