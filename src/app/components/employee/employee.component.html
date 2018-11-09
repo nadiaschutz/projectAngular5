@@ -128,88 +128,8 @@
         <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
       </div>
     </div>
-
-    <!-- <div class="row">
-      <mat-grid-list cols="2" rowHeight="2:1">
-
-        <mat-form-field class="full form-field " appearance="outline">
-          <input matInput placeholder="First Name" formControlName="givenName">
-          <mat-error *ngIf="givenName.invalid && givenName.touched">
-            Cannot be blank!
-          </mat-error>
-        </mat-form-field>
-        <mat-form-field class="full form-field" appearance="outline">
-          <input matInput [matDatepicker]="picker" placeholder="Choose a date" formControlName="dob">
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      </mat-grid-list>
-    </div>
-    <div class="row">
-      <mat-form-field class="full form-field  " appearance="outline">
-        <input matInput placeholder="Email" formControlName="email">
-        <mat-error *ngIf="email.invalid && email.touched">
-          Email is incorrect
-        </mat-error>
-      </mat-form-field>
-      <mat-form-field class="full form-field  " appearance="outline">
-        <input matInput placeholder="Phone Number" formControlName="phoneNumber">
-      </mat-form-field>
-    </div>
-
-    <div class="row">
-      <mat-form-field class="full street  " appearance="outline">
-        <input matInput placeholder="Address" formControlName="addressStreet">
-      </mat-form-field>
-      <mat-form-field class="full unit " appearance="outline">
-        <input matInput placeholder="Unit" formControlName="addressUnit">
-      </mat-form-field>
-      <mat-form-field class="full form-field  " appearance="outline">
-        <input matInput placeholder="City" formControlName="addressCity">
-      </mat-form-field>
-    </div>
-
-    <div class="row">
-      <mat-grid-list cols="2" rowHeight="2:1">
-        <mat-form-field class="full form-field " appearance="outline">
-          <input matInput placeholder="Province" formControlName="addressProv">
-        </mat-form-field>
-        <mat-form-field class="full form-field " appearance="outline">
-          <input matInput placeholder="Postal Code" formControlName="addressPcode">
-        </mat-form-field>
-      </mat-grid-list>
-    </div>
-
-    <div class="row">
-      <mat-grid-list cols="2" rowHeight="2:1">
-        <mat-form-field class="full form-field " appearance="outline">
-          <input matInput placeholder="Country" formControlName="addressCountry">
-        </mat-form-field>
-        <mat-form-field class="full form-field " appearance="outline">
-          <input matInput placeholder="Language" formControlName="language">
-        </mat-form-field>
-      </mat-grid-list>
-    </div>
-    <div class="row">
-      <mat-checkbox color="primary" class="form-field ">Are there any dependents?</mat-checkbox>
-    </div>
-    <div class="row">
-      <button mat-raised-button class="formButton" (click)="setEmployee()" color="primary">Submit</button>
-    </div> -->
-
-
-    <!-- save for later -->
-
-    <!-- <label for="exampleFormControlFile1">Example file input</label>
-    <input type="file" class="form-control-file" id="exampleFormControlFile1"> -->
+    <button class="btn form-button" (click)="setEmployee()" type="submit">Submit form</button>
   </form>
-
-
-
-  <!-- <hr> -->
-
-  <!-- {{accountForm.value | json}} -->
-
 
 
 </div>

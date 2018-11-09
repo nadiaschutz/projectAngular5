@@ -9,12 +9,8 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { CreateAccountComponent } from './components/create-account/create-account.component';
 import { AuthComponent } from './components/auth/auth.component';
 import { EmployeeComponent } from './components/employee/employee.component';
-import { PsohpRegionalComponent } from './components/psohp-regional/psohp-regional.component';
-import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
-import { ServiceRequestComponent } from './components/service-request/service-request.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { NewServiceRequestComponent } from './components/new-service-request/new-service-request.component';
@@ -33,13 +29,9 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 
 const routes: Routes = [
-  { path: 'employee-summary', component: EmployeeSummaryComponent },
   { path: 'employeeform', component: EmployeeComponent },
-  { path: 'newaccount', component: CreateAccountComponent },
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'servicerequest', component: ServiceRequestComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
-  { path: 'psohpform', component: PsohpRegionalComponent },
   { path: '', component: AuthComponent }
 ];
 
@@ -52,11 +44,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     DashboardComponent,
     EmployeeComponent,
-    CreateAccountComponent,
     AuthComponent,
-    PsohpRegionalComponent,
-    EmployeeSummaryComponent,
-    ServiceRequestComponent,
     NavbarComponent,
     SidebarComponent,
     NewServiceRequestComponent,

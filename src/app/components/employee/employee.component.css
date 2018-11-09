@@ -50,3 +50,9 @@
 
 }
 
+.form-button {
+    border-radius: 2px;
+    background-color: #ffffff;
+    border: solid 0.7px #d5d5d5;
+}
+

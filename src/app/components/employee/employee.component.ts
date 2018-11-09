@@ -12,9 +12,6 @@ import * as Employee from '../../interface/employee';
 import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
 
-// const uuidv4 = require('uuid/v4');
-// import _ = require('uuid/v4');
-// import * as _ from ('uuid/v4');
 
 export interface AccountType {
   value: string;
@@ -38,7 +35,17 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   isLinear = false;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
-
+  employee;
+  employee_name;
+  employee_address;
+  employee_extension;
+  employee_language;
+  employee_language_coding;
+  employee_communication;
+  employee_identifier;
+  dependents: any[];
+  // Links a Depdendent(s) to an Employee. Variable to store UUID generated
+  linkId;
   constructor(private fb: FormBuilder,
     private httpClient: HttpClient,
     public translate: TranslateService,
@@ -62,29 +69,8 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
-    employee;
-    employee_name;
-    employee_address;
-    employee_extension;
-    employee_language;
-    employee_language_coding;
-    employee_communication;
-    employee_identifier;
 
-    // Links a Depdendent(s) to an Employee. Variable to store UUID generated
-    linkId;
   ngOnInit() {
-
-    // const picker = datepicker('#dob');
-
-    this.employee = new Employee.Resource;
-    this.employee_name = new Employee.Name;
-    this.employee_address = new Employee.Address;
-    this.employee_extension = new Employee.Extension;
-    this.employee_language = new Employee.Language;
-    this.employee_language_coding = new Employee.Coding;
-    this.employee_communication = new Employee.Communication;
-    this.employee_identifier = new Employee.Identifier;
 
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
@@ -115,7 +101,9 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
 
     });
 
-    this.linkId = uuid();
+    console.log(this.linkId);
+    const retrievedObject = localStorage.getItem('employee');
+    console.log('object from storage', JSON.parse( retrievedObject));
 
   }
 
@@ -123,11 +111,6 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   ngAfterContentInit() {
   }
 
-  deserializethis(object) {
-    const temparray = [];
-    temparray.push(object);
-    console.log(temparray);
-  }
 
   // getQuestionItem(temp) {
   //   const tempquestion = [];
@@ -141,6 +124,16 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   // }
 
   setEmployee() {
+
+    this.employee = new Employee.Resource;
+    this.employee_name = new Employee.Name;
+    this.employee_address = new Employee.Address;
+    this.employee_extension = new Employee.Extension;
+    this.employee_language = new Employee.Language;
+    this.employee_language_coding = new Employee.Coding;
+    this.employee_communication = new Employee.Communication;
+    this.employee_identifier = new Employee.Identifier;
+
 
     this.employee_address.city = this.employeeFormGroup.get('addressCity').value;
     this.employee_address.line = [this.employeeFormGroup.get('addressStreet').value];
@@ -168,11 +161,17 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     this.employee.name = this.employee_name;
     this.employee.address = [this.employee_address];
     this.employee_identifier.use = 'home';
-    const finalJSON = JSON.stringify(this.employee);
 
+    const finalJSON = JSON.stringify(this.employee);
+    // this.patientService.postPatientData(finalJSON);
+
+    localStorage.setItem('employee', finalJSON);
     console.log(finalJSON);
 
-    this.patientService.postPatientData(finalJSON);
+  }
+
+  printData(data) {
+    console.log (data);
   }
 
   resetData() {
@@ -187,6 +186,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
       this.employee_communication = new Employee.Communication;
 
   }
+
   get resourceType() {
     return this.employeeFormGroup.get('resourceType');
   }
