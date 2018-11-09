@@ -60,7 +60,7 @@ export class UserService {
   }
 
   getDepartmentList() {
-    return this.httpClient.get<JSON>('../../sasets/departments.json'); //records in this case
+    return this.httpClient.get<JSON>('../../assets/departments.json'); //records in this case
   }
   // Initialize headers for the login section
   getLoginHeaders(): HttpHeaders {

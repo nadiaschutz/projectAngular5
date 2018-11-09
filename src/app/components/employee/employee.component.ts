@@ -1,5 +1,5 @@
 
-import { Component, OnInit, AfterContentInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
@@ -18,10 +18,6 @@ export interface AccountType {
   viewValue: string;
 }
 
-export interface Province {
-  value: string;
-  viewValue: string;
-}
 
 @Component({
   selector: 'app-employee',
@@ -29,7 +25,7 @@ export interface Province {
   styleUrls: ['./employee.component.css']
 })
 
-export class EmployeeComponent implements OnInit, AfterContentInit {
+export class EmployeeComponent implements OnInit {
   employeeFormGroup: FormGroup;
   clientFormGroup: FormGroup;
   isLinear = false;
@@ -44,6 +40,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
   employee_communication;
   employee_identifier;
   dependents: any[];
+  department: any;
   // Links a Depdendent(s) to an Employee. Variable to store UUID generated
   linkId;
   constructor(private fb: FormBuilder,
@@ -71,6 +68,11 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
 
 
   ngOnInit() {
+
+    this.userService.getDepartmentList().subscribe(
+      data => this.setDepartments(data),
+      error => this.handleError(error)
+    );
 
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
@@ -107,21 +109,13 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
 
   }
 
-
-  ngAfterContentInit() {
+  setDepartments(data) {
+    this.department = data.department;
   }
 
-
-  // getQuestionItem(temp) {
-  //   const tempquestion = [];
-  //   for (const value of temp.returnQuestionObject().item) {
-  //     tempquestion.push(value.text);
-  //     for (const object of value.option) {
-  //       tempquestion.push(object.valueCoding.code);
-  //     }
-  //   }
-  //   return tempquestion;
-  // }
+  handleError(error) {
+    console.log(error);
+  }
 
   setEmployee() {
 
@@ -154,7 +148,6 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     this.employee_language.coding = [this.employee_language_coding];
     this.employee_communication.language = this.employee_language;
     this.employee_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso-21090-name-use';
-    // this.employee_extension.valueString = uuidv4();
     this.employee_extension.valueString = this.linkId;
     this.employee.communication = [this.employee_communication];
     this.employee.extension = [this.employee_extension];
@@ -168,7 +161,7 @@ export class EmployeeComponent implements OnInit, AfterContentInit {
     // this.patientService.postPatientData(finalJSON);
 
     localStorage.setItem('employee', finalJSON);
-    console.log(finalJSON);
+    // console.log(finalJSON);
 
   }
 
