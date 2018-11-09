@@ -47,6 +47,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { ServReqMainComponent } from './components/serv-req-main/serv-req-main.component';
 
 
 
@@ -55,6 +56,7 @@ const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent },
   { path: 'newaccount', component: CreateAccountComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'servreqmain', component: ServReqMainComponent },
   { path: 'servicerequest', component: ServiceRequestComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: 'psohpform', component: PsohpRegionalComponent },
@@ -78,7 +80,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NavbarComponent,
     SidebarComponent,
     NewServiceRequestComponent,
-    NewServiceRequestNoClientComponent
+    NewServiceRequestNoClientComponent,
+    ServReqMainComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
