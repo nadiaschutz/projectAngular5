@@ -58,8 +58,8 @@
   <tbody>
     <tr *ngFor="let q of qrequest ">
       <td>{{q.resource.id}}</td>
-      <td>{{q.resource.name[0].given}}</td>
-      <td>{{q.resource.name[0].family}}</td>
+      <td *ngFor="let name of q.resource.name">{{name.given}}</td>
+      <td *ngFor="let name of q.resource.name">{{name.family}}</td>
       <td>{{q.resource.birthDate | date: 'dd/MM/yyyy'}}</td>
       <!-- <td>Employee</td> -->
       <td *ngIf="q.resource.link">
