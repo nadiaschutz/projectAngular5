@@ -36,7 +36,7 @@ export interface EmployeeElement {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
 
 
   // patientSubscription: subscription;
@@ -86,7 +86,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   handleSuccess(data) {
     this.qrequest = data.entry;
-    console.log(this.qrequest);
 
   }
 
@@ -107,6 +106,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   newEmployeeButton() {
+
     this.router.navigate(['/employeeform']);
   }
 
