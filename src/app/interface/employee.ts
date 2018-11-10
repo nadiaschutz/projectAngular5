@@ -90,7 +90,7 @@ export class Address {
     city: string;
     state: string;
     country: string;
-    postalcode: string;
+    postalCode: string;
     text: string;
 }
 
