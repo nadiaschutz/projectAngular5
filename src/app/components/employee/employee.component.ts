@@ -18,7 +18,6 @@ export interface AccountType {
   viewValue: string;
 }
 
-
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',

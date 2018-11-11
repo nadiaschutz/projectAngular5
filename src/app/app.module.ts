@@ -25,6 +25,7 @@ import { UserService } from './service/user.service';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { DependentComponent } from './components/dependent/dependent.component';
 
 
 
@@ -48,7 +49,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NavbarComponent,
     SidebarComponent,
     NewServiceRequestComponent,
-    NewServiceRequestNoClientComponent
+    NewServiceRequestNoClientComponent,
+    DependentComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

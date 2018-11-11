@@ -107,7 +107,7 @@ export class DashboardComponent implements OnInit {
 
   newEmployeeButton() {
 
-    this.router.navigate(['/employeeform']);
+    this.router.navigateByUrl('/employeeform');
   }
 
   checkRegionalOfficeButtion() {
