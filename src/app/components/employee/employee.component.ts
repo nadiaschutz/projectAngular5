@@ -364,6 +364,10 @@ export class EmployeeComponent implements OnInit {
 
   }
 
+  addDependent() {
+    this.router.navigateByUrl ('/dependentform');
+  }
+
   get resourceType() {
     return this.employeeFormGroup.get('resourceType');
   }

@@ -15,6 +15,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { NewServiceRequestComponent } from './components/new-service-request/new-service-request.component';
 import { NewServiceRequestNoClientComponent } from './components/new-service-request-no-client/new-service-request-no-client.component';
+import { DependentComponent } from './components/dependent/dependent.component';
+
 // import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
@@ -25,11 +27,11 @@ import { UserService } from './service/user.service';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { DependentComponent } from './components/dependent/dependent.component';
 
 
 
 const routes: Routes = [
+  { path: 'dependentform', component: DependentComponent},
   { path: 'employeeform', component: EmployeeComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
