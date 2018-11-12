@@ -47,22 +47,33 @@
 
         <div class="col">
           <label for="region" class="label-name">Region</label>
-          <input type="text" 
-          [(ngModel)]="region"
-          name="region" 
-          id="region" 
-          class="form-control field-box" 
-          placeholder="Enter">
+          <select class="form-control" 
+            [(ngModel)]="region"
+            (ngModelChange)="region = $event"  
+            name = "region">
+            <option [ngValue]="null">Select Category</option>
+            <option *ngFor="let region of regionArr" 
+            [value]="region"
+            >
+              {{region}}
+            </option>
+          </select>
         </div>
 
         <div class="col">
           <label for="department" class="label-name">Client Department</label>
-          <input type="text" 
-          [(ngModel)]="clientDepartment"
-          name="department" 
-          id="department" 
-          class="form-control field-box" 
-          placeholder="Enter">
+          <select class="form-control" 
+            [(ngModel)]="clientDepartment"
+            (ngModelChange)="clientDepartment = $event"  
+            name = "department">
+            <option [ngValue]="null">Select Category</option>
+            <option *ngFor="let department of departmentArr" 
+            [value]="department"
+            >
+              {{department}}
+            </option>
+          </select>
+
         </div>
 
       </div>
