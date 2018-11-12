@@ -4,7 +4,6 @@
 
   {{ employeeFormGroup.value | json }}
 
-
   <form [formGroup]="employeeFormGroup">
     <div class="row">
       <h4>
@@ -133,7 +132,11 @@
         <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
       </div>
     </div>
-    <button class="btn form-button" (click)="setEmployee()" type="submit">Submit form</button>
+    <div class="row">
+      <button class="btn form-button" (click)="setEmployee()" type="submit">Set Employee</button>
+      <button class="btn form-button" (click)="addDependent()" type="submit">Add a dependent</button>
+      <button class="btn form-button" (click)="submitForm()" type="submit">Save Form</button>
+    </div>
   </form>
 
 

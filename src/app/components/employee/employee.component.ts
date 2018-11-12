@@ -1,6 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { UserService } from '../../service/user.service';
@@ -8,7 +8,7 @@ import { UserService } from '../../service/user.service';
 import { Router } from '@angular/router';
 import { PatientService } from '../../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
-import * as Employee from '../../interface/employee';
+import * as Employee from '../../interface/patient';
 import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
 
@@ -25,11 +25,9 @@ export interface AccountType {
 })
 
 export class EmployeeComponent implements OnInit {
+  // Declaration for Employree form group object
+
   employeeFormGroup: FormGroup;
-  clientFormGroup: FormGroup;
-  isLinear = false;
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
 
   // Declarations for objects related Patients and Extensions
 
@@ -160,14 +158,6 @@ export class EmployeeComponent implements OnInit {
       error => this.handleError(error)
     );
 
-
-    // this.firstFormGroup = this.fb.group({
-    //   firstCtrl: ['', Validators.required]
-    // });
-    // this.secondFormGroup = this.fb.group({
-    //   secondCtrl: ['', Validators.required]
-    // });
-
     // Initialize Employee Form Group for DOM
 
     this.employeeFormGroup = this.fb.group({
@@ -193,7 +183,7 @@ export class EmployeeComponent implements OnInit {
     });
 
     const retrievedObject = localStorage.getItem('employee');
-    const parsedObject = JSON.parse( retrievedObject);
+    const parsedObject = JSON.parse(retrievedObject);
     console.log(parsedObject);
 
   }
@@ -241,7 +231,7 @@ export class EmployeeComponent implements OnInit {
 
     this.employee_address.city = this.employeeFormGroup.get('addressCity').value;
     this.employee_address.line = [this.employeeFormGroup.get('addressStreet').value];
-    this.employee_address.postalcode = this.employeeFormGroup.get('addressPcode').value;
+    this.employee_address.postalCode = this.employeeFormGroup.get('addressPcode').value;
     this.employee_address.country = this.employeeFormGroup.get('addressCountry').value;
     this.employee_address.state = this.employeeFormGroup.get('addressProv').value;
 
@@ -330,7 +320,7 @@ export class EmployeeComponent implements OnInit {
     this.employee.address = [this.employee_address];
 
     const finalJSON = JSON.stringify(this.employee);
-    this.patientService.postPatientData(finalJSON);
+    // this.patientService.postPatientData(finalJSON);
 
     localStorage.removeItem('employee');
     localStorage.setItem('employee', finalJSON);
@@ -342,7 +332,7 @@ export class EmployeeComponent implements OnInit {
   }
 
   printData(data) {
-    console.log (data);
+    console.log(data);
   }
 
   resetData() {
@@ -365,7 +355,7 @@ export class EmployeeComponent implements OnInit {
   }
 
   addDependent() {
-    this.router.navigateByUrl ('/dependentform');
+    this.router.navigateByUrl('/dependentform');
   }
 
   get resourceType() {
