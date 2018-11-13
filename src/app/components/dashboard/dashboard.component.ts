@@ -86,7 +86,6 @@ export class DashboardComponent implements OnInit {
 
   handleSuccess(data) {
     this.qrequest = data.entry;
-    console.log(this.qrequest);
 
   }
 
@@ -107,6 +106,7 @@ export class DashboardComponent implements OnInit {
   }
 
   newEmployeeButton() {
+
     this.router.navigate(['/employeeform']);
   }
 
