@@ -103,7 +103,7 @@ export class EmployeeComponent implements OnInit {
 
   // Array for Dependent Objects
 
-  dependents: any[];
+  dependentsArray: any[];
 
   // Store list of Departments
 
@@ -118,6 +118,8 @@ export class EmployeeComponent implements OnInit {
 
   linkId;
 
+
+  i;
   constructor(
 
     private fb: FormBuilder,
@@ -144,6 +146,9 @@ export class EmployeeComponent implements OnInit {
 
   ngOnInit() {
 
+
+    this.dependentsArray = new Array;
+    this.i = 0;
     // Set Department List
 
     this.userService.getDepartmentList().subscribe(
@@ -325,11 +330,11 @@ export class EmployeeComponent implements OnInit {
     localStorage.removeItem('employee');
     localStorage.setItem('employee', finalJSON);
 
-    this.router.navigate(['/dashboard']);
+    // this.router.navigate(['/dashboard']);
 
-    console.log(finalJSON);
 
   }
+
 
   printData(data) {
     console.log(data);
@@ -352,6 +357,31 @@ export class EmployeeComponent implements OnInit {
     this.employee_telecom_email = new Employee.Telecom;
     this.employee_telecom_phone = new Employee.Telecom;
 
+  }
+
+  printBundle(data) {
+    console.log(JSON.parse(localStorage.getItem('bundle')));
+
+  }
+
+  bundleObjects() {
+
+    this.dependentsArray = JSON.parse(localStorage.getItem('dependent'));
+
+    // console.log (this.dependentsArray[0]);
+    const bundle = {
+      'entry': [ ]
+    };
+
+    for (const element in this.dependentsArray) {
+      if (element) {
+        bundle.entry.push ({'resource': JSON.parse( this.dependentsArray[element]) });
+      }
+    }
+    bundle.entry.push({ 'resource': this.employee });
+
+    localStorage.setItem('bundle', JSON.stringify(bundle));
+    console.log('the bundle:', bundle);
   }
 
   addDependent() {

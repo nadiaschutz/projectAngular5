@@ -31,7 +31,7 @@ export class DependentComponent implements OnInit {
 
   // Dependent base object
 
-  // dependent;
+  dependent;
 
   // Dependent Extension object (Dependent Link)
 
@@ -75,7 +75,7 @@ export class DependentComponent implements OnInit {
 
   // Array for Dependent Objects
 
-  // dependents: any[];
+  dependentArray: any[];
 
   // Store list of Departments
 
@@ -104,6 +104,7 @@ export class DependentComponent implements OnInit {
 
   ngOnInit() {
 
+    this.dependentArray = new Array;
 
 
     // Set Department List
@@ -122,7 +123,6 @@ export class DependentComponent implements OnInit {
 
 
     this.dependentFormGroup = this.fb.group({
-      resourceType: 'Patient',
       type: ['', [Validators.required]],
       familyName: ['', [Validators.required]],
       givenName: ['', [Validators.required]],
@@ -147,7 +147,7 @@ export class DependentComponent implements OnInit {
 
     // this.linkId = uuid();
 
-    const dependent = new Dependent.Resource;
+    this.dependent = new Dependent.Resource;
     const dependent_name = new Dependent.Name;
     const dependent_address = new Dependent.Address;
     const dependent_language = new Dependent.Language;
@@ -164,11 +164,6 @@ export class DependentComponent implements OnInit {
 
     dependent_extension_dependentlink.url = 'https://bcip.smilecdr.com/fhir/dependentlink';
     dependent_extension_dependentlink.valueString = parsedId.extension[2].valueString;
-
-    // Dependent identifer
-
-    dependent_identifier.use = 'work';
-    dependent_identifier.value = this.dependentFormGroup.get('id').value;
 
     // Dependent Address
 
@@ -199,32 +194,61 @@ export class DependentComponent implements OnInit {
     dependent_telecom_phone.use = 'work';
 
     // Telecome (email)
-
+    this.dependent.extension = [dependent_extension_dependentlink];
     dependent_telecom_email.system = 'email';
     dependent_telecom_email.value = this.dependentFormGroup.get('email').value;
     dependent_telecom_email.use = 'work';
-    dependent.identifier = [dependent_identifier];
+    this.dependent.identifier = [dependent_identifier];
     dependent_language.coding = [dependent_language_coding];
     dependent_communication.language = dependent_language;
-    dependent.telecom = [dependent_telecom_phone, dependent_telecom_email];
-    dependent.communication = [dependent_communication];
-    dependent.birthDate = this.dependentFormGroup.get('dob').value;
-    dependent.resourceType = 'Patient';
-    dependent.name = dependent_name;
-    dependent.address = [dependent_address];
+    this.dependent.telecom = [dependent_telecom_phone, dependent_telecom_email];
+    this.dependent.communication = [dependent_communication];
+    this.dependent.birthDate = this.dependentFormGroup.get('dob').value;
+    this.dependent.resourceType = 'Patient';
+    this.dependent.name = dependent_name;
+    this.dependent.address = [dependent_address];
 
-    const finalJSON = JSON.stringify(dependent);
+    const finalJSON = JSON.stringify(this.dependent);
+    this.dependentArray.push(finalJSON);
+
+    // dependent = new Dependent.Resource;
+    // dependent_name = new Dependent.Name;
+    // dependent_address = new Dependent.Address;
+    // dependent_language = new Dependent.Language;
+    // dependent_language_coding = new Dependent.Coding;
+    // dependent_communication = new Dependent.Communication;
+    // dependent_identifier = new Dependent.Identifier;
+    // dependent_telecom_email = new Dependent.Telecom;
+    // dependent_telecom_phone = new Dependent.Telecom;
+    // dependent_extension_dependentlink = new Dependent.Extension;
+    // const storedObject = JSON.parse(localStorage.getItem('dependent'));
+
+    // storedObject.push(finalJSON);
     // this.patientService.postPatientData(finalJSON);
+    // this.router.navigate(['/employeeform']);
 
-    localStorage.removeItem('dependent');
-    localStorage.setItem('dependent', finalJSON);
+    // console.log(localStorage.getItem('dependent'));
+    console.log(this.dependentArray);
 
-    this.router.navigate(['/dashboard']);
-
-    console.log(finalJSON);
+    localStorage.setItem('dependent', JSON.stringify(this.dependentArray));
 
   }
 
+  addDependent() {
+    this.dependentArray.push(JSON.parse(this.dependent));
+    localStorage.setItem('dependent', JSON.stringify(this.dependentArray));
+
+    console.log(this.dependent);
+    // const bundle = JSON.parse(localStorage.getItem('bundle'));
+    // bundle.entry.push(JSON.stringify(data));
+    // localStorage.setItem('bundle', JSON.stringify(bundle));
+
+    // localStorage.setItem('dependent', JSON.stringify(this.dependents));
+  }
+
+  backToEmployee() {
+    this.router.navigate(['/employeeform']);
+  }
 
   setBranchList(data) {
     this.branches = data.branchlist;
@@ -288,38 +312,6 @@ export class DependentComponent implements OnInit {
   }
   get language() {
     return this.dependentFormGroup.get('language');
-  }
-
-  get userName() {
-    return this.dependentFormGroup.get('userName');
-  }
-
-  get agree() {
-    return this.dependentFormGroup.get('agree');
-  }
-
-  get id() {
-    return this.dependentFormGroup.get('id');
-  }
-
-  get jobTitle() {
-    return this.dependentFormGroup.get('jobTitle');
-  }
-
-  get departmentName() {
-    return this.dependentFormGroup.get('departmentName');
-  }
-
-  get departmentBranch() {
-    return this.dependentFormGroup.get('departmentBranch');
-  }
-
-  get referenceOne() {
-    return this.dependentFormGroup.get('referenceOne');
-  }
-
-  get referenceTwo() {
-    return this.dependentFormGroup.get('referenceTwo');
   }
 
 }

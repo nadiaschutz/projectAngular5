@@ -1,5 +1,7 @@
 <h1>Create Employee & Dependent Records</h1>
 
+
+
 <div id="content-form">
 
   {{ employeeFormGroup.value | json }}
@@ -133,12 +135,13 @@
       </div>
     </div>
     <div class="row">
-      <button class="btn form-button" (click)="setEmployee()" type="submit">Set Employee</button>
-      <button class="btn form-button" (click)="addDependent()" type="submit">Add a dependent</button>
-      <button class="btn form-button" (click)="submitForm()" type="submit">Save Form</button>
+      <button class="btn form-button" (click)="setEmployee()" >Set Employee</button>
+      <button class="btn form-button" (click)="addDependent()" >addDependent</button>
+      <button class="btn form-button" (click)="bundleObjects()" >bundleObjects</button>
+      <button class="btn form-button" (click)="printBundle()" >printBundle</button>
     </div>
   </form>
 
-
+  
 </div>
 <br />
