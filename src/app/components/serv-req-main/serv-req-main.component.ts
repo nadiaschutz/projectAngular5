@@ -69,6 +69,9 @@ export class ServReqMainComponent implements OnInit {
     data: null
   };
 
+
+
+
 // status
   // 1= In Progress -request is assigned there are no impediment to the request being processed
   // 2= Waiting -waiting for additional information
@@ -84,7 +87,7 @@ export class ServReqMainComponent implements OnInit {
 
 
   departmentArr = [
-    'Agriculture and Agri-Foods Canada (AAFC)',
+    'Agriculture and AgriFoods Canada (AAFC)',
     'Canada Border Services Agency (CBSA)',
     'Canadian Coast Guard (CCG)',
     'Canadian Grain Commission (CGC)',
@@ -159,6 +162,8 @@ export class ServReqMainComponent implements OnInit {
 
   // comes from the responce object
   region: string = null;
+  regionString;
+  departmentString;
   clientDepartment: string = null;
 
   myString;
@@ -195,6 +200,8 @@ export class ServReqMainComponent implements OnInit {
 
     console.log(this.dateOfBirth.data);
     console.log(this.date.data);
+    console.log(this.region);
+    console.log(this.clientDepartment);
 
     this.arrOfVar.forEach((element, index) => {
       if ( element.data !== null ) {
@@ -242,31 +249,21 @@ export class ServReqMainComponent implements OnInit {
     //   // tslint:disable-next-line:max-line-length
     //   this.str = '?' + this.name.prefix + this.name.data + '&' + this.dateOfBirth.prefix + this.dateOfBirth.data + '&' + this.status.prefix + this.status.data;
     // }
-
-
-
     console.log(this.str);
 
-
-    // console.log(this.name, this.status, this.dateOfBirth, this.clientId);
-
-    // this.str = this.name.prefix + this.name.data;
-    // test
-    // this.str = this.name.prefix + this.name.data;
-     // this.str = this.clientId.prefix + this.clientId.data;
     // calling get request with updated string
     this.qrequestService.getData(this.str).subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
 
-    this.str = null;
 
-    this.name.data = null;
-    this.clientId.data = null;
-    this.dateOfBirth.data = null;
-    this.status.data = null;
-    this.date.data = null;
+    console.log(this.region, this.regionString);
+    if (this.region === this.regionString) {
+      console.log(true);
+    }
+
+
   }
 
   // dataSearch(e) {
@@ -290,12 +287,48 @@ export class ServReqMainComponent implements OnInit {
   handleSuccess(data) {
     console.log(data);
     // assign data.Regional Office for Processing to var regionData
-    // remove everything after first "-"
-    // check if regionData === region and filter
+    console.log(data.entry[0].resource.item);
+    console.log(data.entry[0].resource.item[5].text);
+    console.log(data.entry[0].resource.item[5].answer[0].valueString);
+    data.entry.forEach(element => {
+      // console.log(element.resource.item);
+      element.resource.item.forEach(item => {
+        console.log(item);
+        if (item.text === 'Regional Office for Processing') {
+          console.log(item.answer[0].valueString);
+          // remove anything after 1st dash
+          this.regionString = item.answer[0].valueString;
+          this.regionString = this.regionString.substring(0, this.regionString.indexOf('-'));
+          console.log(this.regionString);
 
-    // assign data.submitingDepartment to var departmentData
-    // remover everything after first '-'
-    // check if departmentData === department and filter
+          if (this.regionString === this.region) {
+            console.log(true);
+          }
+        }
+        if (item.text === 'Submitting Department') {
+          console.log(item.answer[0].valueString);
+          // remove anything after 1st dash
+          this.departmentString = item.answer[0].valueString;
+          this.departmentString = this.departmentString.substring(0, this.departmentString.indexOf('-'));
+          console.log(this.departmentString);
+          console.log(this.clientDepartment);
+
+          if (this.departmentString === this.clientDepartment) {
+            console.log(true);
+          }
+        }
+      });
+    });
+
+
+    this.str = null;
+    this.name.data = null;
+    this.clientId.data = null;
+    this.dateOfBirth.data = null;
+    this.status.data = null;
+    this.date.data = null;
+    this.region = null;
+    this.clientDepartment = null;
   }
   handleError(error) {
     console.log(error);
