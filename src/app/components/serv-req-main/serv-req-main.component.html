@@ -141,19 +141,19 @@
         </thead>
         <tbody *ngIf="str===null">
           <tr *ngFor="let q of servRequests ">
-            <td>{{q.resource.id}}</td>
-            <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
+            <td>{{q.id}}</td>
+            <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
             <td>{{q}}</td>
             <td>{{q}}</td>
             <td>{{q}}</td>
             <td>{{q}}</td>
-            <td>{{q.resource.subject.display}}</td>
-            <td>{{q.resource.status}}</td>
+            <td>{{q.subject.display}}</td>
+            <td>{{q.status}}</td>
           </tr>
         </tbody>
 
 
-        <tbody *ngIf="str!==null">
+        <!-- <tbody *ngIf="str!==null">
           <tr *ngFor="let q of servRequests ">
             <td>{{q.resource.id}}</td>
             <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
@@ -164,7 +164,7 @@
             <td>{{q.resource.subject.display}}</td>
             <td>{{q.resource.status}}</td>
           </tr>
-        </tbody>
+        </tbody> -->
 
 
       </table>
