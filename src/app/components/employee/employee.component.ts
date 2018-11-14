@@ -166,10 +166,10 @@ export class EmployeeComponent implements OnInit {
     // Initialize Employee Form Group for DOM
 
     this.employeeFormGroup = this.fb.group({
-      type: ['', [Validators.required]],
-      familyName: ['', [Validators.required]],
-      givenName: ['', [Validators.required]],
-      dob: ['', [Validators.required]],
+      type: new FormControl ('', Validators.required),
+      familyName: new FormControl ('', [Validators.required, Validators.minLength(2)]),
+      givenName: new FormControl ('', [Validators.required, Validators.minLength(2)]),
+      dob: new FormControl ('', Validators.required),
       email: new FormControl('', [
         Validators.required,
         Validators.pattern(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)
@@ -178,16 +178,19 @@ export class EmployeeComponent implements OnInit {
         Validators.required,
         Validators.pattern('^[+]?(?:[0-9]{2})?[0-9]{10}$')
       ]),
-      addressStreet: ['', [Validators.required]],
-      addressCity: ['', [Validators.required]],
-      addressProv: ['', [Validators.required]],
-      addressPcode: ['', [Validators.required]],
-      addressCountry: ['', [Validators.required]],
-      language: ['', [Validators.required]],
-      id: ['', [Validators.required]],
-      jobTitle: ['', [Validators.required]],
-      departmentName: ['', [Validators.required]],
-      departmentBranch: ['', [Validators.required]],
+      addressStreet: new FormControl ('', Validators.required),
+      addressCity: new FormControl ('', Validators.required),
+      addressProv: new FormControl ('', Validators.required),
+      addressPcode: new FormControl ('', [
+        Validators.required,
+        // tslint:disable-next-line:max-line-length
+        Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
+      addressCountry: new FormControl ('', Validators.required),
+      language: new FormControl ('', Validators.required),
+      id: new FormControl ('', Validators.required),
+      jobTitle: new FormControl ('', Validators.required),
+      departmentName: new FormControl ('', Validators.required),
+      departmentBranch: new FormControl ('', Validators.required),
       referenceOne: [''],
       referenceTwo: [''],
     });
@@ -269,7 +272,7 @@ export class EmployeeComponent implements OnInit {
     // Cross Reference One extension
 
     this.employee_extension_crossreferenceone.url = 'https://bcip.smilecdr.com/fhir/crossreferenceone';
-    this.employee_extension_crossreferenceone.value = this.employeeFormGroup.get('referenceOne').value;
+    this.employee_extension_crossreferenceone.valueString = this.employeeFormGroup.get('referenceOne').value;
 
     // Cross Reference Two extension
 
@@ -284,7 +287,7 @@ export class EmployeeComponent implements OnInit {
     // Type extension
 
     this.employee_extension_type.url = 'https://bcip.smilecdr.com/fhir/employeetype';
-    this.employee_extension_type.valueString = this.type;
+    this.employee_extension_type.valueString = this.employeeFormGroup.get('type').value;
 
     this.employee.extension = [
       this.employee_extension_branch,
@@ -292,7 +295,8 @@ export class EmployeeComponent implements OnInit {
       this.employee_extension_dependentlink,
       this.employee_extension_crossreferencetwo,
       this.employee_extension_jobtitle,
-      this.employee_extension_workplace
+      this.employee_extension_workplace,
+      this.employee_extension_type
     ];
 
     // Employe Name
@@ -333,13 +337,13 @@ export class EmployeeComponent implements OnInit {
     const finalJSON = JSON.stringify(this.employee);
 
     // localStorage.removeItem('employee');
-    // localStorage.setItem('employee', finalJSON);
+    localStorage.setItem('employee', finalJSON);
 
 
     console.log(this.employeeFormGroup);
     // this.router.navigate(['/dashboard']);
 
-    // this.patientService.postPatientData(finalJSON);
+    this.patientService.postPatientData(finalJSON);
 
   }
 
@@ -347,27 +351,7 @@ export class EmployeeComponent implements OnInit {
     console.log(JSON.parse(localStorage.getItem('bundle')));
   }
 
-  bundleObjects() {
-
-    this.dependentsArray = JSON.parse(localStorage.getItem('dependent'));
-
-    // console.log (this.dependentsArray[0]);
-    const bundle = {
-      'type': 'transaction',
-      'entry': []
-    };
-
-    for (const element in this.dependentsArray) {
-      if (element) {
-        bundle.entry.push({ 'resource': JSON.parse(this.dependentsArray[element]) });
-      }
-    }
-    const employeeStored = JSON.parse(localStorage.getItem('employee'));
-    bundle.entry.push({ 'resource': employeeStored });
-
-    localStorage.setItem('bundle', JSON.stringify(bundle));
-    console.log('the bundle:', bundle);
-  }
+  
 
   addDependent() {
     this.router.navigateByUrl('/dependentform');

@@ -37,6 +37,7 @@ const routes: Routes = [
   { path: 'dependentform', component: DependentComponent},
   { path: 'employeeform', component: EmployeeComponent },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'employeesummary', component: EmployeeSummaryComponent}
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: '', component: AuthComponent }
 ];

@@ -75,7 +75,7 @@ export class DependentComponent implements OnInit {
 
   // Array for Dependent Objects
 
-  dependentArray: any[];
+  dependentsArray: any[];
 
   // Store list of Departments
 
@@ -104,7 +104,7 @@ export class DependentComponent implements OnInit {
 
   ngOnInit() {
 
-    this.dependentArray = new Array;
+    this.dependentsArray = new Array;
 
 
     // Set Department List
@@ -209,34 +209,17 @@ export class DependentComponent implements OnInit {
     this.dependent.address = [dependent_address];
 
     const finalJSON = JSON.stringify(this.dependent);
-    this.dependentArray.push(finalJSON);
+    this.dependentsArray.push(finalJSON);
 
-    // dependent = new Dependent.Resource;
-    // dependent_name = new Dependent.Name;
-    // dependent_address = new Dependent.Address;
-    // dependent_language = new Dependent.Language;
-    // dependent_language_coding = new Dependent.Coding;
-    // dependent_communication = new Dependent.Communication;
-    // dependent_identifier = new Dependent.Identifier;
-    // dependent_telecom_email = new Dependent.Telecom;
-    // dependent_telecom_phone = new Dependent.Telecom;
-    // dependent_extension_dependentlink = new Dependent.Extension;
-    // const storedObject = JSON.parse(localStorage.getItem('dependent'));
+    console.log(this.dependentsArray);
 
-    // storedObject.push(finalJSON);
-    // this.patientService.postPatientData(finalJSON);
-    // this.router.navigate(['/employeeform']);
-
-    // console.log(localStorage.getItem('dependent'));
-    console.log(this.dependentArray);
-
-    localStorage.setItem('dependent', JSON.stringify(this.dependentArray));
+    localStorage.setItem('dependent', JSON.stringify(this.dependentsArray));
 
   }
 
   addDependent() {
-    this.dependentArray.push(JSON.parse(this.dependent));
-    localStorage.setItem('dependent', JSON.stringify(this.dependentArray));
+    this.dependentsArray.push(JSON.parse(this.dependent));
+    localStorage.setItem('dependent', JSON.stringify(this.dependentsArray));
 
     console.log(this.dependent);
     // const bundle = JSON.parse(localStorage.getItem('bundle'));
@@ -246,6 +229,27 @@ export class DependentComponent implements OnInit {
     // localStorage.setItem('dependent', JSON.stringify(this.dependents));
   }
 
+  bundleObjects() {
+
+    this.dependentsArray = JSON.parse(localStorage.getItem('dependent'));
+
+    // console.log (this.dependentsArray[0]);
+    const bundle = {
+      'type': 'transaction',
+      'entry': []
+    };
+
+    for (const element in this.dependentsArray) {
+      if (element) {
+        bundle.entry.push({ 'resource': JSON.parse(this.dependentsArray[element]) });
+      }
+    }
+    const employeeStored = JSON.parse(localStorage.getItem('employee'));
+    bundle.entry.push({ 'resource': employeeStored });
+
+    localStorage.setItem('bundle', JSON.stringify(bundle));
+    console.log('the bundle:', bundle);
+  }
   backToEmployee() {
     this.router.navigate(['/employeeform']);
   }
