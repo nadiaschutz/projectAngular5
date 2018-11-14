@@ -33,7 +33,6 @@ const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'servreqmain', component: ServReqMainComponent },
-  { path: 'servicerequest', component: ServiceRequestComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: '', component: AuthComponent }
 ];

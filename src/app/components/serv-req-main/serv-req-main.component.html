@@ -107,8 +107,49 @@
       </div>
 
 
-      <button type="button" class="btn search-button btn-primary" (click)="dataSearch()">Search</button>
+      <button type="button" class="btn search-button btn-primary" (click)="dataSearch()" style="margin-top: 15px">Search</button>
 
     </div>
   </form>
+</div>
+
+
+
+<div>
+    <a routerLink="/newservicerequest"><button class="btn btn-primary" > + New Service Request</button></a>
+    <a routerLink="/newservicerequest"><button class="btn btn-primary" style="margin-left: 20px" > + New Advice Consultation</button></a>
+</div>
+
+
+
+<div>
+    <table class="table">
+        <thead class="header-table">
+          <tr>
+            <th scope="col">#ID</th>
+            <th scope="col">Date</th>
+            <th scope="col">Service Type</th>
+            <th scope="col">Assesment Type</th>
+            <th scope="col">Region</th>
+            <th scope="col">Created By</th>
+            <th scope="col">Clietn's Name</th>
+            <th scope="col">Status</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+      
+          </tr>
+        </thead>
+        <tbody *ngIf="str===null">
+          <tr *ngFor="let q of servRequests ">
+            <td>{{q.id}}</td>
+            <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
+            <td>{{getServiceType(q)}}</td>
+            <td>{{getAssessmentType(q)}}</td>
+            <td>{{getRegion(q)}}</td>
+            <td>{{getCreatedBy(q)}}</td>
+            <td>{{q.subject.display}}</td>
+            <td>{{q.status}}</td>
+          </tr>
+        </tbody>
+      </table>
 </div>
