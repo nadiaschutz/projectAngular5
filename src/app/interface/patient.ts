@@ -67,6 +67,7 @@ export class Type {
 export class Identifier {
     system: string;
     value: string;
+    use: string;
     type: Type;
 }
 

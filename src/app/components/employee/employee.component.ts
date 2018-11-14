@@ -1,12 +1,12 @@
-
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
+
 import { UserService } from '../../service/user.service';
+import { PatientService } from '../../service/patient.service';
 
 import { Router } from '@angular/router';
-import { PatientService } from '../../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
 import * as Employee from '../../interface/patient';
 import * as datepicker from 'js-datepicker';
@@ -166,13 +166,18 @@ export class EmployeeComponent implements OnInit {
     // Initialize Employee Form Group for DOM
 
     this.employeeFormGroup = this.fb.group({
-      resourceType: 'Patient',
       type: ['', [Validators.required]],
       familyName: ['', [Validators.required]],
       givenName: ['', [Validators.required]],
       dob: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required]],
+      email: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)
+      ]),
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        Validators.pattern('^[+]?(?:[0-9]{2})?[0-9]{10}$')
+      ]),
       addressStreet: ['', [Validators.required]],
       addressCity: ['', [Validators.required]],
       addressProv: ['', [Validators.required]],
@@ -226,8 +231,9 @@ export class EmployeeComponent implements OnInit {
     this.employee_telecom_email = new Employee.Telecom;
     this.employee_telecom_phone = new Employee.Telecom;
 
-
     // Employee identifer
+
+    // this.employee.Identifier.use = 'sad';
 
     this.employee_identifier.use = 'work';
     this.employee_identifier.value = this.employeeFormGroup.get('id').value;
@@ -278,7 +284,7 @@ export class EmployeeComponent implements OnInit {
     // Type extension
 
     this.employee_extension_type.url = 'https://bcip.smilecdr.com/fhir/employeetype';
-    this.employee_extension_type.valueString = this.employeeFormGroup.get('type').value;
+    this.employee_extension_type.valueString = this.type;
 
     this.employee.extension = [
       this.employee_extension_branch,
@@ -325,43 +331,20 @@ export class EmployeeComponent implements OnInit {
     this.employee.address = [this.employee_address];
 
     const finalJSON = JSON.stringify(this.employee);
-    // this.patientService.postPatientData(finalJSON);
 
-    localStorage.removeItem('employee');
-    localStorage.setItem('employee', finalJSON);
+    // localStorage.removeItem('employee');
+    // localStorage.setItem('employee', finalJSON);
 
+
+    console.log(this.employeeFormGroup);
     // this.router.navigate(['/dashboard']);
 
-
-  }
-
-
-  printData(data) {
-    console.log(data);
-  }
-
-  resetData() {
-    this.employee = new Employee.Resource;
-    this.employee_name = new Employee.Name;
-    this.employee_address = new Employee.Address;
-    this.employee_language = new Employee.Language;
-    this.employee_language_coding = new Employee.Coding;
-    this.employee_communication = new Employee.Communication;
-    this.employee_identifier = new Employee.Identifier;
-    this.employee_extension_jobtitle = new Employee.Extension;
-    this.employee_extension_workplace = new Employee.Extension;
-    this.employee_extension_branch = new Employee.Extension;
-    this.employee_extension_crossreferenceone = new Employee.Extension;
-    this.employee_extension_crossreferencetwo = new Employee.Extension;
-    this.employee_extension_dependentlink = new Employee.Extension;
-    this.employee_telecom_email = new Employee.Telecom;
-    this.employee_telecom_phone = new Employee.Telecom;
+    // this.patientService.postPatientData(finalJSON);
 
   }
 
   printBundle(data) {
     console.log(JSON.parse(localStorage.getItem('bundle')));
-
   }
 
   bundleObjects() {
@@ -370,15 +353,17 @@ export class EmployeeComponent implements OnInit {
 
     // console.log (this.dependentsArray[0]);
     const bundle = {
-      'entry': [ ]
+      'type': 'transaction',
+      'entry': []
     };
 
     for (const element in this.dependentsArray) {
       if (element) {
-        bundle.entry.push ({'resource': JSON.parse( this.dependentsArray[element]) });
+        bundle.entry.push({ 'resource': JSON.parse(this.dependentsArray[element]) });
       }
     }
-    bundle.entry.push({ 'resource': this.employee });
+    const employeeStored = JSON.parse(localStorage.getItem('employee'));
+    bundle.entry.push({ 'resource': employeeStored });
 
     localStorage.setItem('bundle', JSON.stringify(bundle));
     console.log('the bundle:', bundle);

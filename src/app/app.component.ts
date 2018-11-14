@@ -4,13 +4,18 @@ import { environment } from '../environments/environment';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
 
+import * as Dependent from './interface/patient';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'nohis';
+
+  sessionObject;
+
   constructor(private oauthService: OAuthService,
     private router: Router) {
 
@@ -33,9 +38,7 @@ export class AppComponent implements OnInit{
     }
 
     ngOnInit() {
-        // if (this.oauthService.hasValidAccessToken()) {
-        //    this.router.navigate(['/dashboard']);
-        // }
+
   }
 
   private configureWithNewConfigApi() {

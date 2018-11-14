@@ -1,10 +1,8 @@
 <h1>Create Employee & Dependent Records</h1>
 
-
-
 <div id="content-form">
 
-  {{ employeeFormGroup.value | json }}
+  <!-- {{ employeeFormGroup.value | json }} -->
 
   <form [formGroup]="employeeFormGroup">
     <div class="row">
@@ -15,7 +13,7 @@
     <div class="row">
       <div class="col-6">
         <label for="type">Client Type</label>
-        <select class="form-control" formControlName="type" id="type">
+        <select class="form-control" formControlName="type" id="type" required>
           <option *ngFor="let type of accountTypes" [value]="type.value">
             {{type.viewValue}}
           </option>
@@ -26,7 +24,7 @@
     <div class="row">
       <div class="col">
         <label for="givenName">First Name</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName">
+        <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName" required>
       </div>
       <div class="col">
         <label for="familyName">Last Name</label>
@@ -137,8 +135,6 @@
     <div class="row">
       <button class="btn form-button" (click)="setEmployee()" >Set Employee</button>
       <button class="btn form-button" (click)="addDependent()" >addDependent</button>
-      <button class="btn form-button" (click)="bundleObjects()" >bundleObjects</button>
-      <button class="btn form-button" (click)="printBundle()" >printBundle</button>
     </div>
   </form>
 

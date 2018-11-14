@@ -16,6 +16,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { NewServiceRequestComponent } from './components/new-service-request/new-service-request.component';
 import { NewServiceRequestNoClientComponent } from './components/new-service-request-no-client/new-service-request-no-client.component';
 import { DependentComponent } from './components/dependent/dependent.component';
+import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
 
 // import {fhir} from './interface/employee.d';
 
@@ -27,7 +28,9 @@ import { UserService } from './service/user.service';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
 
+import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 
 
 const routes: Routes = [
@@ -52,7 +55,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     SidebarComponent,
     NewServiceRequestComponent,
     NewServiceRequestNoClientComponent,
-    DependentComponent
+    DependentComponent,
+    EditEmployeeComponent,
+    EmployeeSummaryComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -68,7 +73,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    })
+    }),
+    NgBootstrapFormValidationModule,
+    NgBootstrapFormValidationModule.forRoot()
   ],
   providers: [
     AuthGuardService,
