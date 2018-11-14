@@ -354,5 +354,41 @@ export class ServReqMainComponent implements OnInit {
   handleError(error) {
     console.log(error);
   }
+  getServiceType(serviceRequestObj): string {
+    let serviceType = '-';
+    serviceRequestObj.item.forEach(item => {
+      if (item.linkId === '2') {
+        serviceType = item.text;
+      }
+    });
+    return serviceType;
+  }
+  getAssessmentType(serviceRequestObj): string {
+    let assessmentType = '-';
+    serviceRequestObj.item.forEach(item => {
+      if (item.linkId === '2') {
+        assessmentType = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+      }
+    });
+    return assessmentType;
+  }
+  getRegion(serviceRequestObj): string {
+    let serviceType = '-';
+    serviceRequestObj.item.forEach(item => {
+      if (item.linkId === '8') {
+        serviceType = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+      }
+    });
+    return serviceType;
+  }
+  getCreatedBy(serviceRequestObj): string {
+    let serviceType = '-';
+    serviceRequestObj.item.forEach(item => {
+      if (item.linkId === '1') {
+        serviceType = item.answer[0].valueString;
+      }
+    });
+    return serviceType;
+  }
 
 }
