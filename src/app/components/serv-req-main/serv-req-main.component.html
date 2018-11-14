@@ -112,3 +112,60 @@
     </div>
   </form>
 </div>
+
+
+
+<div>
+    <a routerLink="/newservicerequest"><button class="btn btn-primary" > + New Service Request</button></a>
+    <a routerLink="/newservicerequest"><button class="btn btn-primary" > + New Advice Consultation</button></a>
+</div>
+
+
+
+<div>
+    <table class="table">
+        <thead class="header-table">
+          <tr>
+            <th scope="col">#ID</th>
+            <th scope="col">Date</th>
+            <th scope="col">Service Type</th>
+            <th scope="col">Assesment Type</th>
+            <th scope="col">Region</th>
+            <th scope="col">Created By</th>
+            <th scope="col">Clietn's Name</th>
+            <th scope="col">Status</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+      
+          </tr>
+        </thead>
+        <tbody *ngIf="str===null">
+          <tr *ngFor="let q of servRequests ">
+            <td>{{q.resource.id}}</td>
+            <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
+            <td>{{q}}</td>
+            <td>{{q}}</td>
+            <td>{{q}}</td>
+            <td>{{q}}</td>
+            <td>{{q.resource.subject.display}}</td>
+            <td>{{q.resource.status}}</td>
+          </tr>
+        </tbody>
+
+
+        <tbody *ngIf="str!==null">
+          <tr *ngFor="let q of servRequests ">
+            <td>{{q.resource.id}}</td>
+            <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
+            <td>{{q}}</td>
+            <td>{{q}}</td>
+            <td>{{q}}</td>
+            <td>{{q}}</td>
+            <td>{{q.resource.subject.display}}</td>
+            <td>{{q.resource.status}}</td>
+          </tr>
+        </tbody>
+
+
+      </table>
+</div>
