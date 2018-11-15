@@ -103,7 +103,7 @@ export class DashboardComponent implements OnInit {
         this.qrequest.push(data);
       }
     }
-    this.resetSearchParams();
+    // this.resetSearchParams();
   }
 
   checkForEmployeeTypeAndClientDepartment(individualEntry) {

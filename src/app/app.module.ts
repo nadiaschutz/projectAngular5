@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { OAuthModule } from 'angular-oauth2-oidc';
@@ -30,10 +30,10 @@ import { ServReqMainComponent } from './components/serv-req-main/serv-req-main.c
 
 
 const routes: Routes = [
-  { path: 'employeeform', component: EmployeeComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'servreqmain', component: ServReqMainComponent },
-  { path: 'newservicerequest', component: NewServiceRequestComponent },
+  { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
+  { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
+  { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: '', component: AuthComponent }
 ];
 
