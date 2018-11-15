@@ -1,70 +1,100 @@
 <div class="main-header">
-  <h5>Service Request Form</h5>
-  <h6>clients > new service request</h6>
-</div>
-
-
-<!-- try [for]="value.text"...
-and value.text has to be the id of the input element or what element you have there -->
-
-<form #form="ngForm" novalidate>
-  <!-- <div class="form-group">
-    <label>First Name</label>
-    <input type="text" class="form-control" name=firstname [(ngModel)]="model.firstname">
-  </div> -->
-
-
-  <div *ngIf="temp.returnQuestionObject()">
-    <div *ngFor="let value of temp.returnQuestionObject().item; let i = index" class="col-6-custom">
-      <div class="form-group" *ngIf="value.type==='choice'">
-
-        <label>{{i}}{{value.text}}</label>
-        <select class="form-control">
-          <option *ngFor="let object of value.option" [value]="object.valueCoding.code">
-
-            {{object.valueCoding.code}}
-          </option>
-        </select>
-      </div>
-      <div class="form-check" *ngIf="value.type==='boolean'">
-
-
-
-        <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-        <label class="form-check-label" for="defaultCheck1">
-          {{i}}{{value.text}}
-        </label>
-
-      </div>
-      <div class="form-group" *ngIf="value.type==='text'">
-
-        <label>{{i}}{{value.text}}</label>
-        <textarea type="text" class="form-control" placeholder="type your text" rows="5" required></textarea>
-      </div>
-      <div class="form-group" *ngIf="value.type==='group'">
-
-        <label>{{i}}{{value.text}}</label>
-        <select class="form-control">
-          <option *ngFor="let object of value.option" [value]="object.valueCoding.code">
-
-            {{object.valueCoding.code}}
-          </option>
-        </select>
-      </div>
-
-      <!-- <div *ngIf="i%2===0" class="col-6-custom">
-                      <p>{{i}}{{value.text}}</p>
-                </div>
-                <div *ngIf="i%2!==0" class="col-6-custom">
-                    <p>{{i}}{{value.text}}</p>
-              </div> -->
-    </div>
+    <h5>Service Request Form</h5>
+    <h6>clients > new service request</h6>
   </div>
-  <button class="btn btn-primary" type="submit">Submit form</button>
+  
+  
+  <!-- try [for]="value.text"...
+  and value.text has to be the id of the input element or what element you have there -->
+  <form #serReqForm="ngForm" (ngSubmit) = "onSubmit()">
+  
+    <!-- <div *ngIf="temp.returnQuestionObject()"> -->
+      <!-- <div *ngFor="let value of temp.returnQuestionObject().item; let i = index" class="col-6-custom"> -->
+  
+        <div *ngFor="let el of qrequest; trackBy: trackByEl; let i=index;" class="col-12-custom">
+        <div class="form-group" *ngIf="el.type==='choice'">
+  
+          <label>{{el.linkId}} {{el.text}}</label>
+          <select class="form-control"
+          name='{{el.text}}'
+  
+          [(ngModel)]="items[i].answer"
+          >
+            <option *ngFor="let object of el.option"
+                        [value]='object.valueCoding.code'
+                >
+  
+              {{object.valueCoding.code}}
+            </option>
+          </select>
+        </div>
+  
+  
+        
+        <div class="form-check" *ngIf="el.type==='boolean'">
+          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+          <label class="form-check-label"
+          for="defaultCheck1">
+              {{el.linkId}} {{el.text}}
+          </label>
+  
+        </div>
+        <div class="form-group" *ngIf="el.type==='text'">
+  
+          <label>{{el.linkId}} {{el.text}}</label>
+          <textarea type="text"
+          [(ngModel)]="items[i].answer"
+          name='{{el.text}}' 
+          class="form-control" 
+          placeholder="type your text" rows="5" required></textarea>
+        </div>
 
-</form>
 
-Model: {{model | json}}
-Angular: {{form.value}}
-
-<!-- <button class="button button-primary" (click)="deserializethis(object.valueCoding.code)">Click me!</button> -->
+        <div class="form-group" *ngIf="el.type==='open-choice'">
+  
+          <label>{{el.linkId}} {{el.text}}</label>
+              <textarea type="text" 
+              [(ngModel)]="items[i].answer"
+              name='{{el.text}}'
+              class="form-control" 
+              placeholder="type your text" 
+              rows="1" required></textarea>
+        </div> 
+  
+         <!-- <div *ngIf="i%2===0" class="col-6-custom">
+                        <p>{{i}}{{value.text}}</p>
+                  </div>
+                  <div *ngIf="i%2!==0" class="col-6-custom">
+                      <p>{{i}}{{value.text}}</p>
+                </div>  -->
+      </div>
+  
+    
+    <!-- <div>
+        <p>
+         <input [(ngModel)]="msg" />
+            <b>{{msg}}</b>
+        </p>
+      </div> -->
+    <button class="btn btn-primary" type="submit">Submit form</button> 
+  
+  </form>
+  <br>
+  <br>
+  <br>
+  
+  Angular/form: {{serReqForm.value | json }}
+  <br>
+  <br>
+  {{item | json }}
+  <br>
+  <br>
+  
+  {{items | json }}
+  
+  <br>
+  <br>
+  Model/qrequest: {{qrequest | json}}
+  
+  <!-- <button class="button button-primary" (click)="deserializethis(object.valueCoding.code)">Click me!</button> -->
+  
