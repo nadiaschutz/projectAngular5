@@ -31,13 +31,15 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
 
 import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
+import { DistrictOfficeComponent } from './components/district-office/district-office.component';
+import { ClientDepartmentComponent } from './components/client-department/client-department.component';
 
 
 const routes: Routes = [
   { path: 'dependentform', component: DependentComponent},
   { path: 'employeeform', component: EmployeeComponent },
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'employeesummary', component: EmployeeSummaryComponent}
+  { path: 'employeesummary', component: EmployeeSummaryComponent},  
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: '', component: AuthComponent }
 ];
@@ -58,7 +60,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     NewServiceRequestNoClientComponent,
     DependentComponent,
     EditEmployeeComponent,
-    EmployeeSummaryComponent
+    EmployeeSummaryComponent,
+    DistrictOfficeComponent,
+    ClientDepartmentComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

@@ -3,6 +3,8 @@ import { OAuthService, AuthConfig, JwksValidationHandler } from 'angular-oauth2-
 import { environment } from '../environments/environment';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { PatientService } from './service/patient.service';
+import { UserService } from './service/user.service';
 
 import * as Dependent from './interface/patient';
 
@@ -17,6 +19,8 @@ export class AppComponent implements OnInit {
   sessionObject;
 
   constructor(private oauthService: OAuthService,
+    private userService: UserService,
+    private patientService: PatientService,
     private router: Router) {
 
     // this.configureWithNewConfigApi();
@@ -33,11 +37,13 @@ export class AppComponent implements OnInit {
 
   }
 
-    returnTokenStatus() {
-        return this.oauthService.hasValidAccessToken();
-    }
+  returnTokenStatus() {
+    return this.oauthService.hasValidAccessToken();
+  }
 
-    ngOnInit() {
+  ngOnInit() {
+    
+
 
   }
 

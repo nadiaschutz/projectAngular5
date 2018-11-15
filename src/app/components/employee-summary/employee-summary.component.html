@@ -1,3 +1,48 @@
+<h1>New Client Form - Review</h1>
 
 
-<p>loads</p>
+<!-- <div class="row">
+  <div class="col">
+    <label for="givenName">First Name</label>
+    <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName" required>
+  </div>
+  <div class="col">
+    <label for="familyName">Last Name</label>
+    <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName">
+  </div>
+</div> -->
+
+
+<div *ngFor="let item of parsedObjecttwo.entry">
+  {{item}}
+</div>
+<div class="row">
+  <div class="col-6">
+
+  </div>
+  <div class="col-6">
+
+  </div>
+</div>
+
+<form [formGroup]="test">
+  <div class="row">
+    <div class="col-6">
+      <label for="type">Client Type</label>
+      <select class="form-control" formControlName="type" id="type" required>
+        <option *ngFor="let type of patientlist" [value]="type.id">
+          <div *ngFor="let name of type.resource.name">
+            {{name.given + " " + name.family}}
+          </div>
+        </option>
+      </select>
+    </div>
+  </div>
+</form>
+
+<!-- 
+<div *ngIf="dependents">
+  <div *ngFor="let dependent of dependents">
+
+  </div>
+</div> -->

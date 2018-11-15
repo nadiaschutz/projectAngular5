@@ -104,6 +104,9 @@ export class DependentComponent implements OnInit {
 
   ngOnInit() {
 
+
+    console.log('from the dependednt form', this.userService.getObjectBase());
+
     this.dependentsArray = new Array;
 
 
@@ -163,7 +166,10 @@ export class DependentComponent implements OnInit {
 
 
     dependent_extension_dependentlink.url = 'https://bcip.smilecdr.com/fhir/dependentlink';
-    dependent_extension_dependentlink.valueString = parsedId.extension[2].valueString;
+
+    for (const item of this.userService.getObjectBase().entry) {
+      dependent_extension_dependentlink.valueString = item.resource.extension[2].valueString;
+    }
 
     // Dependent Address
 
@@ -211,45 +217,19 @@ export class DependentComponent implements OnInit {
     const finalJSON = JSON.stringify(this.dependent);
     this.dependentsArray.push(finalJSON);
 
-    console.log(this.dependentsArray);
 
-    localStorage.setItem('dependent', JSON.stringify(this.dependentsArray));
+    this.userService.setObjectBase(this.dependent);
 
+
+    this.patientService.postPatientData(finalJSON);
+    // this.bundleObjects();
   }
 
-  addDependent() {
-    this.dependentsArray.push(JSON.parse(this.dependent));
-    localStorage.setItem('dependent', JSON.stringify(this.dependentsArray));
-
-    console.log(this.dependent);
-    // const bundle = JSON.parse(localStorage.getItem('bundle'));
-    // bundle.entry.push(JSON.stringify(data));
-    // localStorage.setItem('bundle', JSON.stringify(bundle));
-
-    // localStorage.setItem('dependent', JSON.stringify(this.dependents));
+  // Head over to summary screen
+  goToSummary() {
+    this.router.navigateByUrl('/employeesummary');
   }
-
-  bundleObjects() {
-
-    this.dependentsArray = JSON.parse(localStorage.getItem('dependent'));
-
-    // console.log (this.dependentsArray[0]);
-    const bundle = {
-      'type': 'transaction',
-      'entry': []
-    };
-
-    for (const element in this.dependentsArray) {
-      if (element) {
-        bundle.entry.push({ 'resource': JSON.parse(this.dependentsArray[element]) });
-      }
-    }
-    const employeeStored = JSON.parse(localStorage.getItem('employee'));
-    bundle.entry.push({ 'resource': employeeStored });
-
-    localStorage.setItem('bundle', JSON.stringify(bundle));
-    console.log('the bundle:', bundle);
-  }
+  // Return back to employee screen
   backToEmployee() {
     this.router.navigate(['/employeeform']);
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 
@@ -11,12 +11,19 @@ import { TranslateService } from '@ngx-translate/core';
 import * as Employee from '../../interface/patient';
 import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
+
 @Component({
   selector: 'app-employee-summary',
   templateUrl: './employee-summary.component.html',
   styleUrls: ['./employee-summary.component.css']
 })
 export class EmployeeSummaryComponent implements OnInit {
+
+
+  patientlist;
+  tempobj;
+  parsedObject;
+  parsedObjecttwo;
 
   constructor(
     private fb: FormBuilder,
@@ -28,13 +35,53 @@ export class EmployeeSummaryComponent implements OnInit {
     private router: Router
   ) { }
 
+  test: FormGroup;
+
   ngOnInit() {
+
+    const sessionToUpload = this.userService.getObjectBase();
+
 
     const dependents = JSON.parse(localStorage.getItem('dependents'));
     const retrievedObject = localStorage.getItem('employee');
-    const parsedObject = JSON.parse(retrievedObject);
-    console.log(retrievedObject);
 
+    this.parsedObject = JSON.parse(retrievedObject);
+
+    console.log(this.parsedObject);
+
+    const bundle = localStorage.getItem('bundle');
+    this.parsedObjecttwo = JSON.parse(bundle);
+    console.log(this.parsedObjecttwo);
+
+    this.test = new FormGroup({
+      type: new FormControl('')
+    });
+
+
+
+    this.patientService.getAllPatientData().subscribe(
+      data => this.setPatientList(data),
+      error => this.handleError(error)
+    );
+
+    if (this.patientlist) {
+      for (const i of this.patientlist) {
+        console.log('the id: ', i.resource.id);
+      }
+    }
+
+  }
+
+  selectedPatient( event: any) {
+    console.log(event.target.value);
+  }
+
+  setPatientList(data) {
+    this.patientlist = data.entry;
+  }
+
+  handleError(error) {
+    console.log(error);
   }
 
 }

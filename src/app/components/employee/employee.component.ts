@@ -166,57 +166,95 @@ export class EmployeeComponent implements OnInit {
     // Initialize Employee Form Group for DOM
 
     this.employeeFormGroup = this.fb.group({
-      type: new FormControl ('', Validators.required),
-      familyName: new FormControl ('', [Validators.required, Validators.minLength(2)]),
-      givenName: new FormControl ('', [Validators.required, Validators.minLength(2)]),
-      dob: new FormControl ('', Validators.required),
+
+      // Employee type
+      type: new FormControl('', Validators.required),
+
+      // Last Name
+      familyName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+
+      // First Name
+      givenName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+
+      // Date of Birth
+      dob: new FormControl('', Validators.required),
+
+      // Email
       email: new FormControl('', [
         Validators.required,
         Validators.pattern(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)
       ]),
+
+      // Client's phone number (can be any number of their choosing)
       phoneNumber: new FormControl('', [
         Validators.required,
         Validators.pattern('^[+]?(?:[0-9]{2})?[0-9]{10}$')
       ]),
-      addressStreet: new FormControl ('', Validators.required),
-      addressCity: new FormControl ('', Validators.required),
-      addressProv: new FormControl ('', Validators.required),
-      addressPcode: new FormControl ('', [
-        Validators.required,
-        // tslint:disable-next-line:max-line-length
-        Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
-      addressCountry: new FormControl ('', Validators.required),
-      language: new FormControl ('', Validators.required),
-      id: new FormControl ('', Validators.required),
-      jobTitle: new FormControl ('', Validators.required),
-      departmentName: new FormControl ('', Validators.required),
-      departmentBranch: new FormControl ('', Validators.required),
+
+      // Address section
+      addressStreet: new FormControl('', Validators.required),
+      addressCity: new FormControl('', Validators.required),
+      addressProv: new FormControl('', Validators.required),
+      addressPcode: new FormControl('', [
+        Validators.required]),
+      addressCountry: new FormControl('', Validators.required),
+
+      // Clients preferred language
+      language: new FormControl('', Validators.required),
+
+      // PRI (handled in Patient with an extension)
+      id: new FormControl('', Validators.required),
+
+      // Job title (handled in Patient with an extension)
+      jobTitle: new FormControl('', Validators.required),
+
+      // Department they work in (handled in Patient with an extension)
+      departmentName: new FormControl('', Validators.required),
+
+      // Branch they work in (handled in Patient with an extension)
+      departmentBranch: new FormControl('', Validators.required),
+
+      // References related to the employee (handled in Patient with an extension)
       referenceOne: [''],
       referenceTwo: [''],
     });
 
-    const retrievedObject = localStorage.getItem('employee');
-    const parsedObject = JSON.parse(retrievedObject);
-    console.log(parsedObject);
+
+    // tslint:disable-next-line:max-line-length
+    // Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
 
   }
 
+  // callback function to set the branch list dropdown from the JSON included
+  // TODO: change implementation to load from list of organizations
   setBranchList(data) {
     this.branches = data.branchlist;
   }
 
+  // callback function to set the department list dropdown from the JSON included
+  // TODO: change implementation to load from list of organizations
   setDepartments(data) {
     this.department = data.department;
   }
 
+
+  // callback function to handle errors
   handleError(error) {
     console.log(error);
   }
 
+
+  // Sets the employee when called. Builds a new Patient object, along with associated
+  // objects, generates a unique ID to link patient resources (useful for linking)
+  // employees & dependents
+
   setEmployee() {
 
+    // Generate unique ID to link new Dependents created
     this.linkId = uuid();
 
+
+    // Initialize all objects being used for the Patient resource
     this.employee = new Employee.Resource;
     this.employee_name = new Employee.Name;
     this.employee_address = new Employee.Address;
@@ -334,24 +372,30 @@ export class EmployeeComponent implements OnInit {
     this.employee.name = this.employee_name;
     this.employee.address = [this.employee_address];
 
+
+    // Stringify the final object
     const finalJSON = JSON.stringify(this.employee);
 
-    // localStorage.removeItem('employee');
-    localStorage.setItem('employee', finalJSON);
+    // Adds the object to the session object that's being shared
+    this.userService.setObjectBase(this.employee);
+
+    console.log('called it');
+    console.log(this.userService.getObjectBase());
 
 
-    console.log(this.employeeFormGroup);
+    // console.log(this.employeeFormGroup);
     // this.router.navigate(['/dashboard']);
 
     this.patientService.postPatientData(finalJSON);
 
   }
 
-  printBundle(data) {
-    console.log(JSON.parse(localStorage.getItem('bundle')));
+  printthing() {
+    this.userService.getObjectBase();
   }
-
-  
+  goToSummary() {
+    this.router.navigateByUrl('/employeesummary');
+  }
 
   addDependent() {
     this.router.navigateByUrl('/dependentform');

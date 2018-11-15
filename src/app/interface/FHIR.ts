@@ -427,3 +427,22 @@ export class DocumentReference extends Resource implements Serializable<Document
         return this;
     }
 }
+
+
+export class Bundle extends Resource implements Serializable<Bundle> {
+
+    type: Code;
+    
+
+    deserialize(jsonObject: any): Bundle {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}

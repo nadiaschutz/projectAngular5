@@ -1,17 +1,45 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { OAuthService } from 'angular-oauth2-oidc';
-
-import { environment } from '../../environments/environment';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { environment } from '../../environments/environment';
+
+import * as Rx from 'rxjs';
 
 @Injectable()
 export class UserService {
 
-  constructor(private httpClient: HttpClient, private oauthService: OAuthService, private router: Router
+  public newPatientSubject = new Rx.BehaviorSubject<Object>(null);
+  newPatientSubject$ = this.newPatientSubject.asObservable();
+
+  sessionObject = {
+    'resourceType': 'Bundle',
+    'type': 'transaction',
+    entry: [],
+  };
+
+
+  entry;
+  constructor(
+
+    private httpClient: HttpClient,
+    private oauthService: OAuthService,
+    private router: Router
+
   ) { }
 
+  setObjectBase(data) {
+    this.sessionObject.entry.push({ 'resource': data });
 
+    this.newPatientSubject.next(this.sessionObject);
+  }
+
+  getObjectBase() {
+
+  // this.newPatientSubject.subscribe ( data => console.log (data));
+    // console.log(this.sessionObject);
+    return this.sessionObject;
+  }
   // TODO Move all calls to FHIR resources into fhir.service.ts
 
   createUserAccount(type: string) {
@@ -26,14 +54,16 @@ export class UserService {
     //     this.router.navigate(['/']);
     // }
 
-    // const header = this.getHeaders();
+    const header = this.getHeaders();
 
-    // this.httpClient.post(environment.logoutURI + '/logout?cb=none&revoke=token', {}, { headers: header, withCredentials: true })
-    //   .subscribe(item => {
-    //     console.log(item);
-    //   }, err => {
-    //     console.log(err);
-    //   });
+    this.httpClient.post(environment.logoutURI + '/logout?cb=none&revoke=token', {}, { headers: header, withCredentials: true })
+      .subscribe(item => {
+        console.log(item);
+      }, err => {
+        console.log(err);
+      });
+        this.router.navigate(['']);
+
   }
 
   login(user: string, pass: string) {

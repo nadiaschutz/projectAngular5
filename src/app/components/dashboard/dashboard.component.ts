@@ -66,6 +66,9 @@ export class DashboardComponent implements OnInit {
     );
 
 
+    this.userService.getObjectBase();
+
+
 
   }
 
