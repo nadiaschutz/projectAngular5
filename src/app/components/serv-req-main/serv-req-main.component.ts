@@ -26,7 +26,7 @@ export class ServReqMainComponent implements OnInit {
   };
 
   dateOfBirth = {
-    prefix: 'birthDate=',
+    prefix: 'birthdate=',
     data: null
   };
 

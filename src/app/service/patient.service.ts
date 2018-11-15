@@ -14,7 +14,7 @@ export class PatientService {
   }
   getPatientData(query: string) {
     return this.httpClient.get<JSON>(environment.queryURI +
-      '/Patient/' + query, { headers: this.getHeaders() });
+      '/Patient' + query, { headers: this.getHeaders() });
   }
 
   postPatientData(patient) {

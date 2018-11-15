@@ -30,16 +30,15 @@
       </div>
       <div class="row">
         <div class="col">
-          <label for="region" class="label-name">Region</label>
+          <label for="region" class="label-name">Employee Type</label>
           <select class="form-control" 
-            [(ngModel)]="region"
-            (ngModelChange)="region = $event"  
-            name = "region">
+            [(ngModel)]="employeeType"
+            (ngModelChange)="employeeType = $event"  
+            name = "employeeType">
             <option [ngValue]="null">Select Category</option>
-            <option *ngFor="let region of listOfRegions" 
-            [value]="region"
-            >
-              {{region}}
+            <option *ngFor="let employeeType of employeeTypeArray" 
+            [value]="employeeType">
+              {{employeeType}}
             </option>
           </select>
         </div>
