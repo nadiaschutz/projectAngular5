@@ -38,13 +38,34 @@ export interface EmployeeElement {
 })
 export class DashboardComponent implements OnInit {
 
+  name = {
+    prefix: 'name=',
+    data: null
+  };
+
+  clientId = {
+    prefix: '',
+    data: null
+  };
+
+  dateOfBirth = {
+    prefix: 'birthDate=',
+    data: null
+  };
+
+  private arrOfVar = [this.name, this.clientId, this.dateOfBirth];
+  str = null;
+  listOfDepartments = [];
+  clientDepartment;
+  listOfRegions = ['Atlantic', 'Quebec', 'NCR', 'Ontario', 'Prairies', 'Pacific'];
+  region;
 
   // patientSubscription: subscription;
   displayedColumns: string[] = ['type', 'id', 'name', 'number', 'dateCreated', 'dateModified'];
 
   displayedColumnsTwo: string[] = ['name', 'id', 'dependent', 'department', 'dateCreated', 'dateModified'];
 
-  qrequest: any;
+  qrequest = [];
 
   constructor(
     private oauthService: OAuthService,
@@ -60,33 +81,38 @@ export class DashboardComponent implements OnInit {
     //     this.router.navigate(['/dashboard']);
     // }
 
-     this.patientService.getAllPatientData().subscribe(
+     this.patientService.getPatientData('').subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
-
-
-
+    this.getDepartmentsList();
   }
 
-  nameSearch(e) {
-    return this.patientService.getPatientDataByName(e.target.value).subscribe(
-      data => this.handleSuccess(data),
-      error => this.handleError(error)
-    );
-  }
+  // nameSearch(e) {
+  //   return this.patientService.getPatientDataByName(e.target.value).subscribe(
+  //     data => this.handleSuccess(data),
+  //     error => this.handleError(error)
+  //   );
+  // }
 
-  dateSearch(e) {
-    return this.patientService.getPatientDataByDOB(e.target.value).subscribe(
-      data => this.handleSuccess(data),
-      error => this.handleError(error)
-    );
-  }
+  // dateSearch(e) {
+  //   return this.patientService.getPatientDataByDOB(e.target.value).subscribe(
+  //     data => this.handleSuccess(data),
+  //     error => this.handleError(error)
+  //   );
+  // }
 
 
   handleSuccess(data) {
-    this.qrequest = data.entry;
-
+    console.log(data);
+    this.qrequest = [];
+    if (data.entry) {
+      data.entry.forEach(item => {
+        this.qrequest.push(item.resource);
+      });
+    } else {
+      this.qrequest.push(data);
+    }
   }
 
   handleError(error) {
@@ -112,6 +138,30 @@ export class DashboardComponent implements OnInit {
 
   checkRegionalOfficeButtion() {
     this.router.navigate(['/region-summary']);
+  }
+  employeeSearch() {
+    console.log(this.clientId);
+    this.arrOfVar.forEach((element, index) => {
+      if ( element.data !== null ) {
+        if (this.str === null) {
+          // this.str = '?' + element.prefix + element.data;
+          this.str = element.prefix + element.data;
+        } else {
+          this.str += '&' + element.prefix + element.data;
+        }
+      }
+    });
+    console.log(this.str);
+
+    this.patientService.getPatientData(this.str).subscribe(
+      data => this.handleSuccess(data),
+      error => this.handleError(error)
+    );
+  }
+  getDepartmentsList() {
+    this.httpClient.get('../../../assets/departments.json').subscribe(data => {
+      this.listOfDepartments = data['department'];
+    });
   }
 
 }

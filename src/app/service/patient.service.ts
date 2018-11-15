@@ -8,29 +8,13 @@ export class PatientService {
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
-  getPatientData(pid) {
+  getPatientDataByID(pid) {
     return this.httpClient.get(environment.queryURI +
       '/Patient/' + pid, { headers: this.getHeaders() });
   }
-
-  getPatientByQuery(query) {
-    return this.httpClient.get(environment.queryURI +
-      '/Patient/' + query, { headers: this.getHeaders() });
-  }
-
-  getPatientDataByName(name) {
-    return this.httpClient.get(environment.queryURI +
-      '/Patient?name=' + name, { headers: this.getHeaders() });
-  }
-
-  getPatientDataByDOB(dob) {
-    return this.httpClient.get(environment.queryURI +
-      '/Patient?birthdate=' + dob, { headers: this.getHeaders() });
-  }
-
-  getAllPatientData() {
+  getPatientData(query: string) {
     return this.httpClient.get<JSON>(environment.queryURI +
-      '/Patient/', { headers: this.postFHIRHeaders() });
+      '/Patient/' + query, { headers: this.getHeaders() });
   }
 
   postPatientData(patient) {
