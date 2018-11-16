@@ -44,6 +44,10 @@ export class PatientService {
     );
   }
 
+  sendObjecttoBundle(data) {
+    return data;
+  }
+
   getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()

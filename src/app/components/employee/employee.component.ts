@@ -1,14 +1,14 @@
-
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
+
 import { UserService } from '../../service/user.service';
+import { PatientService } from '../../service/patient.service';
 
 import { Router } from '@angular/router';
-import { PatientService } from '../../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
-import * as Employee from '../../interface/employee';
+import * as Employee from '../../interface/patient';
 import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
 
@@ -18,7 +18,6 @@ export interface AccountType {
   viewValue: string;
 }
 
-
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',
@@ -26,11 +25,9 @@ export interface AccountType {
 })
 
 export class EmployeeComponent implements OnInit {
+  // Declaration for Employree form group object
+
   employeeFormGroup: FormGroup;
-  clientFormGroup: FormGroup;
-  isLinear = false;
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
 
   // Declarations for objects related Patients and Extensions
 
@@ -106,7 +103,7 @@ export class EmployeeComponent implements OnInit {
 
   // Array for Dependent Objects
 
-  dependents: any[];
+  dependentsArray: any[];
 
   // Store list of Departments
 
@@ -121,6 +118,8 @@ export class EmployeeComponent implements OnInit {
 
   linkId;
 
+
+  i;
   constructor(
 
     private fb: FormBuilder,
@@ -147,6 +146,9 @@ export class EmployeeComponent implements OnInit {
 
   ngOnInit() {
 
+
+    this.dependentsArray = new Array;
+    this.i = 0;
     // Set Department List
 
     this.userService.getDepartmentList().subscribe(
@@ -161,60 +163,98 @@ export class EmployeeComponent implements OnInit {
       error => this.handleError(error)
     );
 
-
-    // this.firstFormGroup = this.fb.group({
-    //   firstCtrl: ['', Validators.required]
-    // });
-    // this.secondFormGroup = this.fb.group({
-    //   secondCtrl: ['', Validators.required]
-    // });
-
     // Initialize Employee Form Group for DOM
 
     this.employeeFormGroup = this.fb.group({
-      resourceType: 'Patient',
-      type: ['', [Validators.required]],
-      familyName: ['', [Validators.required]],
-      givenName: ['', [Validators.required]],
-      dob: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required]],
-      addressStreet: ['', [Validators.required]],
-      addressCity: ['', [Validators.required]],
-      addressProv: ['', [Validators.required]],
-      addressPcode: ['', [Validators.required]],
-      addressCountry: ['', [Validators.required]],
-      language: ['', [Validators.required]],
-      id: ['', [Validators.required]],
-      jobTitle: ['', [Validators.required]],
-      departmentName: ['', [Validators.required]],
-      departmentBranch: ['', [Validators.required]],
+
+      // Employee type
+      type: new FormControl('', Validators.required),
+
+      // Last Name
+      familyName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+
+      // First Name
+      givenName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+
+      // Date of Birth
+      dob: new FormControl('', Validators.required),
+
+      // Email
+      email: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)
+      ]),
+
+      // Client's phone number (can be any number of their choosing)
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        Validators.pattern('^[+]?(?:[0-9]{2})?[0-9]{10}$')
+      ]),
+
+      // Address section
+      addressStreet: new FormControl('', Validators.required),
+      addressCity: new FormControl('', Validators.required),
+      addressProv: new FormControl('', Validators.required),
+      addressPcode: new FormControl('', [
+        Validators.required]),
+      addressCountry: new FormControl('', Validators.required),
+
+      // Clients preferred language
+      language: new FormControl('', Validators.required),
+
+      // PRI (handled in Patient with an extension)
+      id: new FormControl('', Validators.required),
+
+      // Job title (handled in Patient with an extension)
+      jobTitle: new FormControl('', Validators.required),
+
+      // Department they work in (handled in Patient with an extension)
+      departmentName: new FormControl('', Validators.required),
+
+      // Branch they work in (handled in Patient with an extension)
+      departmentBranch: new FormControl('', Validators.required),
+
+      // References related to the employee (handled in Patient with an extension)
       referenceOne: [''],
       referenceTwo: [''],
     });
 
-    const retrievedObject = localStorage.getItem('employee');
-    const parsedObject = JSON.parse( retrievedObject);
-    console.log(parsedObject);
+
+    // tslint:disable-next-line:max-line-length
+    // Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
 
   }
 
+  // callback function to set the branch list dropdown from the JSON included
+  // TODO: change implementation to load from list of organizations
   setBranchList(data) {
     this.branches = data.branchlist;
   }
 
+  // callback function to set the department list dropdown from the JSON included
+  // TODO: change implementation to load from list of organizations
   setDepartments(data) {
     this.department = data.department;
   }
 
+
+  // callback function to handle errors
   handleError(error) {
     console.log(error);
   }
 
+
+  // Sets the employee when called. Builds a new Patient object, along with associated
+  // objects, generates a unique ID to link patient resources (useful for linking)
+  // employees & dependents
+
   setEmployee() {
 
+    // Generate unique ID to link new Dependents created
     this.linkId = uuid();
 
+
+    // Initialize all objects being used for the Patient resource
     this.employee = new Employee.Resource;
     this.employee_name = new Employee.Name;
     this.employee_address = new Employee.Address;
@@ -232,8 +272,9 @@ export class EmployeeComponent implements OnInit {
     this.employee_telecom_email = new Employee.Telecom;
     this.employee_telecom_phone = new Employee.Telecom;
 
-
     // Employee identifer
+
+    // this.employee.Identifier.use = 'sad';
 
     this.employee_identifier.use = 'work';
     this.employee_identifier.value = this.employeeFormGroup.get('id').value;
@@ -242,7 +283,7 @@ export class EmployeeComponent implements OnInit {
 
     this.employee_address.city = this.employeeFormGroup.get('addressCity').value;
     this.employee_address.line = [this.employeeFormGroup.get('addressStreet').value];
-    this.employee_address.postalcode = this.employeeFormGroup.get('addressPcode').value;
+    this.employee_address.postalCode = this.employeeFormGroup.get('addressPcode').value;
     this.employee_address.country = this.employeeFormGroup.get('addressCountry').value;
     this.employee_address.state = this.employeeFormGroup.get('addressProv').value;
 
@@ -269,7 +310,7 @@ export class EmployeeComponent implements OnInit {
     // Cross Reference One extension
 
     this.employee_extension_crossreferenceone.url = 'https://bcip.smilecdr.com/fhir/crossreferenceone';
-    this.employee_extension_crossreferenceone.value = this.employeeFormGroup.get('referenceOne').value;
+    this.employee_extension_crossreferenceone.valueString = this.employeeFormGroup.get('referenceOne').value;
 
     // Cross Reference Two extension
 
@@ -292,7 +333,8 @@ export class EmployeeComponent implements OnInit {
       this.employee_extension_dependentlink,
       this.employee_extension_crossreferencetwo,
       this.employee_extension_jobtitle,
-      this.employee_extension_workplace
+      this.employee_extension_workplace,
+      this.employee_extension_type
     ];
 
     // Employe Name
@@ -330,39 +372,33 @@ export class EmployeeComponent implements OnInit {
     this.employee.name = this.employee_name;
     this.employee.address = [this.employee_address];
 
+
+    // Stringify the final object
     const finalJSON = JSON.stringify(this.employee);
+
+    // Adds the object to the session object that's being shared
+    this.userService.setObjectBase(this.employee);
+
+    console.log('called it');
+    console.log(this.userService.getObjectBase());
+
+
+    // console.log(this.employeeFormGroup);
+    // this.router.navigate(['/dashboard']);
+
     this.patientService.postPatientData(finalJSON);
 
-    localStorage.removeItem('employee');
-    localStorage.setItem('employee', finalJSON);
-
-    this.router.navigate(['/dashboard']);
-
-    console.log(finalJSON);
-
   }
 
-  printData(data) {
-    console.log (data);
+  printthing() {
+    this.userService.getObjectBase();
+  }
+  goToSummary() {
+    this.router.navigateByUrl('/employeesummary');
   }
 
-  resetData() {
-    this.employee = new Employee.Resource;
-    this.employee_name = new Employee.Name;
-    this.employee_address = new Employee.Address;
-    this.employee_language = new Employee.Language;
-    this.employee_language_coding = new Employee.Coding;
-    this.employee_communication = new Employee.Communication;
-    this.employee_identifier = new Employee.Identifier;
-    this.employee_extension_jobtitle = new Employee.Extension;
-    this.employee_extension_workplace = new Employee.Extension;
-    this.employee_extension_branch = new Employee.Extension;
-    this.employee_extension_crossreferenceone = new Employee.Extension;
-    this.employee_extension_crossreferencetwo = new Employee.Extension;
-    this.employee_extension_dependentlink = new Employee.Extension;
-    this.employee_telecom_email = new Employee.Telecom;
-    this.employee_telecom_phone = new Employee.Telecom;
-
+  addDependent() {
+    this.router.navigateByUrl('/dependentform');
   }
 
   get resourceType() {

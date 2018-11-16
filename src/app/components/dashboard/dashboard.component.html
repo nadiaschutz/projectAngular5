@@ -17,7 +17,7 @@
         </div>
         <div class="col">
           <label for="dob" class="label-name">Date of Birth</label>
-          <input type="text" (input)="dateSearch($event)" name="dob" id="dob" class="form-control field-box" placeholder="Enter">
+          <input type="text" (keypress)="dateSearch($event)" name="dob" id="dob" class="form-control field-box" placeholder="Enter">
         </div>
       </div>
       <div class="row">
@@ -39,7 +39,7 @@
 <br />
 <h3>Clients</h3>
 <br />
-<button type="button" class="btn employee-button" (click)="newEmployeeButton()"> + New Employee Record</button>
+<button type="button" class="btn employee-button" (click)="newEmployeeButton()"> + New Employee Record</button> 
 <br />
 
 <table class="table ">
@@ -61,6 +61,7 @@
       <td *ngFor="let name of q.resource.name">{{name.given}}</td>
       <td *ngFor="let name of q.resource.name">{{name.family}}</td>
       <td>{{q.resource.birthDate | date: 'dd/MM/yyyy'}}</td>
+      <!-- <td>Employee</td> -->
       <td *ngIf="q.resource.link">
         1
       </td>
