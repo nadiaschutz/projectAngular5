@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { OAuthModule } from 'angular-oauth2-oidc';
@@ -28,7 +28,7 @@ import { UserService } from './service/user.service';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
+import { ServReqMainComponent } from './components/serv-req-main/serv-req-main.component';
 
 import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
@@ -36,11 +36,10 @@ import { ClientDepartmentComponent } from './components/client-department/client
 
 
 const routes: Routes = [
-  { path: 'dependentform', component: DependentComponent},
-  { path: 'employeeform', component: EmployeeComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'employeesummary', component: EmployeeSummaryComponent},  
-  { path: 'newservicerequest', component: NewServiceRequestComponent },
+  { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
+  { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
+  { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: '', component: AuthComponent }
 ];
 
@@ -58,11 +57,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     SidebarComponent,
     NewServiceRequestComponent,
     NewServiceRequestNoClientComponent,
-    DependentComponent,
-    EditEmployeeComponent,
-    EmployeeSummaryComponent,
-    DistrictOfficeComponent,
-    ClientDepartmentComponent
+    ServReqMainComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

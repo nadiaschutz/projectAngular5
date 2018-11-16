@@ -1,0 +1,155 @@
+<div class="main-header">
+  <h5>Search Service Request</h5>
+  <h6>client department > service request</h6>
+</div>
+<div class="search-box">
+  <form #form="ngForm" class="center-align">
+    <div class="form-group">
+
+      <div class="row ">
+
+        <div class="col-12">
+          <label for="name" class="label-name">Name</label>
+          <input type="text" 
+          name="name" 
+          id="name" 
+          class="form-control field-box-name" 
+          placeholder="Enter"
+          [(ngModel)]="name.data">
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col">
+          <label for="clientid" class="label-name">Client ID</label>
+          <input type="text" 
+          name="clientid" 
+          id="clientid" 
+          class="form-control field-box"
+          [(ngModel)]="clientId.data"
+          placeholder="Enter">
+        </div>
+
+        <div class="col">
+          <label for="dob" class="label-name">Date of Birth</label>
+          <input class="form-control" 
+          [ngModel]="dateOfBirth.data | date:'yyyy-MM-dd'" 
+          (ngModelChange)="dateOfBirth.data = $event" 
+          type="date" 
+          name="dob"/>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col">
+          <label for="region" class="label-name">Region</label>
+          <select class="form-control" 
+            [(ngModel)]="region"
+            (ngModelChange)="region = $event"  
+            name = "region">
+            <option [ngValue]="null">Select Category</option>
+            <option *ngFor="let region of regionArr" 
+            [value]="region"
+            >
+              {{region}}
+            </option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label for="department" class="label-name">Client Department</label>
+          <select class="form-control" 
+            [(ngModel)]="clientDepartment"
+            (ngModelChange)="clientDepartment = $event"  
+            name = "department">
+            <option [ngValue]="null">Select Category</option>
+            <option *ngFor="let department of departmentArr" 
+            [value]="department"
+            >
+              {{department}}
+            </option>
+          </select>
+
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col">
+            <label for="stat" class="label-name">Status</label>
+            <select class="form-control" 
+            [(ngModel)]="status.data"
+            (ngModelChange)="status.data = $event"  
+            name = "stat">
+            <option [ngValue]="null">Select Category</option>
+            <option *ngFor="let stat of statusArr" 
+            [value]="stat"
+            >
+              {{stat}}
+            </option>
+          </select>
+        </div> 
+
+        <div class="col">
+          <label for="date" class="label-name">Date</label>
+          <input class="form-control" 
+          [ngModel]="date.data | date:'yyyy-MM-dd'" 
+          (ngModelChange)="date.data = $event" 
+          type="date" 
+          name="date"/>
+        </div>
+        
+      </div>
+
+
+      <button type="button" class="btn search-button btn-primary" (click)="dataSearch()" style="margin-top: 15px">Search</button>
+
+    </div>
+  </form>
+</div>
+
+
+
+<div>
+    <a routerLink="/newservicerequest"><button class="btn btn-primary" > + New Service Request</button></a>
+    <a routerLink="/newservicerequest"><button class="btn btn-primary" style="margin-left: 20px" > + New Advice Consultation</button></a>
+</div>
+
+
+
+<div>
+    <table class="table">
+        <thead class="header-table">
+          <tr>
+            <th scope="col">#ID</th>
+            <th scope="col">Date</th>
+            <th scope="col">Service Type</th>
+            <th scope="col">Assesment Type</th>
+            <th scope="col">Region</th>
+            <th scope="col">Created By</th>
+            <th scope="col">Clietn's Name</th>
+            <th scope="col">Status</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+      
+          </tr>
+        </thead>
+        <tbody *ngIf="str===null">
+          <tr *ngFor="let q of servRequests ">
+            <td>{{q.id}}</td>
+            <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
+            <td>{{getServiceType(q)}}</td>
+            <td>{{getAssessmentType(q)}}</td>
+            <td>{{getRegion(q)}}</td>
+            <td>{{getCreatedBy(q)}}</td>
+            <td>{{q.subject.display}}</td>
+            <td>{{q.status}}</td>
+          </tr>
+        </tbody>
+      </table>
+</div>

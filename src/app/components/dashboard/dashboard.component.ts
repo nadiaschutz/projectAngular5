@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 import { environment } from '../../../environments/environment';
@@ -38,13 +38,33 @@ export interface EmployeeElement {
 })
 export class DashboardComponent implements OnInit {
 
+  name = {
+    prefix: 'name=',
+    data: null
+  };
+
+  clientId = {
+    prefix: '/',
+    data: null
+  };
+
+  dateOfBirth = {
+    prefix: 'birthdate=',
+    data: null
+  };
+
+  private arrOfVar = [this.name, this.dateOfBirth];
+  listOfDepartments = [];
+  clientDepartment;
+  employeeTypeArray = ['Employee', 'Dependent'];
+  employeeType;
 
   // patientSubscription: subscription;
   displayedColumns: string[] = ['type', 'id', 'name', 'number', 'dateCreated', 'dateModified'];
 
   displayedColumnsTwo: string[] = ['name', 'id', 'dependent', 'department', 'dateCreated', 'dateModified'];
 
-  qrequest: any;
+  qrequest = [];
 
   constructor(
     private oauthService: OAuthService,
@@ -55,41 +75,49 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // this.patient.getAllPatientData();
-    // if (this.oauthService.hasValidAccessToken()) {
-    //     this.router.navigate(['/dashboard']);
-    // }
 
-     this.patientService.getAllPatientData().subscribe(
+    this.patientService.getPatientData('').subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
-
-
-    this.userService.getObjectBase();
-
-
-
-  }
-
-  nameSearch(e) {
-    return this.patientService.getPatientDataByName(e.target.value).subscribe(
-      data => this.handleSuccess(data),
-      error => this.handleError(error)
-    );
-  }
-
-  dateSearch(e) {
-    return this.patientService.getPatientDataByDOB(e.target.value).subscribe(
-      data => this.handleSuccess(data),
-      error => this.handleError(error)
-    );
+    this.getDepartmentsList();
   }
 
 
   handleSuccess(data) {
-    this.qrequest = data.entry;
+    console.log(data);
+    this.qrequest = [];
+    if (data.entry) {
+      data.entry.forEach(item => {
+        const individualEntry = item.resource;
+        if (this.employeeType || this.clientDepartment) {
+          this.checkForEmployeeTypeAndClientDepartment(individualEntry);
+        } else {
+          this.qrequest.push(individualEntry);
+        }
+      });
+    } else {
+      if (this.employeeType || this.clientDepartment) {
+        this.checkForEmployeeTypeAndClientDepartment(data);
+      } else {
+        this.qrequest.push(data);
+      }
+    }
+    // this.resetSearchParams();
+  }
 
+  checkForEmployeeTypeAndClientDepartment(individualEntry) {
+    individualEntry.extension.forEach(individualExtension => {
+      if (this.employeeType && individualExtension.url === 'https://bcip.smilecdr.com/fhir/employeetype') {
+        if (individualExtension.valueString === this.employeeType) {
+          this.qrequest.push(individualEntry);
+        }
+      } else if (this.clientDepartment && individualExtension.url === 'https://bcip.smilecdr.com/fhir/workplace') {
+        if (individualExtension.valueString === this.clientDepartment) {
+          this.qrequest.push(individualEntry);
+        }
+      }
+    });
   }
 
   handleError(error) {
@@ -115,6 +143,38 @@ export class DashboardComponent implements OnInit {
 
   checkRegionalOfficeButtion() {
     this.router.navigate(['/region-summary']);
+  }
+  employeeSearch() {
+    let searchParams = '';
+    this.arrOfVar.forEach((element, index) => {
+      if ( element.data !== null) {
+        if (searchParams.length === 0) {
+          searchParams = '?' + element.prefix + element.data;
+        } else {
+          searchParams += '&' + element.prefix + element.data;
+        }
+      }
+    });
+    if (this.clientId.data) {
+      searchParams = this.clientId.prefix + this.clientId.data + searchParams;
+    }
+
+    this.patientService.getPatientData(searchParams).subscribe(
+      data => this.handleSuccess(data),
+      error => this.handleError(error)
+    );
+  }
+  resetSearchParams() {
+    this.clientDepartment = '';
+    this.employeeType = '';
+    this.name.data = '';
+    this.clientId.data = '';
+    this.dateOfBirth.data = '';
+  }
+  getDepartmentsList() {
+    this.httpClient.get('../../../assets/departments.json').subscribe(data => {
+      this.listOfDepartments = data['department'];
+    });
   }
 
 }

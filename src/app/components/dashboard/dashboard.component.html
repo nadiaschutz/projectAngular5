@@ -7,30 +7,57 @@
       <div class="row ">
         <div class="col-12">
           <label for="firstname" class="label-name">First Name</label>
-          <input type="text" (keypress)="nameSearch($event)"  name="firstname" id="firstname" class="form-control field-box-name" placeholder="Enter">
+          <input type="text"  
+          name="firstname" id="firstname" 
+          class="form-control field-box-name" 
+          placeholder="Enter" 
+          [(ngModel)]="name.data">
         </div>
       </div>
       <div class="row">
         <div class="col">
           <label for="clientid" class="label-name">Client ID</label>
-          <input type="text" name="clientid" id="clientid" class="form-control field-box" placeholder="Enter">
+          <input type="text" name="clientid" id="clientid" class="form-control field-box" placeholder="Enter" [(ngModel)]="clientId.data">
         </div>
         <div class="col">
           <label for="dob" class="label-name">Date of Birth</label>
-          <input type="text" (keypress)="dateSearch($event)" name="dob" id="dob" class="form-control field-box" placeholder="Enter">
+          <input class="form-control" 
+          [ngModel]="dateOfBirth.data | date:'yyyy-MM-dd'" 
+          (ngModelChange)="dateOfBirth.data = $event" 
+          type="date" 
+          name="dob"/>
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <label for="region" class="label-name">Region</label>
-          <input type="text" name="region" id="region" class="form-control field-box" placeholder="Enter">
+          <label for="region" class="label-name">Employee Type</label>
+          <select class="form-control" 
+            [(ngModel)]="employeeType"
+            (ngModelChange)="employeeType = $event"  
+            name = "employeeType">
+            <option [ngValue]="null">Select Category</option>
+            <option *ngFor="let employeeType of employeeTypeArray" 
+            [value]="employeeType">
+              {{employeeType}}
+            </option>
+          </select>
         </div>
         <div class="col">
           <label for="department" class="label-name">Client Department</label>
-          <input type="text" name="department" id="department" class="form-control field-box" placeholder="Enter">
+          <select class="form-control" 
+            [(ngModel)]="clientDepartment"
+            (ngModelChange)="clientDepartment = $event"  
+            name = "department">
+            <option [ngValue]="null">Select Category</option>
+            <option *ngFor="let department of listOfDepartments" 
+            [value]="department"
+            >
+              {{department}}
+            </option>
+          </select>
         </div>
       </div>
-      <button type="button" class="btn search-button">Search</button>
+      <button type="button" class="btn search-button" (click)="employeeSearch()">Search</button>
 
     </div>
   </form>
