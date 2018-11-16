@@ -8,6 +8,11 @@ export class PatientService {
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
+  getAllPatientData() {
+    return this.httpClient.get(environment.queryURI +
+      '/Patient/', { headers: this.getHeaders() });
+  }
+
   getPatientDataByID(pid) {
     return this.httpClient.get(environment.queryURI +
       '/Patient/' + pid, { headers: this.getHeaders() });
