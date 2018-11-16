@@ -62,15 +62,7 @@ export class NewServiceRequestNoClientComponent implements OnInit {
 
 
 
-//   element: Element = {
-//     linkId: '',
-//     text: '',
-//     answer: [{
-//       valueString: '',
-//     }]
-// };
-
-
+  documents = null;
 
   itemToSend: {
     resourceType: string;
@@ -159,6 +151,10 @@ export class NewServiceRequestNoClientComponent implements OnInit {
   });
 
     console.log(this.itemToSend);
+
+   }
+
+   addDependent() {
 
    }
 

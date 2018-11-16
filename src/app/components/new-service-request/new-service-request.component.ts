@@ -19,17 +19,42 @@ export class NewServiceRequestComponent implements OnInit {
   // serviceRequestResponce: ServiceRequestResponce = {
   // };
 
+  
+
+  dependents = null;
+  documents = null;
+
+  itemToSend: {
+    resourceType: string;
+    extension: [
+      {
+        url: string;
+        valueCode: string;
+      },
+      {
+        url: string;
+        valueDateTime: string;
+      }
+    ],
+    status: string;
+    subject: {
+      reference: string;
+      display: string;
+    },
+    authored: string;
+    items: any [];
+  };
+
   formId = '1952';
   qrequest: any;
 
-  items: any [];
+  items: Item [];
 
-  item = {
+  item: Item = {
     linkId: '',
-    question: '',
+    text: '',
     answer: ''
   };
-
 
 
   trackByEl(index: number, el: any): string { return el.linkId; }
@@ -42,68 +67,81 @@ export class NewServiceRequestComponent implements OnInit {
 
   ngOnInit() {
 
-    // this.context = new Context('https://bcip.smilecdr.com/fhir-request');
-    // this.temp = new NewQuestionnaire(this.context, '1896');
-    // console.log(this.context);
-    // console.log(this.temp);
-
     this.questionnaireService.getForm(this.formId).subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
+    // console.log(this.itemS.answer[0].valueString);
   }
 
    onSubmit(serReqForm) {
-    // this.checkingEnableWhen();
+    // this.checkingEnableWhen()
+   }
+
+   onSend() {
+    this.itemToSend = {
+      resourceType: 'QuestionnaireResponse',
+      extension: [
+        {
+          url: 'https://bcip.smilecdr.com/fhir-request/name',
+          valueCode: 'Demetre Vasia'
+        },
+        {
+          url: 'https://bcip.smilecdr.com/fhir-request/birthDate',
+          valueDateTime: '2018-09-12T04:00:00.000Z'
+        }
+      ],
+      status: 'completed',
+      subject: {
+        reference: 'Patient/1881',
+        display: 'Demetre Vasia'
+      },
+      authored: '2018-11-08T15:41:00.581+00:00',
+      items: []
+    };
+
+  this.itemToSend.items = this.items.map(el => {
+    return {
+      linkId: el.linkId,
+      text: el.text,
+      answer: [{
+        valueString: el.answer
+      }]
+    };
+  });
+
+    console.log(this.itemToSend);
+
+   }
+
+   addDependent() {
+     
    }
 
   handleSuccess(data) {
     this.qrequest = data.item;
     console.log(this.qrequest);
 
-    
-    // this.patients.map(x => this.getAge(x.resource.birthDate));
-
-    // // console.log(this.ages);
-    // this.ages.map((age, index) => {
-    //     this.patients[index].resource.age = age;
-    //     // console.log(this.patients[index].resource.age);
-    //  });
-
-
-    // const userTestStatus: { linkId: string, question: string, answer: string }[] = [];
-    //  this.qrequest.map((x, index) => (
-    // userTestStatus[index].linkId = x,
-    // console.log(userTestStatus[index].linkId)
-    // ));
-
-    // this.qrequest.forEach((el, index) => {
-    //   this.itemX.linkId = el.linkId;
-    //   this.itemX.question = el.text;
-    //   this.items.push(this.itemX);
-    //   console.log(this.itemX);
-    // });
-
-
-    // console.log(this.items);
-    // console.log(this.itemX);
-
-    this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, question: el.text }));
-
-    // this.qrequest.map((el, index) => {
-    //   this.itemX.linkId = el.linkId;
-    //   this.items.push(this.itemX);
-    //   console.log(el, index);
-    // });
+   this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text}));
     console.log(this.items);
-    // loop trough this.form.item
+
   }
 
-  // ell.enableWhen[indexx].question === '8' && ell.enableWhen[indexx].answerString === 'BC'
 
   handleError (error) {
     console.log(error);
   }
+
+
+  // get date for authored: '2018-11-08T15:41:00.581+00:00'
+
+  // get patient name and id on fhir
+  // subject: {
+      //   reference: 'Patient/1881',
+      //   display: 'Demetre Vasia'
+      // },
+
+  //  get status for the service request
 
   checkingEnableWhen() {
     this.qrequest.forEach((el, index) => {
@@ -129,12 +167,6 @@ export class NewServiceRequestComponent implements OnInit {
                 return e.option;
               }
             });
-
-            // if (e.enableWhen[0].question === '8' && e.enableWhen[0].answerString === 'BC' ) {
-            //   console.log(true);
-            //   // show options
-            //   console.log(e.option);
-            // }
           });
           }
       }

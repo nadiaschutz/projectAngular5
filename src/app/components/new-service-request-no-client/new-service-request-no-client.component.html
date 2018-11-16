@@ -47,20 +47,119 @@
 
         <div class="form-group" *ngIf="el.type==='open-choice'">
   
-          <label>{{el.linkId}} {{el.text}}</label>
-              <textarea type="text" 
-              [(ngModel)]="items[i].answer"
-              name='{{el.text}}'
-              class="form-control" 
-              placeholder="type your text" 
-              rows="1" required></textarea>
-        </div> 
+            <label>{{el.linkId}} {{el.text}}</label>
+                <textarea type="text" 
+                [(ngModel)]="items[i].answer"
+                name='{{el.text}}'
+                class="form-control" 
+                placeholder="type your text" 
+                rows="1" required></textarea>
+          </div> 
   
-   
-      </div>
-  
+        </div>
 
-    <button class="btn btn-primary" type="submit" (click)='onSend()'>Submit form</button> 
+        
+        <div class="col-12-custom">
+          <h6>documents</h6>
+  
+            <button class="btn btn-secondary" (click)='addDependent()'>
+                add document
+            </button>
+            <div>
+                <table class="table">
+                    <thead class="header-table">
+                      <tr>
+                        <th scope="col">#ID</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Document Name</th>
+                        <th scope="col">Document Type</th>
+                        <th scope="col">File Type</th>
+                        <th scope="col">File Size</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                  
+                      </tr>
+                    </thead>
+                    <tbody *ngIf="documents===null">
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+  
+                          <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr> 
+  
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+                    </tbody>
+            
+            
+                    <tbody *ngIf="documents !==null">
+                      <tr *ngFor="let q of servRequests ">
+                        <td>{{q.resource.id}}</td>
+                        <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
+                        <td>{{q}}</td>
+                        <td>{{q}}</td>
+                        <td>{{q}}</td>
+                        <td>{{q}}</td>
+                        <td>{{q.resource.subject.display}}</td>
+                        <td>{{q.resource.status}}</td>
+                      </tr>
+                    </tbody>
+            
+            
+                  </table>
+            </div>
+  
+        </div>
+    
+      
+     
+      <button class="btn btn-primary" type="submit">Next</button>
+      <button class="btn btn-secondary" type="submit">Save</button>  
+      <button class="btn btn-secondary" type="button">Cancel</button> 
   
   </form>
   <br>
