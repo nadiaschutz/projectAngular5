@@ -10,6 +10,48 @@ import { QuestionnaireService } from '../../service/questionnaire.service';
 import { Item } from '../models/item.model';
 import { Element } from '../models/element.model';
 
+
+// interface Item {
+//   answer: string;
+//   text: string;
+//   linkId: string;
+// }
+
+// interface StringElement {
+//   linkId: string;
+//   text: string;
+//   answer: [{
+//     valueString: string;
+//   }];
+// }
+
+// interface Element {
+//   linkId: string;
+//   text: string;
+//   elem: StringElement[];
+// }
+
+// interface SendItem {
+//   resourceType: string;
+//   extension: [
+//     {
+//       url: string;
+//       valueCode: string;
+//     },
+//     {
+//       url: string;
+//       valueDateTime: string;
+//     }
+//   ];
+//   status: string;
+//   subject: {
+//     reference: string;
+//     display: string;
+//   };
+//   authored: string;
+//   elements: StringElement[];
+// }
+
 @Component({
   selector: 'app-new-service-request-no-client',
   templateUrl: './new-service-request-no-client.component.html',
@@ -19,13 +61,14 @@ export class NewServiceRequestNoClientComponent implements OnInit {
   // @ViewChild('serReqForm') form: NgForm;
 
 
-  element: Element = {
-    linkId: '',
-    text: '',
-    elem: [{
-      valueString: '',
-    }]
-};
+
+//   element: Element = {
+//     linkId: '',
+//     text: '',
+//     answer: [{
+//       valueString: '',
+//     }]
+// };
 
 
 
@@ -47,7 +90,7 @@ export class NewServiceRequestNoClientComponent implements OnInit {
       display: string;
     },
     authored: string;
-    elements: {valueString: string}[];
+    items: any [];
   };
 
   formId = '1953';
@@ -88,11 +131,11 @@ export class NewServiceRequestNoClientComponent implements OnInit {
       resourceType: 'QuestionnaireResponse',
       extension: [
         {
-          url: '',
+          url: 'https://bcip.smilecdr.com/fhir-request/name',
           valueCode: 'Demetre Vasia'
         },
         {
-          url: '',
+          url: 'https://bcip.smilecdr.com/fhir-request/birthDate',
           valueDateTime: '2018-09-12T04:00:00.000Z'
         }
       ],
@@ -102,32 +145,28 @@ export class NewServiceRequestNoClientComponent implements OnInit {
         display: 'Demetre Vasia'
       },
       authored: '2018-11-08T15:41:00.581+00:00',
-      elements: []
+      items: []
     };
 
-
-    this.itemToSend.elements = this.items.map(el => {
-      return this.element.elem[0].valueString = el.answer;
-    console.log(this.element.elem[0].valueString);
-   
+  this.itemToSend.items = this.items.map(el => {
+    return {
+      linkId: el.linkId,
+      text: el.text,
+      answer: [{
+        valueString: el.answer
+      }]
+    };
   });
 
-
-  // this.itemToSend.elements = this.items.map(el => ({ ...this.element, this.element.elem[0].valueString: el.answer }));
-
-  // this.itemToSend.elements.push(this.element.elem[0].valueString);
-
- 
     console.log(this.itemToSend);
 
-    // this.element.elem[0].valueString = this.item.answer.map(el => console.log (el));
    }
 
   handleSuccess(data) {
     this.qrequest = data.item;
     console.log(this.qrequest);
 
-   this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text }));
+   this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text}));
     console.log(this.items);
 
   }
@@ -136,6 +175,17 @@ export class NewServiceRequestNoClientComponent implements OnInit {
   handleError (error) {
     console.log(error);
   }
+
+
+  // get date for authored: '2018-11-08T15:41:00.581+00:00'
+
+  // get patient name and id on fhir
+  // subject: {
+      //   reference: 'Patient/1881',
+      //   display: 'Demetre Vasia'
+      // },
+
+  //  get status for the service request
 
   checkingEnableWhen() {
     this.qrequest.forEach((el, index) => {

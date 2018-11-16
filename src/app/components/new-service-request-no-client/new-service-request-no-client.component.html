@@ -6,11 +6,7 @@
   
   <!-- try [for]="value.text"...
   and value.text has to be the id of the input element or what element you have there -->
-  <form #advReqForm="ngForm" (ngSubmit) = "onSubmit()">
-  
-    <!-- <div *ngIf="temp.returnQuestionObject()"> -->
-      <!-- <div *ngFor="let value of temp.returnQuestionObject().item; let i = index" class="col-6-custom"> -->
-  
+  <form #advReqForm="ngForm">
         <div *ngFor="let el of qrequest; trackBy: trackByEl; let i=index;" class="col-12-custom">
         <div class="form-group" *ngIf="el.type==='choice'">
   
@@ -63,13 +59,7 @@
    
       </div>
   
-    
-    <!-- <div>
-        <p>
-         <input [(ngModel)]="msg" />
-            <b>{{msg}}</b>
-        </p>
-      </div> -->
+
     <button class="btn btn-primary" type="submit" (click)='onSend()'>Submit form</button> 
   
   </form>
@@ -93,6 +83,4 @@
   <br>
   <br>
   Model/qrequest: {{qrequest | json}}
-  
-  <!-- <button class="button button-primary" (click)="deserializethis(object.valueCoding.code)">Click me!</button> -->
   

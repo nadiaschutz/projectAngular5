@@ -1,7 +1,7 @@
 export interface Element {
     linkId: string;
     text: string;
-    elem: [
+    answer: [
     {
       valueString: string;
     }
