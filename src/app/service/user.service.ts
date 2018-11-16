@@ -36,7 +36,7 @@ export class UserService {
 
   getObjectBase() {
 
-  // this.newPatientSubject.subscribe ( data => console.log (data));
+    // this.newPatientSubject.subscribe ( data => console.log (data));
     // console.log(this.sessionObject);
     return this.sessionObject;
   }
@@ -49,7 +49,6 @@ export class UserService {
   logout() {
 
     // Uses the OAuthService library to revoke token and log the user out
-    this.oauthService.logOut();
     // if (!this.oauthService.hasValidAccessToken()) {
     //     this.router.navigate(['/']);
     // }
@@ -62,7 +61,9 @@ export class UserService {
       }, err => {
         console.log(err);
       });
-        this.router.navigate(['']);
+
+      this.oauthService.logOut();
+    this.router.navigate(['']);
 
   }
 

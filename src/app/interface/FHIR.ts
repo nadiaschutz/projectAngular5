@@ -432,7 +432,7 @@ export class DocumentReference extends Resource implements Serializable<Document
 export class Bundle extends Resource implements Serializable<Bundle> {
 
     type: Code;
-    
+
 
     deserialize(jsonObject: any): Bundle {
         const that = this;

@@ -30,7 +30,6 @@ export class AppComponent implements OnInit {
       clientId: 'NOHIS',
       // redirectUri: 'https://nohis.smilecdr.com/dashboard',
       redirectUri: 'http://localhost:4200/dashboard',
-
       scope: 'launch/patient openid patient/*.read patient/*.write profile'
     });
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
@@ -42,8 +41,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    
-
 
   }
 

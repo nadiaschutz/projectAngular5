@@ -105,8 +105,6 @@ export class DependentComponent implements OnInit {
   ngOnInit() {
 
 
-    console.log('from the dependednt form', this.userService.getObjectBase());
-
     this.dependentsArray = new Array;
 
 
@@ -145,6 +143,13 @@ export class DependentComponent implements OnInit {
     // console.log(parsedObject);
   }
 
+  // setLinkId() {
+  //   const tempObj = this.userService.getObjectBase;
+  //   for (const entry of tempObj.entry) {
+      
+  //   }
+
+  // }
 
   setDependent() {
 
@@ -257,6 +262,7 @@ export class DependentComponent implements OnInit {
   get dob() {
     return this.dependentFormGroup.get('dob');
   }
+
 
   get phoneNumber() {
     return this.dependentFormGroup.get('phoneNumber');
