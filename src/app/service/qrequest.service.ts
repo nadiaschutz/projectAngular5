@@ -16,4 +16,6 @@ export class QrequestService {
     return this.http.get(this.API_URL + query);
   }
 
+  
+
 }

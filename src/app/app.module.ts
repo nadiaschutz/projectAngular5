@@ -26,6 +26,7 @@ import { UserService } from './service/user.service';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ServReqMainComponent } from './components/serv-req-main/serv-req-main.component';
+import { SummaryPageComponent } from './components/summary-page/summary-page.component';
 
 
 
@@ -35,6 +36,7 @@ const routes: Routes = [
   { path: 'servreqmain', component: ServReqMainComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent },
+  { path: 'summary', component: SummaryPageComponent },
   { path: '', component: AuthComponent }
 ];
 
@@ -52,7 +54,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     SidebarComponent,
     NewServiceRequestComponent,
     NewServiceRequestNoClientComponent,
-    ServReqMainComponent
+    ServReqMainComponent,
+    SummaryPageComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
