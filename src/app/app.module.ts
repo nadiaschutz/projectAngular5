@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { OAuthModule } from 'angular-oauth2-oidc';
@@ -15,6 +15,9 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { NewServiceRequestComponent } from './components/new-service-request/new-service-request.component';
 import { NewServiceRequestNoClientComponent } from './components/new-service-request-no-client/new-service-request-no-client.component';
+import { DependentComponent } from './components/dependent/dependent.component';
+import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
+
 // import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
@@ -28,6 +31,9 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ServReqMainComponent } from './components/serv-req-main/serv-req-main.component';
 import { SummaryPageComponent } from './components/summary-page/summary-page.component';
 
+import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
+import { DistrictOfficeComponent } from './components/district-office/district-office.component';
+import { ClientDepartmentComponent } from './components/client-department/client-department.component';
 
 
 const routes: Routes = [
@@ -71,7 +77,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient]
       }
-    })
+    }),
+    NgBootstrapFormValidationModule,
+    NgBootstrapFormValidationModule.forRoot()
   ],
   providers: [
     AuthGuardService,
