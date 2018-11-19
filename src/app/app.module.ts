@@ -36,6 +36,7 @@ import { DistrictOfficeComponent } from './components/district-office/district-o
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService]  },
+  { path: 'dependentform', component: DependentComponent, canActivate: [AuthGuardService]  },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
   { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
   { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
