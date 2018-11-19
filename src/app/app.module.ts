@@ -64,7 +64,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NewServiceRequestComponent,
     NewServiceRequestNoClientComponent,
     ServReqMainComponent,
-    SummaryPageComponent
+    SummaryPageComponent,
+    ClientDepartmentComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

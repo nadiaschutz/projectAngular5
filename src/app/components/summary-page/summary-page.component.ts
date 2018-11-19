@@ -115,7 +115,7 @@ export class SummaryPageComponent implements OnInit {
     // send responseId
 
     this.questionnaireService.shareResponseId(this.responseId);
-    
+
     if (this.formId = '1952') {
       this.router.navigate(['/newservicerequest']);
     }
@@ -123,7 +123,7 @@ export class SummaryPageComponent implements OnInit {
     if (this.formId = '1953') {
       this.router.navigate(['/newadvicerequest']);
     }
-    
+
   }
 
 

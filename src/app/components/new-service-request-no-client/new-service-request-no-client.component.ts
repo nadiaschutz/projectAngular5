@@ -171,19 +171,17 @@ export class NewServiceRequestNoClientComponent implements OnInit {
      // 6
      this.getDate();
 
-     
-
      // To-Do: check if has dependents => add dependents, add patient/#, subject, exstention
 
      if (this.dependents === true) {
-      
+
        this.items.forEach(element => {
          console.log(element.text);
 
-         if(element.text === 'Dependent Involved') {
-           this.dependentNumber = '0';
-           return element.answer = this.dependentNumber;
-         }
+        //  if(element.text === 'Dependent Involved') {
+        //    this.dependentNumber = '0';
+        //    return element.answer = this.dependentNumber;
+        //  }
        });
      }
 
@@ -203,7 +201,7 @@ export class NewServiceRequestNoClientComponent implements OnInit {
           }]
         };
       });
-// 7 
+// 7
       console.log(this.itemToSend);
   }
 
