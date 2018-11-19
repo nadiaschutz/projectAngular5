@@ -31,12 +31,12 @@ import { SummaryPageComponent } from './components/summary-page/summary-page.com
 
 
 const routes: Routes = [
-  { path: 'employeeform', component: EmployeeComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'servreqmain', component: ServReqMainComponent },
-  { path: 'newservicerequest', component: NewServiceRequestComponent },
-  { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent },
-  { path: 'summary', component: SummaryPageComponent },
+  { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService]  },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
+  { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
+  { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
+  { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
+  { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
   { path: '', component: AuthComponent }
 ];
 
