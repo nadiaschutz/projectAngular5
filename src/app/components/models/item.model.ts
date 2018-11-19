@@ -1,5 +1,5 @@
 export interface Item {
-    linkId: '';
-    text: '';
-    answer: '';
+    linkId: string;
+    text: string;
+    answer: string;
 }

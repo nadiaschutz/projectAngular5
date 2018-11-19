@@ -83,7 +83,7 @@ export class NewServiceRequestComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-// 1
+
     this.questionnaireService.getForm(this.formId).subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
@@ -96,38 +96,38 @@ export class NewServiceRequestComponent implements OnInit {
   }
 
 
-  //  onSave() {
-  //   this.savingData();
-  //   this.questionnaireService.saveRequest(this.itemToSend).subscribe(
-  //     data => this.handleSuccessOnSave(data),
-  //     error => this.handleErrorOnSave(error)
-  //   );
-  //  }
+   onSave() {
+    // this.savingData();
+    // this.questionnaireService.saveRequest(this.itemToSend).subscribe(
+    //   data => this.handleSuccessOnSave(data),
+    //   error => this.handleErrorOnSave(error)
+    // );
+   }
 
 
    onNext() {
     this.savingData();
-    // 8
+
     this.questionnaireService.saveRequest(this.itemToSend).subscribe(
       data => this.handleSuccessOnSave(data),
       error => this.handleErrorOnSave(error)
     );
-    // 9
+
     console.log(this.itemToSend);
 
     // this.submitingFormData.itemToSend = this.itemToSend;
     // this.submitingFormData.formId = this.formId;
     // console.log(this.submitingFormData, this.submitingFormData.itemToSend);
      // this.questionnaireService.shareServiceResponseData(this.itemToSend);
-      // 8
+
      // this.questionnaireService.shareServiceResponseData(this.responseId);
-     // 10
+
 
 
    }
 
    savingData() {
-     // 6
+
      this.getDate();
 
      // To-Do: check if has dependents => add dependents, add patient/#, subject, exstention
@@ -137,10 +137,10 @@ export class NewServiceRequestComponent implements OnInit {
        this.items.forEach(element => {
          console.log(element.text);
 
-        //  if(element.text === 'Dependent Involved') {
-        //    this.dependentNumber = '0';
-        //    return element.answer = this.dependentNumber;
-        //  }
+         if (element.text === 'Dependent Involved') {
+           this.dependentNumber = '0';
+           return element.answer = this.dependentNumber;
+         }
        });
      }
 
@@ -160,24 +160,24 @@ export class NewServiceRequestComponent implements OnInit {
           }]
         };
       });
-// 7
+
       console.log(this.itemToSend);
   }
 
    addDependent() {
 
    }
-// 2
+
   handleSuccess(data) {
     this.qrequest = data.item;
-    // 3
+
     console.log(this.qrequest);
 
    this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text}));
-   // 4
+
     console.log(this.items);
     this.checkDependentItem(this.items);
-    // 5
+
     console.log(this.dependents);
 
     console.log(this.responseId);
@@ -200,7 +200,7 @@ export class NewServiceRequestComponent implements OnInit {
     console.log(this.responseId);
     this.questionnaireService.shareResponseId(this.responseId);
     this.questionnaireService.shareServiceFormId(this.formId);
-    // 11
+
     this.router.navigate(['/summary']);
   }
 
@@ -240,7 +240,7 @@ export class NewServiceRequestComponent implements OnInit {
   }
 
   handleSuccessResponse(data) {
-    // 23
+
     console.log(data);
     this.itemToSend = data;
     console.log(this.itemToSend);
@@ -290,6 +290,10 @@ export class NewServiceRequestComponent implements OnInit {
         i = '0' + i;
     }
     return i;
+}
+
+addDocument() {
+// add documents
 }
 
 
