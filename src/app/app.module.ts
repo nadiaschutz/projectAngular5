@@ -26,6 +26,7 @@ import { UserService } from './service/user.service';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ServReqMainComponent } from './components/serv-req-main/serv-req-main.component';
+import { DistrictOfficeComponent } from './components/district-office/district-office.component';
 
 
 
@@ -34,6 +35,7 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
   { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
   { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
+  { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService] },
   { path: '', component: AuthComponent }
 ];
 
@@ -51,7 +53,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     SidebarComponent,
     NewServiceRequestComponent,
     NewServiceRequestNoClientComponent,
-    ServReqMainComponent
+    ServReqMainComponent,
+    DistrictOfficeComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

@@ -39,6 +39,7 @@ export class NewServiceRequestComponent implements OnInit {
 
     this.context = new Context('https://bcip.smilecdr.com/fhir-request');
     this.temp = new NewQuestionnaire(this.context, '1896');
+    console.log(this.temp.returnQuestionObject());
     console.log(this.context);
     console.log(this.temp);
   }
