@@ -6,7 +6,7 @@
   
   <!-- try [for]="value.text"...
   and value.text has to be the id of the input element or what element you have there -->
-  <form #serReqForm="ngForm" (ngSubmit) = "onSubmit()">
+  <form #serReqForm="ngForm">
   
     <!-- <div *ngIf="temp.returnQuestionObject()"> -->
       <!-- <div *ngFor="let value of temp.returnQuestionObject().item; let i = index" class="col-6-custom"> -->
@@ -32,10 +32,16 @@
   
         
         <div class="form-check" *ngIf="el.type==='boolean' && el.text!=='Dependent Involved'">
-          <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-          <label class="form-check-label"
+          <!-- <input class="form-check-input" 
+          type="checkbox"
+          name='{{el.text}}'
+          (change)="addprop1($event)"> -->
+          <!-- <label class="form-check-label"
           for="defaultCheck1">
               {{el.linkId}} {{el.text}}
+          </label> -->
+          <label class="checkbox-inline">
+            <input type="checkbox" name='{{el.text}}' [(ngModel)]="items[i].answer">{{el.linkId}} {{el.text}}
           </label>
   
         </div>
@@ -166,7 +172,7 @@
           
           
                   <tbody *ngIf="documents !==null">
-                    <tr *ngFor="let q of servRequests ">
+                    <tr *ngFor="let q of servRequests">
                       <td>{{q.resource.id}}</td>
                       <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
                       <td>{{q}}</td>
@@ -186,9 +192,9 @@
   
     
    
-    <button class="btn btn-primary" type="submit">Next</button>
-    <button class="btn btn-secondary" type="submit">Save</button>  
-    <button class="btn btn-secondary" type="button">Cancel</button> 
+      <button class="btn btn-primary" type="button" (click)="onNext()">Next</button>
+      <button class="btn btn-secondary" type="button" (click)="onSave()">Save</button>  
+      <button class="btn btn-secondary" type="button" (click)="onCancel()">Cancel</button> 
   
   </form>
   <br>

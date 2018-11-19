@@ -65,7 +65,7 @@ export class NewServiceRequestNoClientComponent implements OnInit {
   // @ViewChild('serReqForm') form: NgForm;
 
   formId = '1953';
-
+  responseId = null;
 
 
 
@@ -98,7 +98,7 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     status: null,
     subject: null,
     authored: null,
-    items: []
+    item: []
   };
 
 
@@ -124,56 +124,77 @@ export class NewServiceRequestNoClientComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
+// 1
     this.questionnaireService.getForm(this.formId).subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
   }
 
-  
+
   onCancel() {
     this.router.navigate(['/servreqmain']);
   }
 
- 
-   onSave() {
-    this.savingData();
-    this.questionnaireService.saveRequest(this.itemToSend).subscribe(
-      data => this.handleSuccessOnSave(data),
-      error => this.handleErrorOnSave(error)
-    );
-   }
+
+  //  onSave() {
+  //   this.savingData();
+  //   this.questionnaireService.saveRequest(this.itemToSend).subscribe(
+  //     data => this.handleSuccessOnSave(data),
+  //     error => this.handleErrorOnSave(error)
+  //   );
+  //  }
+
+
    onNext() {
     this.savingData();
+    // 8
     this.questionnaireService.saveRequest(this.itemToSend).subscribe(
       data => this.handleSuccessOnSave(data),
       error => this.handleErrorOnSave(error)
     );
+    // 9
     console.log(this.itemToSend);
 
     // this.submitingFormData.itemToSend = this.itemToSend;
     // this.submitingFormData.formId = this.formId;
     // console.log(this.submitingFormData, this.submitingFormData.itemToSend);
-     this.questionnaireService.shareServiceResponseData(this.itemToSend);
-     this.questionnaireService.shareServiceFormId(this.formId);
-     this.router.navigate(['/summary']);
+     // this.questionnaireService.shareServiceResponseData(this.itemToSend);
+      // 8
+     // this.questionnaireService.shareServiceResponseData(this.responseId);
+     // 10
+
 
    }
 
    savingData() {
+     // 6
      this.getDate();
 
+     
+
      // To-Do: check if has dependents => add dependents, add patient/#, subject, exstention
+
+     if (this.dependents === true) {
+      
+       this.items.forEach(element => {
+         console.log(element.text);
+
+         if(element.text === 'Dependent Involved') {
+           this.dependentNumber = '0';
+           return element.answer = this.dependentNumber;
+         }
+       });
+     }
 
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
         status: 'in-progress',
         authored: this.myDay,
-        items: []
+        item: []
       };
 
-      this.itemToSend.items = this.items.map(el => {
+      this.itemToSend.item = this.items.map(el => {
         return {
           linkId: el.linkId,
           text: el.text,
@@ -182,22 +203,31 @@ export class NewServiceRequestNoClientComponent implements OnInit {
           }]
         };
       });
-
+// 7 
       console.log(this.itemToSend);
   }
 
    addDependent() {
 
    }
-
+// 2
   handleSuccess(data) {
     this.qrequest = data.item;
+    // 3
     console.log(this.qrequest);
 
    this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text}));
+   // 4
     console.log(this.items);
     this.checkDependentItem(this.items);
+    // 5
     console.log(this.dependents);
+
+    console.log(this.responseId);
+   if (this.responseId === null) {
+    this.getResponseId();
+   }
+
 
   }
 
@@ -209,6 +239,12 @@ export class NewServiceRequestNoClientComponent implements OnInit {
 
   handleSuccessOnSave(data) {
     console.log(data);
+    this.responseId = data.id;
+    console.log(this.responseId);
+    this.questionnaireService.shareResponseId(this.responseId);
+    this.questionnaireService.shareServiceFormId(this.formId);
+    // 11
+    this.router.navigate(['/summary']);
   }
 
 
@@ -216,8 +252,59 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     console.log(error);
   }
 
+  getResponseId() {
+    this.questionnaireService.newResponseIdSubject.subscribe(
+      data => this.handleSuccessResponseId(data),
+      error => this.handleErrorResponseId(error)
+    );
+  }
 
- 
+  handleSuccessResponseId(data) {
+    console.log(data);
+    this.responseId = data;
+    console.log(this.responseId);
+    // get data from the server
+
+    if (this.responseId !== null) {
+      this.getResponse();
+    }
+  }
+
+  handleErrorResponseId(error) {
+    console.log(error);
+  }
+
+
+  getResponse() {
+    this.questionnaireService.getResponse(this.responseId).subscribe(
+      data => this.handleSuccessResponse(data),
+      error => this.handleErrorResponse(error)
+    );
+  }
+
+  handleSuccessResponse(data) {
+    // 23
+    console.log(data);
+    this.itemToSend = data;
+    console.log(this.itemToSend);
+    console.log(this.items);
+
+    this.items = this.itemToSend.item.map(el => {
+      return {
+        linkId: el.linkId,
+        text: el.text,
+        answer: el.answer[0].valueString
+      };
+    });
+
+    console.log(this.items);
+  }
+
+  handleErrorResponse(error) {
+    console.log(error);
+  }
+
+
 
   // get date for authored: '2018-11-08T15:41:00.581+00:00'
 
@@ -232,9 +319,9 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     this.msec = this.today.getMilliseconds();
 
     this.myDate();
-    
+
     // to-do: fix mlseconds and timeZone
-    
+
     // console.log(msec);
   }
   myDate() {

@@ -16,5 +16,5 @@ export interface ItemToSend {
           display: string;
         };
         authored: string;
-        items: any [];
+        item: any [];
       }
