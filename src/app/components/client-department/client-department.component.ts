@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { UserService } from '../../service/user.service';
 @Component({
   selector: 'app-client-department',
   templateUrl: './client-department.component.html',
@@ -7,9 +7,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ClientDepartmentComponent implements OnInit {
 
-  constructor() { }
+
+  constructor(
+    private userService: UserService
+  ) { }
 
   ngOnInit() {
+
+    const departments = [];
+
+
   }
 
 }

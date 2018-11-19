@@ -85,6 +85,12 @@ export class DependentComponent implements OnInit {
 
   branches: any;
 
+  employeelist = [];
+
+  // Link ID used to assign to Dependent
+
+  depLinkID;
+
   constructor(
 
     private fb: FormBuilder,
@@ -107,7 +113,6 @@ export class DependentComponent implements OnInit {
 
     this.dependentsArray = new Array;
 
-
     // Set Department List
 
     this.userService.getDepartmentList().subscribe(
@@ -119,6 +124,11 @@ export class DependentComponent implements OnInit {
 
     this.userService.getBranchList().subscribe(
       data => this.setBranchList(data),
+      error => this.handleError(error)
+    );
+
+    this.patientService.getAllPatientData().subscribe(
+      data => this.loadListOfPatients(data),
       error => this.handleError(error)
     );
 
@@ -146,7 +156,7 @@ export class DependentComponent implements OnInit {
   // setLinkId() {
   //   const tempObj = this.userService.getObjectBase;
   //   for (const entry of tempObj.entry) {
-      
+
   //   }
 
   // }
@@ -165,16 +175,22 @@ export class DependentComponent implements OnInit {
     const dependent_telecom_email = new Dependent.Telecom;
     const dependent_telecom_phone = new Dependent.Telecom;
     const dependent_extension_dependentlink = new Dependent.Extension;
+    const dependent_extension_type = new Dependent.Extension;
 
-    const linkId = localStorage.getItem('employee');
-    const parsedId = JSON.parse(linkId);
 
+
+    // Assign link ID to dependent
 
     dependent_extension_dependentlink.url = 'https://bcip.smilecdr.com/fhir/dependentlink';
+    dependent_extension_dependentlink.valueString = this.depLinkID;
 
-    for (const item of this.userService.getObjectBase().entry) {
-      dependent_extension_dependentlink.valueString = item.resource.extension[2].valueString;
-    }
+    // Save type of patient (dependent in this case)
+
+    // Type extension
+
+    dependent_extension_type.url = 'https://bcip.smilecdr.com/fhir/employeetype';
+    dependent_extension_type.valueString = this.dependentFormGroup.get('type').value;
+
 
     // Dependent Address
 
@@ -205,7 +221,7 @@ export class DependentComponent implements OnInit {
     dependent_telecom_phone.use = 'work';
 
     // Telecome (email)
-    this.dependent.extension = [dependent_extension_dependentlink];
+    this.dependent.extension = [dependent_extension_dependentlink, dependent_extension_type];
     dependent_telecom_email.system = 'email';
     dependent_telecom_email.value = this.dependentFormGroup.get('email').value;
     dependent_telecom_email.use = 'work';
@@ -222,13 +238,16 @@ export class DependentComponent implements OnInit {
     const finalJSON = JSON.stringify(this.dependent);
     this.dependentsArray.push(finalJSON);
 
-
+    console.log(this.dependent);
     this.userService.setObjectBase(this.dependent);
 
 
     this.patientService.postPatientData(finalJSON);
+
     // this.bundleObjects();
   }
+
+
 
   // Head over to summary screen
   goToSummary() {
@@ -249,6 +268,39 @@ export class DependentComponent implements OnInit {
 
   handleError(error) {
     console.log(error);
+  }
+
+  grabID(event: any) {
+
+    const dependentlinkID = event.target.value;
+    this.employeelist.forEach(item => {
+      if (item.id === dependentlinkID) {
+        item.extension.forEach(element => {
+          if (element.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+            this.assignIDtoDependent(element.valueString);
+          }
+        });
+      }
+    });
+  }
+
+  assignIDtoDependent(data) {
+    this.depLinkID = data;
+  }
+
+  // Initialize a list of Patients in the system, allowing the user to select
+  // which Employee they can link to
+
+  loadListOfPatients(data) {
+    this.employeelist = [];
+    if (data.entry) {
+      data.entry.forEach(item => {
+        const individualEntry = item.resource;
+        this.employeelist.push(individualEntry);
+      });
+    } else {
+      this.employeelist.push(data);
+    }
   }
 
   get resourceType() {

@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import * as Employee from '../../interface/patient';
 import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
+import { Item } from 'src/app/interface/FHIR';
 
 @Component({
   selector: 'app-employee-summary',
@@ -19,12 +20,12 @@ import * as uuid from 'uuid';
 })
 export class EmployeeSummaryComponent implements OnInit {
 
-
-  patientlist;
-  tempobj;
-  parsedObject;
-  parsedObjecttwo;
-
+  id = '';
+  // linkID = 'a44109ad-e58b-47cd-b348-7556e4d2c117';
+  linkID = '';
+  selected;
+  employeetype;
+  dependentArray = [];
   constructor(
     private fb: FormBuilder,
     private httpClient: HttpClient,
@@ -35,53 +36,83 @@ export class EmployeeSummaryComponent implements OnInit {
     private router: Router
   ) { }
 
-  test: FormGroup;
-
   ngOnInit() {
 
-    const sessionToUpload = this.userService.getObjectBase();
 
+    this.id = this.userService.returnSelectedID();
 
-    const dependents = JSON.parse(localStorage.getItem('dependents'));
-    const retrievedObject = localStorage.getItem('employee');
+    if (this.id) {
+      this.patientService.getPatientDataByID(this.id).subscribe(
+        data => this.populatePatientArray(data),
+        error => this.handleError(error)
+      );
+      this.setLinkID();
 
-    this.parsedObject = JSON.parse(retrievedObject);
-
-    console.log(this.parsedObject);
-
-    const bundle = localStorage.getItem('bundle');
-    this.parsedObjecttwo = JSON.parse(bundle);
-    console.log(this.parsedObjecttwo);
-
-    this.test = new FormGroup({
-      type: new FormControl('')
-    });
+    } else if (!this.id) {
+      this.router.navigateByUrl('/dashboard');
+    }
 
 
 
-    this.patientService.getAllPatientData().subscribe(
-      data => this.setPatientList(data),
+    this.patientService.getPatientByLinkID(this.linkID).subscribe(
+      data => this.populateDependentArray(data),
       error => this.handleError(error)
     );
 
-    if (this.patientlist) {
-      for (const i of this.patientlist) {
-        console.log('the id: ', i.resource.id);
-      }
-    }
-
+    // this.setDependentLinkID();
   }
 
-  selectedPatient( event: any) {
+  populatePatientArray(data) {
+    this.selected = data;
+  }
+
+  selectedPatient(event: any) {
     console.log(event.target.value);
   }
 
-  setPatientList(data) {
-    this.patientlist = data.entry;
+  newServiceRequest() {
+    this.router.navigate(['/newservicerequest']);
   }
-
   handleError(error) {
     console.log(error);
+  }
+
+  backToDashboard() {
+    this.router.navigateByUrl('/dashboard');
+  }
+
+  populateDependentArray(data) {
+    this.dependentArray = [];
+    if (data.entry) {
+      data.entry.forEach(element => {
+        const individualEntry = element.resource;
+        this.dependentArray.push(individualEntry);
+        console.log(this.dependentArray);
+      });
+    }
+  }
+
+  checkEmployeeType() {
+    for (const extension of this.selected.extension) {
+      if (extension.url === 'https://bcip.smilecdr.com/fhir/employeetype' && extension.valueString === 'Employee') {
+        this.employeetype = true;
+        console.log(this.employeetype);
+      } else {
+        this.employeetype = false;
+        console.log(this.employeetype);
+
+      }
+    }
+  }
+
+  setLinkID() {
+    this.linkID = '';
+    for (const extension of this.selected.extension) {
+      if (extension.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+        this.linkID = extension.valueString;
+        console.log(this.linkID);
+      }
+    }
   }
 
 }
