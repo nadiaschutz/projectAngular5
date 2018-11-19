@@ -143,7 +143,6 @@ export class EmployeeComponent implements OnInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
-
   ngOnInit() {
 
 
@@ -274,9 +273,7 @@ export class EmployeeComponent implements OnInit {
 
     // Employee identifer
 
-    // this.employee.Identifier.use = 'sad';
-
-    this.employee_identifier.use = 'work';
+    this.employee_identifier.use = 'official';
     this.employee_identifier.value = this.employeeFormGroup.get('id').value;
 
     // Employee Address
@@ -387,6 +384,11 @@ export class EmployeeComponent implements OnInit {
     // this.router.navigate(['/dashboard']);
 
     this.patientService.postPatientData(finalJSON);
+
+  }
+
+  returnToDashboard () {
+    this.router.navigateByUrl('/dashboard');
 
   }
 

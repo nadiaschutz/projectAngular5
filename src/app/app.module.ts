@@ -17,7 +17,7 @@ import { NewServiceRequestComponent } from './components/new-service-request/new
 import { NewServiceRequestNoClientComponent } from './components/new-service-request-no-client/new-service-request-no-client.component';
 import { DependentComponent } from './components/dependent/dependent.component';
 import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
-
+import { ClientDepartmentComponent } from './components/client-department/client-department.component';
 // import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
@@ -25,7 +25,6 @@ import { AuthGuardService } from '../app/service/auth-guard.service';
 import { QuestionnaireService } from './service/questionnaire.service';
 import { PatientService } from './service/patient.service';
 import { UserService } from './service/user.service';
-
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ServReqMainComponent } from './components/serv-req-main/serv-req-main.component';
@@ -33,7 +32,6 @@ import { SummaryPageComponent } from './components/summary-page/summary-page.com
 
 import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
-import { ClientDepartmentComponent } from './components/client-department/client-department.component';
 
 
 const routes: Routes = [
@@ -42,7 +40,10 @@ const routes: Routes = [
   { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
   { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
-  { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
+  // { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
+  { path: 'employeesummary', component: EmployeeSummaryComponent },
+  { path: 'newservicerequest', component: NewServiceRequestComponent },
+  { path: 'clientdepartment', component: ClientDepartmentComponent },
   { path: '', component: AuthComponent }
 ];
 
@@ -55,6 +56,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     DashboardComponent,
     EmployeeComponent,
+    EmployeeSummaryComponent,
+    DependentComponent,
     AuthComponent,
     NavbarComponent,
     SidebarComponent,

@@ -22,6 +22,11 @@ export class PatientService {
       '/Patient' + query, { headers: this.getHeaders() });
   }
 
+  getPatientByLinkID(query: string) {
+    return this.httpClient.get<JSON>(environment.queryURI +
+      '/Patient?dependentlink=' + query, { headers: this.getHeaders() });
+  }
+
   postPatientData(patient) {
     this.httpClient.post(environment.queryURI + '/Patient/', patient, { headers: this.postFHIRHeaders() }).subscribe(
       data => {

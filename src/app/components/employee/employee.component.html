@@ -2,9 +2,8 @@
 
 <div id="content-form">
 
-  <!-- {{ employeeFormGroup.value | json }} -->
 
-  <form [formGroup]="employeeFormGroup" novalidate> 
+  <form [formGroup]="employeeFormGroup" novalidate>
     <div class="row">
       <h4>
         Client Information
@@ -133,15 +132,19 @@
       </div>
     </div>
     <div class="row">
-      <button class="btn form-button" (click)="setEmployee()">Submit</button>
-      <button class="btn form-button" (click)="addDependent()" >addDependent</button>
-      <button class="btn form-button" (click)="goToSummary()" > go to Summary</button>
-      <button class="btn form-button" (click)="printthing()" > go to Summary</button>
+      <div class="col">
+          <button class="btn form-button" (click)="setEmployee()">Submit</button>
+          <button class="btn form-button" (click)="addDependent()">Add a Dependent</button>
+      </div>
+      <div class="col">
+          <button class="btn form-button" (click)="returnToDashboard()">Return to Dashboard</button>
+      </div>
+      
 
 
     </div>
   </form>
 
-  
+
 </div>
 <br />

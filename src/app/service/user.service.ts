@@ -19,7 +19,7 @@ export class UserService {
   };
 
 
-  entry;
+  selectID = '';
   constructor(
 
     private httpClient: HttpClient,
@@ -36,14 +36,18 @@ export class UserService {
 
   getObjectBase() {
 
-    // this.newPatientSubject.subscribe ( data => console.log (data));
-    // console.log(this.sessionObject);
     return this.sessionObject;
   }
   // TODO Move all calls to FHIR resources into fhir.service.ts
 
-  createUserAccount(type: string) {
 
+  getSelectedID(data) {
+    this.selectID = data;
+    console.log('ID in system: ' , this.selectID);
+  }
+
+  returnSelectedID() {
+    return this.selectID;
   }
 
   logout() {
@@ -53,7 +57,7 @@ export class UserService {
     //     this.router.navigate(['/']);
     // }
 
-    const header = this.getHeaders();
+    const header = this.getLoginHeaders();
 
     this.httpClient.post(environment.logoutURI + '/logout?cb=none&revoke=token', {}, { headers: header, withCredentials: true })
       .subscribe(item => {
@@ -100,14 +104,6 @@ export class UserService {
   }
   // Initialize headers for the login section
   getLoginHeaders(): HttpHeaders {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded ',
-      'Accept': 'application/json'
-    });
-    return headers;
-  }
-
-  getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded ',
       'Accept': 'application/json'
