@@ -41,7 +41,7 @@ const routes: Routes = [
   { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
   { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
-  // { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
+  { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
   { path: 'employeesummary', component: EmployeeSummaryComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: 'clientdepartment', component: ClientDepartmentComponent },
