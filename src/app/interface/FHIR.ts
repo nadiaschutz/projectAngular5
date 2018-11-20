@@ -312,6 +312,17 @@ export class FHIROption extends BackboneElement {
     }
 }
 
+export class Context extends BackboneElement {
+    encounter: Reference;
+
+}
+
+export class Position extends BackboneElement {
+    longitude: number;
+    latitude: number;
+    altitude: number;
+}
+
 export class Item extends BackboneElement {
     linkId: string;
     definition: string;
@@ -385,6 +396,7 @@ export class Patient extends Resource implements Serializable<Patient> {
     birthDate: Date;
     address: Address;
     maritalStatus: CodeableConcept;
+    // TODO - fix this to not be a backbone element
     contact: BackboneElement;
     communication: Communication[];
     generalPractitioner: Reference[];
@@ -404,7 +416,6 @@ export class Patient extends Resource implements Serializable<Patient> {
     }
 }
 
-
 export class DocumentReference extends Resource implements Serializable<DocumentReference> {
     masterIdentifier: Identifier;
     status: Code;
@@ -416,6 +427,99 @@ export class DocumentReference extends Resource implements Serializable<Document
     content: Content[];
     // TODO - add rest of the fields from the spec
     deserialize(jsonObject: any): DocumentReference {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+
+export class Organization extends Resource implements Serializable<Organization> {
+
+    identifier: Identifier[];
+    active: boolean;
+    status: Code;
+    name: string;
+    alias: string[];
+    description: string;
+    type: CodeableConcept[];
+    telecom: ContactPoint[];
+    address: Address[];
+    partOf: Reference;
+    contact: Contact[];
+    endpoint: Reference[];
+
+    deserialize(jsonObject: any): Organization {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+export class Location extends Resource implements Serializable<Location> {
+
+    identifier: Identifier[];
+    status: Code;
+    operationalStatus: Coding;
+    name: string;
+    alias: string[];
+    description: string;
+    mode: Code;
+    type: CodeableConcept;
+    telecom: ContactPoint;
+    address: Address;
+    physicalType: CodeableConcept;
+    managingOrganization: Reference;
+    partOf: Reference;
+    endpoint: Reference[];
+
+    deserialize(jsonObject: any): Location {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+export class Account extends Resource implements Serializable<Account> {
+
+    identifier: Identifier[];
+    status: Code;
+    type: CodeableConcept;
+    name: string;
+    subject: Reference;
+    period: Period;
+    active: Period;
+    // TODO: fix mapping for money
+    // balance: Money;
+    alias: string[];
+    description: string;
+    mode: Code;
+    telecom: ContactPoint;
+    address: Address;
+    physicalType: CodeableConcept;
+    managingOrganization: Reference;
+    partOf: Reference;
+    endpoint: Reference[];
+
+    deserialize(jsonObject: any): Account {
         const that = this;
         Object.entries(jsonObject).forEach(function (value) {
             if (!(typeof value[1] === 'object')) {

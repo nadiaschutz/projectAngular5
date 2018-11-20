@@ -84,7 +84,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     }),
     NgBootstrapFormValidationModule,
-    NgBootstrapFormValidationModule.forRoot()
+    NgBootstrapFormValidationModule.forRoot(),
   ],
   providers: [
     AuthGuardService,

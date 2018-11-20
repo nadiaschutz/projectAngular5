@@ -46,7 +46,6 @@ export class EmployeeSummaryComponent implements OnInit {
         data => this.populatePatientArray(data),
         error => this.handleError(error)
       );
-      this.setLinkID();
 
     } else if (!this.id) {
       this.router.navigateByUrl('/dashboard');
@@ -54,16 +53,22 @@ export class EmployeeSummaryComponent implements OnInit {
 
 
 
+    // this.setDependentLinkID();
+  }
+
+  populatePatientArray(data) {
+    this.linkID = '';
+    this.selected = data;
+    data.extension.forEach(item => {
+      if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+        this.linkID = item.valueString;
+      }
+    });
     this.patientService.getPatientByLinkID(this.linkID).subscribe(
       data => this.populateDependentArray(data),
       error => this.handleError(error)
     );
 
-    // this.setDependentLinkID();
-  }
-
-  populatePatientArray(data) {
-    this.selected = data;
   }
 
   selectedPatient(event: any) {
@@ -105,14 +110,5 @@ export class EmployeeSummaryComponent implements OnInit {
     }
   }
 
-  setLinkID() {
-    this.linkID = '';
-    for (const extension of this.selected.extension) {
-      if (extension.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
-        this.linkID = extension.valueString;
-        console.log(this.linkID);
-      }
-    }
-  }
 
 }
