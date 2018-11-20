@@ -40,6 +40,7 @@ export class EmployeeSummaryComponent implements OnInit {
 
 
     this.id = this.userService.returnSelectedID();
+    console.log(this.id);
 
     if (this.id) {
       this.patientService.getPatientDataByID(this.id).subscribe(

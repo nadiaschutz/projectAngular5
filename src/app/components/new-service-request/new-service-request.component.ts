@@ -12,6 +12,7 @@ import { Item } from '../models/item.model';
 import { Element } from '../models/element.model';
 import { forEach } from '@angular/router/src/utils/collection';
 import { ItemToSend } from '../models/itemToSend.model';
+import { PatientService } from 'src/app/service/patient.service';
 
 @Component({
   selector: 'app-new-service-request',
@@ -25,6 +26,9 @@ export class NewServiceRequestComponent implements OnInit {
 
   formId = '1952';
   responseId = null;
+  clientId = null;
+  clientName = null;
+  clientBoD = null;
 
 
 
@@ -52,7 +56,7 @@ export class NewServiceRequestComponent implements OnInit {
   };
 
   itemToSend: ItemToSend = {
-    resourceType: 'string',
+    resourceType: '',
     extension: null,
     status: null,
     subject: null,
@@ -79,7 +83,9 @@ export class NewServiceRequestComponent implements OnInit {
   constructor(
     public translate: TranslateService,
     private questionnaireService: QuestionnaireService,
-    private router: Router
+    private router: Router,
+    private userService: UserService,
+    private patientService: PatientService,
   ) { }
 
   ngOnInit() {
@@ -88,6 +94,18 @@ export class NewServiceRequestComponent implements OnInit {
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
+    this.clientId = this.userService.returnSelectedID();
+    console.log(this.clientId);
+
+    if (this.clientId) {
+      this.patientService.getPatientDataByID(this.clientId).subscribe(
+        data => this.getClientData(data),
+        error => this.handleErrorClientError(error)
+      );
+
+    } else if (!this.clientId) {
+      this.router.navigateByUrl('/dashboard');
+    }
   }
 
 
@@ -130,7 +148,9 @@ export class NewServiceRequestComponent implements OnInit {
 
      this.getDate();
 
-     // To-Do: check if has dependents => add dependents, add patient/#, subject, exstention
+     // To-Do: check if has dependents => add dependents
+
+     // ToDo: add patient/#, subject, exstention
 
      if (this.dependents === true) {
 
@@ -148,6 +168,20 @@ export class NewServiceRequestComponent implements OnInit {
         resourceType: 'QuestionnaireResponse',
         status: 'in-progress',
         authored: this.myDay,
+        subject: {
+          reference: 'Patient/' + this.clientId,
+          display: this.clientName
+        },
+        extension: [
+          {
+            url: 'https://bcip.smilecdr.com/fhir-request/name',
+            valueCode: this.clientName
+          },
+          {
+            url: 'https://bcip.smilecdr.com/fhir-request/birthDate',
+            valueDateTime: this.clientBoD
+          }
+        ],
         item: []
       };
 
@@ -168,30 +202,38 @@ export class NewServiceRequestComponent implements OnInit {
 
    }
 
+
+   getClientData(data) {
+     console.log(data);
+     this.clientBoD = data.birthDate;
+     this.clientName = data.name[0].given[0] + ' ' + data.name[0].family;
+   }
+
+   handleErrorClientError(error) {
+     console.log(error);
+   }
+
   handleSuccess(data) {
     this.qrequest = data.item;
-
     console.log(this.qrequest);
-
-   this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text}));
-
+    this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text}));
     console.log(this.items);
     this.checkDependentItem(this.items);
-
     console.log(this.dependents);
 
     console.log(this.responseId);
    if (this.responseId === null) {
     this.getResponseId();
    }
-
-
   }
 
 
   handleError (error) {
     console.log(error);
   }
+
+
+
 
 
   handleSuccessOnSave(data) {
@@ -204,10 +246,13 @@ export class NewServiceRequestComponent implements OnInit {
     this.router.navigate(['/summary']);
   }
 
-
   handleErrorOnSave (error) {
     console.log(error);
   }
+
+
+
+
 
   getResponseId() {
     this.questionnaireService.newResponseIdSubject.subscribe(
