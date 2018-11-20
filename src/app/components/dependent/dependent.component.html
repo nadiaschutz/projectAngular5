@@ -1,18 +1,20 @@
-<h1>Create Employee & Dependent Records</h1>
+<h1>Create Client Dependent Records</h1>
 
 <div id="content-form">
 
+  <!-- {{ dependentFormGroup.value | json }} -->
 
-  <form [formGroup]="employeeFormGroup" novalidate>
+
+  <form [formGroup]="dependentFormGroup" novalidate>
     <div class="row">
       <h4>
-        Client Information
+        Dependent Information
       </h4>
     </div>
     <div class="row">
       <div class="col-6">
         <label for="type">Client Type</label>
-        <select class="form-control" formControlName="type" id="type" required>
+        <select class="form-control" formControlName="type" id="type">
           <option *ngFor="let type of accountTypes" [value]="type.value">
             {{type.viewValue}}
           </option>
@@ -23,7 +25,7 @@
     <div class="row">
       <div class="col">
         <label for="givenName">First Name</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName" required>
+        <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName">
       </div>
       <div class="col">
         <label for="familyName">Last Name</label>
@@ -86,68 +88,24 @@
     </div>
 
     <div class="row">
-      <h4>
-        Employment Information
-      </h4>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label for="jobTitle">Job Title</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle">
-      </div>
-      <div class="col">
-        <label for="id">Associated Employee PRI</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label for="departmentName">Derpartment Name</label>
-        <select class="form-control" formControlName="departmentName" id="departmentName">
-          <option *ngFor="let dept of department" [value]="dept">
-            {{dept}}
-          </option>
-        </select>
-      </div>
-      <div class="col">
-        <label for="departmentBranch">Department Branch</label>
-        <select class="form-control" formControlName="departmentBranch" id="departmentBranch">
-          <option *ngFor="let branch of branches" [value]="branch">
-            {{branch}}
+      <div class="col-6">
+        <label for="type">Clients on System</label>
+        <select class="form-control"  (change)="grabID($event)">
+          <option *ngFor="let employee of employeelist" [value]="employee.id">
+            <div *ngFor="let name of employee.name">
+              {{name.given}} {{name.family}}
+            </div>
           </option>
         </select>
       </div>
     </div>
 
     <div class="row">
-      <div class="col">
-        <label for="referenceOne">Cross-reference No. 1</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne">
-      </div>
-      <div class="col">
-        <label for="referenceTwo">Cross-reference No. 2</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
-      </div>
+      <button class="btn form-button" (click)="setDependent()">Save Dependent</button>
+      <button class="btn form-button" (click)="backToEmployee()">Employee</button>
     </div>
-
   </form>
 
-  <div class="row">
-    <div class="col">
-      <button class="btn form-button" (click)="setEmployee()">Submit</button>
-      <button class="btn form-button" (click)="addDependent()">Add a Dependent</button>
-    </div>
-  </div>
-  <div class="row">
 
-    <div class="col">
-      <button class="btn form-button" (click)="returnToDashboard()">Return to Dashboard</button>
-    </div>
-
-
-
-  </div>
 </div>
 <br />

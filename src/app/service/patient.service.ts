@@ -8,6 +8,11 @@ export class PatientService {
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
+  getAllPatientData() {
+    return this.httpClient.get(environment.queryURI +
+      '/Patient/', { headers: this.getHeaders() });
+  }
+
   getPatientDataByID(pid) {
     return this.httpClient.get(environment.queryURI +
       '/Patient/' + pid, { headers: this.getHeaders() });
@@ -15,6 +20,11 @@ export class PatientService {
   getPatientData(query: string) {
     return this.httpClient.get<JSON>(environment.queryURI +
       '/Patient' + query, { headers: this.getHeaders() });
+  }
+
+  getPatientByLinkID(query: string) {
+    return this.httpClient.get<JSON>(environment.queryURI +
+      '/Patient?dependentlink=' + query, { headers: this.getHeaders() });
   }
 
   postPatientData(patient) {
@@ -26,6 +36,10 @@ export class PatientService {
         console.log('Error', error);
       }
     );
+  }
+
+  sendObjecttoBundle(data) {
+    return data;
   }
 
   getHeaders(): HttpHeaders {

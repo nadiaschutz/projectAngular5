@@ -85,7 +85,7 @@ export class DashboardComponent implements OnInit {
 
 
   handleSuccess(data) {
-    console.log(data);
+    // console.log(data);
     this.qrequest = [];
     if (data.entry) {
       data.entry.forEach(item => {
@@ -124,10 +124,10 @@ export class DashboardComponent implements OnInit {
     console.log(error);
   }
 
-  // ngOnDestroy() {
-  //   this.patientService.unsubscribe();
-  // }
-
+  printThis(data) {
+   this.userService.getSelectedID(data);
+   this.router.navigateByUrl('/employeesummary');
+  }
   newPSOHPButton() {
     this.router.navigate(['/psohpform']);
   }
@@ -138,7 +138,7 @@ export class DashboardComponent implements OnInit {
 
   newEmployeeButton() {
 
-    this.router.navigate(['/employeeform']);
+    this.router.navigateByUrl('/employeeform');
   }
 
   checkRegionalOfficeButtion() {

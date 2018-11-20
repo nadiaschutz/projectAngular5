@@ -67,6 +67,7 @@ export class Type {
 export class Identifier {
     system: string;
     value: string;
+    use: string;
     type: Type;
 }
 
@@ -90,7 +91,8 @@ export class Address {
     city: string;
     state: string;
     country: string;
-    postalcode: string;
+    postalCode: string;
+    text: string;
 }
 
 export class Coding2 {

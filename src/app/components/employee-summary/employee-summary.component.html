@@ -1,0 +1,141 @@
+<div *ngIf="selected">
+  <div *ngFor="let name of selected.name">
+    <h1 class="title">Client Review - {{name.given}} {{name.family}} </h1>
+    <div class="row">
+      <div class="col-2">
+        <span>First Name</span><br />
+        <span id="givenName"><ins>{{name.given}}</ins></span>
+      </div>
+      <div class="col-2">
+        <span>Last Name</span><br />
+        <span id="familyName"><ins>{{name.family}}</ins></span>
+      </div>
+    </div>
+  </div>
+
+
+  <div>
+    <div class="row">
+      <div class="col-2">
+        <span>Date of Birth</span><br />
+        <span id="dob"><ins>{{selected.birthDate}}</ins></span>
+      </div>
+      <div class="col-4">
+        <span>Language</span><br />
+        <div *ngFor="let language of selected.communication">
+          <span id="dob" *ngFor="let usedLanguage of language.language.coding"><ins>{{usedLanguage.display}}</ins></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<h2 class="title">Contact Information</h2>
+<div *ngIf="selected.telecom">
+  <div class="row">
+    <div class="col-2" *ngFor="let email of selected.telecom">
+      <span>{{email.system}}</span>
+      <div>
+        <span id="dob"><ins>{{email.value}}</ins></span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngFor="let address of selected.address">
+    <div class="row">
+      <div class="col-2">
+        <span>Street Address</span><br />
+        <span *ngFor="let line of address.line"><ins>{{line}}</ins></span>
+      </div>
+      <div class="col-2">
+        <span>City</span><br />
+        <span><ins>{{address.city}}</ins></span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-2">
+        <label for="addressProv">Province</label><br />
+        <span><ins>{{address.state}}</ins></span>
+      </div>
+      <div class="col-2">
+        <label for="addressPcode">Postal Code</label><br />
+        <span><ins>{{address.postalCode}}</ins></span>
+      </div>
+      <div class="col-4">
+        <label for="addressCountry">Country</label><br />
+        <span><ins>{{address.country}}</ins></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div *ngFor="let extension of selected.extension">
+  <div *ngIf="extension.valueString=='Employee'">
+    <h2 class="title">Employment Information</h2>
+    <div>
+
+      <div class="row">
+        <div *ngFor="let extension of selected.extension">
+          <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
+            <span>Job Title</span><br />
+            <span><ins>{{extension.valueString}}</ins></span>
+          </div>
+        </div>
+        <div>
+          <span>Employee PRI</span><br />
+          <span><ins>{{selected.id}}</ins></span>
+        </div>
+      </div>
+      <div class="row">
+        <div *ngFor="let extension of selected.extension">
+          <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
+            <span>Employing Department Name</span><br />
+            <span><ins>{{extension.valueString}}</ins></span>
+          </div>
+          <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">
+            <span>Employing Department Branch</span><br />
+            <span><ins>{{extension.valueString}}</ins></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div *ngFor="let extension of selected.extension">
+          <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferenceone'">
+            <span>Cross Reference</span><br />
+            <span><ins>{{extension.valueString}}</ins></span>
+          </div>
+          <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferencetwo'">
+            <span>Cross Reference</span><br />
+            <span><ins>{{extension.valueString}}</ins></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div *ngFor="let extension of selected.extension">
+    <h2 *ngIf="extension.valueString == 'Employee'">
+      Dependents
+    </h2>
+  </div>
+
+</div>
+<div class="row">
+  <div *ngFor="let dependent of dependentArray">
+    <div *ngFor="let name of dependent.name">
+        <div *ngFor="let extension of selected.extension">
+          <span *ngIf="extension.valueString == 'Dependent'">{{name.given}} {{name.family}} </span>
+        </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <button class="btn form-button" (click)="newServiceRequest()">Create a Service Request</button>
+  <button class="btn form-button" (click)="backToDashboard()">Back to Dashboard</button>
+</div>

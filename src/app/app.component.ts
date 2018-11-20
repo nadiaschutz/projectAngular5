@@ -3,6 +3,10 @@ import { OAuthService, AuthConfig, JwksValidationHandler } from 'angular-oauth2-
 import { environment } from '../environments/environment';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { PatientService } from './service/patient.service';
+import { UserService } from './service/user.service';
+
+import * as Dependent from './interface/patient';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +15,12 @@ import { Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   title = 'nohis';
+
+  sessionObject;
+
   constructor(private oauthService: OAuthService,
+    private userService: UserService,
+    private patientService: PatientService,
     private router: Router) {
 
     // this.configureWithNewConfigApi();
@@ -21,21 +30,18 @@ export class AppComponent implements OnInit {
       clientId: 'NOHIS',
       // redirectUri: 'https://nohis.smilecdr.com/dashboard',
       redirectUri: 'http://localhost:4200/dashboard',
-
       scope: 'launch/patient openid patient/*.read patient/*.write profile'
     });
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
 
   }
 
-    returnTokenStatus() {
-        return this.oauthService.hasValidAccessToken();
-    }
+  returnTokenStatus() {
+    return this.oauthService.hasValidAccessToken();
+  }
 
-    ngOnInit() {
-        // if (this.oauthService.hasValidAccessToken()) {
-        //    this.router.navigate(['/dashboard']);
-        // }
+  ngOnInit() {
+
   }
 
   private configureWithNewConfigApi() {

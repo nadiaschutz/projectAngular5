@@ -1,5 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+
+import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
+import { UserService } from '../../service/user.service';
+import { PatientService } from '../../service/patient.service';
+import { TranslateService } from '@ngx-translate/core';
+
+import * as Dependent from '../../interface/patient';
+import * as datepicker from 'js-datepicker';
+import * as uuid from 'uuid';
+import * as Organization from '../../interface/organization';
 
 @Component({
   selector: 'app-district-office',

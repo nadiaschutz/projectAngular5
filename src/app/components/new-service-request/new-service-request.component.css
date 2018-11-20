@@ -35,3 +35,9 @@ label{
 select{
     font-size: 13px;
 }
+
+/* buttons */
+
+.move-dwn{
+    margin-top: 70px;
+}

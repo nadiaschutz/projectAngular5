@@ -26,7 +26,7 @@ export class ServReqMainComponent implements OnInit {
   };
 
   dateOfBirth = {
-    prefix: 'birthdate=',
+    prefix: 'birthDate=',
     data: null
   };
 
@@ -356,39 +356,63 @@ export class ServReqMainComponent implements OnInit {
   }
   getServiceType(serviceRequestObj): string {
     let serviceType = '-';
-    serviceRequestObj.item.forEach(item => {
-      if (item.linkId === '2') {
-        serviceType = item.text;
-      }
-    });
-    return serviceType;
+    if (serviceRequestObj.item) {
+      serviceRequestObj.item.forEach(item => {
+        if (item.linkId === '2') {
+          serviceType = item.text;
+        }
+      });
+      return serviceType;
+    } else {
+      return '-';
+    }
   }
   getAssessmentType(serviceRequestObj): string {
     let assessmentType = '-';
-    serviceRequestObj.item.forEach(item => {
-      if (item.linkId === '2') {
-        assessmentType = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
-      }
-    });
-    return assessmentType;
+    if (serviceRequestObj.item) {
+      serviceRequestObj.item.forEach(item => {
+        if (item.linkId === '2') {
+          assessmentType = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+        }
+      });
+      return assessmentType;
+    } else {
+      return '-';
+    }
   }
   getRegion(serviceRequestObj): string {
     let serviceType = '-';
-    serviceRequestObj.item.forEach(item => {
-      if (item.linkId === '8') {
-        serviceType = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
-      }
-    });
-    return serviceType;
+    if (serviceRequestObj.item) {
+      serviceRequestObj.item.forEach(item => {
+        if (item.linkId === '8') {
+          serviceType = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+        }
+      });
+      return serviceType;
+    } else {
+      return '-';
+    }
   }
   getCreatedBy(serviceRequestObj): string {
     let serviceType = '-';
-    serviceRequestObj.item.forEach(item => {
-      if (item.linkId === '1') {
-        serviceType = item.answer[0].valueString;
-      }
-    });
-    return serviceType;
+    if (serviceRequestObj.item) {
+      serviceRequestObj.item.forEach(item => {
+        if (item.linkId === '1') {
+          serviceType = item.answer[0].valueString;
+        }
+      });
+      return serviceType;
+    } else {
+      return '-';
+    }
+  }
+
+  getClientName(servReqobj) {
+    if (servReqobj.subject && servReqobj.subject.display) {
+      return servReqobj.subject.display;
+    } else {
+      return '-';
+    }
   }
 
 }
