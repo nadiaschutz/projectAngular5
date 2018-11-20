@@ -118,16 +118,24 @@
 </div>
 
 
-<div *ngFor="let extension of selected.extension">
-  <div *ngIf="extension.url =='https://bcip.smilecdr.com/fhir/dependentlink'">
-    <h2>
-        Dependents 
-      </h2>
-    
+<div class="row">
+  <div *ngFor="let extension of selected.extension">
+    <h2 *ngIf="extension.valueString == 'Employee'">
+      Dependents
+    </h2>
+  </div>
+
+</div>
+<div class="row">
+  <div *ngFor="let dependent of dependentArray">
+    <div *ngFor="let name of dependent.name">
+        <div *ngFor="let extension of selected.extension">
+          <span *ngIf="extension.valueString == 'Dependent'">{{name.given}} {{name.family}} </span>
+        </div>
+    </div>
   </div>
 </div>
 <div class="row">
   <button class="btn form-button" (click)="newServiceRequest()">Create a Service Request</button>
-
   <button class="btn form-button" (click)="backToDashboard()">Back to Dashboard</button>
 </div>
