@@ -43,7 +43,8 @@ export class NewServiceRequestComponent implements OnInit {
     msec: any;
 
   dependents = false;
-  dependentNumber = null;
+  dependentBoolean = false;
+  dependentNumber = 0;
   qrequest: any;
 
   submitingFormData: {
@@ -52,7 +53,7 @@ export class NewServiceRequestComponent implements OnInit {
   };
 
   itemToSend: ItemToSend = {
-    resourceType: 'string',
+    resourceType: '',
     extension: null,
     status: null,
     subject: null,
@@ -67,7 +68,7 @@ export class NewServiceRequestComponent implements OnInit {
   item: Item = {
     linkId: '',
     text: '',
-    answer: ''
+    answer: null
   };
 
 
@@ -88,6 +89,9 @@ export class NewServiceRequestComponent implements OnInit {
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
+
+
+    
   }
 
 
@@ -137,9 +141,12 @@ export class NewServiceRequestComponent implements OnInit {
        this.items.forEach(element => {
          console.log(element.text);
 
-         if (element.text === 'Dependent Involved') {
-           this.dependentNumber = '0';
-           return element.answer = this.dependentNumber;
+         if (element.text === 'Dependent Involved' ) {
+           if (this.dependentNumber === 0) {
+            return element.answer = false;
+           } else {
+            return element.answer = true;
+           }
          }
        });
      }
@@ -152,13 +159,23 @@ export class NewServiceRequestComponent implements OnInit {
       };
 
       this.itemToSend.item = this.items.map(el => {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [{
-            valueString: el.answer
-          }]
-        };
+        if (el.text === 'Dependent Involved' || el.text === 'Health Exam Done Externally') {
+          return {
+            linkId: el.linkId,
+            text: el.text,
+            answer: [{
+              valueBoolean: el.answer
+            }]
+          };
+         } else {
+            return {
+              linkId: el.linkId,
+              text: el.text,
+              answer: [{
+                valueString: el.answer
+              }]
+          };
+        }
       });
 
       console.log(this.itemToSend);
@@ -174,6 +191,12 @@ export class NewServiceRequestComponent implements OnInit {
     console.log(this.qrequest);
 
    this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text}));
+
+   this.items.forEach(item => {
+    if (item.text === 'Health Exam Done Externally' ) {
+      return item.answer = false;
+    }
+  });
 
     console.log(this.items);
     this.checkDependentItem(this.items);
