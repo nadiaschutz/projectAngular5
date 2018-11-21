@@ -43,7 +43,6 @@ export class UserService {
 
   getSelectedID(data) {
     this.selectID = data;
-    console.log('ID in system: ' , this.selectID);
   }
 
   returnSelectedID() {

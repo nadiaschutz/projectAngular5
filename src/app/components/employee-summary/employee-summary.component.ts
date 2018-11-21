@@ -62,10 +62,11 @@ export class EmployeeSummaryComponent implements OnInit {
     data.extension.forEach(item => {
       if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
         this.linkID = item.valueString;
+        console.log('the id is:' , this.linkID);
       }
     });
     this.patientService.getPatientByLinkID(this.linkID).subscribe(
-      data => this.populateDependentArray(data),
+      dataPatient => this.populateDependentArray(dataPatient),
       error => this.handleError(error)
     );
 
