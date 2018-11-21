@@ -350,6 +350,32 @@ export class Resource {
     language: Code;
 }
 
+export class QuestionnaireResponse extends Resource implements Serializable<QuestionnaireResponse> {
+    identifier: Identifier;
+    basedOn: Reference[];
+    parent: Reference[];
+    questionnaire: Reference;
+    status: Code;
+    context: Reference;
+    authored: Date;
+    author: Reference;
+    source: Reference;
+    item: Item[];
+
+    deserialize(jsonObject: any): QuestionnaireResponse {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+
+}
+
 export class Questionnaire extends Resource implements Serializable<Questionnaire> {
     url: string;
     identifier: Identifier[];
@@ -387,6 +413,7 @@ export class Questionnaire extends Resource implements Serializable<Questionnair
 
 }
 
+
 export class Patient extends Resource implements Serializable<Patient> {
     identifier: Identifier[];
     active: boolean;
@@ -396,8 +423,7 @@ export class Patient extends Resource implements Serializable<Patient> {
     birthDate: Date;
     address: Address;
     maritalStatus: CodeableConcept;
-    // TODO - fix this to not be a backbone element
-    contact: BackboneElement;
+    contact: Contact[];
     communication: Communication[];
     generalPractitioner: Reference[];
     managingOrganization: Reference;
