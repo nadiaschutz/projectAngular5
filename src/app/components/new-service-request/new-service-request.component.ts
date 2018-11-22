@@ -110,10 +110,11 @@ export class NewServiceRequestComponent implements OnInit {
   /**
    *
    * @param $event
-   *   This function builds a new DocumentReference object,
-  Inserts the appropriate data from the response into declared
-  Objects, stringifies the object, and posts said string to the
-  FHIR server.
+   *s
+   * This function builds a new DocumentReference object,
+   * Inserts the appropriate data from the response into declared
+   * Objects, stringifies the object, and posts said string to the
+   * FHIR server.
    */
 
   addDocument($event) {
