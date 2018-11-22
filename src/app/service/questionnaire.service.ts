@@ -45,6 +45,16 @@ export class QuestionnaireService {
     return this.http.get(environment.queryURI + '/QuestionnaireResponse/' + query, { headers: this.getHeaders() } );
   }
   
+  postDataFile(data: string) {
+    this.http.post(environment.queryURI + '/DocuementReference/', data, {headers: this.getHeaders()}).subscribe (
+      dataFile => {
+        console.log('POST Request is successful ', data);
+      },
+      error => {
+        console.log('Error', error);
+      }
+    );
+  }
 
   saveRequest(data: any) {
     return this.http.post(environment.queryURI + '/QuestionnaireResponse', data, { headers: this.getHeaders() });
@@ -57,6 +67,7 @@ export class QuestionnaireService {
 
   getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
+      'Content-Type' : 'application/json',
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
     });
     return headers;
