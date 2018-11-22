@@ -110,6 +110,7 @@ export class NewServiceRequestComponent implements OnInit {
     let size: number;
     let type;
     const date = moment().toDate();
+    console.log(date);
     const fileList = $event.target.files;
     const reader = new FileReader();
     if (fileList[0]) {
