@@ -105,11 +105,28 @@ export class NewServiceRequestComponent implements OnInit {
     }
   }
 
+
+
+  /**
+   *
+   * @param $event
+   *   This function builds a new DocumentReference object,
+  Inserts the appropriate data from the response into declared
+  Objects, stringifies the object, and posts said string to the
+  FHIR server.
+   */
+
   addDocument($event) {
-    let file;
+    const documentReference = new FHIR.DocumentReference;
+    const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
+    const documentReferenceCoding = new FHIR.Coding;
+    const content = new FHIR.Content;
+    const contentAttachment = new FHIR.Attachment;
+    const contentCode = new FHIR.Coding;
+    const file = [];
     let size: number;
     let type;
-    const date = moment().toDate();
+    const date = new Date().toJSON();
     console.log(date);
     const fileList = $event.target.files;
     const reader = new FileReader();
@@ -118,29 +135,58 @@ export class NewServiceRequestComponent implements OnInit {
       type = fileList[0].type;
       reader.readAsDataURL(fileList[0]);
     }
+    const that = this;
     reader.onloadend = function() {
-      file = reader.result;
+      file.push(reader.result);
+
+      console.log('The file uploaded is: ', file[0] );
+
+      documentReference.resourceType = 'DocumentReference';
+
+      contentAttachment.size = size;
+      contentAttachment.contentType = type;
+      contentAttachment.data = file[0];
+      contentAttachment.creation = date;
+
+      contentCode.code = 'urn:ihe:pcc:xphr:2007';
+      contentCode.display = 'Personal Health Records';
+
+      content.format = contentCode;
+      content.attachment = contentAttachment;
+
+      documentReferenceCoding.code = '51851-4';
+      documentReferenceCoding.system = 'http://loinc.org';
+      documentReferenceCoding.display = 'Administrative note';
+
+      documentReferenceCodeableConcept.coding = [ documentReferenceCoding];
+      documentReferenceCodeableConcept.text = 'Administrative note';
+
+      documentReference.instant = date;
+      documentReference.type = documentReferenceCodeableConcept;
+      documentReference.content = [content];
+
+      console.log(JSON.stringify(documentReference));
+
+      // that.questionnaireService.postDataFile();
+
+      // console.log (contentAttachment);
       return reader.result;
+
     };
 
-    console.log('The file uploaded is: ', file);
-    console.log('The size is: ', size, ' bytes');
-    console.log('The type is: ', type);
 
-    const documentReference = new FHIR.DocumentReference();
-    const content = new FHIR.Content();
-    const contentAttachment = new FHIR.Attachment();
-    const contentAttachmentFormat = new FHIR.Coding();
 
     // Initializing attachment
     // contentAttachment.contentType
-    contentAttachment.size = size;
-    contentAttachment.data = file;
-    contentAttachment.creation = date;
+
 
     // Post the data to the server
 
-    // this.questionnaireService.postDataFile(file);
+  }
+
+  postFileFunction(data) {
+    const stringifyData = JSON.stringify(data);
+    this.questionnaireService.postDataFile(stringifyData);
   }
 
   onCancel() {
