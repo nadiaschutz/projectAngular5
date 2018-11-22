@@ -68,32 +68,29 @@ export class SummaryPageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // get form id // 12
+    // get form id
     this.questionnaireService.newServFormIdSubject.subscribe(
-      data => this.handleSuccessFormId(data),
+      data => this.getFormId(data),
       error => this.handleErrorFormId(error)
     );
 
-    // get response id // 14
+    // get response id
     this.questionnaireService.newResponseIdSubject.subscribe(
-      data => this.handleSuccessResponseId(data),
+      data => this.getQuestionnaireResponseId(data),
       error => this.handleErrorResponseId(error)
     );
 
 
-    // get service request with id
-      // 16
+    // get service request form
     this.questionnaireService.getForm(this.formId).subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
 
-    // 21
-    console.log(this.responseId);
 
-    // 22
+    // get the response data to show on screen
     this.questionnaireService.getResponse(this.responseId).subscribe(
-      data => this.handleSuccessResponse(data),
+      data => this.getResponseData(data),
       error => this.handleErrorResponse(error)
     );
 
@@ -139,8 +136,7 @@ export class SummaryPageComponent implements OnInit {
 
 
 
-  // 13
-  handleSuccessFormId(data) {
+  getFormId(data) {
     console.log(data);
     this.formId = data;
   }
@@ -150,8 +146,8 @@ export class SummaryPageComponent implements OnInit {
   }
 
 
-  // 15
-  handleSuccessResponseId(data) {
+
+  getQuestionnaireResponseId(data) {
     console.log(data);
     this.responseId = data;
   }
@@ -163,22 +159,33 @@ export class SummaryPageComponent implements OnInit {
 
 
 
-  handleSuccessResponse(data) {
-    // 23
-    console.log(data);
+  getResponseData(data) {
     this.itemToSend = data;
-    console.log(this.itemToSend);
-    console.log(this.items);
+    console.log('this.itemToSend:', this.itemToSend);
+    console.log('this.items BEFORE assigning them to data from server:', this.items);
+
+
+    for (let i = 0; i < 500; i++) {
+      console.log(i);
+    }
 
     this.items = this.itemToSend.item.map(el => {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: el.answer[0].valueString
-      };
+      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved' ) {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueBoolean
+        };
+      } else {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueString
+        };
+      }
     });
 
-    console.log(this.items);
+    console.log('this.items AFTER assigning them to data from server:', this.items);
   }
 
   handleErrorResponse(error) {
@@ -193,17 +200,17 @@ export class SummaryPageComponent implements OnInit {
   //   );
   // }
 
-  // 17
+
   handleSuccess(data) {
     this.qrequest = data.item;
-    // 18
+
     console.log(this.qrequest);
 
    this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text}));
-   // 19
+
     console.log(this.items);
     this.checkDependentItem(this.items);
-    // 20
+
     console.log(this.dependents);
 
 
@@ -234,7 +241,6 @@ export class SummaryPageComponent implements OnInit {
     itemsServer.forEach(element => {
       if (element.text === 'Dependent Involved') {
         this.dependents = true;
-        console.log(this.dependents);
       }
     });
   }
