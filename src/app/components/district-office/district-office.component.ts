@@ -107,7 +107,6 @@ export class DistrictOfficeComponent implements OnInit {
   saveDistrictOffice(locationObj) {
     this.userService.saveDistrictOffice(locationObj).subscribe(data => {
       this.showFormElement = false;
-      this.districtOffices = [];
       this.fetchAllDistrictOffices();
     });
   }
