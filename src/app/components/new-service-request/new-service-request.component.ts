@@ -165,28 +165,13 @@ export class NewServiceRequestComponent implements OnInit {
       documentReference.type = documentReferenceCodeableConcept;
       documentReference.content = [content];
 
-      console.log(JSON.stringify(documentReference));
 
-      // that.questionnaireService.postDataFile();
+      that.questionnaireService.postDataFile(JSON.stringify(documentReference));
 
       // console.log (contentAttachment);
       return reader.result;
 
     };
-
-
-
-    // Initializing attachment
-    // contentAttachment.contentType
-
-
-    // Post the data to the server
-
-  }
-
-  postFileFunction(data) {
-    const stringifyData = JSON.stringify(data);
-    this.questionnaireService.postDataFile(stringifyData);
   }
 
   onCancel() {
