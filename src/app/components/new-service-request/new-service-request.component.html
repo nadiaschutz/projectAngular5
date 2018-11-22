@@ -100,10 +100,7 @@
 
       <div class="col-12-custom">
         <h6>documents</h6>
-
-          <button class="btn btn-secondary" (click)='addDocument()'>
-              add document
-          </button>
+        <input type="file"  class="btn btn-secondary" (change)='addDocument($event)' placeholder="Add a document">
           <div>
               <table class="table">
                   <thead class="header-table">
