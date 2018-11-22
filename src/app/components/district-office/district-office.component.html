@@ -3,26 +3,26 @@
 
   <div class="search-box container">
     <div *ngIf="!showFormElement">
-      <button (click)="addNewDistrictOffice()" style="margin-top: 25px">Add new District Office</button>
-        <table style="margin-top: 25px">
+      <button (click)="showAddDisctrictOfficeForm()" style="margin-top: 25px">Add new District Office</button>
+        <table style="margin-top: 25px" class="officeList" *ngIf="districtOffices.length > 0">
             <thead>
               <tr>
                 <th>REGION</th>
                 <th>DISTRICT</th>
                 <th>ADDRESS</th>
                 <th>EMAIL</th>
-                <th>ACTION</th>
+                <!-- <th>ACTION</th> -->
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Ontario</td>
-                <td>Toronto</td>
-                <td>123 Queen St</td>
-                <td>ontario@canada.ca</td>
-                <td>
-                  <button (click)="editNewDistrictOffice()">Edit</button>
-                </td>
+              <tr *ngFor="let item of districtOffices">
+                <td>{{getRegion(item.managingOrganization)}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.address.line[0]}}</td>
+                <td>{{item.telecom[0]['value']}}</td>
+                <!-- <td>
+                  <button (click)="editNewDistrictOffice(item)">Edit</button>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -39,11 +39,11 @@
           </div>
           <div class="col">
               <label class="label-name" for="office-name">Parent Regional Office</label>
-              <select class="form-control" 
+              <select class="form-control field-box-name" 
                 (ngModelChange)="region = $event"  
                 name = "region" formControlName="managingOrganization">
                 <option [value]="">Select Category</option>
-                <option *ngFor="let region of regionalOffice" 
+                <option *ngFor="let region of regionalOffices" 
                 [value]="region">{{region}}</option>
           </select>
           </div>

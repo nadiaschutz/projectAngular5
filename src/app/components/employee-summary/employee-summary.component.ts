@@ -65,7 +65,7 @@ export class EmployeeSummaryComponent implements OnInit {
       }
     });
     this.patientService.getPatientByLinkID(this.linkID).subscribe(
-      data => this.populateDependentArray(data),
+      patientData => this.populateDependentArray(patientData),
       error => this.handleError(error)
     );
 
