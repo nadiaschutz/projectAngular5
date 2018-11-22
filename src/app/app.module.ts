@@ -41,6 +41,7 @@ const routes: Routes = [
   { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
   { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
+  { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
   { path: 'employeesummary', component: EmployeeSummaryComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
@@ -66,7 +67,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NewServiceRequestNoClientComponent,
     ServReqMainComponent,
     SummaryPageComponent,
-    ClientDepartmentComponent
+    ClientDepartmentComponent,
+    DistrictOfficeComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

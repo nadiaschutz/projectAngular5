@@ -56,3 +56,11 @@
     border: solid 0.7px #d5d5d5;
 }
 
+.officeList th, td{
+    border-radius: 3px;
+    padding: 10px;
+}
+.field-box-name {
+    width: 450px;
+}
+

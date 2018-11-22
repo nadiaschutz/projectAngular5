@@ -110,6 +110,19 @@ export class UserService {
     return headers;
   }
 
+  fetchAllDistrictOffices() {
+    return this.httpClient.get(environment.queryURI + '/Location', {headers: this.getHeaders()});
+  }
+
+  saveDistrictOffice(locationObj) {
+    return this.httpClient.post(environment.queryURI + '/Location/', locationObj,
+    {headers: this.postFHIRHeaders()});
+  }
+
+  fetchAllRegionalOffices() {
+    return this.httpClient.get(environment.queryURI + '/Organization?type=team', {headers: this.getHeaders()});
+  }
+
   // TODO - check if function is in use, and delete if not being used
   postFHIRHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
@@ -118,6 +131,13 @@ export class UserService {
 
       // 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
       // 'Access-Control-Allow-Origin': '*'
+    });
+    return headers;
+  }
+
+  getHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
     });
     return headers;
   }

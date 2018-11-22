@@ -23,6 +23,9 @@ export class SidebarComponent implements OnInit {
   serviceRequestPage() {
     this.router.navigate(['/servreqmain']);
   }
+  districtOfficePage() {
+    this.router.navigateByUrl('/district-office');
+  }
 
 
 }

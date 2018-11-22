@@ -497,14 +497,14 @@ export class Organization extends Resource implements Serializable<Organization>
 export class Location extends Resource implements Serializable<Location> {
 
     identifier: Identifier[];
-    status: Code;
+    status: string;
     operationalStatus: Coding;
     name: string;
     alias: string[];
     description: string;
     mode: Code;
     type: CodeableConcept;
-    telecom: ContactPoint;
+    telecom: ContactPoint[];
     address: Address;
     physicalType: CodeableConcept;
     managingOrganization: Reference;

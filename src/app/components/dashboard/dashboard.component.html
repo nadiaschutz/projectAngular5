@@ -76,7 +76,7 @@
 
       <td>
         <span *ngFor="let extension of q.extension">
-          <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/employeetype'; else notShow">{{extension.valueString}}</span>
+          <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/employeetype'">{{extension.valueString}}</span>
         </span>
       </td>
 
@@ -93,8 +93,6 @@
         </td>
 
       </ng-container> -->
-
-
     </tr>
   </tbody>
 </table>

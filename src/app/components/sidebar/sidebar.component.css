@@ -9,6 +9,7 @@
     float: none;
     display: block;
     text-align: left;
+    cursor: pointer;
 }
 
 .menu-item a {
