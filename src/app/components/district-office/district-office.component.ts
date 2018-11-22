@@ -28,7 +28,8 @@ export class DistrictOfficeComponent implements OnInit {
   locationFormGroup: FormGroup;
   showFormElement = false;
 
-  constructor(private formBuilder: FormBuilder, private httpClient: HttpClient) { }
+  constructor(private formBuilder: FormBuilder, private httpClient: HttpClient,
+    private userService: UserService) { }
 
   ngOnInit() {
     this.showFormElement = false;
@@ -48,7 +49,6 @@ export class DistrictOfficeComponent implements OnInit {
       id: ['', [Validators.required]],
       managingOrganization: ['', [Validators.required]]
     });
-    console.log(this.locationFormGroup);
   }
 
   addNewDistrictOffice() {
@@ -105,16 +105,14 @@ export class DistrictOfficeComponent implements OnInit {
   }
 
   saveDistrictOffice(locationObj) {
-    this.httpClient.post(environment.queryURI + '/Location/', locationObj,
-    {headers: this.postFHIRHeaders()}).subscribe(data => {
-      console.log(data);
+    this.userService.saveDistrictOffice(locationObj).subscribe(data => {
       this.showFormElement = false;
       this.fetchAllDistrictOffices();
     });
   }
 
   fetchAllRegionalOffices() {
-    this.httpClient.get(environment.queryURI + '/Organization?type=team').subscribe(data => {
+    this.userService.fetchAllRegionalOffices().subscribe(data => {
       data['entry'].forEach(element => {
         const id = element.resource.id;
         const name = element.resource.name;
@@ -126,23 +124,13 @@ export class DistrictOfficeComponent implements OnInit {
 
   fetchAllDistrictOffices() {
     this.districtOffices = [];
-    this.httpClient.get(environment.queryURI + '/Location').subscribe(data => {
+    this.userService.fetchAllDistrictOffices().subscribe(data => {
       if (data['entry']) {
-        console.log(data['entry']);
         data['entry'].forEach(element => {
           this.districtOffices.push(element.resource);
         });
       }
     });
-  }
-
-  postFHIRHeaders(): HttpHeaders {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      // 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-      // 'Access-Control-Allow-Origin': '*'
-    });
-    return headers;
   }
 
   getRegion(organization: string) {
