@@ -15,7 +15,7 @@ import { ItemToSend } from '../models/itemToSend.model';
 import { PatientService } from 'src/app/service/patient.service';
 
 import * as FHIR from '../../interface/FHIR';
-import * as moment from 'moment';
+
 @Component({
   selector: 'app-new-service-request',
   templateUrl: './new-service-request.component.html',
