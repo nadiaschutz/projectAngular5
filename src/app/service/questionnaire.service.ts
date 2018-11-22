@@ -46,7 +46,7 @@ export class QuestionnaireService {
   }
   
   postDataFile(data: string) {
-    this.http.post(environment.queryURI + '/DocuementReference/', data, {headers: this.getHeaders()}).subscribe (
+    this.http.post(environment.queryURI + '/DocumentReference/', data, {headers: this.getHeaders()}).subscribe (
       dataFile => {
         console.log('POST Request is successful ', data);
       },
