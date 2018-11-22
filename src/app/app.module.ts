@@ -42,7 +42,7 @@ const routes: Routes = [
   { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
-  // { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
+  { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
   { path: 'employeesummary', component: EmployeeSummaryComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: 'clientdepartment', component: ClientDepartmentComponent },

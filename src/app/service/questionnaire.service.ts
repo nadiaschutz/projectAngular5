@@ -78,7 +78,7 @@ export class QuestionnaireService {
 
   shareResponseId(data) {
     this.newResponseIdSubject.next(data);
-    console.log('service response object from service');
+    console.log('service response ID from service');
     console.log(data);
   }
 

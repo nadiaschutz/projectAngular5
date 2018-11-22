@@ -40,6 +40,7 @@ export class EmployeeSummaryComponent implements OnInit {
 
 
     this.id = this.userService.returnSelectedID();
+    console.log(this.id);
 
     if (this.id) {
       this.patientService.getPatientDataByID(this.id).subscribe(
@@ -62,10 +63,11 @@ export class EmployeeSummaryComponent implements OnInit {
     data.extension.forEach(item => {
       if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
         this.linkID = item.valueString;
+        console.log('the id is:' , this.linkID);
       }
     });
     this.patientService.getPatientByLinkID(this.linkID).subscribe(
-      patientData => this.populateDependentArray(patientData),
+      dataPatient => this.populateDependentArray(dataPatient),
       error => this.handleError(error)
     );
 

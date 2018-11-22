@@ -41,7 +41,11 @@
               {{el.linkId}} {{el.text}}
           </label> -->
           <label class="checkbox-inline">
-            <input type="checkbox" name='{{el.text}}' [(ngModel)]="items[i].answer">{{el.linkId}} {{el.text}}
+            <input type="checkbox" 
+            name='{{el.text}}' 
+            [(ngModel)]="items[i].answer"
+            
+            >{{el.linkId}} {{el.text}}
           </label>
   
         </div>
