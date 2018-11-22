@@ -306,11 +306,19 @@ export class NewServiceRequestComponent implements OnInit {
     console.log(this.items);
 
     this.items = this.itemToSend.item.map(el => {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: el.answer[0].valueString
-      };
+      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved' ) {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueBoolean
+        };
+      } else {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueString
+        };
+      }
     });
 
     console.log(this.items);

@@ -113,13 +113,16 @@ export class SummaryPageComponent implements OnInit {
 
     this.questionnaireService.shareResponseId(this.responseId);
 
+    // navigate the previous service request page
+    console.log(this.formId);
+
     if (this.formId = '1952') {
       this.router.navigate(['/newservicerequest']);
     }
 
-    if (this.formId = '1953') {
-      this.router.navigate(['/newadvicerequest']);
-    }
+    // if (this.formId = '1953') {
+    //   this.router.navigate(['/newadvicerequest']);
+    // }
 
   }
 
@@ -127,7 +130,7 @@ export class SummaryPageComponent implements OnInit {
 
   // FIX ON CANCEL
   onCancel() {
-    this.router.navigate(['/servreqmain']);
+    this.navigateMain();
   }
 
   navigateMain() {
