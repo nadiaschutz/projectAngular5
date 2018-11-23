@@ -15,7 +15,7 @@ export class ServiceRequestSummaryComponent implements OnInit {
 
   ngOnInit() {
     const selectedServiceRequestID = this.userService.getSelectedServiceRequestID();
-    this.qrequestService.getData('/' + '2161').subscribe(data => {
+    this.qrequestService.getData(selectedServiceRequestID).subscribe(data => {
       console.log(data);
       data['item'].forEach(item => {
         const temp = {};
