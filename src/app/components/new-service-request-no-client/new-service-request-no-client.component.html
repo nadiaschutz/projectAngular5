@@ -90,101 +90,58 @@
         </div>
   
         <div class="col-12-custom">
-          <h6>documents</h6>
-  
-            <button class="btn btn-secondary" (click)='addDocument()'>
-                add document
-            </button>
-            <div>
-                <table class="table">
-                    <thead class="header-table">
-                      <tr>
-                        <th scope="col">#ID</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Document Name</th>
-                        <th scope="col">Document Type</th>
-                        <th scope="col">File Type</th>
-                        <th scope="col">File Size</th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                  
-                      </tr>
-                    </thead>
-                    <tbody *ngIf="documents===null">
-                      <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
+            <h6>documents</h6>
+            <input type="file"  id="uploader" class="btn btn-secondary" (change)='addDocument($event)' placeholder="Add a document">
+              <div>
+                  <table class="table">
+                      <thead class="header-table">
+                        <tr>
+                          <th scope="col">#ID</th>
+                          <th scope="col">Date</th>
+                          <th scope="col">Document Name</th>
+                          <th scope="col">Document Type</th>
+                          <th scope="col">File Type</th>
+                          <th scope="col">File Size</th>
+                          <th scope="col"></th>
+                          <th scope="col"></th>
+                    
                         </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>
-  
-                          <tr>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr> 
-  
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>
-                    </tbody>
-            
-            
-                    <!-- <tbody *ngIf="documents !==null">
-                      <tr *ngFor="let q of servRequests ">
-                        <td>{{q.resource.id}}</td>
-                        <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
-                        <td>{{q}}</td>
-                        <td>{{q}}</td>
-                        <td>{{q}}</td>
-                        <td>{{q}}</td>
-                        <td>{{q.resource.subject.display}}</td>
-                        <td>{{q.resource.status}}</td>
-                      </tr>
-                    </tbody> -->
-            
-            
-                  </table>
-            </div>
-  
-        </div>
+                      </thead>
+                      <tbody>
+                        
+                        <tr *ngIf="documents">
+                          <td>{{documents.id}}</td>
+                          <td>{{documents.content[0].attachment.creation | date: 'dd/MM/yyyy'}}</td>
+                          <td>{{documents.content[0].attachment.title }}</td>
+                          <td>Medical Note</td>
+                          <td>{{documents.content[0].attachment.contentType }}</td>
+                          <td>{{documents.content[0].attachment.size }}</td>
     
+                        </tr>
+                       <tr>
+                         <td></td>
+                       </tr>
+                      </tbody>
+              
+              
+                      <!-- <tbody *ngIf="documents !==null">
+                        <tr *ngFor="let q of servRequests">
+                          <td>{{q.resource.id}}</td>
+                          <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
+                          <td>{{q}}</td>
+                          <td>{{q}}</td>
+                          <td>{{q}}</td>
+                          <td>{{q}}</td>
+                          <td>{{q.resource.subject.display}}</td>
+                          <td>{{q.resource.status}}</td>
+                        </tr>
+                      </tbody> -->
+              
+              
+                    </table>
+              </div>
+    
+          </div>
       
      
       <button class="btn btn-primary" type="button" (click)="onNext()">Next</button>

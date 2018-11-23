@@ -124,7 +124,7 @@ export class DashboardComponent implements OnInit {
     console.log(error);
   }
 
-  printThis(data) {
+  routeToSummary(data) {
    this.userService.getSelectedID(data);
    this.router.navigateByUrl('/employeesummary');
   }

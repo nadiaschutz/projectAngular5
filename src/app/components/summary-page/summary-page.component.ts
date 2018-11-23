@@ -15,7 +15,7 @@ export class SummaryPageComponent implements OnInit {
 
   formId = null;
   responseId = null;
-
+  documentReferenceId = null;
 
   documents = null;
   today = new Date();
@@ -81,6 +81,13 @@ export class SummaryPageComponent implements OnInit {
     );
 
 
+    // get Document Reference based on the ID from the QuestionnaireResponse
+
+    this.questionnaireService.getDocumentReferenceByQuery(this.documentReferenceId).subscribe (
+      data => this.retrieveDocumentReferenceObject(data),
+      error => this.handleError(error)
+    );
+
     // get service request form
     this.questionnaireService.getForm(this.formId).subscribe(
       data => this.handleSuccess(data),
@@ -96,7 +103,15 @@ export class SummaryPageComponent implements OnInit {
 
   }
 
+  retrieveDocumentReferenceObject(data) {
+    this.documents = data;
+    this.documents.item.forEach (element => {
+      if (element.text === 'Document') {
+        this.documentReferenceId = element.answer[0].valueReference.reference;
+      }
+    });
 
+  }
   onSubmit() {
     this.itemToSend['id'] = this.responseId;
     this.itemToSend.status = 'completed';
@@ -173,6 +188,13 @@ export class SummaryPageComponent implements OnInit {
     }
 
     this.items = this.itemToSend.item.map(el => {
+      if (el.text === 'Document') {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueReference.reference
+        };
+      }
       if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved' ) {
         return {
           linkId: el.linkId,

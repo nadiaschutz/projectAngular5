@@ -55,44 +55,46 @@
 <button type="button" class="btn employee-button" (click)="newEmployeeButton()"> + New Client Record</button>
 <br />
 
-<table class="table  table-hover">
-  <thead class="header-table">
-    <tr>
-      <th scope="col">Employee #ID</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Date of Birth</th>
-      <th scope="col">Client Type</th>
-      <th scope="col">Department</th>
-
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let q of qrequest " >
-      <td>{{q.id}}</td>
-      <td *ngFor="let name of q.name" (click)="printThis(q.id)">{{name.given}}</td>
-      <td *ngFor="let name of q.name" (click)="printThis(q.id)">{{name.family}}</td>
-      <td>{{q.birthDate | date: 'dd/MM/yyyy'}}</td>
-
-      <td>
-        <span *ngFor="let extension of q.extension">
-          <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/employeetype'">{{extension.valueString}}</span>
-        </span>
-      </td>
-
-      <td>
-        <span *ngFor="let extension of q.extension">
-          <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">{{extension.valueString}}</span>
-        </span>
-      </td>
-
-
-      <!-- <ng-container *ngFor="let extension of q.extension">
-        <td *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
-          {{extension.valueString}}
+<div class="table-container">
+  <table class="table  table-hover">
+    <thead class="header-table ">
+      <tr>
+        <th scope="col">Employee #ID</th>
+        <th scope="col">First</th>
+        <th scope="col">Last</th>
+        <th scope="col">Date of Birth</th>
+        <th scope="col">Client Type</th>
+        <th scope="col">Department</th>
+  
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let q of qrequest " (click)="routeToSummary(q.id)" class="cursor" >
+        <td>{{q.id}}</td>
+        <td *ngFor="let name of q.name" >{{name.given}}</td>
+        <td *ngFor="let name of q.name" >{{name.family}}</td>
+        <td>{{q.birthDate | date: 'dd/MM/yyyy'}}</td>
+  
+        <td>
+          <span *ngFor="let extension of q.extension">
+            <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/employeetype'">{{extension.valueString}}</span>
+          </span>
         </td>
-
-      </ng-container> -->
-    </tr>
-  </tbody>
-</table>
+  
+        <td>
+          <span *ngFor="let extension of q.extension">
+            <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">{{extension.valueString}}</span>
+          </span>
+        </td>
+  
+  
+        <!-- <ng-container *ngFor="let extension of q.extension">
+          <td *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
+            {{extension.valueString}}
+          </td>
+  
+        </ng-container> -->
+      </tr>
+    </tbody>
+  </table>
+</div>
