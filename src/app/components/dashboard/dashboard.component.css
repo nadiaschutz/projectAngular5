@@ -21,6 +21,11 @@
 
 }
 
+.cursor {
+    cursor: pointer;
+
+}
+
 .formButton {
     border-radius: 4px;
     border: 1px solid transparent;
@@ -51,14 +56,20 @@ td {
     margin-bottom: 30px;
 }
 
-.table {
+.table-container {
     width: 1208px;
+
+    border-radius: 2px;
+
+    border: solid 0.7px;
+}
+
+.table {
 
     /* height: 242px; */
   
-    border-radius: 2px;
   
-    border: solid 0.7px;
+  
 }
 
 .header-table {

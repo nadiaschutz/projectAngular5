@@ -18,11 +18,9 @@
           <select class="form-control"
           name='{{el.text}}'
   
-          [(ngModel)]="items[i].answer"
-          >
+          [(ngModel)]="items[i].answer">
             <option *ngFor="let object of el.option"
-                        [value]='object.valueCoding.code'
-                >
+                        [value]='object.valueCoding.code'>
   
               {{object.valueCoding.code}}
             </option>
@@ -100,7 +98,7 @@
 
       <div class="col-12-custom">
         <h6>documents</h6>
-        <input type="file"  class="btn btn-secondary" (change)='addDocument($event)' placeholder="Add a document">
+        <input type="file"  id="uploader" class="btn btn-secondary" (change)='addDocument($event)' placeholder="Add a document">
           <div>
               <table class="table">
                   <thead class="header-table">
@@ -116,59 +114,20 @@
                 
                     </tr>
                   </thead>
-                  <tbody *ngIf="documents===null">
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                  <tbody>
+                    
+                    <tr *ngIf="documents">
+                      <td>{{documents.id}}</td>
+                      <td>{{documents.content[0].attachment.creation | date: 'dd/MM/yyyy'}}</td>
+                      <td>{{documents.content[0].attachment.title }}</td>
+                      <td>Medical Note</td>
+                      <td>{{documents.content[0].attachment.contentType }}</td>
+                      <td>{{documents.content[0].attachment.size }}</td>
+
                     </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-
-                        <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr> 
-
-                      <tr>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
+                   <tr>
+                     <td></td>
+                   </tr>
                   </tbody>
           
           

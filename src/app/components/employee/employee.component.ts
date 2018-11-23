@@ -278,11 +278,11 @@ export class EmployeeComponent implements OnInit {
 
     // Employee Address
 
-    this.employee_address.city = this.employeeFormGroup.get('addressCity').value;
-    this.employee_address.line = [this.employeeFormGroup.get('addressStreet').value];
-    this.employee_address.postalCode = this.employeeFormGroup.get('addressPcode').value;
-    this.employee_address.country = this.employeeFormGroup.get('addressCountry').value;
-    this.employee_address.state = this.employeeFormGroup.get('addressProv').value;
+    this.employee_address.city = this.employeeFormGroup.get('addressCity').value.trim();
+    this.employee_address.line = [this.employeeFormGroup.get('addressStreet').value.trim()];
+    this.employee_address.postalCode = this.employeeFormGroup.get('addressPcode').value.trim();
+    this.employee_address.country = this.employeeFormGroup.get('addressCountry').value.trim();
+    this.employee_address.state = this.employeeFormGroup.get('addressProv').value.trim();
 
 
     // Extensions related to employment information
