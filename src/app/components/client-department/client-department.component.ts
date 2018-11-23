@@ -3,7 +3,7 @@ import { UserService } from '../../service/user.service';
 @Component({
   selector: 'app-client-department',
   templateUrl: './client-department.component.html',
-  styleUrls: ['./client-department.component.css']
+  styleUrls: ['./client-department.component.scss']
 })
 export class ClientDepartmentComponent implements OnInit {
 

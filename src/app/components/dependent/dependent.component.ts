@@ -21,7 +21,7 @@ export interface AccountType {
 @Component({
   selector: 'app-dependent',
   templateUrl: './dependent.component.html',
-  styleUrls: ['./dependent.component.css']
+  styleUrls: ['./dependent.component.scss']
 })
 export class DependentComponent implements OnInit {
 

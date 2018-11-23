@@ -15,7 +15,7 @@ import { Item } from 'src/app/interface/FHIR';
 @Component({
   selector: 'app-employee-summary',
   templateUrl: './employee-summary.component.html',
-  styleUrls: ['./employee-summary.component.css']
+  styleUrls: ['./employee-summary.component.scss']
 })
 export class EmployeeSummaryComponent implements OnInit {
 
