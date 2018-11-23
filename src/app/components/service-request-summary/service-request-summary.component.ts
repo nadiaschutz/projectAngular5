@@ -15,16 +15,16 @@ export class ServiceRequestSummaryComponent implements OnInit {
 
   ngOnInit() {
     const selectedServiceRequestID = this.userService.getSelectedServiceRequestID();
-    this.qrequestService.getData(selectedServiceRequestID).subscribe(data => {
-      console.log(data);
-      data['item'].forEach(item => {
-        const temp = {};
-        temp['name'] = item.text;
-        temp['value'] = item['answer'][0]['valueString'];
-        this.serviceRequestObject.push(temp);
-      });
-      this.serviceRequestObject.push({name: 'status', value: data['status']});
-      console.log(this.serviceRequestObject);
+    this.qrequestService.getData('/' + selectedServiceRequestID).subscribe(data => {
+      if (data['item']) {
+        data['item'].forEach(item => {
+          const temp = {};
+          temp['name'] = item.text;
+          temp['value'] = item['answer'][0]['valueString'];
+          this.serviceRequestObject.push(temp);
+        });
+        this.serviceRequestObject.push({name: 'status', value: data['status']});
+      }
     });
   }
 
