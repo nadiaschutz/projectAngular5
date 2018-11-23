@@ -75,7 +75,8 @@ export class Code extends FHIRElement {
 export class Coding extends FHIRElement {
     system: string;
     version: string;
-    code: Code;
+    // should be of type Code
+    code: string;
     display: string;
     userSelected: boolean;
 
@@ -194,14 +195,18 @@ export class UsageContext extends FHIRElement {
 }
 
 export class Attachment extends FHIRElement {
-    contentType: Code;
-    language: Code;
+
+    // should be of type code
+    contentType: string;
+
+    // should be of type code
+    language: string;
     data: string;
     url: string;
     size: number;
     hash: string;
     title: string;
-    creation: Date;
+    creation: string;
 }
 
 export class Content extends BackboneElement {
@@ -451,6 +456,7 @@ export class DocumentReference extends Resource implements Serializable<Document
     created: Date;
     author: Reference[];
     content: Content[];
+    instant: string;
     // TODO - add rest of the fields from the spec
     deserialize(jsonObject: any): DocumentReference {
         const that = this;

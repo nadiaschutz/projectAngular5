@@ -22,7 +22,7 @@
       </div>
       <div class="col-4">
         <span>Language</span><br />
-        <div *ngFor="let language of selected.communication">
+        <div *ngFor="let language of selected?.communication">
           <span id="dob" *ngFor="let usedLanguage of language.language.coding"><ins>{{usedLanguage.display}}</ins></span>
         </div>
       </div>
@@ -32,17 +32,18 @@
 
 
 <h2 class="title">Contact Information</h2>
-<div *ngIf="selected.telecom">
-  <div class="row">
-    <div class="col-2" *ngFor="let email of selected.telecom">
-      <span>{{email.system}}</span>
-      <div>
-        <span id="dob"><ins>{{email.value}}</ins></span>
+  <div *ngIf="selected?.telecom">
+    <div class="row">
+      <div class="col-2" *ngFor="let telecom of selected.telecom">
+        <span>{{telecom.system}}</span>
+        <div>
+          <span id="dob"><ins>{{telecom.value}}</ins></span>
+        </div>
       </div>
     </div>
   </div>
 
-  <div *ngFor="let address of selected.address">
+  <div *ngFor="let address of selected?.address">
     <div class="row">
       <div class="col-2">
         <span>Street Address</span><br />
@@ -68,10 +69,9 @@
       </div>
     </div>
   </div>
-</div>
 
 
-<div *ngFor="let extension of selected.extension">
+<div *ngFor="let extension of selected?.extension">
   <div *ngIf="extension.valueString=='Employee'">
     <h2 class="title">Employment Information</h2>
     <div>
@@ -119,7 +119,7 @@
 
 
 <div class="row">
-  <div *ngFor="let extension of selected.extension">
+  <div *ngFor="let extension of selected?.extension">
     <h2 *ngIf="extension.valueString == 'Employee'">
       Dependents
     </h2>
@@ -128,7 +128,7 @@
 </div>
 <div class="row">
   <div *ngFor="let dependent of dependentArray">
-    <div *ngFor="let name of dependent.name">
+    <div *ngFor="let name of dependent?.name">
         <div *ngFor="let extension of selected.extension">
           <span *ngIf="extension.valueString == 'Dependent'">{{name.given}} {{name.family}} </span>
         </div>
