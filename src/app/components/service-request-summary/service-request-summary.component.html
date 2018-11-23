@@ -1,6 +1,6 @@
 <h1>Service Request Summary Page</h1>
-<div class="container" *ngIf="serviceRequestObject != {}" style="margin-top: 25px">
-  <div class="row">
+<div class="container" *ngIf="serviceRequestObject.length > 0" style="margin-top: 25px">
+  <!-- <div class="row">
     <div class="col">
       <label class="label-name">Name of the Requester</label>
       <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['requesterName']}}"/>
@@ -35,5 +35,11 @@
           <label class="label-name">Department Name</label>
           <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['departmentName']}}"/>
       </div>
+  </div> -->
+  <div *ngFor="let item of serviceRequestObject">
+    <div style="margin-top: 10px">
+      <label class="label-name">{{item.name | titlecase}}</label>
+      <input disabled=true class="form-control field-box-name" placeholder="{{item.value | titlecase}}"/>
+    </div>
   </div>
 </div>

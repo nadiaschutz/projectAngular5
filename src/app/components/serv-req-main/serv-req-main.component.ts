@@ -356,7 +356,21 @@ export class ServReqMainComponent implements OnInit {
     console.log(error);
   }
   getServiceType(serviceRequestObj): string {
-    return this.getLinkValueFromObject(serviceRequestObj, '2');
+    let result = '-';
+    if (serviceRequestObj.item) {
+      serviceRequestObj.item.forEach(item => {
+        if (item.linkId === '2') {
+          if (item['answer']) {
+            if (item.answer[0].valueString.indexOf('-') > 0) {
+              result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('-') + 1, item.answer[0].valueString.length);
+            } else {
+              result = item.answer[0].valueString;
+            }
+          }
+        }
+      });
+    }
+    return result;
   }
   getAssessmentType(serviceRequestObj): string {
     return this.getLinkValueFromObject(serviceRequestObj, '2');
