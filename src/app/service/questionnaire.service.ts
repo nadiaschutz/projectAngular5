@@ -63,9 +63,19 @@ export class QuestionnaireService {
     return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, data, { headers: this.getHeaders() });
   }
 
-
+  deleteServiceRequest(serviceRequestId: string) {
+    return this.http.delete(environment.queryURI + '/QuestionnaireResponse/' + serviceRequestId, {headers: this.getHeaders()});
+  }
 
   getHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Content-Type' : 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
+  }
+
+  getHeadersWithoutType(): HttpHeaders {
     const headers = new HttpHeaders({
       'Content-Type' : 'application/json',
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
