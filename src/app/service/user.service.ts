@@ -20,6 +20,7 @@ export class UserService {
 
 
   selectID = '';
+  selectedServiceRequestID = '';
   constructor(
 
     private httpClient: HttpClient,
@@ -140,5 +141,12 @@ export class UserService {
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
     });
     return headers;
+  }
+
+  saveSelectedServiceRequestID(id) {
+    this.selectedServiceRequestID = id;
+  }
+  getSelectedServiceRequestID(): string {
+    return this.selectedServiceRequestID;
   }
 }

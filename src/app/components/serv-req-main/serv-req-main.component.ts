@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { multicast } from 'rxjs/operators';
 import { PatientService } from 'src/app/service/patient.service';
 import { FormsModule } from '@angular/forms';
+import { link } from 'fs';
 
 @Component({
   selector: 'app-serv-req-main',
@@ -355,56 +356,48 @@ export class ServReqMainComponent implements OnInit {
     console.log(error);
   }
   getServiceType(serviceRequestObj): string {
-    let serviceType = '-';
+    let result = '-';
     if (serviceRequestObj.item) {
       serviceRequestObj.item.forEach(item => {
         if (item.linkId === '2') {
-          serviceType = item.text;
+          if (item['answer']) {
+            if (item.answer[0].valueString.indexOf('-') > 0) {
+              result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('-') + 1, item.answer[0].valueString.length);
+            } else {
+              result = item.answer[0].valueString;
+            }
+          }
         }
       });
-      return serviceType;
-    } else {
-      return '-';
     }
+    return result;
   }
   getAssessmentType(serviceRequestObj): string {
-    let assessmentType = '-';
-    if (serviceRequestObj.item) {
-      serviceRequestObj.item.forEach(item => {
-        if (item.linkId === '2') {
-          assessmentType = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
-        }
-      });
-      return assessmentType;
-    } else {
-      return '-';
-    }
+    return this.getLinkValueFromObject(serviceRequestObj, '2');
   }
   getRegion(serviceRequestObj): string {
-    let serviceType = '-';
-    if (serviceRequestObj.item) {
-      serviceRequestObj.item.forEach(item => {
-        if (item.linkId === '8') {
-          serviceType = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
-        }
-      });
-      return serviceType;
-    } else {
-      return '-';
-    }
+    return this.getLinkValueFromObject(serviceRequestObj, '8');
   }
-  getCreatedBy(serviceRequestObj): string {
-    let serviceType = '-';
+  getCreatedBy(serviceRequestObj) {
+    return this.getLinkValueFromObject(serviceRequestObj, '1');
+  }
+
+  getLinkValueFromObject(serviceRequestObj, linkId: string): string {
+    let result = '-';
     if (serviceRequestObj.item) {
       serviceRequestObj.item.forEach(item => {
-        if (item.linkId === '1') {
-          serviceType = item.answer[0].valueString;
+        if (item.linkId === linkId) {
+          if (item['answer']) {
+            if (item.answer[0].valueString.indexOf('-') > 0) {
+              result = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+            } else {
+              result = item.answer[0].valueString;
+            }
+          }
         }
       });
-      return serviceType;
-    } else {
-      return '-';
     }
+    return result;
   }
 
   getClientName(servReqobj) {
@@ -413,6 +406,11 @@ export class ServReqMainComponent implements OnInit {
     } else {
       return '-';
     }
+  }
+
+  navigateToSummary(servReqObj) {
+    this.userService.saveSelectedServiceRequestID(servReqObj['id']);
+    this.router.navigateByUrl('service-request-summary');
   }
 
 }

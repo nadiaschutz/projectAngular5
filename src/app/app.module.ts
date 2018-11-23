@@ -32,6 +32,7 @@ import { SummaryPageComponent } from './components/summary-page/summary-page.com
 
 import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
+import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
 
 
 const routes: Routes = [
@@ -43,9 +44,10 @@ const routes: Routes = [
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
-  { path: 'employeesummary', component: EmployeeSummaryComponent, canActivate: [AuthGuardService]  },
-  { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService]  },
-  { path: 'clientdepartment', component: ClientDepartmentComponent, canActivate: [AuthGuardService]  },
+  { path: 'employeesummary', component: EmployeeSummaryComponent },
+  { path: 'newservicerequest', component: NewServiceRequestComponent },
+  { path: 'clientdepartment', component: ClientDepartmentComponent },
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
 ];
 
@@ -68,7 +70,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ServReqMainComponent,
     SummaryPageComponent,
     ClientDepartmentComponent,
-    DistrictOfficeComponent
+    DistrictOfficeComponent,
+    ServiceRequestSummaryComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

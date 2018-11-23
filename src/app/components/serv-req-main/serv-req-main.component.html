@@ -140,7 +140,7 @@
             </tr>
           </thead>
           <tbody *ngIf="str===null">
-            <tr *ngFor="let q of servRequests ">
+            <tr *ngFor="let q of servRequests" (click)="navigateToSummary(q)" class="request-list">
               <td>{{q.id}}</td>
               <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
               <td>{{getServiceType(q)}}</td>
