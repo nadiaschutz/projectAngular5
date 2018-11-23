@@ -21,7 +21,7 @@ import * as FHIR from '../../interface/FHIR';
 @Component({
   selector: 'app-new-service-request-no-client',
   templateUrl: './new-service-request-no-client.component.html',
-  styleUrls: ['./new-service-request-no-client.component.css']
+  styleUrls: ['./new-service-request-no-client.component.scss']
 })
 export class NewServiceRequestNoClientComponent implements OnInit {
   // @ViewChild('serReqForm') form: NgForm;
@@ -93,6 +93,8 @@ export class NewServiceRequestNoClientComponent implements OnInit {
       error => this.handleError(error)
     );
   }
+
+
 
 
   onCancel() {

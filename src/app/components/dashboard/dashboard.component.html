@@ -1,25 +1,41 @@
-<br />
-<h3>Search Client</h3>
-<br />
+<div class="main-header">
+    <h5>Search Client</h5>
+    <h6>client department > client</h6>
+  </div>
 <div class="search-box">
   <form class="center-align">
     <div class="form-group">
+        <div class="form-group-search">
+
       <div class="row ">
+
         <div class="col-12">
           <label for="firstname" class="label-name">First Name</label>
-          <input type="text" name="firstname" id="firstname" class="form-control field-box-name" placeholder="Enter"
+          <input type="text" 
+          name="firstname" 
+          id="firstname" 
+          class="form-control 
+          field-box-name" 
+          placeholder="Enter"
             [(ngModel)]="name.data">
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <label for="clientid" class="label-name">Client ID</label>
-          <input type="text" name="clientid" id="clientid" class="form-control field-box" placeholder="Enter"
+          <label for="clientid" 
+          class="label-name">Client ID</label>
+          <input type="text" 
+          name="clientid" 
+          id="clientid" 
+          class="form-control" 
+          placeholder="Enter"
             [(ngModel)]="clientId.data">
         </div>
         <div class="col">
           <label for="dob" class="label-name">Date of Birth</label>
-          <input class="form-control" [ngModel]="dateOfBirth.data | date:'yyyy-MM-dd'" (ngModelChange)="dateOfBirth.data = $event"
+          <input class="form-control" 
+          [ngModel]="dateOfBirth.data | date:'yyyy-MM-dd'" 
+          (ngModelChange)="dateOfBirth.data = $event"
             type="date" name="dob" />
         </div>
       </div>
@@ -43,18 +59,18 @@
           </select>
         </div>
       </div>
-      <button type="button" class="btn search-button" (click)="employeeSearch()">Search</button>
+    </div>
+      <button type="button" class="btn regular-button" (click)="employeeSearch()">Search</button>
 
     </div>
   </form>
 </div>
 <!-- List of Clients  -->
-<br />
-<h3>Clients</h3>
-<br />
-<button type="button" class="btn employee-button" (click)="newEmployeeButton()"> + New Client Record</button>
-<br />
 
+<h6>Clients</h6>
+<div class="button-section">
+    <button type="button" class="btn special-button" (click)="newEmployeeButton()"> + New Client Record</button>
+</div>
 <div class="table-container">
   <table class="table  table-hover">
     <thead class="header-table ">
@@ -68,7 +84,7 @@
   
       </tr>
     </thead>
-    <tbody>
+    <tbody class="body-table">
       <tr *ngFor="let q of qrequest " (click)="routeToSummary(q.id)" class="cursor" >
         <td>{{q.id}}</td>
         <td *ngFor="let name of q.name" >{{name.given}}</td>

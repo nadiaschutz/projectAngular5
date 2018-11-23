@@ -19,7 +19,7 @@ import * as FHIR from '../../interface/FHIR';
 @Component({
   selector: 'app-new-service-request',
   templateUrl: './new-service-request.component.html',
-  styleUrls: ['./new-service-request.component.css']
+  styleUrls: ['./new-service-request.component.scss']
 })
 export class NewServiceRequestComponent implements OnInit {
   // @ViewChild('advReqForm') form: NgForm;
