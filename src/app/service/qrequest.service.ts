@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,14 +16,12 @@ export class QrequestService {
 
   getData(query: string) {
     const header = this.getHeaders();
-    return this.http.get(this.API_URL + query, { headers: header });
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse' + query, { headers: header });
   }
 
   getHeaders(): HttpHeaders {
     const header = new HttpHeaders().set('Authorization', 'Bearer ' + this.oauthService.getAccessToken());
     return header;
   }
-
-  
 
 }

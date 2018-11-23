@@ -1,0 +1,39 @@
+<h1>Service Request Summary Page</h1>
+<div class="container" *ngIf="serviceRequestObject != {}" style="margin-top: 25px">
+  <div class="row">
+    <div class="col">
+      <label class="label-name">Name of the Requester</label>
+      <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['requesterName']}}"/>
+    </div>
+    <div class="col">
+        <label class="label-name">Status</label>
+        <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['status']}}"/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label-name">Contact email</label>
+      <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['email']}}"/>
+    </div>
+    <div class="col">
+      <label class="label-name">Contact Phone number</label>
+      <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['phoneNumber']}}"/>
+    </div>
+  </div>
+  <div class="row">
+      <div class="col">
+        <label class="label-name">Request Type</label>
+        <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['requestType']}}"/>
+      </div>
+      <div class="col">
+        <label class="label-name">Request Detail</label>
+        <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['requestDetail']}}"/>
+      </div>
+  </div>
+  <div class="row">
+      <div class="col">
+          <label class="label-name">Department Name</label>
+          <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['departmentName']}}"/>
+      </div>
+  </div>
+</div>

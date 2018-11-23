@@ -44,7 +44,6 @@ export class QuestionnaireService {
     // tslint:disable-next-line:max-line-length
     return this.http.get(environment.queryURI + '/QuestionnaireResponse/' + query, { headers: this.getHeaders() } );
   }
-  
 
   saveRequest(data: any) {
     return this.http.post(environment.queryURI + '/QuestionnaireResponse', data, { headers: this.getHeaders() });
@@ -52,8 +51,6 @@ export class QuestionnaireService {
   changeRequest(id, data: any) {
     return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, data, { headers: this.getHeaders() });
   }
-  
-
 
   getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
