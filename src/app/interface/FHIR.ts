@@ -369,6 +369,22 @@ export class Timing extends FHIRElement {
 
 }
 
+export class Input extends BackboneElement {
+    type: CodeableConcept;
+    value: any;
+}
+
+export class Output extends BackboneElement {
+    type: CodeableConcept;
+    value: any;
+}
+
+export class Restriction extends BackboneElement {
+    repetitions: number;
+    preiod: Period;
+    recipient: Reference[];
+}
+
 export class Detail extends BackboneElement {
     category: CodeableConcept;
     definition: Reference;
@@ -388,6 +404,11 @@ export class Position extends BackboneElement {
     longitude: number;
     latitude: number;
     altitude: number;
+}
+
+export class Requester extends BackboneElement {
+    agent: Reference;
+    onBehalfOf: Reference;
 }
 
 export class Item extends BackboneElement {
@@ -652,6 +673,51 @@ export class CarePlan extends Resource implements Serializable<CarePlan> {
 
 
     deserialize(jsonObject: any): CarePlan {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+export class Task extends Resource implements Serializable<Task> {
+
+    identifier: Identifier[];
+    defintionUri: string;
+    defintionReference: Reference;
+    basedOn: Reference[];
+    groupIdentifier: Identifier;
+    replaces: Reference[];
+    partOf: Reference[];
+    status: Code;
+    statusReason: CodeableConcept;
+    businessStatus: CodeableConcept;
+    intent: Code;
+    priority: Code;
+    code: CodeableConcept;
+    description: string;
+    focus: Reference;
+    for: Reference;
+    context: Reference;
+    executionPeriod: Period;
+    authoredOn: string;
+    lastModified: string;
+    requester: Requester;
+    performerType: CodeableConcept;
+    owner: Reference;
+    reason: CodeableConcept;
+    note: Annotation[];
+    relevantHistory: Reference[];
+    restriction: Restriction;
+    input: Input[];
+    output: Output[];
+
+    deserialize(jsonObject: any): Task {
         const that = this;
         Object.entries(jsonObject).forEach(function (value) {
             if (!(typeof value[1] === 'object')) {
