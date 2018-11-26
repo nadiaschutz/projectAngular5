@@ -12,11 +12,10 @@ import * as Employee from '../../interface/patient';
 import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
 import { Item } from 'src/app/interface/FHIR';
-
 @Component({
   selector: 'app-employee-summary',
   templateUrl: './employee-summary.component.html',
-  styleUrls: ['./employee-summary.component.css']
+  styleUrls: ['./employee-summary.component.scss']
 })
 export class EmployeeSummaryComponent implements OnInit {
 

@@ -300,6 +300,20 @@ export class EnableWhen extends BackboneElement {
 
 }
 
+export class Answer extends BackboneElement {
+    valueDecimal: number;
+    valueInteger: number;
+    valueDate: string;
+    valueDateTime: string;
+    valueTime: string;
+    valueString: string;
+    valueUri: string;
+    valueAttachment: Attachment;
+    valueCoding: Coding;
+    valueQuantity: Quantity;
+    valueReference: Reference;
+}
+
 export class FHIROption extends BackboneElement {
     value: any;
 
@@ -344,6 +358,7 @@ export class Item extends BackboneElement {
     option: FHIROption[];
     item: Item[];
     initial: any;
+    answer: Answer;
 }
 
 /* This is the base FHIR Resource from which others are derived */

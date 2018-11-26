@@ -12,7 +12,7 @@ import { link } from 'fs';
 @Component({
   selector: 'app-serv-req-main',
   templateUrl: './serv-req-main.component.html',
-  styleUrls: ['./serv-req-main.component.css']
+  styleUrls: ['./serv-req-main.component.scss']
 })
 export class ServReqMainComponent implements OnInit {
 

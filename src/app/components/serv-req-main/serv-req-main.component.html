@@ -5,6 +5,7 @@
   <div class="search-box">
     <form #form="ngForm" class="center-align">
       <div class="form-group">
+        <div class="form-group-search">
   
         <div class="row ">
   
@@ -13,7 +14,7 @@
             <input type="text" 
             name="name" 
             id="name" 
-            class="form-control field-box-name" 
+            class="form-control" 
             placeholder="Enter"
             [(ngModel)]="name.data">
           </div>
@@ -27,7 +28,7 @@
             <input type="text" 
             name="clientid" 
             id="clientid" 
-            class="form-control field-box"
+            class="form-control"
             [(ngModel)]="clientId.data"
             placeholder="Enter">
           </div>
@@ -105,9 +106,11 @@
           </div>
           
         </div>
+      </div>
+
+      
   
-  
-        <button type="button" class="btn search-button btn-primary" (click)="dataSearch()" style="margin-top: 15px">Search</button>
+        <button type="button" class="btn regular-button" (click)="dataSearch()">Search</button>
   
       </div>
     </form>
@@ -115,9 +118,9 @@
   
   
   
-  <div>
-      
-      <a routerLink="/newadvicerequest"><button class="btn btn-primary" style="margin-left: 20px" > + New Advice Consultation</button></a>
+  <div class="button-section">
+    
+      <a routerLink="/newadvicerequest"><button class="btn special-button"> + New Advice Consultation</button></a>
   </div>
   
   

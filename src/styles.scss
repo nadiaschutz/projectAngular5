@@ -1,0 +1,161 @@
+/* You can add global styles to this file, and also import other style files */
+@import '../node_modules/bootstrap/dist/css/bootstrap.css';
+
+
+/* variables */
+$grey: #ced4da;
+$light-grey: rgba(0, 0, 0, 0.03);
+$light-grey-2: #f8f8f8;
+$white: #ffffff;
+@mixin buttons-global{
+  border-radius: 2px;
+  background-color: $white;
+  font-size: 13px;
+  border: 1px solid $grey;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+
+/*************** styling ****************/
+
+html, body { height: 100%; }
+body { margin: 0; font-family: 'Lato', sans-serif; }
+
+
+/* font */
+
+h4, h5, h6{
+    text-transform: uppercase;
+}
+h6{
+    font-size: 12px;
+}
+
+
+
+/* global responsive styling */
+
+.row:before, row:after, .col-5{
+    display: inline-block;
+}
+/* .col-6{
+    padding: 0;
+}
+.col-1, .col-lg-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-11, .col-lg-10, .col-md-9{
+    padding: 0;
+} */
+
+.col-12-custom{
+    width: 100%;
+}
+
+.col-6-custom{
+    width: 50%;
+    display: inline-block;
+}
+
+
+/* buttons */
+
+.special-button{
+  @include buttons-global;
+  padding: 6px 60px;
+}
+
+.regular-button{
+    @include buttons-global;
+}
+
+.move-dwn{
+    margin-top: 66px;
+}
+
+.action-button{
+    background-color: $light-grey;
+    border: none;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+
+/* headers */
+
+.main-header{
+    margin: 50px 0 70px 0;
+}
+.header{
+    margin-bottom: 30px;
+}
+
+
+
+/* form */
+
+label{
+    font-size: 11px;
+}
+
+select{
+    font-size: 13px;
+    border-radius: 2px;
+    background-color: $white;
+}
+
+.form-control{
+    font-size: 13px;
+    border-radius: 2px;
+    background-color: $white;
+}
+
+
+
+
+/* other */
+.line{
+    border-top: 2px solid $grey;
+    padding-top: 40px;
+}
+.button-section{
+    margin-bottom: 35px;
+}
+
+.form-section{
+    padding-bottom: 70px;
+}
+.table{
+        thead{
+            background-color: $light-grey;
+             border: 1px solid $grey; 
+
+            th{
+                font-size: 11px;
+                font-weight: normal;
+                text-transform: uppercase;
+            }
+        }
+        tbody.body-table{
+            border: 1px solid $grey; 
+            tr{
+                td{
+                    font-size: 13px;
+                    font-weight: normal;
+                }
+            }
+        }
+}
+
+.search-box {
+    margin-bottom: 50px;
+    padding: 60px;
+    background-color: $light-grey-2;
+    border: 1px solid $grey;
+    form{
+        .form-group{
+            .form-group-search{
+                margin-bottom: 30px;
+            }
+        }
+    }
+}
+

@@ -17,7 +17,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-district-office',
   templateUrl: './district-office.component.html',
-  styleUrls: ['./district-office.component.css']
+  styleUrls: ['./district-office.component.scss']
 })
 export class DistrictOfficeComponent implements OnInit {
 

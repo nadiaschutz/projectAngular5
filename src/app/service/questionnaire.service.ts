@@ -46,14 +46,7 @@ export class QuestionnaireService {
   }
 
   postDataFile(data: string) {
-    this.http.post(environment.queryURI + '/DocumentReference/', data, {headers: this.getHeaders()}).subscribe (
-      dataFile => {
-        console.log('POST Request is successful ', dataFile);
-      },
-      error => {
-        console.log('Error', error);
-      }
-    );
+    return this.http.post(environment.queryURI + '/DocumentReference/', data, {headers: this.getHeaders()});
   }
 
   saveRequest(data: any) {
@@ -65,6 +58,10 @@ export class QuestionnaireService {
 
   deleteServiceRequest(serviceRequestId: string) {
     return this.http.delete(environment.queryURI + '/QuestionnaireResponse/' + serviceRequestId, {headers: this.getHeaders()});
+  }
+  // This function takes in a generic query
+  getDocumentReferenceByQuery(query: string) {
+    return this.http.get(environment.queryURI + query, { headers: this.getHeaders() } );
   }
 
   getHeaders(): HttpHeaders {

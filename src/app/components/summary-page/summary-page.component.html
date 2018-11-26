@@ -97,8 +97,9 @@
         </div>
   
         <div class="col-12-custom">
+            <div class='header'>
           <h6>documents</h6>
-  
+            </div>
 
             <div>
                 <table class="table">
@@ -115,7 +116,7 @@
                   
                       </tr>
                     </thead>
-                    <tbody *ngIf="documents===null">
+                    <tbody *ngIf="documents===null" class="body-table">
                       <tr>
                         <td></td>
                         <td></td>
@@ -191,13 +192,13 @@
         </div>
     
       
-     
-      <button class="btn btn-primary" type="button" (click)="onSubmit()">Submit</button>
-      <button class="btn btn-secondary" type="button" (click)="onEdit()">Edit</button>  
-      <button class="btn btn-secondary" type="button" (click)="onCancel()">Cancel</button> 
-    
+        <div class="button-section-line">
+      <button class="btn action-button float-right" type="button" (click)="onSubmit()">Submit</button>
+      <button class="btn regular-button" type="button" (click)="onEdit()">Edit</button>  
+      <button class="btn regular-button" type="button" (click)="onCancel()">Cancel</button> 
+    </div>
     </form>
-    <br>
+    <!-- <br>
     <br>
     <br>
     
@@ -212,9 +213,8 @@
     
     <br>
     <br>
-    Model/qrequest: {{qrequest | json}}
+    Model/qrequest: {{qrequest | json}} -->
     
     <!-- <button class="button button-primary" (click)="deserializethis(object.valueCoding.code)">Click me!</button> -->
 
   </div>
-    

@@ -29,6 +29,7 @@
     "angular-oauth2-oidc": "^4.0.2",
     "angular-oauth2-oidc-b2c": "^1.0.26",
     "bootstrap": "^4.1.3",
+    "bootstrap-select": "^1.13.3",
     "class-transformer": "^0.1.9",
     "core-js": "^2.5.4",
     "font-awesome": "^4.7.0",

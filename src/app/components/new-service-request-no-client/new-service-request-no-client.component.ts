@@ -14,13 +14,14 @@ import { forEach } from '@angular/router/src/utils/collection';
 import { ItemToSend } from '../models/itemToSend.model';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 
+import * as FHIR from '../../interface/FHIR';
 
 
 
 @Component({
   selector: 'app-new-service-request-no-client',
   templateUrl: './new-service-request-no-client.component.html',
-  styleUrls: ['./new-service-request-no-client.component.css']
+  styleUrls: ['./new-service-request-no-client.component.scss']
 })
 export class NewServiceRequestNoClientComponent implements OnInit {
   // @ViewChild('serReqForm') form: NgForm;
@@ -30,9 +31,10 @@ export class NewServiceRequestNoClientComponent implements OnInit {
 
 
 
-
-
   documents = null;
+  fileLink = [];
+  itemReference;
+
   today = new Date();
   myDay;
     dd: any;
@@ -93,6 +95,8 @@ export class NewServiceRequestNoClientComponent implements OnInit {
   }
 
 
+
+
   onCancel() {
     this.router.navigate(['/servreqmain']);
   }
@@ -106,7 +110,115 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     // );
    }
 
+   /**
+   *
+   * @param $event
+   *s
+   * This function builds a new DocumentReference object,
+   * Inserts the appropriate data from the response into declared
+   * Objects, stringifies the object, and posts said string to the
+   * FHIR server.
+   */
 
+  addDocument($event) {
+
+    const preview = document.querySelector('uploader');
+    const documentReference = new FHIR.DocumentReference;
+    const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
+    const documentReferenceCoding = new FHIR.Coding;
+    const content = new FHIR.Content;
+    const contentAttachment = new FHIR.Attachment;
+    const contentCode = new FHIR.Coding;
+    let file;
+    let trimmedFile = '';
+    let size: number;
+    let type;
+    const date = new Date().toJSON();
+    console.log(date);
+    const fileList = $event.target.files;
+    const reader = new FileReader();
+    if (fileList[0]) {
+      size = fileList[0].size;
+      type = fileList[0].type;
+      reader.readAsDataURL(fileList[0]);
+    }
+    const that = this;
+    reader.onloadend = function() {
+
+      file = reader.result;
+      trimmedFile = file.split(',').pop();
+
+      documentReference.resourceType = 'DocumentReference';
+
+      contentAttachment.size = size;
+      contentAttachment.contentType = type;
+      contentAttachment.data = trimmedFile;
+      contentAttachment.creation = date;
+      contentAttachment.title = fileList[0].name;
+
+      contentCode.code = 'urn:ihe:pcc:xphr:2007';
+      contentCode.display = 'Personal Health Records';
+
+      content.format = contentCode;
+      content.attachment = contentAttachment;
+
+      documentReferenceCoding.code = '51851-4';
+      documentReferenceCoding.system = 'http://loinc.org';
+      documentReferenceCoding.display = 'Administrative note';
+
+      documentReferenceCodeableConcept.coding = [ documentReferenceCoding];
+      documentReferenceCodeableConcept.text = 'Administrative note';
+
+      documentReference.instant = date;
+      documentReference.type = documentReferenceCodeableConcept;
+      documentReference.content = [content];
+
+
+      that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
+        data =>   {
+          that.retrieveDocuments(data),
+          that.createItemReferenceObject(data);
+        }
+      );
+
+      // console.log (contentAttachment);
+      return reader.result;
+
+    };
+    reader.onerror = function (error) {
+      console.log('Error: ', error);
+    };
+
+  }
+
+  createItemReferenceObject(data) {
+    const obj: string = data.id;
+    // const item = new FHIR.Item;
+    // const answer = new FHIR.Answer;
+    // const reference = new FHIR.Reference;
+
+    // reference.reference = 'DocumentReference/' + obj.id;
+
+    // answer.valueReference = reference;
+
+    // item.linkId = '30';
+    // item.text = obj.content[0].attachment.title;
+    // item.answer = answer;
+    // this.itemReference = item;
+    // console.log('here is the object for doc ref:' , item );
+    // return item;
+
+    this.itemReference = {
+      linkId: '30',
+      // text: obj.content[0].attachment.title,
+      text: 'Document',
+      answer:  'DocumentReference/' + obj
+    };
+  }
+
+  retrieveDocuments(data) {
+    this.documents = data;
+  }
    onNext() {
     this.savingData();
 
@@ -146,6 +258,8 @@ export class NewServiceRequestNoClientComponent implements OnInit {
        });
      }
 
+     this.items.push(this.itemReference);
+
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
         status: 'in-progress',
@@ -154,6 +268,19 @@ export class NewServiceRequestNoClientComponent implements OnInit {
       };
 
       this.itemToSend.item = this.items.map(el => {
+        if (el.text === 'Document') {
+          return {
+            linkId: el.linkId,
+            text: el.text,
+            answer: [
+              {
+                valueReference: {
+                  reference: el.answer
+                }
+              }
+            ]
+          };
+        }
         return {
           linkId: el.linkId,
           text: el.text,
@@ -249,11 +376,20 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     console.log(this.items);
 
     this.items = this.itemToSend.item.map(el => {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: el.answer[0].valueString
-      };
+      if (el.text === 'Document') {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueReference.reference
+        };
+      } else {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueString
+        };
+      }
+
     });
 
     console.log(this.items);
@@ -293,12 +429,6 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     }
     return i;
 }
-
-addDocument() {
-// add documents
-}
-
-
 
   checkDependentItem(itemsServer) {
     itemsServer.forEach(element => {
