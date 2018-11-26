@@ -1,4 +1,5 @@
 import { hasOwnProperty } from 'tslint/lib/utils';
+import { TimingAst } from '@angular/animations/browser/src/dsl/animation_ast';
 
 export interface Serializable<T> {
     deserialize(input: Object): T;
@@ -262,6 +263,8 @@ export class Identifier extends FHIRElement {
     assigner: Reference;
 }
 
+
+
 export class EnableWhen extends BackboneElement {
     question: string;
     hasAnswer: boolean;
@@ -331,9 +334,54 @@ export class FHIROption extends BackboneElement {
     }
 }
 
+export class Annotation extends FHIRElement {
+    authorReference: Reference;
+    authorString: string;
+    time: string;
+    text: string;
+}
+
 export class Context extends BackboneElement {
     encounter: Reference;
 
+}
+
+export class Activity extends BackboneElement {
+    outcomeCodeableConcept: CodeableConcept[];
+    outcomeReference: Reference[];
+    progress: Annotation[];
+    reference: Reference;
+
+}
+
+
+export class Timing extends FHIRElement {
+    event: Date;
+    // TODO work on a Timing object
+    repeat: string;
+    location: Reference;
+    performer: Reference[];
+    productCodeableConcept: CodeableConcept;
+    productReference: Reference;
+    dailyAmount: string;
+    quantity: string;
+    description: string;
+
+}
+
+export class Detail extends BackboneElement {
+    category: CodeableConcept;
+    definition: Reference;
+    code: CodeableConcept;
+    reasonCode: CodeableConcept[];
+    reasonReference: Reference[];
+    goal: Reference;
+    status: Code;
+    statusReason: string;
+    prohibited: boolean;
+    scheduledTiming: Timing;
+    scheduledPeriod: Period;
+    scheduledString: string;
 }
 
 export class Position extends BackboneElement {
@@ -579,6 +627,42 @@ export class Account extends Resource implements Serializable<Account> {
     }
 }
 
+export class CarePlan extends Resource implements Serializable<CarePlan> {
+
+    identifier: Identifier[];
+    defintion: Reference[];
+    basedOn: Reference[];
+    replaces: Reference[];
+    partOf: Reference[];
+    status: Code;
+    intent: Code;
+    category: CodeableConcept[];
+    title: string;
+    description: string;
+    subject: Reference;
+    context: Reference;
+    period: Period;
+    author: Reference[];
+    careTeam: Reference[];
+    addresses: Reference[];
+    supportingInfo: Reference[];
+    goal: Reference[];
+    activity: Activity[];
+    note: Annotation[];
+
+
+    deserialize(jsonObject: any): CarePlan {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
 
 export class Bundle extends Resource implements Serializable<Bundle> {
 
