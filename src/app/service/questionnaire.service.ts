@@ -75,14 +75,6 @@ export class QuestionnaireService {
     return headers;
   }
 
-  getHeadersWithoutType(): HttpHeaders {
-    const headers = new HttpHeaders({
-      'Content-Type' : 'application/json',
-      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
-    });
-    return headers;
-  }
-
   shareServiceResponseData(data) {
     this.newServRespSubject.next(data);
     // 9

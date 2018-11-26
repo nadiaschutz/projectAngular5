@@ -63,4 +63,11 @@
 .field-box-name {
     width: 450px;
 }
+.back-button {
+    margin-left: 15px;
+}
+.add-button {
+    margin-top: 25px;
+    margin-left: 15px;
+}
 

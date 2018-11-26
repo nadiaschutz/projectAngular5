@@ -24,7 +24,6 @@ export class AuthComponent implements OnInit {
 
   ngOnInit() {
 
-
     this.logInForm = this.fb.group({
       username: ['', [Validators.required]],
       password: [
@@ -36,11 +35,6 @@ export class AuthComponent implements OnInit {
         ]
       ]
     });
-
-    this.oauthService.redirectUri = environment.redirectUri;
-    if (this.oauthService.hasValidAccessToken()) {
-      this.router.navigate(['/dashboard']);
-    }
 
   }
 

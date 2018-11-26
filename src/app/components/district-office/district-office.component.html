@@ -3,7 +3,8 @@
 
   <div class="search-box container">
     <div *ngIf="!showFormElement">
-      <button (click)="showAddDisctrictOfficeForm()" style="margin-top: 25px">Add new District Office</button>
+      <button (click)="showAddDisctrictOfficeForm()" class="add-button">
+        Add new District Office</button>
         <table style="margin-top: 25px" class="officeList" *ngIf="districtOffices.length > 0">
             <thead>
               <tr>
@@ -29,6 +30,10 @@
     </div>
     <form [formGroup]="locationFormGroup" class="center-align" *ngIf="showFormElement">
       <div class="form-group">
+        <div class="row">
+          <button class="back-button" (click)="hideAddDisctrictOfficeForm()">
+            Back to List of Offices</button>
+        </div>
 
         <div class="row">
           <div class="col">
