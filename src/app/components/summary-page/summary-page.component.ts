@@ -116,7 +116,7 @@ export class SummaryPageComponent implements OnInit {
     this.itemToSend['id'] = this.responseId;
     this.itemToSend.status = 'completed';
 
-    this.questionnaireService.changeRequest(this.responseId, this.itemToSend).subscribe(
+    this.questionnaireService.changeRequest(this.itemToSend).subscribe(
       data => this.handleSuccessSubmit(data),
       error => this.handleErrorSubmit(error)
     );
