@@ -122,7 +122,6 @@ export class NewServiceRequestComponent implements OnInit {
 
   addDocument($event) {
 
-    const preview = document.querySelector('uploader');
     const documentReference = new FHIR.DocumentReference;
     const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
     const documentReferenceCoding = new FHIR.Coding;
