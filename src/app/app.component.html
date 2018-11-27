@@ -2,10 +2,14 @@
 <div id="container">
     <div class="row">
         <div class="col-1 col-lg-2 col-md-3">
-            <app-sidebar></app-sidebar>
+                <!-- <div fxFlexFill fxLayout="column">
+                        <div fxFlex style="background-color:blue;"> -->
+            <app-sidebar style="min-height:100vh;"> </app-sidebar>
         </div>
+    <!-- </div>
+</div> -->
         <div class="col-11 col-lg-10 col-md-9">
-            <router-outlet></router-outlet>
-        </div> -->
+            <router-outlet style="min-height:100vh;"></router-outlet>
+        </div> 
     </div>
 </div>

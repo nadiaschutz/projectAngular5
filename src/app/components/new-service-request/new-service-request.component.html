@@ -19,7 +19,7 @@
           <div class="form-group" *ngIf="el.type==='choice'">
     
             <label>{{el.text}}</label>
-            <select class="form-control"
+            <select class="form-control border-bottom"
             name='{{el.text}}'
             [(ngModel)]="items[i].answer"
             >
@@ -108,7 +108,9 @@
       
   
               <div class="col-12-custom">
+                  <div class='header'>
                   <h6>documents</h6>
+                </div>
                   <input type="file"  id="uploader" class="btn btn-secondary" (change)='addDocument($event)' placeholder="Add a document">
                     <div>
                         <table class="table">

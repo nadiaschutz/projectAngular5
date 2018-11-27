@@ -3,10 +3,12 @@
 
 
 /* variables */
+$denim: #334f75;
 $grey: #ced4da;
-$light-grey: rgba(0, 0, 0, 0.03);
+$light-grey: rgba(0, 0, 0, 0.18);
 $light-grey-2: #f8f8f8;
 $white: #ffffff;
+$skyBlue: #7fd6ed;
 @mixin buttons-global{
   border-radius: 2px;
   background-color: $white;
@@ -19,11 +21,23 @@ $white: #ffffff;
 
 /*************** styling ****************/
 
-html, body { height: 100%; }
-body { margin: 0; font-family: 'Lato', sans-serif; }
+html, body {
+    box-sizing: border-box;
+    height: 100%;
+    margin: 0;
+  }
+    
+ 
+body {
+    font-family: 'Lato', sans-serif;
+}
 
 
 /* font */
+h2{
+  font-size: 30px;
+  font-weight: bold;
+}
 
 h4, h5, h6{
     text-transform: uppercase;
@@ -58,6 +72,14 @@ h6{
 
 /* buttons */
 
+.signIn-button{
+    background-color: $denim;
+    padding-left: 30px;
+    padding-right: 30px;
+    color: white;
+    border-radius: 2px;
+}
+
 .special-button{
   @include buttons-global;
   padding: 6px 60px;
@@ -76,6 +98,7 @@ h6{
     border: none;
     padding-left: 30px;
     padding-right: 30px;
+    border-radius: 2px;
 }
 
 
@@ -91,6 +114,11 @@ h6{
 
 
 /* form */
+
+textarea {
+    resize: none;
+    outline: none;
+  }
 
 label{
     font-size: 11px;
@@ -108,10 +136,45 @@ select{
     background-color: $white;
 }
 
+.was-validated .form-control:valid,
+.was-validated .form-control:valid:focus,
+.form-control.is-valid, 
+.form-control.is-valid:focus, 
+.was-validated .custom-select:valid, 
+.was-validated .custom-select:valid:focus,
+.custom-select.is-valid,
+.custom-select.is-valid:focus  {
+    border-color: $skyBlue;
+    box-shadow: none;
+}
 
+// input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+//     background-color: white !important;
+//     background-image: none !important;
+//     color: rgb(0, 0, 0) !important;
+// }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+//   -webkit-text-fill-color: purple;
+  -webkit-box-shadow: 0 0 0px 1000px $white inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
 
 
 /* other */
+
+.height-100{
+    min-height: 86vh;
+}
+
 .line{
     border-top: 2px solid $grey;
     padding-top: 40px;
