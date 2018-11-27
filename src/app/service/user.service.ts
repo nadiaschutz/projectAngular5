@@ -85,13 +85,10 @@ export class UserService {
       + '&username=admin&password=' + pass
       + '&redirect_uri=' + environment.redirectUri + '/dashboard' + '&scope=' + environment.scopeUrl,
       { headers: header });
-    this.oauthService.fetchTokenUsingPasswordFlow(user, pass, header);
-
-    if (this.oauthService.hasValidAccessToken()) {
+    this.oauthService.fetchTokenUsingPasswordFlow(user, pass, header).then(() => {
       this.router.navigate(['/dashboard']);
     }
-
-
+    );
   }
 
   getDepartmentList() {
