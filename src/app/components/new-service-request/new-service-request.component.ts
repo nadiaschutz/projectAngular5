@@ -296,8 +296,11 @@ export class NewServiceRequestComponent implements OnInit {
       });
     }
 
-
-    this.items.push(this.itemReference);
+    // pushing document into itmes arr
+    if (this.itemReference) {
+      this.items.push(this.itemReference);
+    }
+    
 
     this.itemToSend = {
       resourceType: 'QuestionnaireResponse',
@@ -391,6 +394,17 @@ export class NewServiceRequestComponent implements OnInit {
       text: el.text
     }));
     console.log(this.items);
+    // checking health exam done externaly
+
+    this.items.forEach(el => {
+      if (el.text === 'Health Exam Done Externally') {
+        el.answer = false;
+      }
+    });
+
+    
+
+
     // checking dependents
     this.checkDependentItem(this.items);
     console.log(this.dependents);
