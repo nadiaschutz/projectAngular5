@@ -1,13 +1,14 @@
 <div class="main-header">
-    <h5>Search Client</h5>
-    <h6>client department > client</h6>
-  </div>
-<div class="search-box">
-  <form class="center-align">
-    <div class="form-group">
+  <h5>Search Client</h5>
+  <h6>client department > client</h6>
+</div>
+<div class="container">
+  <div class="search-box">
+    <form class="center-align">
+      <div class="form-group">
         <div class="form-group-search">
 
-      <div class="row ">
+          <div class="row ">
 
         <div class="col-12">
           <label for="firstname" class="label-name">Client's Name</label>
@@ -69,17 +70,15 @@
             </option>
           </select>
         </div>
+        <button type="button" class="btn regular-button" (click)="employeeSearch()">Search</button>
+
       </div>
-    </div>
-      <button type="button" class="btn regular-button" (click)="employeeSearch()">Search</button>
+    </form>
+  </div>
+  <!-- List of Clients  -->
 
-    </div>
-  </form>
-</div>
-<!-- List of Clients  -->
-
-<h6>Clients</h6>
-<div class="button-section">
+  <h6>Clients</h6>
+  <div class="button-section">
     <button type="button" class="btn special-button" (click)="newEmployeeButton()"> + New Client Record</button>
 </div>
 <div class="table-container">
@@ -119,9 +118,27 @@
           <td *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
             {{extension.valueString}}
           </td>
-  
-        </ng-container> -->
-      </tr>
-    </tbody>
-  </table>
+
+          <td>
+            <span *ngFor="let extension of q.extension">
+              <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">{{extension.valueString}}</span>
+            </span>
+          </td>
+
+          <td>
+            <span *ngFor="let extension of q.extension">
+              <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">{{extension.valueString}}</span>
+            </span>
+          </td>
+          <!-- <ng-container *ngFor="let extension of q.extension">
+                <td *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
+                  {{extension.valueString}}
+                </td>
+        
+              </ng-container> -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>

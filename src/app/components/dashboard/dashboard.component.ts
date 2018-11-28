@@ -85,7 +85,6 @@ export class DashboardComponent implements OnInit {
 
 
   handleSuccess(data) {
-    // console.log(data);
     this.qrequest = [];
     if (data.entry) {
       data.entry.forEach(item => {
