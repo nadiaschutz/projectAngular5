@@ -118,6 +118,9 @@ export class EmployeeComponent implements OnInit {
 
   linkId;
 
+  // list of  Languages
+  languages: ['English', 'French'];
+
 
   i;
   constructor(
@@ -167,7 +170,7 @@ export class EmployeeComponent implements OnInit {
     this.employeeFormGroup = this.fb.group({
 
       // Employee type
-      type: new FormControl('', Validators.required),
+      type: new FormControl(null, Validators.required),
 
       // Last Name
       familyName: new FormControl('', [Validators.required, Validators.minLength(2)]),
@@ -199,7 +202,7 @@ export class EmployeeComponent implements OnInit {
       addressCountry: new FormControl('', Validators.required),
 
       // Clients preferred language
-      language: new FormControl('', Validators.required),
+      language: new FormControl(null, Validators.required),
 
       // PRI (handled in Patient with an extension)
       id: new FormControl('', Validators.required),
@@ -208,10 +211,10 @@ export class EmployeeComponent implements OnInit {
       jobTitle: new FormControl('', Validators.required),
 
       // Department they work in (handled in Patient with an extension)
-      departmentName: new FormControl('', Validators.required),
+      departmentName: new FormControl(null, Validators.required),
 
       // Branch they work in (handled in Patient with an extension)
-      departmentBranch: new FormControl('', Validators.required),
+      departmentBranch: new FormControl(null, Validators.required),
 
       // References related to the employee (handled in Patient with an extension)
       referenceOne: [''],
