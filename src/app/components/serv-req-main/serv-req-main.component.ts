@@ -359,34 +359,44 @@ export class ServReqMainComponent implements OnInit {
     let result = '-';
     if (serviceRequestObj.item) {
       serviceRequestObj.item.forEach(item => {
-        if (item.linkId === '2') {
+        // if (item.linkId === '2') {
+        // if (item.text === 'PSOHP Service') {
+        //   if (item['answer']) {
+        //     if (item.answer[0].valueString.indexOf('-') > 0) {
+        //       result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('-') + 1, item.answer[0].valueString.length);
+        //     } else {
+        //       result = item.answer[0].valueString;
+        //     }
+        //   }
+        // }
+
+        if (item.text === 'PSOHP Service') {
           if (item['answer']) {
-            if (item.answer[0].valueString.indexOf('-') > 0) {
-              result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('-') + 1, item.answer[0].valueString.length);
-            } else {
-              result = item.answer[0].valueString;
+            // tslint:disable-next-line:max-line-length
+            result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('(') + 1, item.answer[0].valueString.length);
+            result = result.substring(0, result.length - 1);
             }
           }
-        }
+
       });
     }
     return result;
   }
   getAssessmentType(serviceRequestObj): string {
-    return this.getLinkValueFromObject(serviceRequestObj, '2');
+    return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service');
   }
   getRegion(serviceRequestObj): string {
-    return this.getLinkValueFromObject(serviceRequestObj, '8');
+    return this.getLinkValueFromObject(serviceRequestObj, 'Regional Office for Processing');
   }
   getCreatedBy(serviceRequestObj) {
-    return this.getLinkValueFromObject(serviceRequestObj, '1');
+    return this.getLinkValueFromObject(serviceRequestObj, 'Created By');
   }
 
-  getLinkValueFromObject(serviceRequestObj, linkId: string): string {
+  getLinkValueFromObject(serviceRequestObj, text: string): string {
     let result = '-';
     if (serviceRequestObj.item) {
       serviceRequestObj.item.forEach(item => {
-        if (item.linkId === linkId) {
+        if (item.text === text) {
           if (item['answer']) {
             if (item.answer[0].valueString.indexOf('-') > 0) {
               result = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
