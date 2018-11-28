@@ -79,58 +79,6 @@
   
         </section>
   
-        <section class="form-section">
-          <div class="row">
-            <div class="col-6">
-              <label for="type">Client Type</label>
-              <select class="form-control" formControlName="type" id="type" required>
-                <option [ngValue]="null">Choose Type</option>
-                <option *ngFor="let type of accountTypes" [value]="type.value">
-                  {{type.viewValue}}
-                </option>
-              </select>
-            </div>
-          </div>
-  
-  
-  
-  
-          <div class="row">
-            <div class="col">
-              <label for="givenName">First Name</label>
-              <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName"
-                required>
-            </div>
-            <div class="col">
-              <label for="familyName">Last Name</label>
-              <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName">
-            </div>
-          </div>
-  
-  
-  
-  
-  
-          <div class="row">
-            <div class="col">
-              <label for="dob">Date of Birth</label>
-              <input type="date" class="form-control" placeholder="Enter" formControlName="dob" id="dob">
-            </div>
-            <div class="col">
-              <label for="language">Preferred Language</label>
-  
-              <select class="form-control" formControlName="language" id="language">
-                <option [ngValue]="null">Choose Language</option>
-                <option *ngFor="let lang of languages" [value]="lang">
-                  {{lang}}
-                </option>
-              </select>
-  
-  
-            </div>
-          </div>
-          </section>
-  
   
           <section class="form-section">
             <div class='header'>

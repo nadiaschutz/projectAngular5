@@ -81,7 +81,8 @@
         <th scope="col">Date of Birth</th>
         <th scope="col">Client Type</th>
         <th scope="col">Department</th>
-  
+        <th scope="col">Branch</th>
+        
       </tr>
     </thead>
     <tbody class="body-table">
@@ -103,7 +104,11 @@
           </span>
         </td>
   
-  
+        <td>
+            <span *ngFor="let extension of q.extension">
+              <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">{{extension.valueString}}</span>
+            </span>
+          </td>
         <!-- <ng-container *ngFor="let extension of q.extension">
           <td *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
             {{extension.valueString}}
