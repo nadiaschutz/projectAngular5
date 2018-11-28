@@ -1,94 +1,170 @@
 <div *ngIf="selected">
-  <div *ngFor="let name of selected.name">
-    <h1 class="title">Client Review - {{name.given}} {{name.family}} </h1>
+
+<div class="container" *ngFor="let name of selected.name">
+
+ 
+    <div class="main-header">
+      <h5>Client Summary</h5>
+      <h6>CLIENT DEPARTMENT > {{name.given}} {{name.family}}</h6>
+    </div>
+
+<!-- general info -->
+    <section class="form-section">
+
+
     <div class="row">
-      <div class="col-2">
-        <span>First Name</span><br />
-        <span id="givenName"><ins>{{name.given}}</ins></span>
+      <div class="col-6">
+          <label>First Name</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" rows="1" disabled placeholder="{{name.given}}"></textarea>
       </div>
-      <div class="col-2">
-        <span>Last Name</span><br />
-        <span id="familyName"><ins>{{name.family}}</ins></span>
+
+      
+      <div class="col-6">
+        <label>Last Name</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" 
+            rows="1" disabled >{{name.family}}</textarea>
       </div>
     </div>
-  </div>
 
 
-  <div>
+
     <div class="row">
-      <div class="col-2">
-        <span>Date of Birth</span><br />
-        <span id="dob"><ins>{{selected.birthDate}}</ins></span>
-      </div>
-      <div class="col-4">
-        <span>Language</span><br />
-        <div *ngFor="let language of selected?.communication">
-          <span id="dob" *ngFor="let usedLanguage of language.language.coding"><ins>{{usedLanguage.display}}</ins></span>
+
+      <div class="col-6">
+          <label>Date of Birth</label>
+            <textarea type="text"
+              class="form-control" 
+              placeholder="type your text" 
+              rows="1" disabled >{{selected.birthDate}}</textarea>
         </div>
-      </div>
+
+
+      <div class="col-6">
+          <label>Language</label>
+          <div *ngFor="let language of selected?.communication">
+            <div *ngFor="let usedLanguage of language.language.coding">
+                <textarea type="text"
+                class="form-control" 
+                placeholder="type your text" 
+                rows="1" disabled>{{usedLanguage.display}}</textarea>
+            </div>
+          </div>
+        </div>
     </div>
-  </div>
-</div>
+  </section>
+
+<!-- contact info -->
+    <section class="form-section">
+    <div class='header'>
+        <h6>Contact Information</h6>
+    </div>
 
 
-<h2 class="title">Contact Information</h2>
   <div *ngIf="selected?.telecom">
     <div class="row">
-      <div class="col-2" *ngFor="let telecom of selected.telecom">
-        <span>{{telecom.system}}</span>
-        <div>
-          <span id="dob"><ins>{{telecom.value}}</ins></span>
+      <div class="col-6" *ngFor="let telecom of selected.telecom">
+
+          <label>{{telecom.system}}</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" 
+            rows="1" disabled>{{telecom.value}}</textarea>
         </div>
       </div>
     </div>
-  </div>
 
   <div *ngFor="let address of selected?.address">
     <div class="row">
-      <div class="col-2">
-        <span>Street Address</span><br />
-        <span *ngFor="let line of address.line"><ins>{{line}}</ins></span>
+      <div class="col-6">
+
+          <label>Street Address</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" 
+            rows="1" disabled
+            *ngFor="let line of address.line"
+            >{{line}}</textarea>
+
       </div>
-      <div class="col-2">
-        <span>City</span><br />
-        <span><ins>{{address.city}}</ins></span>
+      <div class="col-6">
+        
+        <label>City</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" 
+            rows="1" disabled
+            *ngFor="let line of address.line"
+           >{{address.city}}</textarea>
       </div>
     </div>
     <div class="row">
-      <div class="col-2">
-        <label for="addressProv">Province</label><br />
-        <span><ins>{{address.state}}</ins></span>
+      <div class="col-6">
+
+          <label>Province</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" 
+            rows="1" disabled
+            *ngFor="let line of address.line"
+           >{{address.state}}</textarea>
+
       </div>
-      <div class="col-2">
-        <label for="addressPcode">Postal Code</label><br />
-        <span><ins>{{address.postalCode}}</ins></span>
+      <div class="col-6">
+
+          <label>Postal Code</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" 
+            rows="1" disabled
+            *ngFor="let line of address.line"
+           >{{address.postalCode}}</textarea>
+
+
       </div>
-      <div class="col-4">
-        <label for="addressCountry">Country</label><br />
-        <span><ins>{{address.country}}</ins></span>
+      <div class="col-6">
+
+          <label>Country</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" 
+            rows="1" disabled
+            *ngFor="let line of address.line"
+           >{{address.country}}</textarea>  
+
+
       </div>
     </div>
   </div>
+</section>
 
 
+<!-- employment info -->
+<section class="form-section">
 <div *ngFor="let extension of selected?.extension">
   <div *ngIf="extension.valueString=='Employee'">
-    <h2 class="title">Employment Information</h2>
-    <div>
+      <div class='header'>
+          <h6>Employment Information</h6>
+      </div>
 
-      <div class="row">
+  
+
+      <!-- <div class="row">
         <div *ngFor="let extension of selected.extension">
           <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
             <span>Job Title</span><br />
             <span><ins>{{extension.valueString}}</ins></span>
           </div>
         </div>
-        <div>
+       
           <span>Employee PRI</span><br />
           <span><ins>{{selected.id}}</ins></span>
-        </div>
-      </div>
-      <div class="row">
+        </div> -->
+      
+      <!-- <div class="row">
         <div *ngFor="let extension of selected.extension">
           <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
             <span>Employing Department Name</span><br />
@@ -99,43 +175,67 @@
             <span><ins>{{extension.valueString}}</ins></span>
           </div>
         </div>
-      </div>
-
+      </div> -->
+     
       <div class="row">
         <div *ngFor="let extension of selected.extension">
-          <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferenceone'">
-            <span>Cross Reference</span><br />
-            <span><ins>{{extension.valueString}}</ins></span>
+          <div class="col-6" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferenceone'">
+            
+
+            <label>Cross Reference</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" 
+            rows="1" disabled
+           >{{extension.valueString}}</textarea>
+
+
           </div>
-          <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferencetwo'">
-            <span>Cross Reference</span><br />
-            <span><ins>{{extension.valueString}}</ins></span>
+          <div class="col-6"  *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferencetwo'">
+
+            <label>Cross Reference</label>
+          <textarea type="text"
+            class="form-control" 
+            placeholder="type your text" 
+            rows="1" disabled
+           >{{extension.valueString}}</textarea>
+
+
           </div>
         </div>
       </div>
+
+      
     </div>
   </div>
-</div>
+ 
+</section>
 
 
+<!-- dependents -->
+<section class="form-section">
 <div class="row">
   <div *ngFor="let extension of selected?.extension">
-    <h2 *ngIf="extension.valueString == 'Employee'">
-      Dependents
-    </h2>
+
+      <div class='header'  *ngIf="extension.valueString == 'Employee'">
+          <h6>Dependents</h6>
+      </div>
+
   </div>
 
 </div>
 <div class="row">
   <div *ngFor="let dependent of dependentArray">
     <div *ngFor="let name of dependent?.name">
-        <div *ngFor="let extension of selected.extension">
-          <span *ngIf="extension.valueString == 'Dependent'">{{name.given}} {{name.family}} </span>
-        </div>
+          <span >{{name.given}} {{name.family}} </span>
     </div>
   </div>
 </div>
+</section>
+
+
+<!-- buttons -->
 <div class="row">
-  <button class="btn form-button" (click)="newServiceRequest()">Create a Service Request</button>
-  <button class="btn form-button" (click)="backToDashboard()">Back to Dashboard</button>
+  <button class="btn regular-button" (click)="newServiceRequest()">Create a Service Request</button>
+  <button class="btn regular-button" (click)="backToDashboard()">Back to Dashboard</button>
 </div>

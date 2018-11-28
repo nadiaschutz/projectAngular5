@@ -12,9 +12,9 @@ export const environment = {
   logoutURI: 'https://bcip.smilecdr.com/smartauth',
   redirectUri: 'http://localhost:4200',
   clientId: 'NOHIS',
-  scope: 'launch/patient openid patient/*.read profile',
+  scope: 'openid profile cdr_all_user_authorities',
   // tslint:disable-next-line:max-line-length
-  scopeUrl: 'launch%2Fpatient%20openid%20patient%2F%2A.read%20patient%2F%2A.write%20organization%2F%2A.read%20organization%2F%2A.write%20profile',
+  scopeUrl: 'openid%20profile%20cdr_all_user_authorities',
   loginLink: 'https://bcip.smilecdr.com/smartauth/oauth/token'
 
 };

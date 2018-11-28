@@ -56,6 +56,9 @@ export class QuestionnaireService {
     return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + data['id'], data, { headers: this.getHeaders() });
   }
 
+  deleteServiceRequest(serviceRequestId: string) {
+    return this.http.delete(environment.queryURI + '/QuestionnaireResponse/' + serviceRequestId, {headers: this.getHeaders()});
+  }
   // This function takes in a generic query
   getDocumentReferenceByQuery(query: string) {
     return this.http.get(environment.queryURI + query, { headers: this.getHeaders() } );

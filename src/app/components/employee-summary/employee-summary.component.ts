@@ -92,8 +92,11 @@ export class EmployeeSummaryComponent implements OnInit {
     if (data.entry) {
       data.entry.forEach(element => {
         const individualEntry = element.resource;
-        this.dependentArray.push(individualEntry);
-        console.log(this.dependentArray);
+        for (const extension of individualEntry.extension) {
+          if (extension.valueString === 'Dependent') {
+            this.dependentArray.push(individualEntry);
+          }
+        }
       });
     }
   }

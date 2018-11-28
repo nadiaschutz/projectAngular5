@@ -104,6 +104,10 @@ export class DistrictOfficeComponent implements OnInit {
     this.showFormElement = true;
   }
 
+  hideAddDisctrictOfficeForm() {
+    this.showFormElement = false;
+  }
+
   saveDistrictOffice(locationObj) {
     this.userService.saveDistrictOffice(locationObj).subscribe(data => {
       this.showFormElement = false;

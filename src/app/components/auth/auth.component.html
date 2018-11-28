@@ -1,29 +1,30 @@
 
-<div class="center-align" role="main">
-  <div class="container">
-    <form #form="ngForm" novalidate [formGroup]="logInForm">
-      <div class="login-row">
-        <div id="login-box">
-            <div class="form-group">
-              <h2>Welcome</h2>
+<div class="container" style="height: 86vh;">
+    <div class="row align-items-center h-100">
+        <div class="col-6 mx-auto">
+            <div class="jumbotron">
+                <div class='header  align-items-center d-flex justify-content-center'>
+                    <h2>Welcome</h2>
+                </div>
 
-              <input type="text" class="form-control form-field"  placeholder="Username" formControlName="username">
-                <!--<mat-error *ngIf="username.invalid && username.touched">-->
-                  <!--Username is incorrect-->
-                <!--</mat-error>-->
-
-                <input type="password" class="form-control form-field" placeholder="Password" formControlName="password">
-                <!--<mat-error *ngIf="password.invalid && password.touched">-->
-                  <!--<p>Your password should be at leasat 6 characters long, with at least one number</p>-->
-                <!--</mat-error>-->
-              <button class="btn" id="logbtn" (click)="login()">
-                Log in
-              </button>
+                <form #form="ngForm" novalidate [formGroup]="logInForm">
+                    <div class="login-row">
+                      <div id="login-box">
+                          <div class="form-group">
+                            
+              
+                            <input type="text" class="form-control form-field"  placeholder="Username" formControlName="username">
+              
+                              <input type="password" class="form-control form-field" placeholder="Password" formControlName="password">
+                            <button class="btn" id="logbtn" (click)="login()">
+                              Log in
+                            </button>
+                          </div>
+              
+                      </div>
+                    </div>
+                  </form>
             </div>
-
         </div>
-      </div>
-    </form>
-  </div>
+    </div>
 </div>
-<!-- </div> -->
