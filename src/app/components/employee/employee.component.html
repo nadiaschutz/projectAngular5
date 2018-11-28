@@ -22,6 +22,7 @@
       <div class="col-6">
         <label for="type">Client Type</label>
         <select class="form-control" formControlName="type" id="type" required>
+          <option [ngValue]="null">Choose Type</option>
           <option *ngFor="let type of accountTypes" [value]="type.value">
             {{type.viewValue}}
           </option>
@@ -54,7 +55,15 @@
       </div>
       <div class="col">
         <label for="language">Preferred Language</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="language" id="language">
+
+        <select class="form-control" formControlName="language" id="language">
+            <option [ngValue]="null">Choose Language</option>
+            <option *ngFor="let lang of languages" [value]="lang">
+              {{lang}}
+            </option>
+          </select>
+
+
       </div>
     </div>
   </section>
@@ -133,6 +142,7 @@
       <div class="col">
         <label for="departmentName">Derpartment Name</label>
         <select class="form-control" formControlName="departmentName" id="departmentName">
+            <option [ngValue]="null">Choose Department</option>
           <option *ngFor="let dept of department" [value]="dept">
             {{dept}}
           </option>
@@ -141,6 +151,7 @@
       <div class="col">
         <label for="departmentBranch">Department Branch</label>
         <select class="form-control" formControlName="departmentBranch" id="departmentBranch">
+            <option [ngValue]="null">Choose Branch</option>
           <option *ngFor="let branch of branches" [value]="branch">
             {{branch}}
           </option>

@@ -52,7 +52,7 @@
               [(ngModel)]="region"
               (ngModelChange)="region = $event"  
               name = "region">
-              <option [ngValue]="null">Select Category</option>
+              <option [ngValue]="null">Select Region</option>
               <option *ngFor="let region of regionArr" 
               [value]="region"
               >
@@ -67,7 +67,7 @@
               [(ngModel)]="clientDepartment"
               (ngModelChange)="clientDepartment = $event"  
               name = "department">
-              <option [ngValue]="null">Select Category</option>
+              <option [ngValue]="null">Select Department</option>
               <option *ngFor="let department of departmentArr" 
               [value]="department"
               >
@@ -87,7 +87,7 @@
               [(ngModel)]="status.data"
               (ngModelChange)="status.data = $event"  
               name = "stat">
-              <option [ngValue]="null">Select Category</option>
+              <option [ngValue]="null">Select Status</option>
               <option *ngFor="let stat of statusArr" 
               [value]="stat"
               >
@@ -129,7 +129,7 @@
       <table class="table">
           <thead class="header-table">
             <tr>
-              <th scope="col">#ID</th>
+              <th scope="col">PRI</th>
               <th scope="col">Date</th>
               <th scope="col">Service Type</th>
               <th scope="col">Assesment Type</th>

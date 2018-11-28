@@ -10,7 +10,7 @@
       <div class="row ">
 
         <div class="col-12">
-          <label for="firstname" class="label-name">First Name</label>
+          <label for="firstname" class="label-name">Client's Name</label>
           <input type="text" 
           name="firstname" 
           id="firstname" 
@@ -23,7 +23,7 @@
       <div class="row">
         <div class="col">
           <label for="clientid" 
-          class="label-name">Client ID</label>
+          class="label-name">PRI</label>
           <input type="text" 
           name="clientid" 
           id="clientid" 
@@ -41,18 +41,29 @@
       </div>
       <div class="row">
         <div class="col">
+
           <label for="region" class="label-name">Employee Type</label>
-          <select class="form-control" [(ngModel)]="employeeType" (ngModelChange)="employeeType = $event" name="employeeType">
+          <select class="form-control" 
+          [(ngModel)]="employeeType" 
+          (ngModelChange)="employeeType = $event" 
+          name="employeeType">
             <option [ngValue]="null">Select Category</option>
-            <option *ngFor="let employeeType of employeeTypeArray" [value]="employeeType">
+            <option *ngFor="let employeeType of employeeTypeArray" 
+            [value]="employeeType">
               {{employeeType}}
             </option>
           </select>
+
         </div>
+
+
+       
+
+
         <div class="col">
           <label for="department" class="label-name">Client Department</label>
           <select class="form-control" [(ngModel)]="clientDepartment" (ngModelChange)="clientDepartment = $event" name="department">
-            <option [ngValue]="null">Select Category</option>
+            <option [ngValue]="null">Select Department</option>
             <option *ngFor="let department of listOfDepartments" [value]="department">
               {{department}}
             </option>
@@ -75,7 +86,7 @@
   <table class="table  table-hover">
     <thead class="header-table ">
       <tr>
-        <th scope="col">Employee #ID</th>
+        <th scope="col">PRI</th>
         <th scope="col">First</th>
         <th scope="col">Last</th>
         <th scope="col">Date of Birth</th>
