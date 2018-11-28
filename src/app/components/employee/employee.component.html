@@ -1,21 +1,83 @@
-
-<div class="main-header">
+<div class="container">
+  <div class="main-header">
     <h5>clients</h5>
     <h6>client department > Create Employee & Dependent Records</h6>
   </div>
+  <div id="content-form">
 
-<div id="content-form">
 
 
-  <form [formGroup]="employeeFormGroup" novalidate>
+    <form [formGroup]="employeeFormGroup" novalidate>
       <section class="form-section">
         <div class='header'>
-      <h6>
-        Client Information
-      </h6>
-    
-  </div>
-  
+          <h6>
+            Client Information
+          </h6>
+
+        </div>
+
+
+        <!-- <div class="row">
+          <div class="col-6">
+            <label for="type">Client Type</label>
+            <select class="form-control" formControlName="type" id="type" required>
+              <option *ngFor="let type of accountTypes" [value]="type.value">
+                {{type.viewValue}}
+              </option>
+            </select>
+          </div>
+        </div> -->
+
+
+
+
+        <div class="row">
+          <div class="col">
+            <label for="givenName">First Name</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName"
+              required>
+            <div class="invalid-feedback">
+              Must be two or more characters long
+            </div>
+          </div>
+          <div class="col">
+            <label for="familyName">Last Name</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
+              required>
+            <div class="invalid-feedback">
+              Must be two or more characters long
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+        <div class="row">
+          <div class="col">
+            <label for="dob">Date of Birth</label>
+            <input type="date" class="form-control" placeholder="Enter" formControlName="dob" id="dob" required>
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+          <div class="col">
+            <label for="type">Preferred Language</label>
+            <select class="form-control" formControlName="language" id="language" placeholder="Select a language"
+              required>
+              <option *ngFor="let lang of languageList" [value]="lang.value">
+                {{lang.viewValue}}
+              </option>
+              <div class="invalid-feedback">
+                  Cannot be blank
+                </div>
+            </select>
+          </div>
+        </div>
+
+
+      </section>
 
   
     <div class="row">
@@ -71,127 +133,157 @@
 
   <section class="form-section">
         <div class='header'>
-      <h6>
-        Contact & Address Information
-      </h6>
-    </div>
-
-    
+          <h6>
+            Contact & Address Information
+          </h6>
+        </div>
 
 
-    <div class="row">
-      <div class="col">
-        <label for="email">Email</label>
-        <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email">
-      </div>
-      <div class="col">
-        <label for="phoneNumber">Phone Number</label>
-        <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label for="addressStreet">Street Address</label>
-        <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet" id="addressStreet">
-      </div>
-      <div class="col">
-        <label for="addressCity">City</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="addressCity" id="addressCity">
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-3">
-        <label for="addressProv">Province</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="addressProv" id="addressProv">
-      </div>
-      <div class="col-3">
-        <label for="addressPcode">Postal Code</label>
-        <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode" id="addressPcode">
-      </div>
-      <div class="col-6">
-        <label for="addressCountry">Country</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="addressCountry" id="addressCountry">
-      </div>
-    </div>
-  </section>
 
 
-  <section class="form-section">
-    
+        <div class="row">
+          <div class="col">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email"
+              required>
+            <div class="invalid-feedback">
+              Must be of format: email@email.com
+            </div>
+          </div>
+          <div class="col">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber"
+              required>
+            <div class="invalid-feedback">
+              Must be ten digits long, no spaces, characters or dashes
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="addressStreet">Street Address</label>
+            <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet" id="addressStreet" required>
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+          <div class="col">
+            <label for="addressCity">City</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="addressCity" id="addressCity" required>
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-3">
+            <label for="addressProv">Province</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="addressProv" id="addressProv" required>
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+          <div class="col-3">
+            <label for="addressPcode">Postal Code</label>
+            <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode" id="addressPcode">
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+          <div class="col-6">
+            <label for="addressCountry">Country</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="addressCountry" id="addressCountry">
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="form-section">
+
         <div class='header'>
-      <h6>
-        Employment Information
-      </h6>
-    </div>
-  
+          <h6>
+            Employment Information
+          </h6>
+        </div>
+
+
+        <div class="row">
+          <div class="col">
+            <label for="jobTitle">Job Title</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle">
+            <div class="invalid-feedback">
+                Cannot be blank
+              </div>
+          </div>
+          <div class="col">
+            <label for="id">Associated Employee PRI</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id">
+            <div class="invalid-feedback">
+                Cannot be blank
+              </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="departmentName">Derpartment Name</label>
+            <select class="form-control" formControlName="departmentName" id="departmentName">
+              <option *ngFor="let dept of department" [value]="dept">
+                {{dept}}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <label for="departmentBranch">Department Branch</label>
+            <select class="form-control" formControlName="departmentBranch" id="departmentBranch">
+              <option *ngFor="let branch of branches" [value]="branch">
+                {{branch}}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="referenceOne">Cross-reference No. 1</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne">
+          </div>
+          <div class="col">
+            <label for="referenceTwo">Cross-reference No. 2</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
+          </div>
+        </div>
+
+      </section>
+
+    </form>
 
     <div class="row">
       <div class="col">
-        <label for="jobTitle">Job Title</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle">
-      </div>
-      <div class="col">
-        <label for="id">Associated Employee PRI</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id">
+        <div class="button-section">
+          <button class="btn regular-button" (click)="addDependent()">Add a Dependent</button>
+        </div>
       </div>
     </div>
-
-    <div class="row">
-      <div class="col">
-        <label for="departmentName">Derpartment Name</label>
-        <select class="form-control" formControlName="departmentName" id="departmentName">
-            <option [ngValue]="null">Choose Department</option>
-          <option *ngFor="let dept of department" [value]="dept">
-            {{dept}}
-          </option>
-        </select>
-      </div>
-      <div class="col">
-        <label for="departmentBranch">Department Branch</label>
-        <select class="form-control" formControlName="departmentBranch" id="departmentBranch">
-            <option [ngValue]="null">Choose Branch</option>
-          <option *ngFor="let branch of branches" [value]="branch">
-            {{branch}}
-          </option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label for="referenceOne">Cross-reference No. 1</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne">
-      </div>
-      <div class="col">
-        <label for="referenceTwo">Cross-reference No. 2</label>
-        <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
-      </div>
-    </div>
-
-  </section>  
-
-  </form>
-
+  </div>
   <div class="row">
+
     <div class="col">
-      <div class="button-section">
-        <button class="btn regular-button" [disabled]="!employeeFormGroup.valid" (click)="setEmployee()">Submit</button>
-        <button class="btn regular-button" (click)="addDependent()">Add a Dependent</button>
+      <div class="button-section line">
+        <button class="btn regular-button float-right" [disabled]="!employeeFormGroup.valid" (click)="setEmployee()">Submit</button>
+        <div class="valid-feedback">
+            Success!
+          </div>
+        <!-- <button class="btn action-button " (click)="setEmployee()">Submit</button> -->
+        <button class="btn regular-button" (click)="returnToDashboard()">Return to Dashboard</button>
       </div>
     </div>
-  </div>
-  </div>
-  <div class="row">
-
-    <div class="col">
-        <div class="button-section line">
-            <button class="btn action-button float-right" (click)="setEmployee()">Submit</button>
-      <button class="btn regular-button" (click)="returnToDashboard()">Return to Dashboard</button>
-    </div>
-  </div>
 
 
   </div>
-<br />
+</div>

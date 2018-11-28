@@ -146,6 +146,12 @@ export class EmployeeComponent implements OnInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
+  languageList: AccountType[] = [
+    { value: 'English', viewValue: 'English' },
+    { value: 'French', viewValue: 'French' },
+
+  ];
+
   ngOnInit() {
 
 
