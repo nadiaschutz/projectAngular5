@@ -119,7 +119,7 @@ export class EmployeeComponent implements OnInit {
   linkId;
 
   // list of  Languages
-  languages: ['English', 'French'];
+  languages = ['English', 'French'];
 
 
   i;
