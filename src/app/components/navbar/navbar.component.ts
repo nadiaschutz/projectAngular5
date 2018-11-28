@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {OAuthService} from 'angular-oauth2-oidc';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { UserService } from '../../service/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -8,13 +10,14 @@ import {OAuthService} from 'angular-oauth2-oidc';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor(
-      private oauthService: OAuthService,
-  ) { }
+  constructor(private oauthService: OAuthService, private userService: UserService, private router: Router) { }
 
   ngOnInit() {
   }
     logout() {
-        this.oauthService.logOut();
+        this.userService.logout();
+    }
+    redirectToDashboard() {
+      this.router.navigateByUrl('/dashboard');
     }
 }

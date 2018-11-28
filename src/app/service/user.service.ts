@@ -51,24 +51,25 @@ export class UserService {
   }
 
   logout() {
+    const header = this.getLogoutHeaders();
 
-    // Uses the OAuthService library to revoke token and log the user out
-    // if (!this.oauthService.hasValidAccessToken()) {
-    //     this.router.navigate(['/']);
-    // }
-
-    const header = this.getLoginHeaders();
-
-    this.httpClient.post(environment.logoutURI + '/logout?cb=none&revoke=token', {}, { headers: header, withCredentials: true })
+    this.httpClient.post(environment.logoutURI + '/session/token/revoke', 'token=' + this.oauthService.getAccessToken(), { headers: header})
       .subscribe(item => {
         console.log(item);
       }, err => {
         console.log(err);
       });
 
-      this.oauthService.logOut();
+    this.oauthService.logOut();
     this.router.navigate(['']);
 
+  }
+
+  getLogoutHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded'
+    });
+    return headers;
   }
 
   login(user: string, pass: string) {
@@ -81,11 +82,12 @@ export class UserService {
     // scopeURL is an environment variable that a user sets, containing scopes that are relevant
     // to the user & use case.
     this.httpClient.post(environment.loginLink,
-      'grant_type=password&client_id=' + user
-      + '&username=admin&password=' + pass
+      'grant_type=password&client_id=NOHIS'
+      + '&username=' + user + '&password=' + pass
       + '&redirect_uri=' + environment.redirectUri + '/dashboard' + '&scope=' + environment.scopeUrl,
       { headers: header });
-    this.oauthService.fetchTokenUsingPasswordFlow(user, pass, header).then(() => {
+    this.oauthService.fetchTokenUsingPasswordFlowAndLoadUserProfile(user, pass, header).then(() => {
+      console.log(this.oauthService.getIdentityClaims());
       this.router.navigate(['/dashboard']);
     }
     );
