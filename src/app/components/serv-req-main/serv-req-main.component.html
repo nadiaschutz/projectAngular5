@@ -139,7 +139,7 @@
               <th scope="col">Status</th>
             </tr>
           </thead>
-          <tbody *ngIf="str===null">
+          <tbody *ngIf="str===null" class="body-table">
             <tr *ngFor="let q of servRequests" (click)="navigateToSummary(q)" class="request-list">
               <td>{{q.id}}</td>
               <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
