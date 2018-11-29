@@ -386,44 +386,51 @@ export class ServReqMainComponent implements OnInit {
     return result;
   }
 
-  
+
 
   getAssessmentType(serviceRequestObj): string {
 
     if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
-      return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service');
+      return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
     }
     if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
-      return this.getLinkValueFromObject(serviceRequestObj, 'Select Request Type');
+      return '-';
       }
     }
   getRegion(serviceRequestObj): string {
     if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
-      return this.getLinkValueFromObject(serviceRequestObj, 'Regional Office for Processing');
+      return this.getLinkValueFromObject(serviceRequestObj, 'Regional Office for Processing', 1);
     }
     if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
-        
+      return '-';
       }
-    
+
   }
   getCreatedBy(serviceRequestObj) {
     if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
-      return this.getLinkValueFromObject(serviceRequestObj, 'Created By');
+      return this.getLinkValueFromObject(serviceRequestObj, 'Created By', 1);
     }
     if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
-      return this.getLinkValueFromObject(serviceRequestObj, '');
+      return '-';
       }
-    
+
   }
 
-  getLinkValueFromObject(serviceRequestObj, text: string): string {
+  getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
     let result = '-';
     if (serviceRequestObj.item) {
       serviceRequestObj.item.forEach(item => {
         if (item.text === text) {
           if (item['answer']) {
             if (item.answer[0].valueString.indexOf('-') > 0) {
-              result = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+
+              if (dashNum === 1) {
+                result = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+              }
+              if (dashNum === 2) {
+                result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('-') + 1);
+                result = result.substring(0, result.indexOf('-'));
+              }
             } else {
               result = item.answer[0].valueString;
             }
@@ -435,7 +442,7 @@ export class ServReqMainComponent implements OnInit {
   }
 
   getLinkValueFromObject2(serviceRequestObj, text: string): string {
-    let result = '-';
+    const result = '-';
     if (serviceRequestObj.item) {
     }
     return result;
@@ -450,11 +457,12 @@ export class ServReqMainComponent implements OnInit {
     }
     if (servReqobj.questionnaire.reference === 'Questionnaire/1953') {
       // console.log(servReqobj.item);
-      servReqobj.item.forEach(element => {
-        if (element.text === 'Name of the Requester') {
-          result = (element.answer[0].valueString);
-        }
-      });
+      // servReqobj.item.forEach(element => {
+      //   if (element.text === 'Name of the Requester') {
+      //     result = (element.answer[0].valueString);
+      //   }
+      // });
+      result = '-';
     }
     return result;
   }
