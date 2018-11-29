@@ -110,37 +110,6 @@
             <div class='header'>
               <h6>Employment Information</h6>
             </div>
-           
-  
-  
-            <!-- <div class="row">
-          <div *ngFor="let extension of selected.extension">
-            <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
-              <span>Job Title</span><br />
-              <span><ins>{{extension.valueString}}</ins></span>
-            </div>
-          </div>
-         
-            <span>Employee PRI</span><br />
-            <span><ins>{{selected.id}}</ins></span>
-          </div> -->
-  
-            <!-- <div class="row">
-          <div *ngFor="let extension of selected.extension">
-            <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
-              <span>Employing Department Name</span><br />
-              <span><ins>{{extension.valueString}}</ins></span>
-            </div>
-            <div class="col-auto" *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">
-              <span>Employing Department Branch</span><br />
-              <span><ins>{{extension.valueString}}</ins></span>
-            </div>
-          </div>
-        </div> -->
-  
-  
-  
-  
           </div>
         </div>
         <div class="row">
@@ -160,8 +129,8 @@
   
           </div>
           <div class="col-6"> 
-              <!-- <div *ngFor="let extension of selected?.extension">
-                <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'"> -->
+              <div *ngFor="let extension of selected?.extension">
+                <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
                   <label>Employee PRI</label>
                   <textarea type="text" 
                    class="form-control"
@@ -170,8 +139,8 @@
                      disabled >{{selected?.id}}
                     </textarea>
                 </div>     
-              <!-- </div>
-            </div> -->
+              </div>
+            </div>
     
         </div>
         <div class="row">
@@ -209,7 +178,7 @@
             <div class="col-6"> 
               <div *ngFor="let extension of selected?.extension">
                 <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferenceone'">
-                  <label>Cross Reference No.1</label>
+                  <label>Cross Reference</label>
                   <textarea type="text" 
                    class="form-control"
                     placeholder="type your text"
@@ -224,7 +193,7 @@
             <div class="col-6"> 
                 <div *ngFor="let extension of selected?.extension">
                   <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferencetwo'">
-                    <label>Cross Reference No.2</label>
+                    <label>Cross Reference</label>
                     <textarea type="text" 
                      class="form-control"
                       placeholder="type your text"
