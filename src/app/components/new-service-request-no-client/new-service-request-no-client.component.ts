@@ -260,7 +260,7 @@ export class NewServiceRequestNoClientComponent implements OnInit {
          }
        });
      }
-    
+
      this.createItemServiceType();
          // pushing document into items arr
     if (this.itemReference) {

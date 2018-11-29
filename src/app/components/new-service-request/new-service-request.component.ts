@@ -60,6 +60,7 @@ export class NewServiceRequestComponent implements OnInit {
   itemToSend: ItemToSend = {
     resourceType: '',
     extension: null,
+    questionnaire: null,
     status: null,
     subject: null,
     authored: null,
@@ -405,7 +406,6 @@ export class NewServiceRequestComponent implements OnInit {
       }
     });
 
-    
 
 
     // checking dependents
