@@ -1,121 +1,112 @@
 <div class="main-header">
-    <h5>Search Client</h5>
-    <h6>client department > client</h6>
-  </div>
-<div class="search-box">
-  <form class="center-align">
-    <div class="form-group">
-        <div class="form-group-search">
-
-      <div class="row ">
-
-        <div class="col-12">
-          <label for="firstname" class="label-name">First Name</label>
-          <input type="text" 
-          name="firstname" 
-          id="firstname" 
-          class="form-control 
-          field-box-name" 
-          placeholder="Enter"
-            [(ngModel)]="name.data">
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="clientid" 
-          class="label-name">Client ID</label>
-          <input type="text" 
-          name="clientid" 
-          id="clientid" 
-          class="form-control" 
-          placeholder="Enter"
-            [(ngModel)]="clientId.data">
-        </div>
-        <div class="col">
-          <label for="dob" class="label-name">Date of Birth</label>
-          <input class="form-control" 
-          [ngModel]="dateOfBirth.data | date:'yyyy-MM-dd'" 
-          (ngModelChange)="dateOfBirth.data = $event"
-            type="date" name="dob" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="region" class="label-name">Employee Type</label>
-          <select class="form-control" [(ngModel)]="employeeType" (ngModelChange)="employeeType = $event" name="employeeType">
-            <option [ngValue]="null">Select Category</option>
-            <option *ngFor="let employeeType of employeeTypeArray" [value]="employeeType">
-              {{employeeType}}
-            </option>
-          </select>
-        </div>
-        <div class="col">
-          <label for="department" class="label-name">Client Department</label>
-          <select class="form-control" [(ngModel)]="clientDepartment" (ngModelChange)="clientDepartment = $event" name="department">
-            <option [ngValue]="null">Select Category</option>
-            <option *ngFor="let department of listOfDepartments" [value]="department">
-              {{department}}
-            </option>
-          </select>
-        </div>
-      </div>
-    </div>
-      <button type="button" class="btn regular-button" (click)="employeeSearch()">Search</button>
-
-    </div>
-  </form>
+  <h5>Search Client</h5>
+  <h6>client department > client</h6>
 </div>
-<!-- List of Clients  -->
-
-<h6>Clients</h6>
-<div class="button-section">
-    <button type="button" class="btn special-button" (click)="newEmployeeButton()"> + New Client Record</button>
-</div>
-<div class="table-container">
-  <table class="table  table-hover">
-    <thead class="header-table ">
-      <tr>
-        <th scope="col">Employee #ID</th>
-        <th scope="col">First</th>
-        <th scope="col">Last</th>
-        <th scope="col">Date of Birth</th>
-        <th scope="col">Client Type</th>
-        <th scope="col">Department</th>
-        <th scope="col">Branch</th>
+<div class="container">
+    <div class="search-box">
+        <form class="center-align">
+          <div class="form-group">
+            <div class="form-group-search">
+      
+              <div class="row ">
+      
+                <div class="col-12">
+                  <label for="firstname" class="label-name">First Name</label>
+                  <input type="text" name="firstname" id="firstname" class="form-control 
+                field-box-name"
+                    placeholder="Enter" [(ngModel)]="name.data">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <label for="clientid" class="label-name">Client ID</label>
+                  <input type="text" name="clientid" id="clientid" class="form-control" placeholder="Enter" [(ngModel)]="clientId.data">
+                </div>
+                <div class="col">
+                  <label for="dob" class="label-name">Date of Birth</label>
+                  <input class="form-control" [ngModel]="dateOfBirth.data | date:'yyyy-MM-dd'" (ngModelChange)="dateOfBirth.data = $event"
+                    type="date" name="dob" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <label for="region" class="label-name">Employee Type</label>
+                  <select class="form-control" [(ngModel)]="employeeType" (ngModelChange)="employeeType = $event" name="employeeType">
+                    <option [ngValue]="null">Select Category</option>
+                    <option *ngFor="let employeeType of employeeTypeArray" [value]="employeeType">
+                      {{employeeType}}
+                    </option>
+                  </select>
+                </div>
+                <div class="col">
+                  <label for="department" class="label-name">Client Department</label>
+                  <select class="form-control" [(ngModel)]="clientDepartment" (ngModelChange)="clientDepartment = $event"
+                    name="department">
+                    <option [ngValue]="null">Select Category</option>
+                    <option *ngFor="let department of listOfDepartments" [value]="department">
+                      {{department}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn regular-button" (click)="employeeSearch()">Search</button>
+      
+          </div>
+        </form>
+      </div>
+      <!-- List of Clients  -->
+      
+      <h6>Clients</h6>
+      <div class="button-section">
+        <button type="button" class="btn special-button" (click)="newEmployeeButton()"> + New Client Record</button>
+      </div>
+      <div class="table-container">
+        <table class="table  table-hover">
+          <thead class="header-table ">
+            <tr>
+              <th scope="col">Employee #ID</th>
+              <th scope="col">First</th>
+              <th scope="col">Last</th>
+              <th scope="col">Date of Birth</th>
+              <th scope="col">Client Type</th>
+              <th scope="col">Department</th>
+              <th scope="col">Branch</th>
+      
+            </tr>
+          </thead>
+          <tbody class="body-table">
+            <tr *ngFor="let q of qrequest ">
+              <td>{{q.id}}</td>
+              <td *ngFor="let name of q.name" (click)="routeToSummary(q.id)" class="cursor">{{name.given}}</td>
+              <td *ngFor="let name of q.name" (click)="routeToSummary(q.id)" class="cursor">{{name.family}}</td>
+              <td>{{q.birthDate | date: 'dd/MM/yyyy'}}</td>
+      
+              <td>
+                <span *ngFor="let extension of q.extension">
+                  <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/employeetype'">{{extension.valueString}}</span>
+                </span>
+              </td>
+      
+              <td>
+                <span *ngFor="let extension of q.extension">
+                  <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">{{extension.valueString}}</span>
+                </span>
+              </td>
+      
+              <td>
+                <span *ngFor="let extension of q.extension">
+                  <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">{{extension.valueString}}</span>
+                </span>
+              </td>
+              <!-- <ng-container *ngFor="let extension of q.extension">
+                <td *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
+                  {{extension.valueString}}
+                </td>
         
-      </tr>
-    </thead>
-    <tbody class="body-table">
-      <tr *ngFor="let q of qrequest "   >
-        <td>{{q.id}}</td>
-        <td *ngFor="let name of q.name" (click)="routeToSummary(q.id)" class="cursor">{{name.given}}</td>
-        <td *ngFor="let name of q.name" (click)="routeToSummary(q.id)" class="cursor">{{name.family}}</td>
-        <td>{{q.birthDate | date: 'dd/MM/yyyy'}}</td>
-  
-        <td>
-          <span *ngFor="let extension of q.extension">
-            <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/employeetype'">{{extension.valueString}}</span>
-          </span>
-        </td>
-  
-        <td>
-          <span *ngFor="let extension of q.extension">
-            <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">{{extension.valueString}}</span>
-          </span>
-        </td>
-  
-        <td>
-            <span *ngFor="let extension of q.extension">
-              <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">{{extension.valueString}}</span>
-            </span>
-          </td>
-        <!-- <ng-container *ngFor="let extension of q.extension">
-          <td *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
-            {{extension.valueString}}
-          </td>
-  
-        </ng-container> -->
-      </tr>
-    </tbody>
-  </table>
+              </ng-container> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
 </div>
