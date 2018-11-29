@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
 import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -14,6 +14,11 @@ import * as uuid from 'uuid';
 
 
 export interface AccountType {
+  value: string;
+  viewValue: string;
+}
+
+export interface LanguageType {
   value: string;
   viewValue: string;
 }
@@ -108,6 +113,12 @@ export class DependentComponent implements OnInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
+  languageList: LanguageType[] = [
+    { value: 'English', viewValue: 'English' },
+    { value: 'French', viewValue: 'French' },
+
+  ];
+
   ngOnInit() {
 
 
@@ -134,18 +145,40 @@ export class DependentComponent implements OnInit {
 
 
     this.dependentFormGroup = this.fb.group({
-      type: ['', [Validators.required]],
-      familyName: ['', [Validators.required]],
-      givenName: ['', [Validators.required]],
-      dob: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required]],
-      addressStreet: ['', [Validators.required]],
-      addressCity: ['', [Validators.required]],
-      addressProv: ['', [Validators.required]],
-      addressPcode: ['', [Validators.required]],
-      addressCountry: ['', [Validators.required]],
-      language: ['', [Validators.required]],
+      // Employee type
+      type: new FormControl(null, Validators.required),
+
+      // Last Name
+      familyName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+
+      // First Name
+      givenName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+
+      // Date of Birth
+      dob: new FormControl('', Validators.required),
+
+      // Email
+      email: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)
+      ]),
+
+      // Client's phone number (can be any number of their choosing)
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        Validators.pattern('^[+]?(?:[0-9]{2})?[0-9]{10}$')
+      ]),
+
+      // Address section
+      addressStreet: new FormControl('', Validators.required),
+      addressCity: new FormControl('', Validators.required),
+      addressProv: new FormControl('', Validators.required),
+      addressPcode: new FormControl('', [
+        Validators.required]),
+      addressCountry: new FormControl('', Validators.required),
+
+      // Clients preferred language
+      language: new FormControl(null, Validators.required),
     });
 
     // const retrievedObject = localStorage.getItem('dependent');
@@ -296,7 +329,11 @@ export class DependentComponent implements OnInit {
     if (data.entry) {
       data.entry.forEach(item => {
         const individualEntry = item.resource;
-        this.employeelist.push(individualEntry);
+        for (const extension of individualEntry.extension) {
+          if (extension.valueString === 'Employee') {
+            this.employeelist.push(individualEntry);
+          }
+        }
       });
     } else {
       this.employeelist.push(data);

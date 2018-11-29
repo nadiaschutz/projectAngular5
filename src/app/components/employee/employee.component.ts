@@ -18,6 +18,11 @@ export interface AccountType {
   viewValue: string;
 }
 
+export interface LanguageType {
+  value: string;
+  viewValue: string;
+}
+
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',
@@ -146,7 +151,7 @@ export class EmployeeComponent implements OnInit {
     { value: 'Dependent', viewValue: 'Dependent' }
   ];
 
-  languageList: AccountType[] = [
+  languageList: LanguageType[] = [
     { value: 'English', viewValue: 'English' },
     { value: 'French', viewValue: 'French' },
 
