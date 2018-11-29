@@ -33,7 +33,7 @@ import { SummaryPageComponent } from './components/summary-page/summary-page.com
 import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
-import { EditNewServceRequestComponent } from './components/edit-new-servce-request/edit-new-servce-request.component';
+// import { EditNewServceRequestComponent } from './components/edit-new-servce-request/edit-new-servce-request.component';
 
 
 const routes: Routes = [
@@ -72,8 +72,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     SummaryPageComponent,
     ClientDepartmentComponent,
     DistrictOfficeComponent,
-    ServiceRequestSummaryComponent,
-    EditNewServceRequestComponent
+    ServiceRequestSummaryComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
