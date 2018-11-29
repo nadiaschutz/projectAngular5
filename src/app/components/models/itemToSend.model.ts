@@ -15,6 +15,10 @@ export interface ItemToSend {
           reference: string;
           display: string;
         };
+        questionnaire: {
+          reference: string;
+        };
+
         authored: string;
         item: any [];
       }

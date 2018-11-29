@@ -57,6 +57,7 @@ export class NewServiceRequestNoClientComponent implements OnInit {
 
   itemToSend: ItemToSend = {
     resourceType: 'string',
+    questionnaire: null,
     extension: null,
     status: null,
     subject: null,
@@ -216,6 +217,8 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     };
   }
 
+
+
   retrieveDocuments(data) {
     this.documents = data;
   }
@@ -257,11 +260,18 @@ export class NewServiceRequestNoClientComponent implements OnInit {
          }
        });
      }
-
-     this.items.push(this.itemReference);
+    
+     this.createItemServiceType();
+         // pushing document into items arr
+    if (this.itemReference) {
+      this.items.push(this.itemReference);
+    }
 
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
+        questionnaire: {
+          reference: 'Questionnaire/' + this.formId
+        },
         status: 'in-progress',
         authored: this.myDay,
         item: []
@@ -291,6 +301,17 @@ export class NewServiceRequestNoClientComponent implements OnInit {
       });
 
       console.log(this.itemToSend);
+  }
+
+  createItemServiceType() {
+    if (this.formId === '1953') {
+      this.itemReference = {
+        linkId: '30',
+        // text: obj.content[0].attachment.title,
+        text: 'PSOHP Service',
+        answer:  'Advice/Consulation/Incident Mngt. (ADCOIN)'
+      };
+    }
   }
 
    addDependent() {
