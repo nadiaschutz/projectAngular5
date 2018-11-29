@@ -13,7 +13,6 @@ export class QrequestService {
 
   constructor(private http: HttpClient, private oauthService: OAuthService) { }
 
-
   getData(query: string) {
     const header = this.getHeaders();
     return this.http.get(environment.queryURI + '/QuestionnaireResponse' + query, { headers: header });
@@ -22,6 +21,11 @@ export class QrequestService {
   getHeaders(): HttpHeaders {
     const header = new HttpHeaders().set('Authorization', 'Bearer ' + this.oauthService.getAccessToken());
     return header;
+  }
+
+  getAllQuestionnaireResponseData(id: string) {
+    const header = this.getHeaders();
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse/' + id , { headers: header });
   }
 
 }
