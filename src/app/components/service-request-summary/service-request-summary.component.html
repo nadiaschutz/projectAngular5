@@ -36,13 +36,13 @@
           <input disabled=true class="form-control field-box-name" placeholder="{{serviceRequestObject['departmentName']}}"/>
       </div>
   </div> -->
+  <button (click)="deleteServiceRequest()" style="margin-top: 20px;" class="btn special-button">
+      Delete
+    </button>
   <div *ngFor="let item of serviceRequestObject">
     <div style="margin-top: 10px">
       <label class="label-name">{{item.name | titlecase}}</label>
       <input disabled=true class="form-control field-box-name" placeholder="{{item.value | titlecase}}"/>
     </div>
   </div>
-  <button (click)="deleteServiceRequest()" style="margin-top: 20px;">
-    Delete
-  </button>
 </div>
