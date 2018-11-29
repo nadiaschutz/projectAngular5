@@ -40,7 +40,6 @@ export class SummaryPageComponent implements OnInit {
 
   itemToSend: ItemToSend = {
     resourceType: 'string',
-    questionnaire: null,
     extension: null,
     status: null,
     subject: null,
