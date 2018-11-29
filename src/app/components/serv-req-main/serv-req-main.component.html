@@ -9,15 +9,25 @@
   
         <div class="row ">
   
-          <div class="col-12">
-            <label for="name" class="label-name">Name</label>
+          <div class="col">
+            <label for="name" class="label-name">Given Name</label>
             <input type="text" 
             name="name" 
             id="name" 
             class="form-control" 
             placeholder="Enter"
-            [(ngModel)]="name.data">
+            [(ngModel)]="givenName.data">
           </div>
+
+          <div class="col">
+              <label for="name" class="label-name">Family Name</label>
+              <input type="text" 
+              name="name" 
+              id="name" 
+              class="form-control" 
+              placeholder="Enter"
+              [(ngModel)]="familyName.data">
+            </div>
   
         </div>
   
