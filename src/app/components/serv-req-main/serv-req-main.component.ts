@@ -386,7 +386,7 @@ export class ServReqMainComponent implements OnInit {
     return result;
   }
 
-  
+
 
   getAssessmentType(serviceRequestObj): string {
 
@@ -402,9 +402,9 @@ export class ServReqMainComponent implements OnInit {
       return this.getLinkValueFromObject(serviceRequestObj, 'Regional Office for Processing');
     }
     if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
-        
+
       }
-    
+
   }
   getCreatedBy(serviceRequestObj) {
     if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
@@ -413,7 +413,7 @@ export class ServReqMainComponent implements OnInit {
     if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
       return this.getLinkValueFromObject(serviceRequestObj, '');
       }
-    
+
   }
 
   getLinkValueFromObject(serviceRequestObj, text: string): string {
@@ -435,7 +435,7 @@ export class ServReqMainComponent implements OnInit {
   }
 
   getLinkValueFromObject2(serviceRequestObj, text: string): string {
-    let result = '-';
+    const result = '-';
     if (serviceRequestObj.item) {
     }
     return result;
