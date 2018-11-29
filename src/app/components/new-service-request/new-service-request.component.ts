@@ -300,10 +300,13 @@ export class NewServiceRequestComponent implements OnInit {
     if (this.itemReference) {
       this.items.push(this.itemReference);
     }
-    
+
 
     this.itemToSend = {
       resourceType: 'QuestionnaireResponse',
+      questionnaire: {
+        reference: 'Questionnaire/' + this.formId
+      },
       status: 'in-progress',
       authored: this.myDay,
       subject: {
