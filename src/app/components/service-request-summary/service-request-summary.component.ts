@@ -2,19 +2,21 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../service/user.service';
 import { QrequestService } from '../../service/qrequest.service';
 import { QuestionnaireService } from '../../service/questionnaire.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-service-request-summary',
   templateUrl: './service-request-summary.component.html',
-  styleUrls: ['./service-request-summary.component.css']
+  styleUrls: ['./service-request-summary.component.scss']
 })
 export class ServiceRequestSummaryComponent implements OnInit {
 
   serviceRequestObject = [];
-  serviceRequestID = '';
+  serviceRequestID = null;
+  showSuccessMessage = false;
 
   constructor(private userService: UserService, private qrequestService: QrequestService,
-  private questionnaireService: QuestionnaireService) { }
+  private questionnaireService: QuestionnaireService, private router: Router) { }
 
   ngOnInit() {
     const selectedServiceRequestID = this.userService.getSelectedServiceRequestID();
@@ -35,9 +37,14 @@ export class ServiceRequestSummaryComponent implements OnInit {
   deleteServiceRequest() {
     this.questionnaireService.deleteServiceRequest(this.serviceRequestID).subscribe(data => {
       console.log(data);
+      this.showSuccessMessage = true;
     }, error => {
       console.error(error);
     });
+  }
+
+  redirectToServiceRequestMainPage() {
+    this.router.navigateByUrl('/servreqmain');
   }
 
 }
