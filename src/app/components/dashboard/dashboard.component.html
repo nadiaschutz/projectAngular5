@@ -10,12 +10,18 @@
 
           <div class="row ">
 
-            <div class="col-12">
-              <label for="firstname" class="label-name">Name</label>
-              <input type="text" name="firstname" id="firstname" class="form-control 
+            <div class="col">
+              <label for="firstName" class="label-name">Given Name</label>
+              <input type="text" name="firstName" id="firstName" class="form-control 
                 field-box-name"
-                placeholder="Enter" [(ngModel)]="name.data">
+                placeholder="Enter" [(ngModel)]="givenName.data">
             </div>
+            <div class="col">
+                <label for="familyName" class="label-name">Family Name</label>
+                <input type="text" name="familyName" id="familyName" class="form-control 
+                  field-box-name"
+                  placeholder="Enter" [(ngModel)]="familyName.data">
+              </div>
           </div>
           <div class="row">
             <div class="col">

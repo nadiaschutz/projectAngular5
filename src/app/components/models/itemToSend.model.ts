@@ -7,6 +7,10 @@ export interface ItemToSend {
           },
           {
             url: string;
+            valueCode: string;
+          },
+          {
+            url: string;
             valueDateTime: string;
           }
         ];
