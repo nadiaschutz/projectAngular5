@@ -119,6 +119,17 @@ export class HumanName extends FHIRElement {
 
 }
 
+export class Extension {
+    url: string;
+    valueString: string;
+    valueCode: string;
+    valueAddress: Address;
+    valueBoolean?: boolean;
+    valueHumanName: HumanName;
+    valueReference: Reference;
+    valueIdentifier: string;
+    valueDecimal?: number;
+}
 
 export class Address extends FHIRElement {
     use: Code;

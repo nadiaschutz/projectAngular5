@@ -335,7 +335,7 @@ export class EmployeeComponent implements OnInit {
     // Type extension
 
     this.employee_extension_type.url = 'https://bcip.smilecdr.com/fhir/employeetype';
-    this.employee_extension_type.valueString = this.employeeFormGroup.get('type').value;
+    this.employee_extension_type.valueString = 'Employee';
 
     this.employee.extension = [
       this.employee_extension_branch,

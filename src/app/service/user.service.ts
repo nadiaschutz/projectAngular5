@@ -119,6 +119,11 @@ export class UserService {
     {headers: this.postFHIRHeaders()});
   }
 
+  saveClientDepartment(locationObj) {
+    return this.httpClient.post(environment.queryURI + '/Location/', locationObj,
+    {headers: this.postFHIRHeaders()});
+  }
+
   fetchAllRegionalOffices() {
     return this.httpClient.get(environment.queryURI + '/Organization?type=team', {headers: this.getHeaders()});
   }

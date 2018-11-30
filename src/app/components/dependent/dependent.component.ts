@@ -222,7 +222,7 @@ export class DependentComponent implements OnInit {
     // Type extension
 
     dependent_extension_type.url = 'https://bcip.smilecdr.com/fhir/employeetype';
-    dependent_extension_type.valueString = this.dependentFormGroup.get('type').value;
+    dependent_extension_type.valueString = 'Dependent';
 
 
     // Dependent Address

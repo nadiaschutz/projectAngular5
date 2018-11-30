@@ -25,20 +25,20 @@ export class ClientDepartmentComponent implements OnInit {
 
     const departments = [];
     this.clientDepartmentFormGroup = this.formBuilder.group({
-      departmentName: new FormControl('', Validators.required),
-      departmentBranch: new FormControl('', Validators.required),
-      contactName: new FormControl('', Validators.required),
-      chargebackClient: new FormControl('', Validators.required),
+      departmentName: new FormControl('', [Validators.required]),
+      departmentBranch: new FormControl('', [Validators.required]),
+      contactName: new FormControl('', [Validators.required]),
+      chargebackClient: new FormControl(''),
       email: new FormControl('', [
         Validators.required,
-        Validators.pattern(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)
+        Validators.email
       ]),
-      phoneNumber: new FormControl('', Validators.required),
-      faxNumber: new FormControl('', Validators.required),
-      addressStreet: new FormControl('', Validators.required),
-      addressCity: new FormControl('', Validators.required),
-      addressProvince: new FormControl('', Validators.required),
-      addressPostalCode: new FormControl('', Validators.required),
+      phoneNumber: new FormControl('', [Validators.required]),
+      faxNumber: new FormControl('', [Validators.required]),
+      addressStreet: new FormControl('', [Validators.required]),
+      addressCity: new FormControl('', [Validators.required]),
+      addressProvince: new FormControl('', [Validators.required]),
+      addressPostalCode: new FormControl('', [Validators.required]),
     });
 
 
@@ -47,12 +47,12 @@ export class ClientDepartmentComponent implements OnInit {
   setClientDepartment() {
     const clientDepartment = new FHIR.Location;
     const branchLocation = new FHIR.Location;
-
+    const chargeBackExtension = new FHIR.Extension;
 
     clientDepartment.resourceType = 'Location';
     clientDepartment.name = this.clientDepartmentFormGroup.get('contactName').value;
 
-    clientDepartment.status = new FHIR.Code('active').code;
+    clientDepartment.status = 'active';
 
     const organizationReference = new FHIR.Reference();
     // organizationReference.reference =
@@ -62,9 +62,16 @@ export class ClientDepartmentComponent implements OnInit {
     //   ];
     clientDepartment.managingOrganization = organizationReference;
 
+    const typeCoding = new FHIR.Coding;
+
+    typeCoding.system = 'https:bcip.smilecdr.com/fhir/clientDepartment';
+    typeCoding.code = 'CLIENTDEPT';
+    typeCoding.display = 'Client Department';
+
     const type = new FHIR.CodeableConcept();
     type.text = 'Client Department';
     clientDepartment.type = type;
+    clientDepartment.type.coding = [typeCoding];
 
     const address = new FHIR.Address();
     address.line = [this.clientDepartmentFormGroup.get('addressStreet').value];
@@ -86,10 +93,13 @@ export class ClientDepartmentComponent implements OnInit {
     faxNumber.value = this.clientDepartmentFormGroup.get('faxNumber').value;
 
     clientDepartment.telecom = [email, phoneNumber, faxNumber];
+    // clientDepartment
 
     branchLocation.name = this.clientDepartmentFormGroup.get('departmentBranch').value;
 
-    console.log(clientDepartment);
+    this.userService.saveClientDepartment(JSON.stringify(clientDepartment)).subscribe(
+      res => console.log(res)
+    );
 
   }
 
