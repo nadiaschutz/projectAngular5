@@ -16,13 +16,18 @@ import { link } from 'fs';
 })
 export class ServReqMainComponent implements OnInit {
 
-  name = {
-    prefix: 'name=',
+  givenName = {
+    prefix: 'givenname=',
     data: null
   };
 
-  clientId = {
-    prefix: 'subject=patient/',
+  familyName = {
+    prefix: 'familyname=',
+    data: null
+  };
+
+  serviceRequestId = {
+    prefix: '/',
     data: null
   };
 
@@ -128,7 +133,7 @@ export class ServReqMainComponent implements OnInit {
 
   myString;
   str = null;
-  private arrOfVar = [this.name, this.clientId, this.dateOfBirth, this.status, this.date];
+  private arrOfVar = [this.givenName, this.familyName, this.serviceRequestId, this.dateOfBirth, this.status, this.date];
 
   constructor(
     private oauthService: OAuthService,
@@ -228,7 +233,9 @@ export class ServReqMainComponent implements OnInit {
   handleSuccessAll(data) {
     console.log(data);
     for (const individualRecord of data.entry) {
-      this.servRequests.push(individualRecord.resource);
+      if (individualRecord.resource.item) {
+        this.servRequests.push(individualRecord.resource);
+      }
     }
     console.log(this.servRequests);
   }
@@ -318,8 +325,9 @@ export class ServReqMainComponent implements OnInit {
 
 
     this.str = null;
-    this.name.data = null;
-    this.clientId.data = null;
+    this.givenName.data = null;
+    this.familyName.data = null;
+    this.serviceRequestId.data = null;
     this.dateOfBirth.data = null;
     this.status.data = null;
     this.date.data = null;

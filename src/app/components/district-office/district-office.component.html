@@ -1,38 +1,46 @@
-<h1>Add District Office</h1>
-
-<div class="container">
-  <div *ngIf="!showFormElement">
-    <button (click)="showAddDisctrictOfficeForm()" class="add-button btn special-button">
-      Add new District Office</button>
-    <table style="margin-top: 25px" class="officeList table  table-hover" *ngIf="districtOffices.length > 0">
-      <thead class="header-table">
-        <tr>
-          <th>REGION</th>
-          <th>DISTRICT</th>
-          <th>ADDRESS</th>
-          <th>EMAIL</th>
-          <!-- <th>ACTION</th> -->
-        </tr>
-      </thead>
-      <tbody class="body-table">
-        <tr *ngFor="let item of districtOffices">
-          <td>{{getRegion(item.managingOrganization)}}</td>
-          <td>{{item.name}}</td>
-          <td>{{item.address.line[0]}}</td>
-          <td>{{item.telecom[0]['value']}}</td>
-          <!-- <td>
-                  <button (click)="editNewDistrictOffice(item)">Edit</button>
-                </td> -->
-        </tr>
-      </tbody>
-    </table>
+<div>
+  <div class="main-header">
+    <h5>Add District Office</h5>
   </div>
-  <form [formGroup]="locationFormGroup" class="center-align" *ngIf="showFormElement">
-    <div class="form-group">
-      <div class="row">
-        <button class="back-button btn special-button" (click)="hideAddDisctrictOfficeForm()">
-          Back to List of Offices</button>
+
+  <div>
+    <div *ngIf="!showFormElement">
+      <div class="button-section">
+        <button (click)="showAddDisctrictOfficeForm()" class="btn special-button">
+          Add new District Office</button>
       </div>
+
+        <div class="table-container">
+          <table style="margin-top: 25px" class="officeList table  table-hover" *ngIf="districtOffices.length > 0">
+              <thead class="header-table">
+                <tr>
+                  <th>REGION</th>
+                  <th>DISTRICT</th>
+                  <th>ADDRESS</th>
+                  <th>EMAIL</th>
+                  <!-- <th>ACTION</th> -->
+                </tr>
+              </thead>
+              <tbody class="body-table">
+                <tr *ngFor="let item of districtOffices">
+                  <td>{{getRegion(item.managingOrganization)}}</td>
+                  <td>{{item.name}}</td>
+                  <td>{{item.address.line[0]}}</td>
+                  <td>{{item.telecom[0]['value']}}</td>
+                  <!-- <td>
+                    <button (click)="editNewDistrictOffice(item)">Edit</button>
+                  </td> -->
+                </tr>
+              </tbody>
+            </table>
+        </div>
+    </div>
+    <form [formGroup]="locationFormGroup" class="center-align" *ngIf="showFormElement">
+      <div class="form-group">
+        <div class="row">
+          <button class="back-button btn special-button" (click)="hideAddDisctrictOfficeForm()">
+            Back to List of Offices</button>
+        </div>
 
       <div class="row">
         <div class="col">
