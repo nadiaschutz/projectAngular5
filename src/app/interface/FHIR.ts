@@ -758,3 +758,4 @@ export class Bundle extends Resource implements Serializable<Bundle> {
         return this;
     }
 }
+

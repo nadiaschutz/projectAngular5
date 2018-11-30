@@ -20,6 +20,7 @@ export class UserService {
 
 
   selectID = '';
+  selectedIDForEmployeePostSummary = '';
   selectedServiceRequestID = '';
   constructor(
 
@@ -48,6 +49,14 @@ export class UserService {
 
   returnSelectedID() {
     return this.selectID;
+  }
+
+  getEmployeeSummaryID(data) {
+    this.selectedIDForEmployeePostSummary = data;
+  }
+
+  returnEmployeeSummaryID() {
+    return this.selectedIDForEmployeePostSummary;
   }
 
   logout() {
