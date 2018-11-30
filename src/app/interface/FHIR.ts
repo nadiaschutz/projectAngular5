@@ -236,9 +236,9 @@ export class Contact extends BackboneElement {
 }
 
 export class ContactPoint extends FHIRElement {
-    system: Code;
+    system: string;
     value: string;
-    use: Code;
+    use: string;
     rank: number;
     period: Period;
 }
@@ -255,7 +255,7 @@ export class Reference extends FHIRElement {
 }
 
 export class Identifier extends FHIRElement {
-    use: string;
+    use: Code;
     type: CodeableConcept;
     system: string;
     value: string;

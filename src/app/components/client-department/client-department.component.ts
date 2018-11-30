@@ -74,15 +74,15 @@ export class ClientDepartmentComponent implements OnInit {
     clientDepartment.address = address;
 
     const email = new FHIR.ContactPoint();
-    email.system = new FHIR.Code('email');
+    email.system = 'email';
     email.value = this.clientDepartmentFormGroup.get('email').value;
 
     const phoneNumber = new FHIR.ContactPoint();
-    phoneNumber.system = new FHIR.Code('phone');
+    phoneNumber.system = 'phone';
     phoneNumber.value = this.clientDepartmentFormGroup.get('phoneNumber').value;
 
     const faxNumber = new FHIR.ContactPoint();
-    faxNumber.system = new FHIR.Code('fax');
+    faxNumber.system = 'fax';
     faxNumber.value = this.clientDepartmentFormGroup.get('faxNumber').value;
 
     clientDepartment.telecom = [email, phoneNumber, faxNumber];

@@ -48,13 +48,13 @@ export class DistrictOfficeComponent implements OnInit {
 
   addNewDistrictOffice() {
     this.showFormElement = true;
-    const districtOffice = new FHIR.Location();
+    const districtOffice = new FHIR.Location;
     districtOffice.resourceType = 'Location';
     districtOffice.name = this.locationFormGroup.get('name').value;
 
     districtOffice.status = new FHIR.Code('active').code;
 
-    const organizationReference = new FHIR.Reference();
+    const organizationReference = new FHIR.Reference;
     organizationReference.reference =
       'Organization/' +
       this.regionalOfficesWithId[
@@ -62,9 +62,15 @@ export class DistrictOfficeComponent implements OnInit {
       ];
     districtOffice.managingOrganization = organizationReference;
 
-    const type = new FHIR.CodeableConcept();
+    const codingForType = new FHIR.Coding;
+    codingForType.system = 'https://bcip.smilecdr.com/fhir/clientdepartment';
+    codingForType.code = 'CLIENTDEPT';
+    codingForType.display = 'Client Department';
+
+    const type = new FHIR.CodeableConcept;
     type.text = 'District Office';
     districtOffice.type = type;
+    type.coding = [codingForType];
 
     const address = new FHIR.Address();
     address.line = [this.locationFormGroup.get('addressStreet').value];
@@ -74,15 +80,15 @@ export class DistrictOfficeComponent implements OnInit {
     districtOffice.address = address;
 
     const email = new FHIR.ContactPoint();
-    email.system = new FHIR.Code('email');
+    email.system = 'email';
     email.value = this.locationFormGroup.get('email').value;
 
     const phoneNumber = new FHIR.ContactPoint();
-    phoneNumber.system = new FHIR.Code('phone');
+    phoneNumber.system = 'phone';
     phoneNumber.value = this.locationFormGroup.get('phoneNumber').value;
 
     const faxNumber = new FHIR.ContactPoint();
-    faxNumber.system = new FHIR.Code('fax');
+    faxNumber.system = 'fax';
     faxNumber.value = this.locationFormGroup.get('faxNumber').value;
 
     districtOffice.telecom = [email, phoneNumber, faxNumber];
