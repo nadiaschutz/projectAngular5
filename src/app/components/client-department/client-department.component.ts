@@ -63,7 +63,7 @@ export class ClientDepartmentComponent implements OnInit {
     clientDepartment.managingOrganization = organizationReference;
 
     const type = new FHIR.CodeableConcept();
-    type.text = 'District Office';
+    type.text = 'Client Department';
     clientDepartment.type = type;
 
     const address = new FHIR.Address();
@@ -88,6 +88,8 @@ export class ClientDepartmentComponent implements OnInit {
     clientDepartment.telecom = [email, phoneNumber, faxNumber];
 
     branchLocation.name = this.clientDepartmentFormGroup.get('departmentBranch').value;
+
+    console.log(clientDepartment);
 
   }
 
