@@ -14,6 +14,7 @@ export class ServiceRequestSummaryComponent implements OnInit {
   serviceRequestObject = [];
   serviceRequestID = null;
   showSuccessMessage = false;
+  patient = [];
 
   constructor(private userService: UserService, private qrequestService: QrequestService,
   private questionnaireService: QuestionnaireService, private router: Router) { }
@@ -21,9 +22,23 @@ export class ServiceRequestSummaryComponent implements OnInit {
   ngOnInit() {
     const selectedServiceRequestID = this.userService.getSelectedServiceRequestID();
     this.qrequestService.getAllQuestionnaireResponseData(selectedServiceRequestID).subscribe(data => {
-      if (data['item']) {
-        console.log(data);
-        this.serviceRequestObject.push({name: 'id', value: data['id']});
+      console.log(data);
+      if (data['entry']) {
+        data['entry'].forEach(element => {
+          if (element['resource']['resourceType'] === 'QuestionnaireResponse') {
+            this.processQuestionnaireResponse(element['resource']);
+          }
+          if (element['resource']['resourceType'] === 'Patient') {
+            this.processPatientDetails(element['resource']);
+          }
+        });
+      }
+    });
+  }
+
+  processQuestionnaireResponse(data) {
+    if (data['item']) {
+        this.serviceRequestObject.push({name: 'Service Request Id', value: data['id']});
         this.serviceRequestID = data['id'];
         data['item'].forEach(item => {
           if (item.text !== 'Document') {
@@ -32,14 +47,37 @@ export class ServiceRequestSummaryComponent implements OnInit {
             if (item['answer'][0]['valueString']) {
               temp['value'] = item['answer'][0]['valueString'];
             } else {
-              temp['value'] = item['answer'][0]['valueBoolean'];
+              if (item['answer'][0]['valueBoolean']) {
+                temp['value'] = 'yes';
+              } else {
+                temp['value'] = 'no';
+              }
             }
             this.serviceRequestObject.push(temp);
           }
         });
         this.serviceRequestObject.push({name: 'status', value: data['status']});
-      }
-    });
+    }
+  }
+
+  processPatientDetails(data) {
+    if (data) {
+      this.patient.push({name: 'First Name', value: data['name'][0]['given'][0]});
+      this.patient.push({name: 'Last Name', value: data['name'][0]['family']});
+      this.patient.push({name: 'Date of Birth', value: data['birthDate']});
+      this.patient.push({name: 'Employee PRI', value: data['id']});
+      data.extension.forEach(element => {
+        if (element.url === 'https://bcip.smilecdr.com/fhir/jobtile') {
+          this.patient.push({name: 'Job Title', value: element.valueString});
+        }
+        if (element.url === 'https://bcip.smilecdr.com/fhir/workplace') {
+          this.patient.push({name: 'Employing Department Name', value: element.valueString});
+        }
+        if (element.url === 'https://bcip.smilecdr.com/fhir/branch') {
+          this.patient.push({name: 'Employing Department Branch', value: element.valueString});
+        }
+      });
+    }
   }
 
   deleteServiceRequest() {
