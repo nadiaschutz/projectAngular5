@@ -9,15 +9,25 @@
   
         <div class="row ">
   
-          <div class="col-12">
-            <label for="name" class="label-name">Name</label>
+          <div class="col">
+            <label for="name" class="label-name">Given Name</label>
             <input type="text" 
             name="name" 
             id="name" 
             class="form-control" 
             placeholder="Enter"
-            [(ngModel)]="name.data">
+            [(ngModel)]="givenName.data">
           </div>
+
+          <div class="col">
+              <label for="name" class="label-name">Family Name</label>
+              <input type="text" 
+              name="name" 
+              id="name" 
+              class="form-control" 
+              placeholder="Enter"
+              [(ngModel)]="familyName.data">
+            </div>
   
         </div>
   
@@ -52,7 +62,7 @@
               [(ngModel)]="region"
               (ngModelChange)="region = $event"  
               name = "region">
-              <option [ngValue]="null">Select Category</option>
+              <option [ngValue]="null">Select Region</option>
               <option *ngFor="let region of regionArr" 
               [value]="region"
               >
@@ -67,7 +77,7 @@
               [(ngModel)]="clientDepartment"
               (ngModelChange)="clientDepartment = $event"  
               name = "department">
-              <option [ngValue]="null">Select Category</option>
+              <option [ngValue]="null">Select Department</option>
               <option *ngFor="let department of departmentArr" 
               [value]="department"
               >
@@ -87,7 +97,7 @@
               [(ngModel)]="status.data"
               (ngModelChange)="status.data = $event"  
               name = "stat">
-              <option [ngValue]="null">Select Category</option>
+              <option [ngValue]="null">Select Status</option>
               <option *ngFor="let stat of statusArr" 
               [value]="stat"
               >
@@ -118,10 +128,10 @@
   
   
   
-  <div class="button-section">
+  <!-- <div class="button-section">
     
       <a routerLink="/newadvicerequest"><button class="btn special-button"> + New Advice Consultation</button></a>
-  </div>
+  </div> -->
   
   
   
@@ -129,9 +139,9 @@
       <table class="table">
           <thead class="header-table">
             <tr>
-              <th scope="col">#ID</th>
+              <th scope="col">PRI</th>
               <th scope="col">Date</th>
-              <th scope="col">Service Type</th>
+              <th scope="col">PSOHP Service</th>
               <th scope="col">Assesment Type</th>
               <th scope="col">Region</th>
               <th scope="col">Created By</th>
@@ -139,7 +149,7 @@
               <th scope="col">Status</th>
             </tr>
           </thead>
-          <tbody *ngIf="str===null">
+          <tbody *ngIf="str===null" class="body-table">
             <tr *ngFor="let q of servRequests" (click)="navigateToSummary(q)" class="request-list">
               <td>{{q.id}}</td>
               <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>

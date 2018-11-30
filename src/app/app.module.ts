@@ -34,6 +34,7 @@ import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
 import { ListPageComponent } from './components/staff/list-page/list-page.component';
+// import { EditNewServceRequestComponent } from './components/edit-new-servce-request/edit-new-servce-request.component';
 
 
 const routes: Routes = [

@@ -29,7 +29,8 @@ export class NewServiceRequestComponent implements OnInit {
   formId = '1952';
   responseId = null;
   clientId = null;
-  clientName = null;
+  clientGivenName = null;
+  clientFamilyName = null;
   clientBoD = null;
 
   documents = null;
@@ -60,6 +61,7 @@ export class NewServiceRequestComponent implements OnInit {
   itemToSend: ItemToSend = {
     resourceType: '',
     extension: null,
+    questionnaire: null,
     status: null,
     subject: null,
     authored: null,
@@ -300,20 +302,27 @@ export class NewServiceRequestComponent implements OnInit {
     if (this.itemReference) {
       this.items.push(this.itemReference);
     }
-    
+
 
     this.itemToSend = {
       resourceType: 'QuestionnaireResponse',
+      questionnaire: {
+        reference: 'Questionnaire/' + this.formId
+      },
       status: 'in-progress',
       authored: this.myDay,
       subject: {
         reference: 'Patient/' + this.clientId,
-        display: this.clientName
+        display: this.clientGivenName + ' ' + this.clientFamilyName
       },
       extension: [
         {
-          url: 'https://bcip.smilecdr.com/fhir-request/name',
-          valueCode: this.clientName
+          url: 'https://bcip.smilecdr.com/fhir-request/givenName',
+          valueCode: this.clientGivenName
+        },
+        {
+          url: 'https://bcip.smilecdr.com/fhir-request/familyName',
+          valueCode: this.clientFamilyName
         },
         {
           url: 'https://bcip.smilecdr.com/fhir-request/birthDate',
@@ -375,7 +384,8 @@ export class NewServiceRequestComponent implements OnInit {
   getClientData(data) {
     console.log(data);
     this.clientBoD = data.birthDate;
-    this.clientName = data.name[0].given[0] + ' ' + data.name[0].family;
+    this.clientGivenName = data.name[0].given[0];
+    this.clientFamilyName = data.name[0].family;
   }
 
   handleErrorClientError(error) {
@@ -402,7 +412,6 @@ export class NewServiceRequestComponent implements OnInit {
       }
     });
 
-    
 
 
     // checking dependents

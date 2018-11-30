@@ -30,7 +30,8 @@ export class AppComponent implements OnInit {
       clientId: 'NOHIS',
       // redirectUri: 'https://nohis.smilecdr.com/dashboard',
       redirectUri: 'http://localhost:4200/dashboard',
-      scope: 'openid profile cdr_all_user_authorities'
+      scope: 'openid profile cdr_all_user_authorities',
+      oidc: false
     });
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
 

@@ -16,13 +16,18 @@ import { link } from 'fs';
 })
 export class ServReqMainComponent implements OnInit {
 
-  name = {
-    prefix: 'name=',
+  givenName = {
+    prefix: 'givenname=',
+    data: null
+  };
+
+  familyName = {
+    prefix: 'familyname=',
     data: null
   };
 
   clientId = {
-    prefix: 'subject=patient/',
+    prefix: 'subject=',
     data: null
   };
 
@@ -128,7 +133,7 @@ export class ServReqMainComponent implements OnInit {
 
   myString;
   str = null;
-  private arrOfVar = [this.name, this.clientId, this.dateOfBirth, this.status, this.date];
+  private arrOfVar = [this.givenName, this.familyName, this.clientId, this.dateOfBirth, this.status, this.date];
 
   constructor(
     private oauthService: OAuthService,
@@ -228,7 +233,9 @@ export class ServReqMainComponent implements OnInit {
   handleSuccessAll(data) {
     console.log(data);
     for (const individualRecord of data.entry) {
-      this.servRequests.push(individualRecord.resource);
+      if (individualRecord.resource.item) {
+        this.servRequests.push(individualRecord.resource);
+      }
     }
     console.log(this.servRequests);
   }
@@ -318,7 +325,8 @@ export class ServReqMainComponent implements OnInit {
 
 
     this.str = null;
-    this.name.data = null;
+    this.givenName.data = null;
+    this.familyName.data = null;
     this.clientId.data = null;
     this.dateOfBirth.data = null;
     this.status.data = null;
@@ -357,12 +365,80 @@ export class ServReqMainComponent implements OnInit {
   }
   getServiceType(serviceRequestObj): string {
     let result = '-';
+    // console.log(serviceRequestObj.questionnaire.reference);
+    if (serviceRequestObj.item) {
+      if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+        serviceRequestObj.item.forEach(item => {
+          if (item.text === 'PSOHP Service') {
+            if (item['answer']) {
+              result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('(') + 1, item.answer[0].valueString.length);
+              result = result.substring(0, result.length - 1);
+              }
+            }
+
+        });
+      }
+
+      if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
+        serviceRequestObj.item.forEach(item => {
+          if (item.text === 'PSOHP Service') {
+            if (item['answer']) {
+              result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('(') + 1, item.answer[0].valueString.length);
+              result = result.substring(0, result.length - 1);
+              }
+            }
+
+        });
+      }
+    }
+    return result;
+  }
+
+
+
+  getAssessmentType(serviceRequestObj): string {
+
+    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
+      return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
+    }
+    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+      return '-';
+      }
+    }
+  getRegion(serviceRequestObj): string {
+    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
+      return this.getLinkValueFromObject(serviceRequestObj, 'Regional Office for Processing', 1);
+    }
+    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+      return '-';
+      }
+
+  }
+  getCreatedBy(serviceRequestObj) {
+    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
+      return this.getLinkValueFromObject(serviceRequestObj, 'Created By', 1);
+    }
+    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+      return '-';
+      }
+
+  }
+
+  getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
+    let result = '-';
     if (serviceRequestObj.item) {
       serviceRequestObj.item.forEach(item => {
-        if (item.linkId === '2') {
+        if (item.text === text) {
           if (item['answer']) {
             if (item.answer[0].valueString.indexOf('-') > 0) {
-              result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('-') + 1, item.answer[0].valueString.length);
+
+              if (dashNum === 1) {
+                result = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+              }
+              if (dashNum === 2) {
+                result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('-') + 1);
+                result = result.substring(0, result.indexOf('-'));
+              }
             } else {
               result = item.answer[0].valueString;
             }
@@ -372,40 +448,31 @@ export class ServReqMainComponent implements OnInit {
     }
     return result;
   }
-  getAssessmentType(serviceRequestObj): string {
-    return this.getLinkValueFromObject(serviceRequestObj, '2');
-  }
-  getRegion(serviceRequestObj): string {
-    return this.getLinkValueFromObject(serviceRequestObj, '8');
-  }
-  getCreatedBy(serviceRequestObj) {
-    return this.getLinkValueFromObject(serviceRequestObj, '1');
-  }
 
-  getLinkValueFromObject(serviceRequestObj, linkId: string): string {
-    let result = '-';
+  getLinkValueFromObject2(serviceRequestObj, text: string): string {
+    const result = '-';
     if (serviceRequestObj.item) {
-      serviceRequestObj.item.forEach(item => {
-        if (item.linkId === linkId) {
-          if (item['answer']) {
-            if (item.answer[0].valueString.indexOf('-') > 0) {
-              result = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
-            } else {
-              result = item.answer[0].valueString;
-            }
-          }
-        }
-      });
     }
     return result;
   }
 
   getClientName(servReqobj) {
-    if (servReqobj.subject && servReqobj.subject.display) {
-      return servReqobj.subject.display;
-    } else {
-      return '-';
+    let result = '-';
+    if (servReqobj.questionnaire.reference === 'Questionnaire/1952') {
+      if (servReqobj.subject && servReqobj.subject.display) {
+        result = servReqobj.subject.display;
+      }
     }
+    if (servReqobj.questionnaire.reference === 'Questionnaire/1953') {
+      // console.log(servReqobj.item);
+      // servReqobj.item.forEach(element => {
+      //   if (element.text === 'Name of the Requester') {
+      //     result = (element.answer[0].valueString);
+      //   }
+      // });
+      result = '-';
+    }
+    return result;
   }
 
   navigateToSummary(servReqObj) {

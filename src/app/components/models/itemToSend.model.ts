@@ -7,6 +7,10 @@ export interface ItemToSend {
           },
           {
             url: string;
+            valueCode: string;
+          },
+          {
+            url: string;
             valueDateTime: string;
           }
         ];
@@ -15,6 +19,10 @@ export interface ItemToSend {
           reference: string;
           display: string;
         };
+        questionnaire: {
+          reference: string;
+        };
+
         authored: string;
         item: any [];
       }
