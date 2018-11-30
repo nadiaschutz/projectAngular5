@@ -90,7 +90,8 @@ export class DependentComponent implements OnInit {
 
   branches: any;
 
-  employeelist = [];
+  employee;
+  employeeID;
 
   // Link ID used to assign to Dependent
 
@@ -121,6 +122,7 @@ export class DependentComponent implements OnInit {
 
   ngOnInit() {
 
+    const id = this.userService.returnEmployeeSummaryID();
 
     this.dependentsArray = new Array;
 
@@ -138,11 +140,14 @@ export class DependentComponent implements OnInit {
       error => this.handleError(error)
     );
 
-
+    if (id) {
+      this.patientService.getPatientDataByID(id).subscribe(
+        data => this.grabID(data),
+        error => this.handleError(error)
+      );
+    }
 
     this.dependentFormGroup = this.fb.group({
-      // Employee type
-      type: new FormControl(null, Validators.required),
 
       // Last Name
       familyName: new FormControl('', [Validators.required, Validators.minLength(2)]),
@@ -177,18 +182,8 @@ export class DependentComponent implements OnInit {
       language: new FormControl(null, Validators.required),
     });
 
-    // const retrievedObject = localStorage.getItem('dependent');
-    // const parsedObject = JSON.parse(retrievedObject);
-    // console.log(parsedObject);
+
   }
-
-  // setLinkId() {
-  //   const tempObj = this.userService.getObjectBase;
-  //   for (const entry of tempObj.entry) {
-
-  //   }
-
-  // }
 
   setDependent() {
 
@@ -211,7 +206,7 @@ export class DependentComponent implements OnInit {
     // Assign link ID to dependent
 
     dependent_extension_dependentlink.url = 'https://bcip.smilecdr.com/fhir/dependentlink';
-    dependent_extension_dependentlink.valueString = this.depLinkID;
+    dependent_extension_dependentlink.valueString = this.employeeID;
 
     // Save type of patient (dependent in this case)
 
@@ -265,18 +260,16 @@ export class DependentComponent implements OnInit {
     this.dependent.address = [dependent_address];
 
     const finalJSON = JSON.stringify(this.dependent);
-    this.dependentsArray.push(finalJSON);
 
-    console.log(this.dependent);
-    this.userService.setObjectBase(this.dependent);
-
-
-    this.patientService.postPatientData(finalJSON);
-
-    // this.bundleObjects();
+    this.patientService.postPatientData(finalJSON).subscribe(data => {
+      this.returnIDFromResponse(data)
+      this.router.navigateByUrl('/clientsummary')
+    });
   }
 
-
+  returnIDFromResponse(data) {
+    this.userService.getEmployeeSummaryID(data.id);
+  }
 
   // Head over to summary screen
   goToSummary() {
@@ -299,18 +292,17 @@ export class DependentComponent implements OnInit {
     console.log(error);
   }
 
-  grabID(event: any) {
+  grabID(data) {
 
-    const dependentlinkID = event.target.value;
-    this.employeelist.forEach(item => {
-      if (item.id === dependentlinkID) {
-        item.extension.forEach(element => {
-          if (element.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
-            this.assignIDtoDependent(element.valueString);
-          }
-        });
-      }
-    });
+    this.employee = data;
+    if (data) {
+      data.extension.forEach(element => {
+        if (element.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+          this.employeeID = element.valueString;
+        }
+      });
+    }
+
   }
 
   assignIDtoDependent(data) {

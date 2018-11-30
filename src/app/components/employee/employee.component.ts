@@ -423,8 +423,8 @@ export class EmployeeComponent implements OnInit {
     // this.router.navigate(['/dashboard']);
 
     this.patientService.postPatientData(finalJSON).subscribe(data => {
-      this.returnIDFromResponse(data);
-      this.router.navigateByUrl('/clientsummary');
+      this.returnIDFromResponse(data),
+      this.router.navigateByUrl('/clientsummary')
     });
   }
 
@@ -433,7 +433,8 @@ export class EmployeeComponent implements OnInit {
   }
 
   returnIDFromResponse(data) {
-    this.userService.getEmployeeSummaryID(data.id);
+    const tempID = this.userService.getEmployeeSummaryID(data.id);
+    return  tempID;
   }
   goToSummary() {
     this.router.navigateByUrl('/employeesummary');
