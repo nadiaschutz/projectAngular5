@@ -18,6 +18,8 @@ export class PatientService {
       '/Patient/' + pid, { headers: this.getHeaders() });
   }
   getPatientData(query: string) {
+    console.log(query);
+    console.log(environment.queryURI + '/Patient' + query);
     return this.httpClient.get<JSON>(environment.queryURI +
       '/Patient' + query, { headers: this.getHeaders() });
   }

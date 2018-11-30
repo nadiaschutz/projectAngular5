@@ -38,8 +38,13 @@ export interface EmployeeElement {
 })
 export class DashboardComponent implements OnInit {
 
-  name = {
-    prefix: 'name=',
+  givenName = {
+    prefix: 'given=',
+    data: null
+  };
+
+  familyName = {
+    prefix: 'family=',
     data: null
   };
 
@@ -53,11 +58,11 @@ export class DashboardComponent implements OnInit {
     data: null
   };
 
-  private arrOfVar = [this.name, this.dateOfBirth];
+  private arrOfVar = [this.givenName, this.familyName, this.dateOfBirth];
   listOfDepartments = [];
-  clientDepartment;
+  clientDepartment = null;
   employeeTypeArray = ['Employee', 'Dependent'];
-  employeeType;
+  employeeType = null;
 
   // patientSubscription: subscription;
   displayedColumns: string[] = ['type', 'id', 'name', 'number', 'dateCreated', 'dateModified'];
@@ -85,21 +90,24 @@ export class DashboardComponent implements OnInit {
 
 
   handleSuccess(data) {
+    console.log(data);
     this.qrequest = [];
-    if (data.entry) {
-      data.entry.forEach(item => {
-        const individualEntry = item.resource;
-        if (this.employeeType || this.clientDepartment) {
-          this.checkForEmployeeTypeAndClientDepartment(individualEntry);
-        } else {
-          this.qrequest.push(individualEntry);
-        }
-      });
-    } else {
-      if (this.employeeType || this.clientDepartment) {
-        this.checkForEmployeeTypeAndClientDepartment(data);
+    if (data.total !== 0) {
+      if (data.entry) {
+        data.entry.forEach(item => {
+          const individualEntry = item.resource;
+          if (this.employeeType || this.clientDepartment) {
+            this.checkForEmployeeTypeAndClientDepartment(individualEntry);
+          } else {
+            this.qrequest.push(individualEntry);
+          }
+        });
       } else {
-        this.qrequest.push(data);
+        if (this.employeeType || this.clientDepartment) {
+          this.checkForEmployeeTypeAndClientDepartment(data);
+        } else {
+          this.qrequest.push(data);
+        }
       }
     }
     // this.resetSearchParams();
@@ -157,6 +165,7 @@ export class DashboardComponent implements OnInit {
     if (this.clientId.data) {
       searchParams = this.clientId.prefix + this.clientId.data + searchParams;
     }
+    console.log(searchParams);
 
     this.patientService.getPatientData(searchParams).subscribe(
       data => this.handleSuccess(data),
@@ -166,7 +175,8 @@ export class DashboardComponent implements OnInit {
   resetSearchParams() {
     this.clientDepartment = '';
     this.employeeType = '';
-    this.name.data = '';
+    this.givenName.data = '';
+    this.familyName.data = '';
     this.clientId.data = '';
     this.dateOfBirth.data = '';
   }
