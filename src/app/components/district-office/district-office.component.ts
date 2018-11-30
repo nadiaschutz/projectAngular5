@@ -1,18 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { UserService } from '../../service/user.service';
-import { PatientService } from '../../service/patient.service';
-import { TranslateService } from '@ngx-translate/core';
 
-import * as Dependent from '../../interface/patient';
-import * as datepicker from 'js-datepicker';
-import * as uuid from 'uuid';
 import * as FHIR from '../../interface/FHIR';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-district-office',
@@ -20,7 +13,6 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./district-office.component.scss']
 })
 export class DistrictOfficeComponent implements OnInit {
-
   regionalOffices = [];
   regionalOfficesWithId = {};
 
@@ -28,8 +20,11 @@ export class DistrictOfficeComponent implements OnInit {
   locationFormGroup: FormGroup;
   showFormElement = false;
 
-  constructor(private formBuilder: FormBuilder, private httpClient: HttpClient,
-    private userService: UserService) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    private httpClient: HttpClient,
+    private userService: UserService
+  ) {}
 
   ngOnInit() {
     this.showFormElement = false;
@@ -53,37 +48,40 @@ export class DistrictOfficeComponent implements OnInit {
 
   addNewDistrictOffice() {
     this.showFormElement = true;
-    const districtOffice = new FHIR.Location;
+    const districtOffice = new FHIR.Location();
     districtOffice.resourceType = 'Location';
     districtOffice.name = this.locationFormGroup.get('name').value;
 
     districtOffice.status = new FHIR.Code('active').code;
 
-    const organizationReference = new FHIR.Reference;
-    organizationReference.reference = 'Organization/' +
-    this.regionalOfficesWithId[this.locationFormGroup.get('managingOrganization').value];
+    const organizationReference = new FHIR.Reference();
+    organizationReference.reference =
+      'Organization/' +
+      this.regionalOfficesWithId[
+        this.locationFormGroup.get('managingOrganization').value
+      ];
     districtOffice.managingOrganization = organizationReference;
 
-    const type = new FHIR.CodeableConcept;
+    const type = new FHIR.CodeableConcept();
     type.text = 'District Office';
     districtOffice.type = type;
 
-    const address = new FHIR.Address;
+    const address = new FHIR.Address();
     address.line = [this.locationFormGroup.get('addressStreet').value];
     address.city = this.locationFormGroup.get('addressCity').value;
     address.postalCode = this.locationFormGroup.get('addressPostalCode').value;
     address.state = this.locationFormGroup.get('addressProvince').value;
     districtOffice.address = address;
 
-    const email = new FHIR.ContactPoint;
+    const email = new FHIR.ContactPoint();
     email.system = new FHIR.Code('email');
     email.value = this.locationFormGroup.get('email').value;
 
-    const phoneNumber = new FHIR.ContactPoint;
+    const phoneNumber = new FHIR.ContactPoint();
     phoneNumber.system = new FHIR.Code('phone');
     phoneNumber.value = this.locationFormGroup.get('phoneNumber').value;
 
-    const faxNumber = new FHIR.ContactPoint;
+    const faxNumber = new FHIR.ContactPoint();
     faxNumber.system = new FHIR.Code('fax');
     faxNumber.value = this.locationFormGroup.get('faxNumber').value;
 
@@ -140,8 +138,10 @@ export class DistrictOfficeComponent implements OnInit {
   getRegion(organization: string) {
     if (this.regionalOfficesWithId !== {}) {
       const organizationReference = organization['reference'];
-      const organizationId = organizationReference.
-      substring(organizationReference.indexOf('/') + 1, organizationReference.length);
+      const organizationId = organizationReference.substring(
+        organizationReference.indexOf('/') + 1,
+        organizationReference.length
+      );
       for (const regionName of Object.keys(this.regionalOfficesWithId)) {
         if (this.regionalOfficesWithId[regionName] === organizationId) {
           return regionName;
@@ -157,5 +157,4 @@ export class DistrictOfficeComponent implements OnInit {
     //   // console.log(element);
     // });
   }
-
 }

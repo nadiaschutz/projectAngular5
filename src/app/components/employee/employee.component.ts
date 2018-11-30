@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
+import { HttpClient } from '@angular/common/http';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
@@ -9,7 +9,6 @@ import { PatientService } from '../../service/patient.service';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as Employee from '../../interface/patient';
-import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
 
 
