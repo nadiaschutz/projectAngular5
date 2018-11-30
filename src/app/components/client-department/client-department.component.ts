@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../service/user.service';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl
+} from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import * as FHIR from '../../interface/FHIR';
-
 
 @Component({
   selector: 'app-client-department',
@@ -11,46 +15,43 @@ import * as FHIR from '../../interface/FHIR';
   styleUrls: ['./client-department.component.scss']
 })
 export class ClientDepartmentComponent implements OnInit {
-
-
   clientDepartmentFormGroup: FormGroup;
+  departments = [];
+  regionalOffices = [];
+  regionalOfficesWithId = {};
 
   constructor(
     private userService: UserService,
-    private formBuilder: FormBuilder,
-
-  ) { }
+    private formBuilder: FormBuilder
+  ) {}
 
   ngOnInit() {
-
-    const departments = [];
+    this.fetchAllRegionalOffices();
     this.clientDepartmentFormGroup = this.formBuilder.group({
+      psohpRegion: new FormControl('', [Validators.required]),
       departmentName: new FormControl('', [Validators.required]),
       departmentBranch: new FormControl('', [Validators.required]),
       contactName: new FormControl('', [Validators.required]),
       chargebackClient: new FormControl(''),
-      email: new FormControl('', [
-        Validators.required,
-        Validators.email
-      ]),
+      email: new FormControl('', [Validators.required, Validators.email]),
       phoneNumber: new FormControl('', [Validators.required]),
       faxNumber: new FormControl('', [Validators.required]),
       addressStreet: new FormControl('', [Validators.required]),
       addressCity: new FormControl('', [Validators.required]),
       addressProvince: new FormControl('', [Validators.required]),
-      addressPostalCode: new FormControl('', [Validators.required]),
+      addressPostalCode: new FormControl('', [Validators.required])
     });
-
-
   }
 
   setClientDepartment() {
-    const clientDepartment = new FHIR.Location;
-    const branchLocation = new FHIR.Location;
-    const chargeBackExtension = new FHIR.Extension;
+    const clientDepartment = new FHIR.Location();
+    const branchLocation = new FHIR.Location();
+    const chargeBackExtension = new FHIR.Extension();
 
     clientDepartment.resourceType = 'Location';
-    clientDepartment.name = this.clientDepartmentFormGroup.get('contactName').value;
+    clientDepartment.name = this.clientDepartmentFormGroup.get(
+      'contactName'
+    ).value;
 
     clientDepartment.status = 'active';
 
@@ -62,7 +63,7 @@ export class ClientDepartmentComponent implements OnInit {
     //   ];
     clientDepartment.managingOrganization = organizationReference;
 
-    const typeCoding = new FHIR.Coding;
+    const typeCoding = new FHIR.Coding();
 
     typeCoding.system = 'https:bcip.smilecdr.com/fhir/clientDepartment';
     typeCoding.code = 'CLIENTDEPT';
@@ -76,7 +77,9 @@ export class ClientDepartmentComponent implements OnInit {
     const address = new FHIR.Address();
     address.line = [this.clientDepartmentFormGroup.get('addressStreet').value];
     address.city = this.clientDepartmentFormGroup.get('addressCity').value;
-    address.postalCode = this.clientDepartmentFormGroup.get('addressPostalCode').value;
+    address.postalCode = this.clientDepartmentFormGroup.get(
+      'addressPostalCode'
+    ).value;
     address.state = this.clientDepartmentFormGroup.get('addressProvince').value;
     clientDepartment.address = address;
 
@@ -95,12 +98,37 @@ export class ClientDepartmentComponent implements OnInit {
     clientDepartment.telecom = [email, phoneNumber, faxNumber];
     // clientDepartment
 
-    branchLocation.name = this.clientDepartmentFormGroup.get('departmentBranch').value;
+    branchLocation.partOf = this.clientDepartmentFormGroup.get(
+      'departmentBranch'
+    ).value;
 
-    this.userService.saveClientDepartment(JSON.stringify(clientDepartment)).subscribe(
-      res => console.log(res)
-    );
+    const managingOrganization = new FHIR.Reference();
 
+    managingOrganization.reference = 'Organization/' + this.clientDepartmentFormGroup.get('psohpRegion').value;
+
+
+    clientDepartment.partOf = managingOrganization;
+    console.log(clientDepartment);
+    // console.log(JSON.stringify(clientDepartment));
+
+    // this.userService
+    //   .saveClientDepartment(JSON.stringify(clientDepartment))
+    //   .subscribe(res => console.log(res));
+
+    // this.userService.saveClientDepartment(JSON.stringify(branchLocation));
   }
 
+  // To save location data, then return the location to reference
+  createDepartmentBranch(data) {
+    this.userService.saveClientDepartment(data);
+  }
+
+  fetchAllRegionalOffices() {
+    this.userService.fetchAllRegionalOffices().subscribe(data => {
+      data['entry'].forEach(element => {
+        const individualEntry = element.resource;
+        this.regionalOffices.push(individualEntry);
+      });
+    });
+  }
 }
