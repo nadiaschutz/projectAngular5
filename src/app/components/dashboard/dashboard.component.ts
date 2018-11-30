@@ -60,9 +60,9 @@ export class DashboardComponent implements OnInit {
 
   private arrOfVar = [this.givenName, this.familyName, this.dateOfBirth];
   listOfDepartments = [];
-  clientDepartment;
+  clientDepartment = null;
   employeeTypeArray = ['Employee', 'Dependent'];
-  employeeType;
+  employeeType = null;
 
   // patientSubscription: subscription;
   displayedColumns: string[] = ['type', 'id', 'name', 'number', 'dateCreated', 'dateModified'];

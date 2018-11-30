@@ -26,8 +26,8 @@ export class ServReqMainComponent implements OnInit {
     data: null
   };
 
-  clientId = {
-    prefix: 'subject=',
+  serviceRequestId = {
+    prefix: '/',
     data: null
   };
 
@@ -133,7 +133,7 @@ export class ServReqMainComponent implements OnInit {
 
   myString;
   str = null;
-  private arrOfVar = [this.givenName, this.familyName, this.clientId, this.dateOfBirth, this.status, this.date];
+  private arrOfVar = [this.givenName, this.familyName, this.serviceRequestId, this.dateOfBirth, this.status, this.date];
 
   constructor(
     private oauthService: OAuthService,
@@ -327,7 +327,7 @@ export class ServReqMainComponent implements OnInit {
     this.str = null;
     this.givenName.data = null;
     this.familyName.data = null;
-    this.clientId.data = null;
+    this.serviceRequestId.data = null;
     this.dateOfBirth.data = null;
     this.status.data = null;
     this.date.data = null;

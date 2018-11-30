@@ -25,7 +25,7 @@ export class QrequestService {
 
   getAllQuestionnaireResponseData(id: string) {
     const header = this.getHeaders();
-    return this.http.get(environment.queryURI + '/QuestionnaireResponse/' + id , { headers: header });
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse?_id=' + id + '&_include=*', { headers: header });
   }
 
 }

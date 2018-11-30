@@ -1,5 +1,6 @@
 <div class="main-header">
   <h5>Service Request Summary Page</h5>
+  <h6>service request > Service Request Summary Page</h6>
 </div>
 <div *ngIf="serviceRequestObject.length > 0 && !showSuccessMessage && serviceRequestID">
   <div class="button-section">
@@ -10,6 +11,12 @@
       Back to Service Requests page
     </button>
   </div>
+  <div *ngFor="let patientDetails of patient">
+      <div style="margin-top: 10px">
+        <label class="label-name">{{patientDetails.name | titlecase}}</label>
+        <input disabled=true class="form-control field-box-name" placeholder="{{patientDetails.value | titlecase}}"/>
+      </div>
+    </div>
   <div *ngFor="let item of serviceRequestObject">
     <div style="margin-top: 10px">
       <label class="label-name">{{item.name | titlecase}}</label>
