@@ -82,6 +82,19 @@ export class EmployeeSummaryComponent implements OnInit {
 
   populateDependentArray(data) {
     this.dependentArray = [];
+
+    for (const value of this.selected.extension) {
+      if (value.valueString === 'Dependent') {
+          data.entry.forEach(element => {
+            const individualEntry = element.resource;
+            for (const extension of individualEntry.extension) {
+              if (extension.valueString === 'Employee') {
+                this.dependentArray.push(individualEntry);
+              }
+            }
+          });
+      }
+    }
     if (data.entry) {
       data.entry.forEach(element => {
         const individualEntry = element.resource;
@@ -92,6 +105,7 @@ export class EmployeeSummaryComponent implements OnInit {
         }
       });
     }
+
   }
 
   checkEmployeeType() {

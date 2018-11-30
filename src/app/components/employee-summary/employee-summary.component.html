@@ -210,7 +210,7 @@
   
       <div *ngFor="let item of selected?.extension">
         <!-- dependents -->
-        <div *ngIf="item.valueString == 'Employee'">
+        <div *ngIf="item.valueString == 'Employee'; else dependentRelatedList">
             <section class="form-section" *ngIf="dependentArray.length > 0">
                 <div class='header'>
                     <h6>Depenedents</h6>
@@ -231,6 +231,34 @@
             </section>
 
         </div>
+
+        <ng-template #dependentRelatedList>
+            <div *ngIf="item.valueString == 'Dependent'">
+                <section class="form-section" *ngIf="dependentArray.length > 0">
+                    <div class='header'>
+                        <h6>Related to</h6>
+                      </div>
+                    <div *ngFor="let dependent of dependentArray">
+                      <div *ngFor="let extension of dependent.extension">
+                        <div *ngIf="extension.valueString =='Employee'">
+                            <div *ngFor="let name of dependent?.name">
+                                <div class="col-6">
+                                  <label>Dependent</label>
+                                  <textarea type="text" 
+                                  class="form-control" 
+                                  placeholder="type your text" 
+                                  rows="1" disabled
+                                  >{{name.given}} {{name.family}}</textarea>
+                                </div>
+                              </div>
+                        </div>
+                      </div>
+                    </div>
+            
+                </section>
+    
+            </div>
+        </ng-template>
       </div>
   
   
