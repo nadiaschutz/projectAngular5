@@ -197,11 +197,9 @@
     <section class="form-section">
         <div class="row">
           <div class="col">
-            <div class="button-section">
-              <div *ngFor="let item of employee?.extension">
+            <div class="button-section"  *ngFor="let item of employee?.extension">
                     <button  *ngIf="item.valueString == 'Employee'" class="btn regular-button" (click)="addDependent()">Add a Dependent</button>
                     <button *ngIf="item.valueString == 'Employee' || item.valueString == 'Dependent'" class="btn regular-button" (click)="returnToDashboard()">Back to Dashboard</button>
-              </div>
     
             </div>
           </div>

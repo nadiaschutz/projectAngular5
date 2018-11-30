@@ -30,7 +30,7 @@ export class EmployeeSummaryComponent implements OnInit {
 
 
     this.id = this.userService.returnSelectedID();
-
+    this.userService.getEmployeeSummaryID(this.id);
     if (this.id) {
       this.patientService.getPatientDataByID(this.id).subscribe(
         data => this.populatePatientArray(data),
@@ -63,6 +63,10 @@ export class EmployeeSummaryComponent implements OnInit {
 
   selectedPatient(event: any) {
     console.log(event.target.value);
+  }
+
+  addDependent() {
+    this.router.navigateByUrl('/dependentform');
   }
 
   newServiceRequest() {
