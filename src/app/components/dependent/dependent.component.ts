@@ -138,10 +138,6 @@ export class DependentComponent implements OnInit {
       error => this.handleError(error)
     );
 
-    this.patientService.getAllPatientData().subscribe(
-      data => this.loadListOfPatients(data),
-      error => this.handleError(error)
-    );
 
 
     this.dependentFormGroup = this.fb.group({
@@ -324,21 +320,7 @@ export class DependentComponent implements OnInit {
   // Initialize a list of Patients in the system, allowing the user to select
   // which Employee they can link to
 
-  loadListOfPatients(data) {
-    this.employeelist = [];
-    if (data.entry) {
-      data.entry.forEach(item => {
-        const individualEntry = item.resource;
-        for (const extension of individualEntry.extension) {
-          if (extension.valueString === 'Employee') {
-            this.employeelist.push(individualEntry);
-          }
-        }
-      });
-    } else {
-      this.employeelist.push(data);
-    }
-  }
+
 
   get resourceType() {
     return this.dependentFormGroup.get('resourceType');

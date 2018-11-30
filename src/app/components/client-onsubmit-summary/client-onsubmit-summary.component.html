@@ -1,0 +1,222 @@
+<div *ngIf="employee">
+
+  <div class="container" *ngFor="let name of employee.name">
+
+
+    <div class="main-header">
+      <h5>Client Summary</h5>
+    </div>
+
+    <h6>Success! {{name.given}} {{name.family}} has been successfully added to the server</h6>
+
+    <!-- general info -->
+    <section class="form-section">
+
+
+      <div class="row">
+        <div class="col-6">
+          <label>First Name</label>
+          <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled placeholder="{{name.given}}"></textarea>
+        </div>
+
+
+        <div class="col-6">
+          <label>Last Name</label>
+          <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{name.family}}</textarea>
+        </div>
+      </div>
+
+
+
+      <div class="row">
+
+        <div class="col-6">
+          <label>Date of Birth</label>
+          <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{employee.birthDate}}</textarea>
+        </div>
+
+
+        <div class="col-6">
+          <label>Language</label>
+          <div *ngFor="let language of employee?.communication">
+            <div *ngFor="let usedLanguage of language.language.coding">
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{usedLanguage.display}}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- contact info -->
+    <section class="form-section">
+      <div class='header'>
+        <h6>Contact Information</h6>
+      </div>
+
+
+      <div *ngIf="employee?.telecom">
+        <div class="row">
+          <div class="col-6" *ngFor="let telecom of employee.telecom">
+
+            <label>{{telecom.system}}</label>
+            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{telecom.value}}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div *ngFor="let address of employee?.address">
+        <div class="row">
+          <div class="col-6">
+
+            <label>Street Address</label>
+            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled *ngFor="let line of address.line">{{line}}</textarea>
+
+          </div>
+          <div class="col-6">
+
+            <label>City</label>
+            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{address.city}}</textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+
+            <label>Province</label>
+            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{address.state}}</textarea>
+
+          </div>
+          <div class="col-6">
+
+            <label>Postal Code</label>
+            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{address.postalCode}}</textarea>
+
+
+          </div>
+          <div class="col-6">
+
+            <label>Country</label>
+            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{address.country}}</textarea>
+
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- employment info -->
+    <section class="form-section">
+      <div *ngFor="let extension of employee?.extension">
+        <div *ngIf="extension.valueString=='Employee'">
+          <div class='header'>
+            <h6>Employment Information</h6>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div *ngFor="let extension of employee?.extension">
+            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
+              <label>Job Title</label>
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
+                  </textarea>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="col-6">
+          <div *ngFor="let extension of employee?.extension">
+            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
+              <label>Employee PRI</label>
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{employee?.id}}
+                    </textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div *ngFor="let extension of employee?.extension">
+            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
+              <label>Employing Department Name</label>
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
+                    </textarea>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="col-6">
+          <div *ngFor="let extension of employee?.extension">
+            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">
+              <label>Employing Department Branch</label>
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
+                      </textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <div *ngFor="let extension of employee?.extension">
+            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferenceone'">
+              <label>Cross Reference</label>
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
+                    </textarea>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="col-6">
+          <div *ngFor="let extension of employee?.extension">
+            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferencetwo'">
+              <label>Cross Reference</label>
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
+                      </textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- dependents -->
+    <!-- <section class="form-section" *ngIf="dependentArray.length > 0">
+          <div class='header'>
+              <h6>Depenedents</h6>
+            </div>
+          <div *ngFor="let dependent of dependentArray">
+            <div *ngFor="let name of dependent?.name">
+              <div class="col-6">
+                <label>Dependent</label>
+                <textarea type="text" 
+                class="form-control" 
+                placeholder="type your text" 
+                rows="1" disabled
+                >{{name.given}} {{name.family}}</textarea>
+              </div>
+            </div>
+          </div>
+  
+      </section> -->
+
+
+    <!-- buttons -->
+  </div>
+
+  <section class="form-section">
+    <div class="row">
+      <div class="col">
+        <div class="button-section">
+          <button class="btn regular-button" (click)="addDependent()">Add a Dependent</button>
+          <button class="btn regular-button" (click)="returnToDashboard()">Back to Dashboard</button>
+
+        </div>
+      </div>
+    </div>
+  </section>
