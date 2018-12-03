@@ -571,7 +571,7 @@ export class Organization extends Resource implements Serializable<Organization>
 
     identifier: Identifier[];
     active: boolean;
-    status: Code;
+    status: string;
     name: string;
     alias: string[];
     description: string;

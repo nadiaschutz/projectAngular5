@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import * as FHIR from '../../interface/FHIR';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-client-department',
@@ -19,10 +20,14 @@ export class ClientDepartmentComponent implements OnInit {
   departments = [];
   regionalOffices = [];
   regionalOfficesWithId = {};
+  addClientDepartment = false;
+  clientDepartmentName = '';
+  clientDepartmentCreationSuccess = false;
 
   constructor(
     private userService: UserService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -131,4 +136,49 @@ export class ClientDepartmentComponent implements OnInit {
       });
     });
   }
+
+  addNewClientDepartment() {
+    this.addClientDepartment = true;
+    this.clientDepartmentName = '';
+    this.clientDepartmentCreationSuccess = false;
+  }
+
+  createClientDepartment(data) {
+    if (this.clientDepartmentName !== '') {
+      console.log(this.clientDepartmentName);
+      const clientDepartment = new FHIR.Organization();
+      clientDepartment.resourceType = 'Organization';
+
+      clientDepartment.active = true;
+      clientDepartment.name = this.clientDepartmentName;
+      const typeCoding = new FHIR.Coding();
+
+      typeCoding.system = 'https:bcip.smilecdr.com/fhir/clientDepartment';
+      typeCoding.code = 'CLIENTDEPT';
+      typeCoding.display = 'Client Department';
+
+      const type = new FHIR.CodeableConcept();
+      type.text = 'Client Department';
+      type.coding = [typeCoding];
+      clientDepartment.type = [type];
+      // const parentOrganizationReference = new FHIR.Reference;
+      // parentOrganizationReference.reference = 'Organization/PSOHP';
+      console.log(clientDepartment);
+      this.saveClientDepartment(JSON.stringify(clientDepartment));
+
+    }
+  }
+
+  saveClientDepartment(clientDepartmentData) {
+    this.userService.saveClientDepartment(clientDepartmentData).subscribe(data => {
+      console.log(data);
+      this.clientDepartmentCreationSuccess = true;
+    });
+  }
+
+  backToCreateBranch() {
+    this.addClientDepartment = false;
+  }
+
+  fetchAllClientDepartments() {}
 }
