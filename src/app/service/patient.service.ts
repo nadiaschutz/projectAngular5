@@ -30,14 +30,7 @@ export class PatientService {
   }
 
   postPatientData(patient) {
-    this.httpClient.post(environment.queryURI + '/Patient/', patient, { headers: this.postFHIRHeaders() }).subscribe(
-      data => {
-        console.log('POST Request is successful ', data);
-      },
-      error => {
-        console.log('Error', error);
-      }
-    );
+    return this.httpClient.post(environment.queryURI + '/Patient/', patient, { headers: this.postFHIRHeaders() });
   }
 
   sendObjecttoBundle(data) {

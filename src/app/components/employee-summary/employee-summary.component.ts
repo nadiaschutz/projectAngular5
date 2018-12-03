@@ -1,17 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 
 import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import * as Employee from '../../interface/patient';
-import * as datepicker from 'js-datepicker';
-import * as uuid from 'uuid';
-import { Item } from 'src/app/interface/FHIR';
+
 @Component({
   selector: 'app-employee-summary',
   templateUrl: './employee-summary.component.html',
@@ -26,21 +19,18 @@ export class EmployeeSummaryComponent implements OnInit {
   employeetype;
   dependentArray = [];
   constructor(
-    private fb: FormBuilder,
-    private httpClient: HttpClient,
-    public translate: TranslateService,
-    private oauthService: OAuthService,
+
     private userService: UserService,
     private patientService: PatientService,
     private router: Router
+
   ) { }
 
   ngOnInit() {
 
 
     this.id = this.userService.returnSelectedID();
-    console.log(this.id);
-
+    this.userService.getEmployeeSummaryID(this.id);
     if (this.id) {
       this.patientService.getPatientDataByID(this.id).subscribe(
         data => this.populatePatientArray(data),
@@ -62,7 +52,6 @@ export class EmployeeSummaryComponent implements OnInit {
     data.extension.forEach(item => {
       if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
         this.linkID = item.valueString;
-        console.log('the id is:' , this.linkID);
       }
     });
     this.patientService.getPatientByLinkID(this.linkID).subscribe(
@@ -74,6 +63,10 @@ export class EmployeeSummaryComponent implements OnInit {
 
   selectedPatient(event: any) {
     console.log(event.target.value);
+  }
+
+  addDependent() {
+    this.router.navigateByUrl('/dependentform');
   }
 
   newServiceRequest() {
@@ -89,6 +82,19 @@ export class EmployeeSummaryComponent implements OnInit {
 
   populateDependentArray(data) {
     this.dependentArray = [];
+
+    for (const value of this.selected.extension) {
+      if (value.valueString === 'Dependent') {
+          data.entry.forEach(element => {
+            const individualEntry = element.resource;
+            for (const extension of individualEntry.extension) {
+              if (extension.valueString === 'Employee') {
+                this.dependentArray.push(individualEntry);
+              }
+            }
+          });
+      }
+    }
     if (data.entry) {
       data.entry.forEach(element => {
         const individualEntry = element.resource;
@@ -99,6 +105,7 @@ export class EmployeeSummaryComponent implements OnInit {
         }
       });
     }
+
   }
 
   checkEmployeeType() {

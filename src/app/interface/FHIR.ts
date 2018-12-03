@@ -119,6 +119,17 @@ export class HumanName extends FHIRElement {
 
 }
 
+export class Extension {
+    url: string;
+    valueString: string;
+    valueCode: string;
+    valueAddress: Address;
+    valueBoolean?: boolean;
+    valueHumanName: HumanName;
+    valueReference: Reference;
+    valueIdentifier: string;
+    valueDecimal?: number;
+}
 
 export class Address extends FHIRElement {
     use: Code;
@@ -236,9 +247,9 @@ export class Contact extends BackboneElement {
 }
 
 export class ContactPoint extends FHIRElement {
-    system: Code;
+    system: string;
     value: string;
-    use: Code;
+    use: string;
     rank: number;
     period: Period;
 }
@@ -747,3 +758,4 @@ export class Bundle extends Resource implements Serializable<Bundle> {
         return this;
     }
 }
+

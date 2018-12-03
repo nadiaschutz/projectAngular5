@@ -33,6 +33,7 @@ import { SummaryPageComponent } from './components/summary-page/summary-page.com
 import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
+import { ClientOnsubmitSummaryComponent } from './components/client-onsubmit-summary/client-onsubmit-summary.component';
 // import { EditNewServceRequestComponent } from './components/edit-new-servce-request/edit-new-servce-request.component';
 
 
@@ -48,6 +49,7 @@ const routes: Routes = [
   { path: 'employeesummary', component: EmployeeSummaryComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: 'clientdepartment', component: ClientDepartmentComponent },
+  { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
 ];
@@ -72,7 +74,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     SummaryPageComponent,
     ClientDepartmentComponent,
     DistrictOfficeComponent,
-    ServiceRequestSummaryComponent
+    ServiceRequestSummaryComponent,
+    ClientOnsubmitSummaryComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
