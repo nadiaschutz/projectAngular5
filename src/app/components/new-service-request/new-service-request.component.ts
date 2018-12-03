@@ -415,8 +415,8 @@ export class NewServiceRequestComponent implements OnInit {
 
 
     // checking dependents
-    this.checkDependentItem(this.items);
-    console.log(this.dependents);
+    // this.checkDependentItem(this.items);
+    // console.log(this.dependents);
 
     console.log(this.responseId);
     if (this.responseId === null) {
