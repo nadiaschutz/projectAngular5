@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl
+} from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
@@ -9,9 +14,7 @@ import { PatientService } from '../../service/patient.service';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as Employee from '../../interface/patient';
-import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
-
 
 export interface AccountType {
   value: string;
@@ -28,14 +31,12 @@ export interface LanguageType {
   templateUrl: './employee.component.html',
   styleUrls: ['./employee.component.scss']
 })
-
 export class EmployeeComponent implements OnInit {
   // Declaration for Employree form group object
 
   employeeFormGroup: FormGroup;
 
   // Declarations for objects related Patients and Extensions
-
 
   // Employee base object
 
@@ -101,7 +102,6 @@ export class EmployeeComponent implements OnInit {
 
   employee_identifier;
 
-
   // Employee Identifier Type subobject
 
   employee_identifier_type;
@@ -118,7 +118,6 @@ export class EmployeeComponent implements OnInit {
 
   branches: any;
 
-
   // Store a UUID to link Employee and Dependent objects
 
   linkId;
@@ -126,10 +125,8 @@ export class EmployeeComponent implements OnInit {
   // list of  Languages
   languages = ['English', 'French'];
 
-
   i;
   constructor(
-
     private fb: FormBuilder,
     private httpClient: HttpClient,
     public translate: TranslateService,
@@ -137,7 +134,6 @@ export class EmployeeComponent implements OnInit {
     private userService: UserService,
     private patientService: PatientService,
     private router: Router
-
   ) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
@@ -153,41 +149,47 @@ export class EmployeeComponent implements OnInit {
 
   languageList: LanguageType[] = [
     { value: 'English', viewValue: 'English' },
-    { value: 'French', viewValue: 'French' },
-
+    { value: 'French', viewValue: 'French' }
   ];
 
   ngOnInit() {
-
-
-    this.dependentsArray = new Array;
+    this.dependentsArray = new Array();
     this.i = 0;
     // Set Department List
 
-    this.userService.getDepartmentList().subscribe(
-      data => this.setDepartments(data),
-      error => this.handleError(error)
-    );
+    this.userService
+      .getDepartmentList()
+      .subscribe(
+        data => this.setDepartments(data),
+        error => this.handleError(error)
+      );
 
     // Set Branch List
 
-    this.userService.getBranchList().subscribe(
-      data => this.setBranchList(data),
-      error => this.handleError(error)
-    );
+    this.userService
+      .getBranchList()
+      .subscribe(
+        data => this.setBranchList(data),
+        error => this.handleError(error)
+      );
 
     // Initialize Employee Form Group for DOM
 
     this.employeeFormGroup = this.fb.group({
-
       // Employee type
-      type: new FormControl(null, Validators.required),
+      // type: new FormControl(null, Validators.required),
 
       // Last Name
-      familyName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+      familyName: new FormControl('', [
+        Validators.required,
+        Validators.minLength(2)
+      ]),
 
       // First Name
-      givenName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+      givenName: new FormControl('', [
+        Validators.required,
+        Validators.minLength(2)
+      ]),
 
       // Date of Birth
       dob: new FormControl('', Validators.required),
@@ -195,7 +197,9 @@ export class EmployeeComponent implements OnInit {
       // Email
       email: new FormControl('', [
         Validators.required,
-        Validators.pattern(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)
+        Validators.pattern(
+          /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+        )
       ]),
 
       // Client's phone number (can be any number of their choosing)
@@ -208,8 +212,7 @@ export class EmployeeComponent implements OnInit {
       addressStreet: new FormControl('', Validators.required),
       addressCity: new FormControl('', Validators.required),
       addressProv: new FormControl('', Validators.required),
-      addressPcode: new FormControl('', [
-        Validators.required]),
+      addressPcode: new FormControl('', [Validators.required]),
       addressCountry: new FormControl('', Validators.required),
 
       // Clients preferred language
@@ -229,13 +232,11 @@ export class EmployeeComponent implements OnInit {
 
       // References related to the employee (handled in Patient with an extension)
       referenceOne: [''],
-      referenceTwo: [''],
+      referenceTwo: ['']
     });
-
 
     // tslint:disable-next-line:max-line-length
     // Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
-
   }
 
   // callback function to set the branch list dropdown from the JSON included
@@ -250,40 +251,36 @@ export class EmployeeComponent implements OnInit {
     this.department = data.department;
   }
 
-
   // callback function to handle errors
   handleError(error) {
     console.log(error);
   }
-
 
   // Sets the employee when called. Builds a new Patient object, along with associated
   // objects, generates a unique ID to link patient resources (useful for linking)
   // employees & dependents
 
   setEmployee() {
-
     // Generate unique ID to link new Dependents created
     this.linkId = uuid();
 
-
     // Initialize all objects being used for the Patient resource
-    this.employee = new Employee.Resource;
-    this.employee_name = new Employee.Name;
-    this.employee_address = new Employee.Address;
-    this.employee_language = new Employee.Language;
-    this.employee_language_coding = new Employee.Coding;
-    this.employee_communication = new Employee.Communication;
-    this.employee_identifier = new Employee.Identifier;
-    this.employee_extension_jobtitle = new Employee.Extension;
-    this.employee_extension_workplace = new Employee.Extension;
-    this.employee_extension_branch = new Employee.Extension;
-    this.employee_extension_crossreferenceone = new Employee.Extension;
-    this.employee_extension_crossreferencetwo = new Employee.Extension;
-    this.employee_extension_dependentlink = new Employee.Extension;
-    this.employee_extension_type = new Employee.Extension;
-    this.employee_telecom_email = new Employee.Telecom;
-    this.employee_telecom_phone = new Employee.Telecom;
+    this.employee = new Employee.Resource();
+    this.employee_name = new Employee.Name();
+    this.employee_address = new Employee.Address();
+    this.employee_language = new Employee.Language();
+    this.employee_language_coding = new Employee.Coding();
+    this.employee_communication = new Employee.Communication();
+    this.employee_identifier = new Employee.Identifier();
+    this.employee_extension_jobtitle = new Employee.Extension();
+    this.employee_extension_workplace = new Employee.Extension();
+    this.employee_extension_branch = new Employee.Extension();
+    this.employee_extension_crossreferenceone = new Employee.Extension();
+    this.employee_extension_crossreferencetwo = new Employee.Extension();
+    this.employee_extension_dependentlink = new Employee.Extension();
+    this.employee_extension_type = new Employee.Extension();
+    this.employee_telecom_email = new Employee.Telecom();
+    this.employee_telecom_phone = new Employee.Telecom();
 
     // Employee identifer
 
@@ -292,51 +289,75 @@ export class EmployeeComponent implements OnInit {
 
     // Employee Address
 
-    this.employee_address.city = this.employeeFormGroup.get('addressCity').value.trim();
-    this.employee_address.line = [this.employeeFormGroup.get('addressStreet').value.trim()];
-    this.employee_address.postalCode = this.employeeFormGroup.get('addressPcode').value.trim();
-    this.employee_address.country = this.employeeFormGroup.get('addressCountry').value.trim();
-    this.employee_address.state = this.employeeFormGroup.get('addressProv').value.trim();
-
+    this.employee_address.city = this.employeeFormGroup
+      .get('addressCity')
+      .value.trim();
+    this.employee_address.line = [
+      this.employeeFormGroup.get('addressStreet').value.trim()
+    ];
+    this.employee_address.postalCode = this.employeeFormGroup
+      .get('addressPcode')
+      .value.trim();
+    this.employee_address.country = this.employeeFormGroup
+      .get('addressCountry')
+      .value.trim();
+    this.employee_address.state = this.employeeFormGroup
+      .get('addressProv')
+      .value.trim();
 
     // Extensions related to employment information
 
-
     // Job title extension
 
-    this.employee_extension_jobtitle.url = 'https://bcip.smilecdr.com/fhir/jobtile';
-    this.employee_extension_jobtitle.valueString = this.employeeFormGroup.get('jobTitle').value;
-
+    this.employee_extension_jobtitle.url =
+      'https://bcip.smilecdr.com/fhir/jobtile';
+    this.employee_extension_jobtitle.valueString = this.employeeFormGroup.get(
+      'jobTitle'
+    ).value;
 
     // Workplace extension
 
-    this.employee_extension_workplace.url = 'https://bcip.smilecdr.com/fhir/workplace';
-    this.employee_extension_workplace.valueString = this.employeeFormGroup.get('departmentName').value;
+    this.employee_extension_workplace.url =
+      'https://bcip.smilecdr.com/fhir/workplace';
+    this.employee_extension_workplace.valueString = this.employeeFormGroup.get(
+      'departmentName'
+    ).value;
 
     // Branch extension
 
-    this.employee_extension_branch.url = 'https://bcip.smilecdr.com/fhir/branch';
-    this.employee_extension_branch.valueString = this.employeeFormGroup.get('departmentBranch').value;
+    this.employee_extension_branch.url =
+      'https://bcip.smilecdr.com/fhir/branch';
+    this.employee_extension_branch.valueString = this.employeeFormGroup.get(
+      'departmentBranch'
+    ).value;
 
     // Cross Reference One extension
 
-    this.employee_extension_crossreferenceone.url = 'https://bcip.smilecdr.com/fhir/crossreferenceone';
-    this.employee_extension_crossreferenceone.valueString = this.employeeFormGroup.get('referenceOne').value;
+    this.employee_extension_crossreferenceone.url =
+      'https://bcip.smilecdr.com/fhir/crossreferenceone';
+    this.employee_extension_crossreferenceone.valueString = this.employeeFormGroup.get(
+      'referenceOne'
+    ).value;
 
     // Cross Reference Two extension
 
-    this.employee_extension_crossreferencetwo.url = 'https://bcip.smilecdr.com/fhir/crossreferencetwo';
-    this.employee_extension_crossreferencetwo.valueString = this.employeeFormGroup.get('referenceTwo').value;
+    this.employee_extension_crossreferencetwo.url =
+      'https://bcip.smilecdr.com/fhir/crossreferencetwo';
+    this.employee_extension_crossreferencetwo.valueString = this.employeeFormGroup.get(
+      'referenceTwo'
+    ).value;
 
     // Cross Reference One extension
 
-    this.employee_extension_dependentlink.url = 'https://bcip.smilecdr.com/fhir/dependentlink';
+    this.employee_extension_dependentlink.url =
+      'https://bcip.smilecdr.com/fhir/dependentlink';
     this.employee_extension_dependentlink.valueString = this.linkId;
 
     // Type extension
 
-    this.employee_extension_type.url = 'https://bcip.smilecdr.com/fhir/employeetype';
-    this.employee_extension_type.valueString = this.employeeFormGroup.get('type').value;
+    this.employee_extension_type.url =
+      'https://bcip.smilecdr.com/fhir/employeetype';
+    this.employee_extension_type.valueString = 'Employee';
 
     this.employee.extension = [
       this.employee_extension_branch,
@@ -355,59 +376,65 @@ export class EmployeeComponent implements OnInit {
 
     // Language info
 
-    if (this.employeeFormGroup.get('language').value === 'English' || this.employeeFormGroup.get('language').value === 'english') {
+    if (
+      this.employeeFormGroup.get('language').value === 'English' ||
+      this.employeeFormGroup.get('language').value === 'english'
+    ) {
       this.employee_language_coding.code = 'en';
       this.employee_language_coding.system = 'urn:ietf:bcp:47';
-      this.employee_language_coding.display = this.employeeFormGroup.get('language').value;
+      this.employee_language_coding.display = this.employeeFormGroup.get(
+        'language'
+      ).value;
     }
 
     // Telecome (phone)
 
     this.employee_telecom_phone.system = 'phone';
-    this.employee_telecom_phone.value = this.employeeFormGroup.get('phoneNumber').value;
+    this.employee_telecom_phone.value = this.employeeFormGroup.get(
+      'phoneNumber'
+    ).value;
     this.employee_telecom_phone.use = 'work';
 
     // Telecome (email)
 
     this.employee_telecom_email.system = 'email';
-    this.employee_telecom_email.value = this.employeeFormGroup.get('email').value;
+    this.employee_telecom_email.value = this.employeeFormGroup.get(
+      'email'
+    ).value;
     this.employee_telecom_email.use = 'work';
 
     this.employee.identifer = [this.employee_identifier];
     this.employee_language.coding = [this.employee_language_coding];
     this.employee_communication.language = this.employee_language;
-    this.employee.telecom = [this.employee_telecom_phone, this.employee_telecom_email];
+    this.employee.telecom = [
+      this.employee_telecom_phone,
+      this.employee_telecom_email
+    ];
     this.employee.communication = [this.employee_communication];
     this.employee.birthDate = this.employeeFormGroup.get('dob').value;
     this.employee.resourceType = 'Patient';
     this.employee.name = this.employee_name;
     this.employee.address = [this.employee_address];
 
-
     // Stringify the final object
     const finalJSON = JSON.stringify(this.employee);
-
-    // Adds the object to the session object that's being shared
-    this.userService.setObjectBase(this.employee);
-
-    console.log('called it');
-    console.log(this.userService.getObjectBase());
-
 
     // console.log(this.employeeFormGroup);
     // this.router.navigate(['/dashboard']);
 
-    this.patientService.postPatientData(finalJSON);
-
+    this.patientService.postPatientData(finalJSON).subscribe(data => {
+      this.returnIDFromResponse(data),
+      this.router.navigateByUrl('/clientsummary')
+    });
   }
 
-  returnToDashboard () {
+  returnToDashboard() {
     this.router.navigateByUrl('/dashboard');
-
   }
 
-  printthing() {
-    this.userService.getObjectBase();
+  returnIDFromResponse(data) {
+    const tempID = this.userService.getEmployeeSummaryID(data.id);
+    return  tempID;
   }
   goToSummary() {
     this.router.navigateByUrl('/employeesummary');
@@ -500,5 +527,4 @@ export class EmployeeComponent implements OnInit {
   get referenceTwo() {
     return this.employeeFormGroup.get('referenceTwo');
   }
-
 }

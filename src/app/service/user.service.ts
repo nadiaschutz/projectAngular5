@@ -20,6 +20,7 @@ export class UserService {
 
 
   selectID = '';
+  selectedIDForEmployeePostSummary = '';
   selectedServiceRequestID = '';
   constructor(
 
@@ -48,6 +49,14 @@ export class UserService {
 
   returnSelectedID() {
     return this.selectID;
+  }
+
+  getEmployeeSummaryID(data) {
+    this.selectedIDForEmployeePostSummary = data;
+  }
+
+  returnEmployeeSummaryID() {
+    return this.selectedIDForEmployeePostSummary;
   }
 
   logout() {
@@ -115,6 +124,11 @@ export class UserService {
   }
 
   saveDistrictOffice(locationObj) {
+    return this.httpClient.post(environment.queryURI + '/Location/', locationObj,
+    {headers: this.postFHIRHeaders()});
+  }
+
+  saveClientDepartment(locationObj) {
     return this.httpClient.post(environment.queryURI + '/Location/', locationObj,
     {headers: this.postFHIRHeaders()});
   }
