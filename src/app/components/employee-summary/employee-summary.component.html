@@ -125,12 +125,10 @@
 
         </div>
         <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
+          <div *ngFor="let identifier of selected?.identifier">
               <label>Employee PRI</label>
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{selected?.id}}
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{identifier?.value}}
                     </textarea>
-            </div>
           </div>
         </div>
 
@@ -190,7 +188,7 @@
       <div *ngIf="item.valueString == 'Employee'; else dependentRelatedList">
         <section class="form-section" *ngIf="dependentArray.length > 0">
           <div class='header'>
-            <h6>Depenedents</h6>
+            <h6>Dependents</h6>
           </div>
           <div *ngFor="let dependent of dependentArray">
             <div *ngFor="let name of dependent?.name">

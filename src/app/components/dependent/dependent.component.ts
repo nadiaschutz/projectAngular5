@@ -232,8 +232,12 @@ export class DependentComponent implements OnInit {
 
     // Language info
 
-    if (this.dependentFormGroup.get('language').value === 'English' || this.dependentFormGroup.get('language').value === 'english') {
+    if (this.dependentFormGroup.get('language').value.toLowerCase() === 'english') {
       dependent_language_coding.code = 'en';
+      dependent_language_coding.system = 'urn:ietf:bcp:47';
+      dependent_language_coding.display = this.dependentFormGroup.get('language').value;
+    } else {
+      dependent_language_coding.code = 'fr';
       dependent_language_coding.system = 'urn:ietf:bcp:47';
       dependent_language_coding.display = this.dependentFormGroup.get('language').value;
     }
