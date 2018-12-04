@@ -166,4 +166,7 @@ export class UserService {
     return this.httpClient.post(environment.queryURI + '/Organization/', data,
     {headers: this.postFHIRHeaders()});
   }
+  fetchAllClientDepartments() {
+    return this.httpClient.get(environment.queryURI + '/Organization?type=CLIENTDEPT', {headers: this.getHeaders()});
+  }
 }

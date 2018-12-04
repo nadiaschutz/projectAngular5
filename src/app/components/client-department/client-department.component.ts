@@ -20,6 +20,7 @@ export class ClientDepartmentComponent implements OnInit {
   departments = [];
   regionalOffices = [];
   regionalOfficesWithId = {};
+  clientDepartments = [];
   addClientDepartment = false;
   clientDepartmentName = '';
   clientDepartmentCreationSuccess = false;
@@ -32,6 +33,7 @@ export class ClientDepartmentComponent implements OnInit {
 
   ngOnInit() {
     this.fetchAllRegionalOffices();
+    this.fetchAllClientDepartments();
     this.clientDepartmentFormGroup = this.formBuilder.group({
       psohpRegion: new FormControl('', [Validators.required]),
       departmentName: new FormControl('', [Validators.required]),
@@ -49,35 +51,38 @@ export class ClientDepartmentComponent implements OnInit {
   }
 
   setClientDepartment() {
-    const clientDepartment = new FHIR.Location();
     const branchLocation = new FHIR.Location();
     const chargeBackExtension = new FHIR.Extension();
 
-    clientDepartment.resourceType = 'Location';
-    clientDepartment.name = this.clientDepartmentFormGroup.get(
-      'contactName'
+    branchLocation.resourceType = 'Location';
+    branchLocation.name = this.clientDepartmentFormGroup.get(
+      'departmentBranch'
     ).value;
 
-    clientDepartment.status = 'active';
+    branchLocation.status = 'active';
 
-    const organizationReference = new FHIR.Reference();
+    const organizationReference = new FHIR.Reference;
     // organizationReference.reference =
     //   'Organization/' +
     //   this.regionalOfficesWithId[
     //     this.clientDepartmentFormGroup.get('managingOrganization').value
     //   ];
-    clientDepartment.managingOrganization = organizationReference;
+    organizationReference.reference = 'Organization/' + this.clientDepartmentFormGroup.get('departmentName').value;
+    branchLocation.managingOrganization = organizationReference;
 
     const typeCoding = new FHIR.Coding();
 
     typeCoding.system = 'https:bcip.smilecdr.com/fhir/clientDepartment';
-    typeCoding.code = 'CLIENTDEPT';
-    typeCoding.display = 'Client Department';
+    typeCoding.code = 'DEPTBRANCH';
+    typeCoding.display = 'Client Department Branch';
 
     const type = new FHIR.CodeableConcept();
-    type.text = 'Client Department';
-    clientDepartment.type = type;
-    clientDepartment.type.coding = [typeCoding];
+    type.text = 'Client Department Branch';
+    type.coding = [typeCoding];
+    branchLocation.type = type;
+
+    const regionType = new FHIR.CodeableConcept();
+    regionType.text = 'Region - ' + this.clientDepartmentFormGroup.get('psohpRegion').value;
 
     const address = new FHIR.Address();
     address.line = [this.clientDepartmentFormGroup.get('addressStreet').value];
@@ -86,7 +91,7 @@ export class ClientDepartmentComponent implements OnInit {
       'addressPostalCode'
     ).value;
     address.state = this.clientDepartmentFormGroup.get('addressProvince').value;
-    clientDepartment.address = address;
+    branchLocation.address = address;
 
     const email = new FHIR.ContactPoint();
     email.system = 'email';
@@ -100,27 +105,19 @@ export class ClientDepartmentComponent implements OnInit {
     faxNumber.system = 'fax';
     faxNumber.value = this.clientDepartmentFormGroup.get('faxNumber').value;
 
-    clientDepartment.telecom = [email, phoneNumber, faxNumber];
+    branchLocation.telecom = [email, phoneNumber, faxNumber];
     // clientDepartment
-
-    branchLocation.partOf = this.clientDepartmentFormGroup.get(
-      'departmentBranch'
-    ).value;
 
     const managingOrganization = new FHIR.Reference();
 
     managingOrganization.reference = 'Organization/' + this.clientDepartmentFormGroup.get('psohpRegion').value;
 
+    console.log(branchLocation);
+    console.log(JSON.stringify(branchLocation));
 
-    clientDepartment.partOf = managingOrganization;
-    console.log(clientDepartment);
-    // console.log(JSON.stringify(clientDepartment));
-
-    // this.userService
-    //   .saveClientDepartment(JSON.stringify(clientDepartment))
-    //   .subscribe(res => console.log(res));
-
-    // this.userService.saveClientDepartment(JSON.stringify(branchLocation));
+    this.userService
+      .saveClientDepartmentBranch(JSON.stringify(branchLocation))
+      .subscribe(res => console.log(res));
   }
 
   // To save location data, then return the location to reference
@@ -161,8 +158,6 @@ export class ClientDepartmentComponent implements OnInit {
       type.text = 'Client Department';
       type.coding = [typeCoding];
       clientDepartment.type = [type];
-      // const parentOrganizationReference = new FHIR.Reference;
-      // parentOrganizationReference.reference = 'Organization/PSOHP';
       console.log(clientDepartment);
       this.saveClientDepartment(JSON.stringify(clientDepartment));
 
@@ -180,5 +175,12 @@ export class ClientDepartmentComponent implements OnInit {
     this.addClientDepartment = false;
   }
 
-  fetchAllClientDepartments() {}
+  fetchAllClientDepartments() {
+    this.userService.fetchAllClientDepartments().subscribe(data => {
+      data['entry'].forEach(element => {
+        this.clientDepartments.push(element['resource']);
+      });
+      console.log(this.clientDepartments);
+    });
+  }
 }
