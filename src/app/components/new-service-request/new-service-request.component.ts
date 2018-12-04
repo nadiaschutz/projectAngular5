@@ -60,7 +60,6 @@ export class NewServiceRequestComponent implements OnInit {
 
   itemToSend: ItemToSend = {
     resourceType: '',
-    extension: null,
     questionnaire: null,
     status: null,
     subject: null,
@@ -88,29 +87,380 @@ export class NewServiceRequestComponent implements OnInit {
     private patientService: PatientService
   ) {}
 
+
+
+
+
+
   ngOnInit() {
+
+    // getting formId to display form fields
     this.questionnaireService
       .getForm(this.formId)
       .subscribe(
-        data => this.handleSuccess(data),
-        error => this.handleError(error)
+        data => this.getFormData(data),
+        error => this.getFormDataError(error)
       );
+
+    // getting clientId
     this.clientId = this.userService.returnSelectedID();
     console.log(this.clientId);
 
+    // getting data for client to add to itmesToSend
     if (this.clientId) {
       this.patientService
         .getPatientDataByID(this.clientId)
         .subscribe(
           data => this.getClientData(data),
-          error => this.handleErrorClientError(error)
+          error => this.getClientError(error)
         );
     } else if (!this.clientId) {
       this.router.navigateByUrl('/dashboard');
     }
   }
+  /*********************************************/
 
 
+
+
+
+/************************************************/
+/******************* onCancel() *****************/
+/************************************************/
+
+  // TO_DO: do post request to delete in-progress service requests
+  onCancel() {
+    if (this.formId === '1952') {
+      this.router.navigate(['/dashboard']);
+    }
+    if (this.formId === '1953') {
+      this.router.navigate(['/servreqmain']);
+    }
+  }
+
+
+
+
+
+/************************************************/
+/******************* onSave() *******************/
+/************************************************/
+
+
+  // TO_DO:  fix save function!!
+  // onSave() {
+  //   this.savingData();
+  //   this.questionnaireService.saveRequest(this.itemToSend).subscribe(
+  //     data => this.handleSuccessOnSave(data),
+  //     error => this.handleErrorOnSave(error)
+  //   );
+  // }
+
+
+
+
+
+/************************************************/
+/******************* onNext() *******************/
+/************************************************/
+  onNext() {
+    this.savingData();
+
+    // sending itemToSend to server
+    this.questionnaireService
+      .saveRequest(this.itemToSend)
+      .subscribe(
+        data => this.onSaveSuccess(data),
+        error => this.onSaveError(error)
+      );
+
+    console.log(this.itemToSend);
+
+
+  }
+/*********************************************/
+
+
+
+
+
+/************************************************/
+/***************** savingData() *****************/
+/************************************************/
+
+  savingData() {
+    this.getDate();
+
+    // To-Do: check if has dependents => add dependents
+
+    // ToDo: add patient/#, subject, exstention
+
+    if (this.dependents === true) {
+      this.items.forEach(element => {
+        // console.log(element.text);
+        if (element.text === 'Dependent Involved') {
+          if (this.dependentNumber === 0) {
+            return (element.answer = false);
+          } else {
+            return (element.answer = true);
+          }
+        }
+      });
+    }
+
+    // pushing document into items arr
+    if (this.itemReference) {
+      this.items.push(this.itemReference);
+    }
+
+    // creating itemToSend
+    this.createItemToSend();
+
+    // adding extra items to itemToSend.item[]
+    this.mapItemToItems();
+  }
+
+
+
+
+
+/************************************************/
+/************** getClientData(data) *************/
+/************************************************/
+
+  getClientData(data) {
+    console.log(data);
+    this.clientBoD = data.birthDate;
+    this.clientGivenName = data.name[0].given[0];
+    this.clientFamilyName = data.name[0].family;
+  }
+
+  getClientError(error) {
+    console.log(error);
+  }
+
+
+
+
+
+/************************************************/
+/****************** getFormData() ***************/
+/************************************************/
+  getFormData(data) {
+    this.qrequest = data.item;
+    console.log(this.qrequest);
+
+    // maping part of the data from the server to item
+    this.items = this.qrequest.map(el => ({
+      ...this.item,
+      linkId: el.linkId,
+      text: el.text
+    }));
+    console.log(this.items);
+
+
+    // checkingif there are any checkboxes in the form
+    this.items.forEach(el => {
+      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved') {
+        el.answer = false;
+      }
+    });
+
+    // checking dependents
+    this.checkDependentItem(this.items);
+    // console.log(this.dependents);
+
+    // console.log(this.responseId);
+    // if (this.responseId === null) {
+    //   this.getResponseId();
+    // }
+  }
+
+  getFormDataError(error) {
+    console.log(error);
+  }
+/************************************************/
+
+
+
+
+
+/************************************************/
+/*************** onSaveSuccess ******************/
+/************************************************/
+
+  // getting response from thr server on "next"
+  onSaveSuccess(data) {
+    if (data.item) {
+      console.log(data);
+      this.responseId = data.id;
+      console.log(this.responseId);
+
+      this.questionnaireService.shareResponseId(this.responseId);
+      // this.questionnaireService.shareServiceFormId(this.formId);
+      this.router.navigate(['/summary']);
+    }
+  }
+
+  onSaveError(error) {
+    console.log(error);
+  }
+/************************************************/
+
+
+
+
+
+/************************************************/
+/*************** getResponseId ******************/
+/************************************************/
+
+  getResponseId() {
+    this.questionnaireService.newResponseIdSubject.subscribe(
+      data => this.responseIdSuccess(data),
+      error => this.responseIdError(error)
+    );
+  }
+  responseIdSuccess(data) {
+    this.responseId = data;
+    // get data from the server
+
+    if (this.responseId !== null) {
+      this.getResponse();
+    }
+  }
+
+  responseIdError(error) {
+    console.log(error);
+  }
+
+
+
+
+
+/************************************************/
+/*************** getResponse() ******************/
+/************************************************/
+  getResponse() {
+    this.questionnaireService
+      .getResponse(this.responseId)
+      .subscribe(
+        data => this.ResponseSuccess(data),
+        error => this.responseError(error)
+      );
+  }
+
+  ResponseSuccess(data) {
+    console.log(data);
+  }
+
+  responseError(error) {
+    console.log(error);
+  }
+
+
+
+
+
+
+
+
+  checkDependentItem(itemsServer) {
+    itemsServer.forEach(element => {
+      if (element.text === 'Dependent Involved') {
+        this.dependents = true;
+        console.log('dependents in the form:', this.dependents);
+      }
+    });
+  }
+
+
+
+
+
+
+
+/************************************************/
+/************* createItemToSend() ***************/
+/************************************************/
+  createItemToSend() {
+    this.itemToSend = {
+      resourceType: 'QuestionnaireResponse',
+      questionnaire: {
+        reference: 'Questionnaire/' + this.formId
+      },
+      status: 'in-progress',
+      authored: this.myDay,
+      subject: {
+        reference: 'Patient/' + this.clientId,
+        display: this.clientGivenName + ' ' + this.clientFamilyName
+      },
+      item: []
+    };
+  }
+
+
+/************************************************/
+/************* mapItemToItems() *****************/
+/************************************************/
+
+
+  mapItemToItems() {
+    this.itemToSend.item = this.items.map(el => {
+
+      if (el.text === 'Document') {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueReference: {
+                reference: el.answer
+              }
+            }
+          ]
+        };
+      }
+      if (
+        el.text === 'Dependent Involved' ||
+        el.text === 'Health Exam Done Externally'
+      ) {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueBoolean: el.answer
+            }
+          ]
+        };
+      } else {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueString: el.answer
+            }
+          ]
+        };
+      }
+    });
+    console.log(this.itemToSend);
+  }
+
+
+
+
+
+
+
+
+
+
+/************************************************/
+/**************** addDocument() *****************/
+/************************************************/
 
   /**
    *
@@ -123,7 +473,6 @@ export class NewServiceRequestComponent implements OnInit {
    */
 
   addDocument($event) {
-
     const documentReference = new FHIR.DocumentReference;
     const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
     const documentReferenceCoding = new FHIR.Coding;
@@ -174,61 +523,24 @@ export class NewServiceRequestComponent implements OnInit {
       documentReference.type = documentReferenceCodeableConcept;
       documentReference.content = [content];
 
-
       that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
         data =>   {
           that.retrieveDocuments(data),
           that.createItemReferenceObject(data);
         }
       );
-
       // console.log (contentAttachment);
       return reader.result;
-
     };
     reader.onerror = function (error) {
       console.log('Error: ', error);
     };
-
   }
 
-  // convertBase64ToFile (data) {
-  //   const obj = data;
-  //   this.fileLink = [];
-  //   const binaryString = data.content[0].attachment.data;
 
-  //   const binary = atob(binaryString.replace(/\s/g, ''));
-  //   const len = binary.length;
-  //   const buffer = new ArrayBuffer(len);
-  //   const view = new Uint8Array(buffer);
-  //   for (let i = 0; i < len; i++) {
-  //       view[i] = binary.charCodeAt(i);
-  //   }
-
-  //   const blob = new Blob( [view], { type: data.content[0].attachment.contentType });
-  //   const fileOfBlob = new File ([blob], data.content[0].attachment.title );
-  //   const url = URL.createObjectURL(blob);
-  //   console.log('url: ', url);
-  //   this.fileLink.push(url);
-
-  // }
 
   createItemReferenceObject(data) {
     const obj: string = data.id;
-    // const item = new FHIR.Item;
-    // const answer = new FHIR.Answer;
-    // const reference = new FHIR.Reference;
-
-    // reference.reference = 'DocumentReference/' + obj.id;
-
-    // answer.valueReference = reference;
-
-    // item.linkId = '30';
-    // item.text = obj.content[0].attachment.title;
-    // item.answer = answer;
-    // this.itemReference = item;
-    // console.log('here is the object for doc ref:' , item );
-    // return item;
 
     this.itemReference = {
       linkId: '30',
@@ -236,8 +548,6 @@ export class NewServiceRequestComponent implements OnInit {
       text: 'Document',
       answer:  'DocumentReference/' + obj
     };
-
-
   }
 
   retrieveDocuments(data) {
@@ -245,354 +555,107 @@ export class NewServiceRequestComponent implements OnInit {
   }
 
 
-  onCancel() {
-    this.router.navigate(['/servreqmain']);
+
+
+
+
+
+
+
+
+/************************************************/
+/***************** getDate() ********************/
+/************************************************/
+
+// get date for authored: '2018-11-08T15:41:00.581+00:00'
+
+getDate() {
+  this.dd = this.addZero(this.today.getDate());
+  this.mm = this.addZero(this.today.getMonth() + 1);
+  this.yyyy = this.today.getFullYear();
+  this.time = this.today.getTime();
+  this.hr = this.addZero(this.today.getHours());
+  this.min = this.addZero(this.today.getMinutes());
+  this.sec = this.addZero(this.today.getSeconds());
+  this.msec = this.today.getMilliseconds();
+
+  this.myDate();
+
+  // to-do: fix mlseconds and timeZone
+
+  // console.log(msec);
+}
+myDate() {
+  return (this.myDay =
+    this.yyyy +
+    '-' +
+    this.mm +
+    '-' +
+    this.dd +
+    'T' +
+    this.hr +
+    ':' +
+    this.min +
+    ':' +
+    this.sec +
+    '.581+00:00');
+}
+
+addZero(i) {
+  if (i < 10) {
+    i = '0' + i;
   }
-
-  onSave() {
-    this.savingData();
-    this.questionnaireService.saveRequest(this.itemToSend).subscribe(
-      data => this.handleSuccessOnSave(data),
-      error => this.handleErrorOnSave(error)
-    );
-  }
-
-  onNext() {
-    this.savingData();
-
-    this.questionnaireService
-      .saveRequest(this.itemToSend)
-      .subscribe(
-        data => this.handleSuccessOnSave(data),
-        error => this.handleErrorOnSave(error)
-      );
-
-    console.log(this.itemToSend);
-
-    this.submitingFormData.itemToSend = this.itemToSend;
-    this.submitingFormData.formId = this.formId;
-    console.log(this.submitingFormData, this.submitingFormData.itemToSend);
-    this.questionnaireService.shareServiceResponseData(this.itemToSend);
-
-    this.questionnaireService.shareServiceResponseData(this.responseId);
-  }
-
-  savingData() {
-    this.getDate();
-
-    // To-Do: check if has dependents => add dependents
-
-    // ToDo: add patient/#, subject, exstention
-
-    if (this.dependents === true) {
-      this.items.forEach(element => {
-        console.log(element.text);
-
-        if (element.text === 'Dependent Involved') {
-          if (this.dependentNumber === 0) {
-            return (element.answer = false);
-          } else {
-            return (element.answer = true);
-          }
-        }
-      });
-    }
-
-    // pushing document into itmes arr
-    if (this.itemReference) {
-      this.items.push(this.itemReference);
-    }
+  return i;
+}
 
 
-    this.itemToSend = {
-      resourceType: 'QuestionnaireResponse',
-      questionnaire: {
-        reference: 'Questionnaire/' + this.formId
-      },
-      status: 'in-progress',
-      authored: this.myDay,
-      subject: {
-        reference: 'Patient/' + this.clientId,
-        display: this.clientGivenName + ' ' + this.clientFamilyName
-      },
-      extension: [
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/givenName',
-          valueCode: this.clientGivenName
-        },
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/familyName',
-          valueCode: this.clientFamilyName
-        },
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/birthDate',
-          valueDateTime: this.clientBoD
-        }
-      ],
-      item: []
-    };
 
 
-    this.itemToSend.item = this.items.map(el => {
 
-      if (el.text === 'Document') {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueReference: {
-                reference: el.answer
-              }
+
+
+
+
+
+
+
+/************************************************/
+/******** enableWhen () not finished!! **********/
+/************************************************/
+
+checkingEnableWhen() {
+  this.qrequest.forEach((el, index) => {
+    // check if type = "choice"
+    if (el.type === 'choice') {
+      // console.log(el.item);
+      // console.log(el);
+      // check enableWhen data
+      if (el.item) {
+        // forEach loop
+        el.item.forEach((e, i) => {
+          // console.log(i);
+          // console.log(e);
+          // console.log(e.enableWhen[0]);
+          // check if enblewhen.question number === linkId number and enableWhen.answerString === model.data
+
+          // tslint:disable-next-line:no-shadowed-variable
+          this.items.forEach((element, index) => {
+            if (
+              e.enableWhen[i].question === element[index].linkId &&
+              e.enableWhen[i].answerString === element[index].answer
+            ) {
+              console.log(true);
+              // show options
+              console.log(e.option);
+              return e.option;
             }
-          ]
-        };
-      }
-      if (
-        el.text === 'Dependent Involved' ||
-        el.text === 'Health Exam Done Externally'
-      ) {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueBoolean: el.answer
-            }
-          ]
-        };
-      } else {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueString: el.answer
-            }
-          ]
-        };
-      }
-
-
-    });
-
-    console.log(this.itemToSend);
-  }
-
-  addDependent() {}
-
-  getClientData(data) {
-    console.log(data);
-    this.clientBoD = data.birthDate;
-    this.clientGivenName = data.name[0].given[0];
-    this.clientFamilyName = data.name[0].family;
-  }
-
-  handleErrorClientError(error) {
-    console.log(error);
-  }
-
-
-  // get form data from the server
-  handleSuccess(data) {
-    this.qrequest = data.item;
-    console.log(this.qrequest);
-    // maping part of the data from the server to item
-    this.items = this.qrequest.map(el => ({
-      ...this.item,
-      linkId: el.linkId,
-      text: el.text
-    }));
-    console.log(this.items);
-    // checking health exam done externaly
-
-    this.items.forEach(el => {
-      if (el.text === 'Health Exam Done Externally') {
-        el.answer = false;
-      }
-    });
-
-
-
-    // checking dependents
-    // this.checkDependentItem(this.items);
-    // console.log(this.dependents);
-
-    console.log(this.responseId);
-    if (this.responseId === null) {
-      this.getResponseId();
-    }
-  }
-
-  handleError(error) {
-    console.log(error);
-  }
-
-
-  // getting response from thr server on "next"
-  handleSuccessOnSave(data) {
-    console.log(data);
-    this.responseId = data.id;
-    console.log(this.responseId);
-    this.questionnaireService.shareResponseId(this.responseId);
-    this.questionnaireService.shareServiceFormId(this.formId);
-
-    this.router.navigate(['/summary']);
-  }
-
-  handleErrorOnSave(error) {
-    console.log(error);
-  }
-
-  getResponseId() {
-    this.questionnaireService.newResponseIdSubject.subscribe(
-      data => this.handleSuccessResponseId(data),
-      error => this.handleErrorResponseId(error)
-    );
-  }
-
-  handleSuccessResponseId(data) {
-    console.log(data);
-    this.responseId = data;
-    console.log(this.responseId);
-    // get data from the server
-
-    if (this.responseId !== null) {
-      this.getResponse();
-    }
-  }
-
-  handleErrorResponseId(error) {
-    console.log(error);
-  }
-
-  getResponse() {
-    this.questionnaireService
-      .getResponse(this.responseId)
-      .subscribe(
-        data => this.handleSuccessResponse(data),
-        error => this.handleErrorResponse(error)
-      );
-  }
-
-  handleSuccessResponse(data) {
-    console.log(data);
-    this.itemToSend = data;
-    console.log(this.itemToSend);
-    console.log(this.items);
-
-    this.items = this.itemToSend.item.map(el => {
-      if (el.text === 'Document') {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueReference.reference
-        };
-      }
-      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved' ) {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueBoolean
-        };
-      } else {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueString
-        };
-      }
-    });
-
-    console.log(this.items);
-  }
-
-  handleErrorResponse(error) {
-    console.log(error);
-  }
-
-  // get date for authored: '2018-11-08T15:41:00.581+00:00'
-
-  getDate() {
-    this.dd = this.addZero(this.today.getDate());
-    this.mm = this.addZero(this.today.getMonth() + 1);
-    this.yyyy = this.today.getFullYear();
-    this.time = this.today.getTime();
-    this.hr = this.addZero(this.today.getHours());
-    this.min = this.addZero(this.today.getMinutes());
-    this.sec = this.addZero(this.today.getSeconds());
-    this.msec = this.today.getMilliseconds();
-
-    this.myDate();
-
-    // to-do: fix mlseconds and timeZone
-
-    // console.log(msec);
-  }
-  myDate() {
-    return (this.myDay =
-      this.yyyy +
-      '-' +
-      this.mm +
-      '-' +
-      this.dd +
-      'T' +
-      this.hr +
-      ':' +
-      this.min +
-      ':' +
-      this.sec +
-      '.581+00:00');
-  }
-
-  addZero(i) {
-    if (i < 10) {
-      i = '0' + i;
-    }
-    return i;
-  }
-
-  checkDependentItem(itemsServer) {
-    itemsServer.forEach(element => {
-      if (element.text === 'Dependent Involved') {
-        this.dependents = true;
-        console.log(this.dependents);
-      }
-    });
-  }
-
-  //  get status for the service request
-
-  checkingEnableWhen() {
-    this.qrequest.forEach((el, index) => {
-      // check if type = "choice"
-      if (el.type === 'choice') {
-        // console.log(el.item);
-        // console.log(el);
-        // check enableWhen data
-        if (el.item) {
-          // forEach loop
-          el.item.forEach((e, i) => {
-            // console.log(i);
-            // console.log(e);
-            // console.log(e.enableWhen[0]);
-            // check if enblewhen.question number === linkId number and enableWhen.answerString === model.data
-
-            // tslint:disable-next-line:no-shadowed-variable
-            this.items.forEach((element, index) => {
-              if (
-                e.enableWhen[i].question === element[index].linkId &&
-                e.enableWhen[i].answerString === element[index].answer
-              ) {
-                console.log(true);
-                // show options
-                console.log(e.option);
-                return e.option;
-              }
-            });
           });
-        }
+        });
       }
-    });
-  }
+    }
+  });
+}
+
+
+/***************** the end **********************/
 }
