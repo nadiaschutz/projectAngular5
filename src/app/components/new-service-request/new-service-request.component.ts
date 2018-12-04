@@ -131,7 +131,13 @@ export class NewServiceRequestComponent implements OnInit {
 
   // TO_DO: do post request to delete in-progress service requests
   onCancel() {
-    this.router.navigate(['/servreqmain']);
+
+    if (this.formId === '1952') {
+      this.router.navigate(['/dashboard']);
+    }
+    if (this.formId === '1953') {
+      this.router.navigate(['/servreqmain']);
+    }
   }
 
 
