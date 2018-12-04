@@ -26,7 +26,7 @@ export class NewServiceRequestComponent implements OnInit {
   // serviceRequestResponce: ServiceRequestResponce = {
   // };
 
-  formId = '1952';
+  formId = 'TEST1';
   responseId = null;
   clientId = null;
   clientGivenName = null;
@@ -52,6 +52,8 @@ export class NewServiceRequestComponent implements OnInit {
   dependentBoolean = false;
   dependentNumber = 0;
   qrequest: any;
+
+  questionsList = [];
 
   submitingFormData: {
     formId: any;
@@ -394,39 +396,79 @@ export class NewServiceRequestComponent implements OnInit {
 
 
   // get form data from the server
+  // handleSuccess(data) {
+  //   this.qrequest = data.item;
+  //   console.log(this.qrequest);
+  //   // maping part of the data from the server to item
+  //   this.items = this.qrequest.map(el => ({
+  //     ...this.item,
+  //     linkId: el.linkId,
+  //     text: el.text
+  //   }));
+  //   console.log(this.items);
+  //   // checking health exam done externaly
+
+  //   this.items.forEach(el => {
+  //     if (el.text === 'Health Exam Done Externally') {
+  //       el.answer = false;
+  //     }
+  //   });
+
+  //   // checking dependents
+  //   // this.checkDependentItem(this.items);
+  //   // console.log(this.dependents);
+
+  //   console.log(this.responseId);
+  //   if (this.responseId === null) {
+  //     this.getResponseId();
+  //   }
+  // }
+
   handleSuccess(data) {
     this.qrequest = data.item;
     console.log(this.qrequest);
+    const enableWhenList = [];
     // maping part of the data from the server to item
-    this.items = this.qrequest.map(el => ({
-      ...this.item,
-      linkId: el.linkId,
-      text: el.text
-    }));
-    console.log(this.items);
-    // checking health exam done externaly
-
-    this.items.forEach(el => {
-      if (el.text === 'Health Exam Done Externally') {
-        el.answer = false;
+    // const temp = ['1'];
+    // const dep = ['1.1'];
+    // dep.push('1.2');
+    // const arr = [temp, dep];
+    for (const questionnaire of this.qrequest) {
+      if (!questionnaire['enableWhen']) {
+        const temp = {};
+        temp['linkId'] = questionnaire['linkId'];
+        temp['text'] = questionnaire['text'];
+        temp['type'] = questionnaire['type'];
+        temp['enabled'] = questionnaire['required'];
+        temp['option'] = questionnaire['option'];
+        temp['answer'] = '';
+        this.questionsList.push([temp]);
+      } else {
+        const temp = {};
+        temp['linkId'] = questionnaire['linkId'];
+        temp['text'] = questionnaire['text'];
+        temp['type'] = questionnaire['type'];
+        temp['answer'] = '';
+        temp['enableWhen'] = questionnaire['enableWhen'];
+        enableWhenList.push(temp);
       }
-    });
-
-
-
-    // checking dependents
-    // this.checkDependentItem(this.items);
-    // console.log(this.dependents);
-
-    console.log(this.responseId);
-    if (this.responseId === null) {
-      this.getResponseId();
     }
+    for (const enableWhen of enableWhenList) {
+      const linkId = enableWhen['linkId'];
+      const primaryLinkId = (linkId.substring(0, linkId.indexOf('.'))) - 1;
+      const subLinkId = linkId.substring(linkId.indexOf('.') + 1, linkId.length);
+      enableWhen['enabled'] = false;
+      this.questionsList[primaryLinkId][subLinkId] = enableWhen;
+    }
+    console.log(this.questionsList);
   }
+
 
   handleError(error) {
     console.log(error);
   }
+
+  buildQuestionnaireItem() {}
 
 
   // getting response from thr server on "next"
@@ -563,36 +605,21 @@ export class NewServiceRequestComponent implements OnInit {
 
   //  get status for the service request
 
-  checkingEnableWhen() {
-    this.qrequest.forEach((el, index) => {
-      // check if type = "choice"
-      if (el.type === 'choice') {
-        // console.log(el.item);
-        // console.log(el);
-        // check enableWhen data
-        if (el.item) {
-          // forEach loop
-          el.item.forEach((e, i) => {
-            // console.log(i);
-            // console.log(e);
-            // console.log(e.enableWhen[0]);
-            // check if enblewhen.question number === linkId number and enableWhen.answerString === model.data
-
-            // tslint:disable-next-line:no-shadowed-variable
-            this.items.forEach((element, index) => {
-              if (
-                e.enableWhen[i].question === element[index].linkId &&
-                e.enableWhen[i].answerString === element[index].answer
-              ) {
-                console.log(true);
-                // show options
-                console.log(e.option);
-                return e.option;
-              }
-            });
+  checkingEnableWhen(value, index) {
+    console.log('Hello');
+    if (this.questionsList.length > 0) {
+      console.log(value, index);
+      this.questionsList[index].forEach(question => {
+        if (question['enableWhen']) {
+          question.enabled = false;
+          console.log(question);
+          question['enableWhen'].forEach(element => {
+            if (element['answerCoding']['code'] === value) {
+              question.enabled = true;
+            }
           });
         }
-      }
-    });
+      });
+    }
   }
 }
