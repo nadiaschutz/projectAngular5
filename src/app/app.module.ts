@@ -34,7 +34,7 @@ import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
 import { ClientOnsubmitSummaryComponent } from './components/client-onsubmit-summary/client-onsubmit-summary.component';
-// import { EditNewServceRequestComponent } from './components/edit-new-servce-request/edit-new-servce-request.component';
+import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
 
 
 const routes: Routes = [
@@ -75,7 +75,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ClientDepartmentComponent,
     DistrictOfficeComponent,
     ServiceRequestSummaryComponent,
-    ClientOnsubmitSummaryComponent
+    ClientOnsubmitSummaryComponent,
+    EditNewServiceRequestComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
