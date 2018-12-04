@@ -60,7 +60,6 @@ export class NewServiceRequestComponent implements OnInit {
 
   itemToSend: ItemToSend = {
     resourceType: '',
-    extension: null,
     questionnaire: null,
     status: null,
     subject: null,
@@ -131,7 +130,6 @@ export class NewServiceRequestComponent implements OnInit {
 
   // TO_DO: do post request to delete in-progress service requests
   onCancel() {
-
     if (this.formId === '1952') {
       this.router.navigate(['/dashboard']);
     }
@@ -397,20 +395,6 @@ export class NewServiceRequestComponent implements OnInit {
         reference: 'Patient/' + this.clientId,
         display: this.clientGivenName + ' ' + this.clientFamilyName
       },
-      extension: [
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/givenName',
-          valueCode: this.clientGivenName
-        },
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/familyName',
-          valueCode: this.clientFamilyName
-        },
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/birthDate',
-          valueDateTime: this.clientBoD
-        }
-      ],
       item: []
     };
   }

@@ -43,6 +43,7 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
   { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
   { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
+  { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },

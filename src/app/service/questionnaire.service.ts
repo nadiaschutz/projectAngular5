@@ -40,6 +40,12 @@ export class QuestionnaireService {
     return this.http.get(environment.queryURI + '/Questionnaire/' + query, { headers: this.getHeaders() } );
   }
 
+
+  getDocument(query: string) {
+    // tslint:disable-next-line:max-line-length
+    return this.http.get(environment.queryURI + '/DocumentReference/' + query, { headers: this.getHeaders() } );
+  }
+
   getResponse(query: string) {
     // tslint:disable-next-line:max-line-length
     return this.http.get(environment.queryURI + '/QuestionnaireResponse/' + query, { headers: this.getHeaders() } );
