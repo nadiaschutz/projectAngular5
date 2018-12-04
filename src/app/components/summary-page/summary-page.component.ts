@@ -84,27 +84,6 @@ export class SummaryPageComponent implements OnInit {
         data => this.getResponseData(data),
         error => this.getResponseDataError(error)
       );
-
-
-
-
-
-
-
-    // get Document Reference based on the ID from the QuestionnaireResponse
-
-    // this.questionnaireService.getDocumentReferenceByQuery(this.documentReferenceId).subscribe (
-    //   data => this.retrieveDocumentReferenceObject(data),
-    //   error => this.handleError(error)
-    // );
-
-    // get service request form
-    // this.questionnaireService.getForm(this.formId).subscribe(
-    //   data => this.handleSuccess(data),
-    //   error => this.handleError(error)
-    // );
-
-
   }
 
   retrieveDocumentReferenceObject(data) {
