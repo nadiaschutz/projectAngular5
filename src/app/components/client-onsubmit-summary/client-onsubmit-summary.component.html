@@ -112,12 +112,10 @@
 
         </div>
         <div class="col-6">
-          <div *ngFor="let extension of employee?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
+          <div *ngFor="let identifier of employee?.identifier">
               <label>Employee PRI</label>
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{employee?.id}}
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{identifier?.value}}
                     </textarea>
-            </div>
           </div>
         </div>
 

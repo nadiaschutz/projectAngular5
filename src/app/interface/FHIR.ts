@@ -266,7 +266,7 @@ export class Reference extends FHIRElement {
 }
 
 export class Identifier extends FHIRElement {
-    use: Code;
+    use: string;
     type: CodeableConcept;
     system: string;
     value: string;

@@ -125,12 +125,10 @@
 
         </div>
         <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
+          <div *ngFor="let identifier of selected?.identifier">
               <label>Employee PRI</label>
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{selected?.id}}
+              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{identifier?.value}}
                     </textarea>
-            </div>
           </div>
         </div>
 
@@ -186,10 +184,11 @@
 
     <div *ngFor="let item of selected?.extension">
       <!-- dependents -->
+      <!-- Display this list of related clients if the selected client in the summary is an Employee -->
       <div *ngIf="item.valueString == 'Employee'; else dependentRelatedList">
         <section class="form-section" *ngIf="dependentArray.length > 0">
           <div class='header'>
-            <h6>Depenedents</h6>
+            <h6>Dependents</h6>
           </div>
           <div *ngFor="let dependent of dependentArray">
             <div *ngFor="let name of dependent?.name">
@@ -204,6 +203,7 @@
 
       </div>
 
+      <!-- Only show this section if the selected client is a Dependent -->
       <ng-template #dependentRelatedList>
         <div *ngIf="item.valueString == 'Dependent'">
           <section class="form-section" *ngIf="dependentArray.length > 0">
@@ -215,7 +215,7 @@
                 <div *ngIf="extension.valueString =='Employee'">
                   <div *ngFor="let name of dependent?.name">
                     <div class="col-6">
-                      <label>Dependent</label>
+                      <label>Employee</label>
                       <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{name.given}} {{name.family}}</textarea>
                     </div>
                   </div>

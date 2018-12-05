@@ -90,7 +90,7 @@ export class DashboardComponent implements OnInit {
 
 
   handleSuccess(data) {
-    console.log(data);
+    // console.log(data);
     this.qrequest = [];
     if (data.total !== 0) {
       if (data.entry) {

@@ -286,6 +286,7 @@ export class EmployeeComponent implements OnInit {
 
     this.employee_identifier.use = 'official';
     this.employee_identifier.value = this.employeeFormGroup.get('id').value;
+    this.employee_identifier.system = 'https://bcip.smilecdr.com/fhir/employeeid';
 
     // Employee Address
 
@@ -376,16 +377,16 @@ export class EmployeeComponent implements OnInit {
 
     // Language info
 
-    if (
-      this.employeeFormGroup.get('language').value === 'English' ||
-      this.employeeFormGroup.get('language').value === 'english'
-    ) {
+    if (this.employeeFormGroup.get('language').value.toLowerCase() === 'english') {
       this.employee_language_coding.code = 'en';
       this.employee_language_coding.system = 'urn:ietf:bcp:47';
-      this.employee_language_coding.display = this.employeeFormGroup.get(
-        'language'
-      ).value;
+      this.employee_language_coding.display = this.employeeFormGroup.get('language').value;
+    } else {
+      this.employee_language_coding.code = 'fr';
+      this.employee_language_coding.system = 'urn:ietf:bcp:47';
+      this.employee_language_coding.display = this.employeeFormGroup.get('language').value;
     }
+
 
     // Telecome (phone)
 
@@ -403,7 +404,7 @@ export class EmployeeComponent implements OnInit {
     ).value;
     this.employee_telecom_email.use = 'work';
 
-    this.employee.identifer = [this.employee_identifier];
+    this.employee.identifier = [this.employee_identifier];
     this.employee_language.coding = [this.employee_language_coding];
     this.employee_communication.language = this.employee_language;
     this.employee.telecom = [
@@ -421,6 +422,9 @@ export class EmployeeComponent implements OnInit {
 
     // console.log(this.employeeFormGroup);
     // this.router.navigate(['/dashboard']);
+
+    // console.log(this.employee)
+    // console.log( JSON.stringify(this.employee))
 
     this.patientService.postPatientData(finalJSON).subscribe(data => {
       this.returnIDFromResponse(data),
