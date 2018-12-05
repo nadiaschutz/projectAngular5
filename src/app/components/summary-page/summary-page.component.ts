@@ -187,15 +187,14 @@ getResponseData(data) {
     this.itemToSend = data;
     console.log('this.itemToSend:', this.itemToSend);
 
-    this.clientName = this.itemToSend.subject.display;
-    console.log('clientName:', this.clientName);
+
 
     this.itemToSend.item.forEach(element => {
       if (element.text === 'Document') {
         this.documentId = element.answer[0].valueReference.reference;
         this.documentId = this.documentId.substring(this.documentId.indexOf('/') + 1);
         console.log(this.documentId);
-          this.getDocument(this.documentId);
+        this.getDocument(this.documentId);
       }
     });
 
@@ -205,8 +204,13 @@ getResponseData(data) {
     this.formId = this.formId.substring(this.formId.indexOf('/') + 1);
     console.log('this.formId:', this.formId);
     if (this.formId) {
-    this.getForm(this.formId);
+      this.getForm(this.formId);
     }
+  }
+  if (this.formId !== '1953') {
+    this.clientName = this.itemToSend.subject.display;
+    console.log('clientName:', this.clientName);
+
   }
 }
 
