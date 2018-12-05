@@ -102,21 +102,25 @@ export class NewServiceRequestComponent implements OnInit {
         error => this.getFormDataError(error)
       );
 
-    // getting clientId
-    this.clientId = this.userService.returnSelectedID();
-    console.log(this.clientId);
 
-    // getting data for client to add to itmesToSend
-    if (this.clientId) {
-      this.patientService
-        .getPatientDataByID(this.clientId)
-        .subscribe(
-          data => this.getClientData(data),
-          error => this.getClientError(error)
-        );
-    } else if (!this.clientId) {
-      this.router.navigateByUrl('/dashboard');
-    }
+      if (this.formId !== '1953') {
+        // getting clientId
+        this.clientId = this.userService.returnSelectedID();
+        console.log(this.clientId);
+        // getting data for client to add to itmesToSend
+        if (this.clientId) {
+          this.patientService
+            .getPatientDataByID(this.clientId)
+            .subscribe(
+              data => this.getClientData(data),
+              error => this.getClientError(error)
+            );
+        } else if (!this.clientId) {
+          this.router.navigateByUrl('/dashboard');
+        }
+
+      }
+
   }
   /*********************************************/
 
@@ -384,19 +388,33 @@ export class NewServiceRequestComponent implements OnInit {
 /************* createItemToSend() ***************/
 /************************************************/
   createItemToSend() {
-    this.itemToSend = {
-      resourceType: 'QuestionnaireResponse',
-      questionnaire: {
-        reference: 'Questionnaire/' + this.formId
-      },
-      status: 'in-progress',
-      authored: this.myDay,
-      subject: {
-        reference: 'Patient/' + this.clientId,
-        display: this.clientGivenName + ' ' + this.clientFamilyName
-      },
-      item: []
-    };
+
+    if (this.formId === '1953') {
+      this.itemToSend = {
+        resourceType: 'QuestionnaireResponse',
+        questionnaire: {
+          reference: 'Questionnaire/' + this.formId
+        },
+        status: 'in-progress',
+        authored: this.myDay,
+        item: []
+      };
+    } else {
+      this.itemToSend = {
+        resourceType: 'QuestionnaireResponse',
+        questionnaire: {
+          reference: 'Questionnaire/' + this.formId
+        },
+        status: 'in-progress',
+        authored: this.myDay,
+        subject: {
+          reference: 'Patient/' + this.clientId,
+          display: this.clientGivenName + ' ' + this.clientFamilyName
+        },
+        item: []
+      };
+
+    }
   }
 
 
