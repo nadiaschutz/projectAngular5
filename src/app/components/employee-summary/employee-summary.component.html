@@ -15,13 +15,13 @@
       <div class="row">
         <div class="col-6">
           <label>First Name</label>
-          <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled placeholder="{{name.given}}"></textarea>
+          <textarea type="text" class="form-control" rows="1" disabled placeholder="{{name.given}}"></textarea>
         </div>
 
 
         <div class="col-6">
           <label>Last Name</label>
-          <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{name.family}}</textarea>
+          <textarea type="text" class="form-control" rows="1" disabled>{{name.family}}</textarea>
         </div>
       </div>
 
@@ -31,7 +31,7 @@
 
         <div class="col-6">
           <label>Date of Birth</label>
-          <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{selected.birthDate}}</textarea>
+          <textarea type="text" class="form-control"  rows="1" disabled>{{selected.birthDate}}</textarea>
         </div>
 
 
@@ -39,7 +39,7 @@
           <label>Language</label>
           <div *ngFor="let language of selected?.communication">
             <div *ngFor="let usedLanguage of language.language.coding">
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{usedLanguage.display}}</textarea>
+              <textarea type="text" class="form-control" rows="1" disabled>{{usedLanguage.display}}</textarea>
             </div>
           </div>
         </div>
@@ -58,7 +58,7 @@
           <div class="col-6" *ngFor="let telecom of selected.telecom">
 
             <label>{{telecom.system}}</label>
-            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{telecom.value}}</textarea>
+            <textarea type="text" class="form-control"  rows="1" disabled>{{telecom.value}}</textarea>
           </div>
         </div>
       </div>
@@ -68,33 +68,33 @@
           <div class="col-6">
 
             <label>Street Address</label>
-            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled *ngFor="let line of address.line">{{line}}</textarea>
+            <textarea type="text" class="form-control"  rows="1" disabled *ngFor="let line of address.line">{{line}}</textarea>
 
           </div>
           <div class="col-6">
 
             <label>City</label>
-            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{address.city}}</textarea>
+            <textarea type="text" class="form-control"  rows="1" disabled>{{address.city}}</textarea>
           </div>
         </div>
         <div class="row">
           <div class="col-6">
 
             <label>Province</label>
-            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{address.state}}</textarea>
+            <textarea type="text" class="form-control" rows="1" disabled>{{address.state}}</textarea>
 
           </div>
           <div class="col-6">
 
             <label>Postal Code</label>
-            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{address.postalCode}}</textarea>
+            <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
 
 
           </div>
           <div class="col-6">
 
             <label>Country</label>
-            <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{address.country}}</textarea>
+            <textarea type="text" class="form-control"  rows="1" disabled>{{address.country}}</textarea>
 
 
           </div>
@@ -105,6 +105,8 @@
 
     <!-- employment info -->
     <section class="form-section">
+
+
       <div *ngFor="let extension of selected?.extension">
         <div *ngIf="extension.valueString=='Employee'">
           <div class='header'>
@@ -112,23 +114,31 @@
           </div>
         </div>
       </div>
+
+
       <div class="row">
         <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/jobtile'">
+
+          
+            <div>
               <label>Job Title</label>
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
-                  </textarea>
+              <textarea type="text" class="form-control" rows="1" disabled>{{jobTitle}}</textarea>
             </div>
           </div>
 
+          
+<!-- 
+              <label>Postal Code</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
+   -->
+  
+            
 
-        </div>
+
         <div class="col-6">
           <div *ngFor="let identifier of selected?.identifier">
               <label>Employee PRI</label>
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{identifier?.value}}
-                    </textarea>
+              <textarea type="text" class="form-control"  rows="1" disabled>{{identifier?.value}}</textarea>
           </div>
         </div>
 
@@ -138,8 +148,7 @@
           <div *ngFor="let extension of selected?.extension">
             <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
               <label>Employing Department Name</label>
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
-                    </textarea>
+              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
             </div>
           </div>
 
@@ -149,8 +158,7 @@
           <div *ngFor="let extension of selected?.extension">
             <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">
               <label>Employing Department Branch</label>
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
-                      </textarea>
+              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
             </div>
           </div>
         </div>
@@ -161,8 +169,7 @@
           <div *ngFor="let extension of selected?.extension">
             <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferenceone'">
               <label>Cross Reference</label>
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
-                    </textarea>
+              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
             </div>
           </div>
 
@@ -172,8 +179,7 @@
           <div *ngFor="let extension of selected?.extension">
             <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferencetwo'">
               <label>Cross Reference</label>
-              <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{extension.valueString}}
-                      </textarea>
+              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
             </div>
           </div>
         </div>
@@ -190,11 +196,12 @@
           <div class='header'>
             <h6>Dependents</h6>
           </div>
+          <div class="col-6">
           <div *ngFor="let dependent of dependentArray">
             <div *ngFor="let name of dependent?.name">
-              <div class="col-6">
+              
                 <label>Dependent</label>
-                <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{name.given}} {{name.family}}</textarea>
+                <textarea type="text" class="form-control"  rows="1" disabled>{{name.given}} {{name.family}}</textarea>
               </div>
             </div>
           </div>
@@ -216,7 +223,7 @@
                   <div *ngFor="let name of dependent?.name">
                     <div class="col-6">
                       <label>Employee</label>
-                      <textarea type="text" class="form-control" placeholder="type your text" rows="1" disabled>{{name.given}} {{name.family}}</textarea>
+                      <textarea type="text" class="form-control"  rows="1" disabled>{{name.given}} {{name.family}}</textarea>
                     </div>
                   </div>
                 </div>
