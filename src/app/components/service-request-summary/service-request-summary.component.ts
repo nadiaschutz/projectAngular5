@@ -14,7 +14,6 @@ export class ServiceRequestSummaryComponent implements OnInit {
   serviceRequestObject = [];
   serviceRequestID = null;
   showSuccessMessage = false;
-  patient = [];
 
   constructor(private userService: UserService, private qrequestService: QrequestService,
   private questionnaireService: QuestionnaireService, private router: Router) { }
@@ -43,17 +42,19 @@ export class ServiceRequestSummaryComponent implements OnInit {
         data['item'].forEach(item => {
           if (item.text !== 'Document') {
             const temp = {};
-            temp['name'] = item.text;
-            if (item['answer'][0]['valueString']) {
-              temp['value'] = item['answer'][0]['valueString'];
-            } else {
-              if (item['answer'][0]['valueBoolean']) {
-                temp['value'] = 'yes';
+            if (item.answer) {
+              temp['name'] = item.text;
+              if (item['answer'][0]['valueString']) {
+                temp['value'] = item['answer'][0]['valueString'];
               } else {
-                temp['value'] = 'no';
+                if (item['answer'][0]['valueBoolean']) {
+                  temp['value'] = 'yes';
+                } else {
+                  temp['value'] = 'no';
+                }
               }
+              this.serviceRequestObject.push(temp);
             }
-            this.serviceRequestObject.push(temp);
           }
         });
         this.serviceRequestObject.push({name: 'status', value: data['status']});
@@ -62,19 +63,19 @@ export class ServiceRequestSummaryComponent implements OnInit {
 
   processPatientDetails(data) {
     if (data) {
-      this.patient.push({name: 'First Name', value: data['name'][0]['given'][0]});
-      this.patient.push({name: 'Last Name', value: data['name'][0]['family']});
-      this.patient.push({name: 'Date of Birth', value: data['birthDate']});
-      this.patient.push({name: 'Employee PRI', value: data['id']});
+      this.serviceRequestObject.push({name: 'First Name', value: data['name'][0]['given'][0]});
+      this.serviceRequestObject.push({name: 'Last Name', value: data['name'][0]['family']});
+      this.serviceRequestObject.push({name: 'Date of Birth', value: data['birthDate']});
+      this.serviceRequestObject.push({name: 'Employee PRI', value: data['id']});
       data.extension.forEach(element => {
         if (element.url === 'https://bcip.smilecdr.com/fhir/jobtile') {
-          this.patient.push({name: 'Job Title', value: element.valueString});
+          this.serviceRequestObject.push({name: 'Job Title', value: element.valueString});
         }
         if (element.url === 'https://bcip.smilecdr.com/fhir/workplace') {
-          this.patient.push({name: 'Employing Department Name', value: element.valueString});
+          this.serviceRequestObject.push({name: 'Employing Department Name', value: element.valueString});
         }
         if (element.url === 'https://bcip.smilecdr.com/fhir/branch') {
-          this.patient.push({name: 'Employing Department Branch', value: element.valueString});
+          this.serviceRequestObject.push({name: 'Employing Department Branch', value: element.valueString});
         }
       });
     }

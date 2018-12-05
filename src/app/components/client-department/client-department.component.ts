@@ -52,7 +52,6 @@ export class ClientDepartmentComponent implements OnInit {
 
   setClientDepartment() {
     const branchLocation = new FHIR.Location();
-    const chargeBackExtension = new FHIR.Extension();
 
     branchLocation.resourceType = 'Location';
     branchLocation.name = this.clientDepartmentFormGroup.get(
@@ -61,12 +60,21 @@ export class ClientDepartmentComponent implements OnInit {
 
     branchLocation.status = 'active';
 
+    const extension = [];
+
+    const chargeBackExtension = new FHIR.Extension();
+    chargeBackExtension.url = 'https:bcip.smilecdr.com/fhir/chargebackClient';
+    chargeBackExtension.valueBoolean = this.clientDepartmentFormGroup.get('chargebackClient').value;
+    extension.push(chargeBackExtension);
+
+    const regionExtension = new FHIR.Extension();
+    regionExtension.url = 'https:bcip.smilecdr.com/fhir/psohpRegion';
+    regionExtension.valueString = 'Organization/' + this.clientDepartmentFormGroup.get('psohpRegion').value;
+    extension.push(regionExtension);
+
+    branchLocation.extension = extension;
+
     const organizationReference = new FHIR.Reference;
-    // organizationReference.reference =
-    //   'Organization/' +
-    //   this.regionalOfficesWithId[
-    //     this.clientDepartmentFormGroup.get('managingOrganization').value
-    //   ];
     organizationReference.reference = 'Organization/' + this.clientDepartmentFormGroup.get('departmentName').value;
     branchLocation.managingOrganization = organizationReference;
 
@@ -80,9 +88,6 @@ export class ClientDepartmentComponent implements OnInit {
     type.text = 'Client Department Branch';
     type.coding = [typeCoding];
     branchLocation.type = type;
-
-    const regionType = new FHIR.CodeableConcept();
-    regionType.text = 'Region - ' + this.clientDepartmentFormGroup.get('psohpRegion').value;
 
     const address = new FHIR.Address();
     address.line = [this.clientDepartmentFormGroup.get('addressStreet').value];

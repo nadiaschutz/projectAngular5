@@ -611,6 +611,7 @@ export class Location extends Resource implements Serializable<Location> {
     managingOrganization: Reference;
     partOf: Reference;
     endpoint: Reference[];
+    extension: Extension[];
 
     deserialize(jsonObject: any): Location {
         const that = this;
