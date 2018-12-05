@@ -9,6 +9,8 @@ $light-grey: rgba(0, 0, 0, 0.18);
 $light-grey-2: #f8f8f8;
 $white: #ffffff;
 $skyBlue: #7fd6ed;
+$red: #CC3D4F;
+
 @mixin buttons-global{
   border-radius: 2px;
   background-color: $white;
@@ -46,6 +48,15 @@ h6{
     font-size: 12px;
 }
 
+p{
+    font-size: 11px;
+}
+
+.error-message{
+    p{
+        color: $red;
+    }
+}
 
 
 /* global responsive styling */
@@ -153,6 +164,10 @@ select{
     font-size: 13px;
     border-radius: 2px;
     background-color: $white;
+}
+
+.form-check {
+    padding-top: 35px;
 }
 
 .was-validated .form-control:valid,

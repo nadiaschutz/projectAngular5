@@ -1,10 +1,12 @@
-<div class="main-header">
-  <h5>Add Client Department</h5>
-</div>
-
 <div class="container">
 
-  <form [formGroup]="clientDepartmentFormGroup" novalidate class="center-align" *ngIf="!addClientDepartment">
+ 
+    <div class="main-header">
+      <h5>Client Department</h5>
+      <h6>Add Client department</h6>
+    </div>
+
+  <form [formGroup]="clientDepartmentFormGroup" novalidate class="center-align" >
 
     <section class="form-section">
       <div class="row">
@@ -15,7 +17,7 @@
           <div *ngIf="clientDepartmentFormGroup.controls['departmentBranch'].invalid
                   && (clientDepartmentFormGroup.controls['departmentBranch'].touched || clientDepartmentFormGroup.controls['departmentBranch'].dirty)">
             <div class="error-message">
-              Cannot be blank
+                <p> Cannot be blank</p>
             </div>
           </div>
         </div>
@@ -48,7 +50,7 @@
           <div *ngIf="clientDepartmentFormGroup.controls['departmentName'].invalid
                   && (clientDepartmentFormGroup.controls['departmentName'].touched || clientDepartmentFormGroup.controls['departmentName'].dirty)">
             <div class="error-message">
-              Cannot be blank
+                <p>Cannot be blank</p>
             </div>
           </div>
         </div>
@@ -87,8 +89,8 @@
           <div *ngIf="clientDepartmentFormGroup.controls['contactName'].invalid
                 && (clientDepartmentFormGroup.controls['contactName'].touched || clientDepartmentFormGroup.controls['contactName'].dirty)">
             <div class="error-message">
-              Cannot be blank
-            </div>c
+              <p>Cannot be blank</p>
+            </div>
           </div>
         </div> -->
         
@@ -133,9 +135,9 @@
             formControlName="addressCity" />
           <div *ngIf="clientDepartmentFormGroup.controls['addressCity'].invalid
         && (clientDepartmentFormGroup.controls['addressCity'].touched || clientDepartmentFormGroup.controls['addressCity'].dirty)">
-            <div class="error-message">
-              Cannot be blank
-            </div>
+        <div class="error-message">
+            <p>Cannot be blank</p>
+          </div>
           </div>
         </div>
         <div class="col">
@@ -158,8 +160,8 @@
             formControlName="addressPostalCode" />
           <div *ngIf="clientDepartmentFormGroup.controls['addressPostalCode'].invalid
           && (clientDepartmentFormGroup.controls['addressPostalCode'].touched || clientDepartmentFormGroup.controls['addressPostalCode'].dirty)">
-            <div class="error-message">
-              Cannot be blank
+          <div class="error-message">
+              <p>Cannot be blank</p>
             </div>
           </div>
         </div>
@@ -175,6 +177,8 @@
     <!-- <button class="btn special-button" style="margin-top: 20px" [disabled]="!clientDepartmentFormGroup.valid" (click)="setClientDepartment()">Add</button> -->
     <button class="btn special-button" style="margin-top: 20px" (click)="setClientDepartment()">Add</button>
 
+    <button class="btn special-button"  [disabled]="!clientDepartmentFormGroup.valid" (click)="setClientDepartment()">Add</button>
+  </div>
   </form>
 
   <div>
