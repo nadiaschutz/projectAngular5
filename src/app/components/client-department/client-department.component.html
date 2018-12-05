@@ -6,7 +6,7 @@
       <h6>Add Client department</h6>
     </div>
 
-  <form [formGroup]="clientDepartmentFormGroup" novalidate class="center-align" >
+  <form [formGroup]="clientDepartmentFormGroup" novalidate class="center-align" *ngIf="!addClientDepartment">
 
     <section class="form-section">
       <div class="row">
@@ -178,7 +178,6 @@
     <button class="btn special-button" style="margin-top: 20px" (click)="setClientDepartment()">Add</button>
 
     <button class="btn special-button"  [disabled]="!clientDepartmentFormGroup.valid" (click)="setClientDepartment()">Add</button>
-  </div>
   </form>
 
   <div>
