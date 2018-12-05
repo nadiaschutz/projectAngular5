@@ -82,7 +82,7 @@
         </tr>
       </thead>
       <tbody class="body-table">
-        <tr *ngFor="let q of qrequest ">
+        <tr *ngFor="let q of qrequest">
           <td>{{q.id}}</td>
           <td *ngFor="let name of q.name" (click)="routeToSummary(q.id)" class="cursor">{{name.given}}</td>
           <td *ngFor="let name of q.name" (click)="routeToSummary(q.id)" class="cursor">{{name.family}}</td>

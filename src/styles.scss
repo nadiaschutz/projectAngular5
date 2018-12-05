@@ -9,6 +9,7 @@ $light-grey: rgba(0, 0, 0, 0.18);
 $light-grey-2: #f8f8f8;
 $white: #ffffff;
 $skyBlue: #7fd6ed;
+$dark-blue: #334f75;
 $red: #CC3D4F;
 
 @mixin buttons-global{
@@ -144,6 +145,13 @@ p{
 
 
 /* form */
+
+.cursor {
+    cursor: pointer;
+}
+.cursor:hover{
+    color: $skyBlue;
+}
 
 textarea {
     resize: none;
