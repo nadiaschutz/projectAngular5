@@ -18,6 +18,9 @@ export class EmployeeSummaryComponent implements OnInit {
   selected;
   employeetype;
   dependentArray = [];
+
+  jobTitle;
+
   constructor(
 
     private userService: UserService,
@@ -49,11 +52,38 @@ export class EmployeeSummaryComponent implements OnInit {
   populatePatientArray(data) {
     this.linkID = '';
     this.selected = data;
-    data.extension.forEach(item => {
-      if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
-        this.linkID = item.valueString;
-      }
-    });
+    console.log(this.selected);
+
+    if (this.selected.extension) {
+      this.selected.extension.forEach(item => {
+        if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+          this.linkID = item.valueString;
+        }
+
+        if (item.url === 'https://bcip.smilecdr.com/fhir/jobtile') {
+          this.jobTitle = item.valueString;
+        }
+
+        if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+          this.linkID = item.valueString;
+        }
+
+        if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+          this.linkID = item.valueString;
+        }
+
+        if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+          this.linkID = item.valueString;
+        }
+
+        if (item.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+          this.linkID = item.valueString;
+        }
+      });
+
+    }
+
+
     this.patientService.getPatientByLinkID(this.linkID).subscribe(
       dataPatient => this.populateDependentArray(dataPatient),
       error => this.handleError(error)
@@ -108,18 +138,18 @@ export class EmployeeSummaryComponent implements OnInit {
 
   }
 
-  checkEmployeeType() {
-    for (const extension of this.selected.extension) {
-      if (extension.url === 'https://bcip.smilecdr.com/fhir/employeetype' && extension.valueString === 'Employee') {
-        this.employeetype = true;
-        console.log(this.employeetype);
-      } else {
-        this.employeetype = false;
-        console.log(this.employeetype);
+  // checkEmployeeType() {
+  //   for (const extension of this.selected.extension) {
+  //     if (extension.url === 'https://bcip.smilecdr.com/fhir/employeetype' && extension.valueString === 'Employee') {
+  //       this.employeetype = true;
+  //       console.log(this.employeetype);
+  //     } else {
+  //       this.employeetype = false;
+  //       console.log(this.employeetype);
 
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
 
 
 }
