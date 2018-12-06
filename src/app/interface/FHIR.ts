@@ -580,7 +580,7 @@ export class Organization extends Resource implements Serializable<Organization>
 
     identifier: Identifier[];
     active: boolean;
-    status: Code;
+    status: string;
     name: string;
     alias: string[];
     description: string;
@@ -620,6 +620,7 @@ export class Location extends Resource implements Serializable<Location> {
     managingOrganization: Reference;
     partOf: Reference;
     endpoint: Reference[];
+    extension: Extension[];
 
     deserialize(jsonObject: any): Location {
         const that = this;

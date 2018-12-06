@@ -136,7 +136,7 @@
   
   
   <div>
-      <table class="table">
+      <table class="table  table-hover">
           <thead class="header-table">
             <tr>
               <th scope="col">Service Request ID</th>
@@ -150,8 +150,8 @@
             </tr>
           </thead>
           <tbody *ngIf="str===null" class="body-table">
-            <tr *ngFor="let q of servRequests" (click)="navigateToSummary(q)" class="request-list">
-              <td>{{q.id}}</td>
+            <tr *ngFor="let q of servRequests"  class="request-list">
+              <td (click)="navigateToSummary(q)" class="cursor">{{q.id}}</td>
               <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
               <td>{{getServiceType(q)}}</td>
               <td>{{getAssessmentType(q)}}</td>

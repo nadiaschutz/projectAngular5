@@ -111,67 +111,40 @@ export class NewServiceRequestComponent implements OnInit {
 
 
 
-  /**
-   *
-   * @param $event
-   *s
-   * This function builds a new DocumentReference object,
-   * Inserts the appropriate data from the response into declared
-   * Objects, stringifies the object, and posts said string to the
-   * FHIR server.
-   */
 
-  addDocument($event) {
 
-    const documentReference = new FHIR.DocumentReference;
-    const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
-    const documentReferenceCoding = new FHIR.Coding;
-    const content = new FHIR.Content;
-    const contentAttachment = new FHIR.Attachment;
-    const contentCode = new FHIR.Coding;
-    let file;
-    let trimmedFile = '';
-    let size: number;
-    let type;
-    const date = new Date().toJSON();
-    console.log(date);
-    const fileList = $event.target.files;
-    const reader = new FileReader();
-    if (fileList[0]) {
-      size = fileList[0].size;
-      type = fileList[0].type;
-      reader.readAsDataURL(fileList[0]);
-    }
-    const that = this;
-    reader.onloadend = function() {
+  ngOnInit() {
 
-      file = reader.result;
-      trimmedFile = file.split(',').pop();
+    // getting formId to display form fields
+    this.questionnaireService
+      .getForm(this.formId)
+      .subscribe(
+        data => this.getFormData(data),
+        error => this.getFormDataError(error)
+      );
 
-      documentReference.resourceType = 'DocumentReference';
 
-      contentAttachment.size = size;
-      contentAttachment.contentType = type;
-      contentAttachment.data = trimmedFile;
-      contentAttachment.creation = date;
-      contentAttachment.title = fileList[0].name;
+      if (this.formId !== '1953') {
+        // getting clientId
+        this.clientId = this.userService.returnSelectedID();
+        console.log(this.clientId);
+        // getting data for client to add to itmesToSend
+        if (this.clientId) {
+          this.patientService
+            .getPatientDataByID(this.clientId)
+            .subscribe(
+              data => this.getClientData(data),
+              error => this.getClientError(error)
+            );
+        } else if (!this.clientId) {
+          this.router.navigateByUrl('/dashboard');
+        }
 
-      contentCode.code = 'urn:ihe:pcc:xphr:2007';
-      contentCode.display = 'Personal Health Records';
+      }
 
-      content.format = contentCode;
-      content.attachment = contentAttachment;
+  }
+  /*********************************************/
 
-      documentReferenceCoding.code = '51851-4';
-      documentReferenceCoding.system = 'http://loinc.org';
-      documentReferenceCoding.display = 'Administrative note';
-
-      documentReferenceCodeableConcept.coding = [ documentReferenceCoding];
-      documentReferenceCodeableConcept.text = 'Administrative note';
-
-      documentReference.instant = date;
-      documentReference.type = documentReferenceCodeableConcept;
-      documentReference.content = [content];
 
 
       that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
@@ -187,33 +160,21 @@ export class NewServiceRequestComponent implements OnInit {
       );
       return reader.result;
 
-    };
-    reader.onerror = function (error) {
-      console.log('Error: ', error);
-    };
+/************************************************/
+/******************* onCancel() *****************/
+/************************************************/
 
+  // TO_DO: do post request to delete in-progress service requests
+  onCancel() {
+    if (this.formId === '1952') {
+      this.router.navigate(['/dashboard']);
+    }
+    if (this.formId === '1953') {
+      this.router.navigate(['/servreqmain']);
+    }
   }
 
-  // convertBase64ToFile (data) {
-  //   const obj = data;
-  //   this.fileLink = [];
-  //   const binaryString = data.content[0].attachment.data;
 
-  //   const binary = atob(binaryString.replace(/\s/g, ''));
-  //   const len = binary.length;
-  //   const buffer = new ArrayBuffer(len);
-  //   const view = new Uint8Array(buffer);
-  //   for (let i = 0; i < len; i++) {
-  //       view[i] = binary.charCodeAt(i);
-  //   }
-
-  //   const blob = new Blob( [view], { type: data.content[0].attachment.contentType });
-  //   const fileOfBlob = new File ([blob], data.content[0].attachment.title );
-  //   const url = URL.createObjectURL(blob);
-  //   console.log('url: ', url);
-  //   this.fileLink.push(url);
-
-  // }
 
 
   onCancel() {
@@ -315,6 +276,15 @@ export class NewServiceRequestComponent implements OnInit {
 
     // this.questionnaireService.shareServiceResponseData(this.responseId);
   }
+/*********************************************/
+
+
+
+
+
+/************************************************/
+/***************** savingData() *****************/
+/************************************************/
 
   onEdit() {
     this.disableInputsForReview = false;
@@ -374,7 +344,7 @@ export class NewServiceRequestComponent implements OnInit {
     this.clientFamilyName = data.name[0].family;
   }
 
-  handleErrorClientError(error) {
+  getClientError(error) {
     console.log(error);
   }
 
@@ -450,6 +420,7 @@ export class NewServiceRequestComponent implements OnInit {
   handleError(error) {
     console.log(error);
   }
+/************************************************/
 
   buildQuestionnaireItem() {}
 
@@ -464,21 +435,27 @@ export class NewServiceRequestComponent implements OnInit {
     // this.questionnaireService.shareServiceFormId(this.formId);
   }
 
-  handleErrorOnSave(error) {
+  onSaveError(error) {
     console.log(error);
   }
+/************************************************/
+
+
+
+
+
+/************************************************/
+/*************** getResponseId ******************/
+/************************************************/
 
   getResponseId() {
     this.questionnaireService.newResponseIdSubject.subscribe(
-      data => this.handleSuccessResponseId(data),
-      error => this.handleErrorResponseId(error)
+      data => this.responseIdSuccess(data),
+      error => this.responseIdError(error)
     );
   }
-
-  handleSuccessResponseId(data) {
-    console.log(data);
+  responseIdSuccess(data) {
     this.responseId = data;
-    console.log(this.responseId);
     // get data from the server
 
     if (this.responseId !== null) {
@@ -486,104 +463,297 @@ export class NewServiceRequestComponent implements OnInit {
     }
   }
 
-  handleErrorResponseId(error) {
+  responseIdError(error) {
     console.log(error);
   }
 
+
+
+
+
+/************************************************/
+/*************** getResponse() ******************/
+/************************************************/
   getResponse() {
     this.questionnaireService
       .getResponse(this.responseId)
       .subscribe(
-        data => this.handleSuccessResponse(data),
-        error => this.handleErrorResponse(error)
+        data => this.ResponseSuccess(data),
+        error => this.responseError(error)
       );
   }
 
-  handleSuccessResponse(data) {
+  ResponseSuccess(data) {
     console.log(data);
-    this.itemToSend = data;
-    console.log(this.itemToSend);
-    console.log(this.items);
-
-    this.items = this.itemToSend.item.map(el => {
-      if (el.text === 'Document') {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueReference.reference
-        };
-      }
-      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved' ) {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueBoolean
-        };
-      } else {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueString
-        };
-      }
-    });
-
-    console.log(this.items);
   }
 
-  handleErrorResponse(error) {
+  responseError(error) {
     console.log(error);
   }
 
-  // get date for authored: '2018-11-08T15:41:00.581+00:00'
 
-  getDate() {
-    this.dd = this.addZero(this.today.getDate());
-    this.mm = this.addZero(this.today.getMonth() + 1);
-    this.yyyy = this.today.getFullYear();
-    this.time = this.today.getTime();
-    this.hr = this.addZero(this.today.getHours());
-    this.min = this.addZero(this.today.getMinutes());
-    this.sec = this.addZero(this.today.getSeconds());
-    this.msec = this.today.getMilliseconds();
 
-    this.myDate();
 
-    // to-do: fix mlseconds and timeZone
 
-    // console.log(msec);
-  }
-  myDate() {
-    return (this.myDay =
-      this.yyyy +
-      '-' +
-      this.mm +
-      '-' +
-      this.dd +
-      'T' +
-      this.hr +
-      ':' +
-      this.min +
-      ':' +
-      this.sec +
-      '.581+00:00');
-  }
 
-  addZero(i) {
-    if (i < 10) {
-      i = '0' + i;
-    }
-    return i;
-  }
+
 
   checkDependentItem(itemsServer) {
     itemsServer.forEach(element => {
       if (element.text === 'Dependent Involved') {
         this.dependents = true;
-        console.log(this.dependents);
+        console.log('dependents in the form:', this.dependents);
       }
     });
   }
+
+
+
+
+
+
+
+/************************************************/
+/************* createItemToSend() ***************/
+/************************************************/
+  createItemToSend() {
+
+    if (this.formId === '1953') {
+      this.itemToSend = {
+        resourceType: 'QuestionnaireResponse',
+        questionnaire: {
+          reference: 'Questionnaire/' + this.formId
+        },
+        status: 'in-progress',
+        authored: this.myDay,
+        item: []
+      };
+    } else {
+      this.itemToSend = {
+        resourceType: 'QuestionnaireResponse',
+        questionnaire: {
+          reference: 'Questionnaire/' + this.formId
+        },
+        status: 'in-progress',
+        authored: this.myDay,
+        subject: {
+          reference: 'Patient/' + this.clientId,
+          display: this.clientGivenName + ' ' + this.clientFamilyName
+        },
+        item: []
+      };
+
+    }
+  }
+
+
+/************************************************/
+/************* mapItemToItems() *****************/
+/************************************************/
+
+
+  mapItemToItems() {
+    this.itemToSend.item = this.items.map(el => {
+
+      if (el.text === 'Document') {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueReference: {
+                reference: el.answer
+              }
+            }
+          ]
+        };
+      }
+      if (
+        el.text === 'Dependent Involved' ||
+        el.text === 'Health Exam Done Externally'
+      ) {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueBoolean: el.answer
+            }
+          ]
+        };
+      } else {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueString: el.answer
+            }
+          ]
+        };
+      }
+    });
+    console.log(this.itemToSend);
+  }
+
+
+
+
+
+
+
+
+
+
+/************************************************/
+/**************** addDocument() *****************/
+/************************************************/
+
+  /**
+   *
+   * @param $event
+   *s
+   * This function builds a new DocumentReference object,
+   * Inserts the appropriate data from the response into declared
+   * Objects, stringifies the object, and posts said string to the
+   * FHIR server.
+   */
+
+  addDocument($event) {
+    const documentReference = new FHIR.DocumentReference;
+    const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
+    const documentReferenceCoding = new FHIR.Coding;
+    const content = new FHIR.Content;
+    const contentAttachment = new FHIR.Attachment;
+    const contentCode = new FHIR.Coding;
+    let file;
+    let trimmedFile = '';
+    let size: number;
+    let type;
+    const date = new Date().toJSON();
+    console.log(date);
+    const fileList = $event.target.files;
+    const reader = new FileReader();
+    if (fileList[0]) {
+      size = fileList[0].size;
+      type = fileList[0].type;
+      reader.readAsDataURL(fileList[0]);
+    }
+    const that = this;
+    reader.onloadend = function() {
+
+      file = reader.result;
+      trimmedFile = file.split(',').pop();
+
+      documentReference.resourceType = 'DocumentReference';
+
+      contentAttachment.size = size;
+      contentAttachment.contentType = type;
+      contentAttachment.data = trimmedFile;
+      contentAttachment.creation = date;
+      contentAttachment.title = fileList[0].name;
+
+      contentCode.code = 'urn:ihe:pcc:xphr:2007';
+      contentCode.display = 'Personal Health Records';
+
+      content.format = contentCode;
+      content.attachment = contentAttachment;
+
+      documentReferenceCoding.code = '51851-4';
+      documentReferenceCoding.system = 'http://loinc.org';
+      documentReferenceCoding.display = 'Administrative note';
+
+      documentReferenceCodeableConcept.coding = [ documentReferenceCoding];
+      documentReferenceCodeableConcept.text = 'Administrative note';
+
+      documentReference.instant = date;
+      documentReference.type = documentReferenceCodeableConcept;
+      documentReference.content = [content];
+
+      that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
+        data =>   {
+          that.retrieveDocuments(data),
+          that.createItemReferenceObject(data);
+        }
+      );
+      // console.log (contentAttachment);
+      return reader.result;
+    };
+    reader.onerror = function (error) {
+      console.log('Error: ', error);
+    };
+  }
+
+
+
+  createItemReferenceObject(data) {
+    const obj: string = data.id;
+
+    this.itemReference = {
+      linkId: '30',
+      // text: obj.content[0].attachment.title,
+      text: 'Document',
+      answer:  'DocumentReference/' + obj
+    };
+  }
+
+  retrieveDocuments(data) {
+    this.documents = data;
+  }
+
+
+
+
+
+
+
+
+
+
+/************************************************/
+/***************** getDate() ********************/
+/************************************************/
+
+// get date for authored: '2018-11-08T15:41:00.581+00:00'
+
+getDate() {
+  this.dd = this.addZero(this.today.getDate());
+  this.mm = this.addZero(this.today.getMonth() + 1);
+  this.yyyy = this.today.getFullYear();
+  this.time = this.today.getTime();
+  this.hr = this.addZero(this.today.getHours());
+  this.min = this.addZero(this.today.getMinutes());
+  this.sec = this.addZero(this.today.getSeconds());
+  this.msec = this.today.getMilliseconds();
+
+  this.myDate();
+
+  // to-do: fix mlseconds and timeZone
+
+  // console.log(msec);
+}
+myDate() {
+  return (this.myDay =
+    this.yyyy +
+    '-' +
+    this.mm +
+    '-' +
+    this.dd +
+    'T' +
+    this.hr +
+    ':' +
+    this.min +
+    ':' +
+    this.sec +
+    '.581+00:00');
+}
+
+addZero(i) {
+  if (i < 10) {
+    i = '0' + i;
+  }
+  return i;
+}
 
   //  get status for the service request
 

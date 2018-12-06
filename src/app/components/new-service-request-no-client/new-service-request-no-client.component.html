@@ -109,7 +109,11 @@
   
         <div class="col-12-custom">
             <h6>documents</h6>
-            <input type="file"  id="uploader" class="btn btn-secondary" (change)='addDocument($event)' placeholder="Add a document">
+            <div class="button-section">
+                <span class="btn regular-button btn-file" (change)='addDocument($event)'>
+                  Add Documents <input type="file">
+                </span>
+              </div>
               <div>
                   <table class="table">
                       <thead class="header-table">

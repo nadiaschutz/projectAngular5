@@ -63,9 +63,9 @@ export class DistrictOfficeComponent implements OnInit {
     districtOffice.managingOrganization = organizationReference;
 
     const codingForType = new FHIR.Coding;
-    codingForType.system = 'https://bcip.smilecdr.com/fhir/clientdepartment';
-    codingForType.code = 'CLIENTDEPT';
-    codingForType.display = 'Client Department';
+    codingForType.system = 'http://hl7.org/fhir/organization-type';
+    codingForType.code = 'team';
+    codingForType.display = 'Regional Office';
 
     const type = new FHIR.CodeableConcept;
     type.text = 'District Office';

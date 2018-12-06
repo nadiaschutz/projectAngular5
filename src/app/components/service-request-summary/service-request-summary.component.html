@@ -11,18 +11,14 @@
       Back to Service Requests page
     </button>
   </div>
-  <div *ngFor="let patientDetails of patient">
-      <div style="margin-top: 10px">
-        <label class="label-name">{{patientDetails.name | titlecase}}</label>
-        <input disabled=true class="form-control field-box-name" placeholder="{{patientDetails.value | titlecase}}"/>
-      </div>
-    </div>
-  <div *ngFor="let item of serviceRequestObject">
-    <div style="margin-top: 10px">
+  
+  <div *ngFor="let item of serviceRequestObject; let x = index">
+    <div [ngClass]="{'left-style': x%2 != 0, 'right-style': x%2 === 0 }">
       <label class="label-name">{{item.name | titlecase}}</label>
       <input disabled=true class="form-control field-box-name" placeholder="{{item.value | titlecase}}"/>
     </div>
   </div>
+  
 </div>
 <div *ngIf="showSuccessMessage && serviceRequestID">
   <div class="alert alert-success">

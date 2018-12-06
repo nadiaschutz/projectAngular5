@@ -128,7 +128,7 @@ export class UserService {
     {headers: this.postFHIRHeaders()});
   }
 
-  saveClientDepartment(locationObj) {
+  saveClientDepartmentBranch(locationObj) {
     return this.httpClient.post(environment.queryURI + '/Location/', locationObj,
     {headers: this.postFHIRHeaders()});
   }
@@ -161,5 +161,12 @@ export class UserService {
   }
   getSelectedServiceRequestID(): string {
     return this.selectedServiceRequestID;
+  }
+  saveClientDepartment(data) {
+    return this.httpClient.post(environment.queryURI + '/Organization/', data,
+    {headers: this.postFHIRHeaders()});
+  }
+  fetchAllClientDepartments() {
+    return this.httpClient.get(environment.queryURI + '/Organization?type=CLIENTDEPT', {headers: this.getHeaders()});
   }
 }
