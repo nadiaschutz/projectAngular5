@@ -367,7 +367,7 @@ export class ServReqMainComponent implements OnInit {
     let result = '-';
     // console.log(serviceRequestObj.questionnaire.reference);
     if (serviceRequestObj.item) {
-      if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+      if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
         serviceRequestObj.item.forEach(item => {
           if (item.text === 'PSOHP Service') {
             if (item['answer']) {
@@ -379,7 +379,7 @@ export class ServReqMainComponent implements OnInit {
         });
       }
 
-      if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
+      if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
         serviceRequestObj.item.forEach(item => {
           if (item.text === 'PSOHP Service') {
             if (item['answer']) {
@@ -398,27 +398,27 @@ export class ServReqMainComponent implements OnInit {
 
   getAssessmentType(serviceRequestObj): string {
 
-    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
+    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
       return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
     }
-    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
       return '-';
       }
     }
   getRegion(serviceRequestObj): string {
-    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
+    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
       return this.getLinkValueFromObject(serviceRequestObj, 'Regional Office for Processing', 1);
     }
-    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
       return '-';
       }
 
   }
   getCreatedBy(serviceRequestObj) {
-    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
+    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1952') {
       return this.getLinkValueFromObject(serviceRequestObj, 'Created By', 1);
     }
-    if (serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
       return '-';
       }
 
@@ -458,12 +458,12 @@ export class ServReqMainComponent implements OnInit {
 
   getClientName(servReqobj) {
     let result = '-';
-    if (servReqobj.questionnaire.reference === 'Questionnaire/1952') {
+    if (servReqobj.questionnaire && servReqobj.questionnaire.reference === 'Questionnaire/1952') {
       if (servReqobj.subject && servReqobj.subject.display) {
         result = servReqobj.subject.display;
       }
     }
-    if (servReqobj.questionnaire.reference === 'Questionnaire/1953') {
+    if (servReqobj.questionnaire && servReqobj.questionnaire.reference === 'Questionnaire/1953') {
       // console.log(servReqobj.item);
       // servReqobj.item.forEach(element => {
       //   if (element.text === 'Name of the Requester') {
