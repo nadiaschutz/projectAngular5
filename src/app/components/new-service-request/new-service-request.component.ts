@@ -16,6 +16,7 @@ import { PatientService } from 'src/app/service/patient.service';
 import { formatDate } from '@angular/common';
 
 import * as FHIR from '../../interface/FHIR';
+import { link } from 'fs';
 
 @Component({
   selector: 'app-new-service-request',
@@ -410,22 +411,19 @@ export class NewServiceRequestComponent implements OnInit {
 
   processQuestionnaire(data) {
     this.qrequest = data.item;
+    const questions = [];
     const enableWhenList = [];
-    // maping part of the data from the server to item
-    // const temp = ['1'];
-    // const dep = ['1.1'];
-    // dep.push('1.2');
-    // const arr = [temp, dep];
     for (const questionnaire of this.qrequest) {
       if (!questionnaire['enableWhen']) {
-        const temp = {};
-        temp['linkId'] = questionnaire['linkId'];
+        const temp: any = {};
+        const linkId = questionnaire['linkId'];
+        temp['linkId'] = linkId;
         temp['text'] = questionnaire['text'];
         temp['type'] = questionnaire['type'];
         temp['required'] = questionnaire['required'];
         temp['option'] = questionnaire['option'];
         temp['answer'] = '';
-        this.questionsList.push([temp]);
+        questions[linkId] = [temp];
       } else {
         const temp = {};
         temp['linkId'] = questionnaire['linkId'];
@@ -436,42 +434,25 @@ export class NewServiceRequestComponent implements OnInit {
         enableWhenList.push(temp);
       }
     }
-    // for (const enableWhen of enableWhenList) {
-    //   const linkId = enableWhen['linkId'];
-    //   const parentQuestionLinkId = linkId.substring(0, linkId.indexOf('.'));
-    //   const subLinkId = linkId.substring(linkId.indexOf('.') + 1, linkId.length);
-    //   enableWhen['enabled'] = false;
-    //   // this.questionsList[primaryLinkId][subLinkId] = enableWhen;
-    // }
-    this.fetchListOfDependentQuestions(enableWhenList);
-    console.log(this.questionsList);
-  }
-
-  fetchListOfDependentQuestions(enableWhenList) {
-    const result = {id: '', value: []};
+    console.log(questions);
+    console.log(enableWhenList);
     for (const enableQuestion of enableWhenList) {
-      const linkId = enableQuestion['linkId'];
-      const parentQuestionLinkId = linkId.substring(0, linkId.indexOf('.'));
-      const subLinkId = linkId.substring(linkId.indexOf('.') + 1, linkId.length);
-      if (result[parentQuestionLinkId]) {
-        console.log('Hey');
-        console.log(enableQuestion);
-        result[parentQuestionLinkId].push(enableQuestion);
-      } else {
-        console.log('Hello World');
-        console.log(enableQuestion);
-        result[parentQuestionLinkId] = [enableQuestion];
+      const parentQuestionLinkId = enableQuestion.enableWhen[0]['question'];
+      questions[parentQuestionLinkId].push(enableQuestion);
+      console.log(questions[parentQuestionLinkId]);
+    }
+    console.log(questions);
+    if (Object.keys(questions).length > 0) {
+      for (const key of Object.keys(questions)) {
+        this.questionsList.push(questions[key]);
       }
     }
-    console.log(result);
+    console.log(this.questionsList);
   }
-
 
   handleError(error) {
     console.log(error);
   }
-
-  buildQuestionnaireItem() {}
 
 
   // getting response from thr server on "next"
