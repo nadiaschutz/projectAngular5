@@ -4,6 +4,7 @@ import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 
 import { Router } from '@angular/router';
+import { QrequestService } from 'src/app/service/qrequest.service';
 
 @Component({
   selector: 'app-employee-summary',
@@ -18,6 +19,7 @@ export class EmployeeSummaryComponent implements OnInit {
   selected;
   employeetype;
   dependentArray = [];
+  servceRequestDatas = [];
 
   jobTitle;
 
@@ -25,7 +27,8 @@ export class EmployeeSummaryComponent implements OnInit {
 
     private userService: UserService,
     private patientService: PatientService,
-    private router: Router
+    private router: Router,
+    private qrequestService: QrequestService,
 
   ) { }
 
@@ -51,8 +54,11 @@ export class EmployeeSummaryComponent implements OnInit {
 
   populatePatientArray(data) {
     this.linkID = '';
+    
     this.selected = data;
     console.log(this.selected);
+
+    
 
     if (this.selected.extension) {
       this.selected.extension.forEach(item => {
@@ -87,6 +93,11 @@ export class EmployeeSummaryComponent implements OnInit {
     this.patientService.getPatientByLinkID(this.linkID).subscribe(
       dataPatient => this.populateDependentArray(dataPatient),
       error => this.handleError(error)
+    );
+
+    this.qrequestService.getServReqForClient(this.id).subscribe(
+      dataSerReq => this.getServReqData(dataSerReq),
+      error => this.getServReqDataError(error)
     );
 
   }
@@ -151,5 +162,24 @@ export class EmployeeSummaryComponent implements OnInit {
   //   }
   // }
 
+
+
+
+  getServReqData(data) {
+    console.log(data.entry);
+    if (data.entry) {
+      this.servceRequestDatas = data.entry;
+    }
+  }
+
+  getServReqDataError(error) {
+    console.log(error);
+  }
+
+
+  navigateToSummary(servReqObj) {
+    this.userService.saveSelectedServiceRequestID(servReqObj['resource']['id']);
+    this.router.navigateByUrl('service-request-summary');
+  }
 
 }
