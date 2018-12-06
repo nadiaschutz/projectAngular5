@@ -325,6 +325,7 @@ export class Answer extends BackboneElement {
     valueAttachment: Attachment;
     valueCoding: Coding;
     valueQuantity: Quantity;
+    valueBoolean: boolean;
     valueReference: Reference;
 }
 
@@ -422,6 +423,13 @@ export class Requester extends BackboneElement {
     onBehalfOf: Reference;
 }
 
+export class QuestionnaireResponseItem extends BackboneElement {
+    linkId: string;
+    definition: string;
+    text: string;
+    answer: Answer[];
+}
+
 export class Item extends BackboneElement {
     linkId: string;
     definition: string;
@@ -455,12 +463,13 @@ export class QuestionnaireResponse extends Resource implements Serializable<Ques
     basedOn: Reference[];
     parent: Reference[];
     questionnaire: Reference;
-    status: Code;
+    status: string;
     context: Reference;
     authored: Date;
     author: Reference;
     source: Reference;
-    item: Item[];
+    item: QuestionnaireResponseItem[];
+    subject: Reference;
 
     deserialize(jsonObject: any): QuestionnaireResponse {
         const that = this;
