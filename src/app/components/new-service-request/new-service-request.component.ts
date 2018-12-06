@@ -91,7 +91,7 @@ export class NewServiceRequestComponent implements OnInit {
     this.questionnaireService
       .getForm(this.formId)
       .subscribe(
-        data => this.handleSuccess(data),
+        data => this.processQuestionnaire(data),
         error => this.handleError(error)
       );
     this.clientId = this.userService.returnSelectedID();
@@ -408,7 +408,7 @@ export class NewServiceRequestComponent implements OnInit {
   //   }
   // }
 
-  handleSuccess(data) {
+  processQuestionnaire(data) {
     this.qrequest = data.item;
     const enableWhenList = [];
     // maping part of the data from the server to item
@@ -436,14 +436,34 @@ export class NewServiceRequestComponent implements OnInit {
         enableWhenList.push(temp);
       }
     }
-    for (const enableWhen of enableWhenList) {
-      const linkId = enableWhen['linkId'];
-      const primaryLinkId = (linkId.substring(0, linkId.indexOf('.'))) - 1;
-      const subLinkId = linkId.substring(linkId.indexOf('.') + 1, linkId.length);
-      enableWhen['enabled'] = false;
-      this.questionsList[primaryLinkId][subLinkId] = enableWhen;
-    }
+    // for (const enableWhen of enableWhenList) {
+    //   const linkId = enableWhen['linkId'];
+    //   const parentQuestionLinkId = linkId.substring(0, linkId.indexOf('.'));
+    //   const subLinkId = linkId.substring(linkId.indexOf('.') + 1, linkId.length);
+    //   enableWhen['enabled'] = false;
+    //   // this.questionsList[primaryLinkId][subLinkId] = enableWhen;
+    // }
+    this.fetchListOfDependentQuestions(enableWhenList);
     console.log(this.questionsList);
+  }
+
+  fetchListOfDependentQuestions(enableWhenList) {
+    const result = {id: '', value: []};
+    for (const enableQuestion of enableWhenList) {
+      const linkId = enableQuestion['linkId'];
+      const parentQuestionLinkId = linkId.substring(0, linkId.indexOf('.'));
+      const subLinkId = linkId.substring(linkId.indexOf('.') + 1, linkId.length);
+      if (result[parentQuestionLinkId]) {
+        console.log('Hey');
+        console.log(enableQuestion);
+        result[parentQuestionLinkId].push(enableQuestion);
+      } else {
+        console.log('Hello');
+        console.log(enableQuestion);
+        result[parentQuestionLinkId] = [enableQuestion];
+      }
+    }
+    console.log(result);
   }
 
 
