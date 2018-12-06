@@ -13,6 +13,7 @@ import { Element } from '../models/element.model';
 import { forEach } from '@angular/router/src/utils/collection';
 import { ItemToSend } from '../models/itemToSend.model';
 import { PatientService } from 'src/app/service/patient.service';
+import { formatDate } from '@angular/common';
 
 import * as FHIR from '../../interface/FHIR';
 
@@ -60,15 +61,7 @@ export class NewServiceRequestComponent implements OnInit {
     itemToSend: any;
   };
 
-  itemToSend: ItemToSend = {
-    resourceType: '',
-    extension: null,
-    questionnaire: null,
-    status: null,
-    subject: null,
-    authored: null,
-    item: []
-  };
+  itemToSend: FHIR.QuestionnaireResponse;
 
   items: Item[];
 
@@ -280,108 +273,45 @@ export class NewServiceRequestComponent implements OnInit {
   }
 
   savingData() {
-    this.getDate();
+    const questionnaireResponse = new FHIR.QuestionnaireResponse;
 
-    // To-Do: check if has dependents => add dependents
+    questionnaireResponse.resourceType = 'QuestionnaireResponse';
 
-    // ToDo: add patient/#, subject, exstention
+    const questionnaireReference = new FHIR.Reference;
+    questionnaireReference.reference = 'Questionnaire/' + this.formId;
 
-    if (this.dependents === true) {
-      this.items.forEach(element => {
-        console.log(element.text);
+    questionnaireResponse.status = 'in-progress';
 
-        if (element.text === 'Dependent Involved') {
-          if (this.dependentNumber === 0) {
-            return (element.answer = false);
-          } else {
-            return (element.answer = true);
-          }
+    // questionnaireResponse.authored = Date.now();
+
+    const subjectReference = new FHIR.Reference;
+    subjectReference.reference = 'Patient/' + this.clientId;
+    subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
+    questionnaireResponse.subject = subjectReference;
+
+    const items = [];
+
+    for (const questions of this.questionsList) {
+      for (const question of questions) {
+        const item = new FHIR.QuestionnaireResponseItem;
+        if (!question['enableWhen']) {
+          item.linkId = question['linkId'];
+          item.text = question['text'];
+          item.answer = question['answer'];
+          items.push(item);
+        } else if (question['enableWhen'] && question['enabled']) {
+          item.linkId = question['linkId'];
+          item.text = question['text'];
+          item.answer = question['answer'];
+          items.push(item);
         }
-      });
-    }
-
-    // pushing document into itmes arr
-    if (this.itemReference) {
-      this.items.push(this.itemReference);
-    }
-
-
-    this.itemToSend = {
-      resourceType: 'QuestionnaireResponse',
-      questionnaire: {
-        reference: 'Questionnaire/' + this.formId
-      },
-      status: 'in-progress',
-      authored: this.myDay,
-      subject: {
-        reference: 'Patient/' + this.clientId,
-        display: this.clientGivenName + ' ' + this.clientFamilyName
-      },
-      extension: [
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/givenName',
-          valueCode: this.clientGivenName
-        },
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/familyName',
-          valueCode: this.clientFamilyName
-        },
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/birthDate',
-          valueDateTime: this.clientBoD
-        }
-      ],
-      item: []
-    };
-
-
-    this.itemToSend.item = this.items.map(el => {
-
-      if (el.text === 'Document') {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueReference: {
-                reference: el.answer
-              }
-            }
-          ]
-        };
       }
-      if (
-        el.text === 'Dependent Involved' ||
-        el.text === 'Health Exam Done Externally'
-      ) {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueBoolean: el.answer
-            }
-          ]
-        };
-      } else {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueString: el.answer
-            }
-          ]
-        };
-      }
-
-
-    });
-
+    }
+    items.push(this.itemReference);
+    questionnaireResponse.item = items;
+    this.itemToSend = questionnaireResponse;
     console.log(this.itemToSend);
   }
-
-  addDependent() {}
 
   getClientData(data) {
     console.log(data);
@@ -439,7 +369,7 @@ export class NewServiceRequestComponent implements OnInit {
         temp['linkId'] = questionnaire['linkId'];
         temp['text'] = questionnaire['text'];
         temp['type'] = questionnaire['type'];
-        temp['enabled'] = questionnaire['required'];
+        temp['required'] = questionnaire['required'];
         temp['option'] = questionnaire['option'];
         temp['answer'] = '';
         this.questionsList.push([temp]);

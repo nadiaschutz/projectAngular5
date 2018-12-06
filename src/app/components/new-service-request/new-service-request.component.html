@@ -94,39 +94,6 @@
 
       </section>
 
-      <section *ngIf="dependents===true" class="form-section">
-
-      
-  
-        <div *ngIf="dependents===true" class="col-12-custom">
-            <div class='header'>
-              <h6>Dependents</h6>
-            </div>
-            <div class="form-group col-6-custom">
-                
-                
-                <div class="col-6-custom">
-                 <label>Dependents</label>
-                <textarea type="text" 
-                    [(ngModel)]="dependentNumber"
-                    name='dependentsNumber'
-                    class="form-control" 
-                    placeholder="0" 
-                    rows="1" disabled></textarea>
-                </div>
-  
-                <div class="col-6-custom">
-                    <button class="btn special-button move-dwn" (click)='addDependent()'>
-                      Add Dependent
-                    </button>
-                  </div>
-  
-            </div>
-            
-        </div>
-
-      </section>
-
       <section class="form-section">
           <div class="table-list">
 
