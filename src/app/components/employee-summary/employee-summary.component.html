@@ -4,7 +4,7 @@
 
 <div *ngIf="selected">
 
-  <div class="container" *ngFor="let name of selected.name">
+  <div *ngFor="let name of selected.name">
 
 
     <div class="main-header">
@@ -192,14 +192,17 @@
     </section>
 
 
+
+    <section class="form-section">
     <div *ngFor="let item of selected?.extension">
       <!-- dependents -->
       <!-- Display this list of related clients if the selected client in the summary is an Employee -->
       <div *ngIf="item.valueString == 'Employee'; else dependentRelatedList">
-        <section class="form-section" *ngIf="dependentArray.length > 0">
+        <div *ngIf="dependentArray.length > 0">
           <div class='header'>
             <h6>Dependents</h6>
           </div>
+          <div class="row">
           <div class="col-6">
           <div *ngFor="let dependent of dependentArray">
             <div *ngFor="let name of dependent?.name">
@@ -209,15 +212,15 @@
               </div>
             </div>
           </div>
+        </div>
 
-        </section>
-
-      </div>
-
+          
+        </div>
+      
       <!-- Only show this section if the selected client is a Dependent -->
       <ng-template #dependentRelatedList>
         <div *ngIf="item.valueString == 'Dependent'">
-          <section class="form-section" *ngIf="dependentArray.length > 0">
+          <div *ngIf="dependentArray.length > 0">
             <div class='header'>
               <h6>Related to</h6>
             </div>
@@ -234,15 +237,46 @@
               </div>
             </div>
 
-          </section>
+          </div>
 
         </div>
       </ng-template>
     </div>
+  </div>
+    </section>
 
+    <section class="form-section">
+          <div class='header'>
+            <h6>Service Requests</h6>
+          </div>
+          <div>
+              <table class="table  table-hover">
+                  <thead class="header-table">
+                    <tr>
+                      <th scope="col">Service Request ID</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">PSOHP Service</th>
+                      <th scope="col">Assesment Type</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody class="body-table">
+                    <tr *ngFor="let q of servceRequestDatas"  class="request-list">
+                      <td (click)="navigateToSummary(q)" class="cursor">{{q.resource.id}}</td>
+                      <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
+                      <td></td>
+                      <td></td>
+                      <td>{{q.resource.status}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+          </div>
+    </section>
+
+  </div>
 
     <!-- buttons -->
-    <div class="row" *ngFor="let item of selected?.extension">
+    <div  *ngFor="let item of selected?.extension">
       <button *ngIf="item.valueString == 'Employee'" class="btn regular-button" (click)="addDependent()">Add a
         Dependent</button>
       <button *ngIf="item.valueString == 'Employee' || item.valueString == 'Dependent'" class="btn regular-button"
@@ -250,6 +284,5 @@
       <button *ngIf="item.valueString == 'Employee' || item.valueString == 'Dependent'" class="btn regular-button float-right"
         (click)="backToDashboard()">Back to Dashboard</button>
     </div>
-  </div>
 </div>
 </div>
