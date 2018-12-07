@@ -264,8 +264,8 @@
                     <tr *ngFor="let q of servceRequestDatas"  class="request-list">
                       <td (click)="navigateToSummary(q)" class="cursor">{{q.resource.id}}</td>
                       <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
-                      <td></td>
-                      <td></td>
+                      <td>{{getServiceType(q)}}</td>
+                      <td>{{getAssessmentType(q)}}</td>
                       <td>{{q.resource.status}}</td>
                     </tr>
                   </tbody>

@@ -229,10 +229,12 @@ export class NewServiceRequestComponent implements OnInit {
 
     const questionnaireReference = new FHIR.Reference;
     questionnaireReference.reference = 'Questionnaire/' + this.formId;
+    questionnaireResponse.questionnaire = questionnaireReference;
+
 
     questionnaireResponse.status = 'in-progress';
 
-    // questionnaireResponse.authored = Date.now();
+    questionnaireResponse.authored = new Date;
 
     const subjectReference = new FHIR.Reference;
     subjectReference.reference = 'Patient/' + this.clientId;
@@ -335,7 +337,7 @@ export class NewServiceRequestComponent implements OnInit {
 
     questionnaireResponse.status = 'in-progress';
 
-    // questionnaireResponse.authored = Date.now();
+    questionnaireResponse.authored = new Date;
 
     const subjectReference = new FHIR.Reference;
     subjectReference.reference = 'Patient/' + this.clientId;
