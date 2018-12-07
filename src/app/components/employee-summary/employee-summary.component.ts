@@ -182,4 +182,58 @@ export class EmployeeSummaryComponent implements OnInit {
     this.router.navigateByUrl('service-request-summary');
   }
 
+
+  getServiceType(serviceRequestObj): string {
+    let result = '-';
+    console.log(serviceRequestObj);
+    // console.log(serviceRequestObj.questionnaire.reference);
+    if (serviceRequestObj.resource.item) {
+      console.log(serviceRequestObj.resource.item);
+        serviceRequestObj.resource.item.forEach(item => {
+          if (item.text === 'PSOHP Service') {
+            if (item['answer']) {
+              result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('(') + 1, item.answer[0].valueString.length);
+              result = result.substring(0, result.length - 1);
+              console.log(result);
+              }
+            }
+        });
+      }
+    
+    return result;
+  }
+
+
+
+  getAssessmentType(serviceRequestObj): string {
+      return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
+    
+    }
+
+    getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
+      let result = '-';
+      if (serviceRequestObj.resource.item) {
+        serviceRequestObj.resource.item.forEach(item => {
+          // console.log(item);
+          if (item.text === text) {
+            if (item['answer']) {
+              if (item.answer[0].valueString.indexOf('-') > 0) {
+  
+                if (dashNum === 1) {
+                  result = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+                }
+                if (dashNum === 2) {
+                  result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('-') + 1);
+                  result = result.substring(0, result.indexOf('-'));
+                }
+              } else {
+                result = item.answer[0].valueString;
+              }
+            }
+          }
+        });
+      }
+      return result;
+    }
+
 }
