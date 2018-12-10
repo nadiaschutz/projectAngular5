@@ -68,4 +68,6 @@ export class ListPageComponent implements OnInit {
     });
   }
 
+  buildResponseObject() {}
+
 }
