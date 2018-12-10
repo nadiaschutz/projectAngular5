@@ -1,15 +1,24 @@
 <h1>Work List</h1>
 
 <div class="container">
-  <table>
-    <thead>
-      <th>Status</th>
-      <th>Patient</th>
-    </thead>
-    <tbody>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tbody>
-  </table>
+  <div class="table-container">
+    <table class="officeList table  table-hover">
+      <thead class="header-table">
+        <th>Service Request ID</th>
+        <th>Client Name</th>
+        <th>Assessment Type</th>
+        <th>Total Days in Queue</th>
+        <th>Status</th>
+      </thead>
+      <tbody class="body-table">
+        <tr *ngFor="let result of resultList">
+          <td>{{result.episodeOfCareId}}</td>
+          <td>{{result.clientName}}</td>
+          <td>{{result.serviceAssessmentType}}</td>
+          <td>{{result.daysInQueue}}</td>
+          <td>{{result.status}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

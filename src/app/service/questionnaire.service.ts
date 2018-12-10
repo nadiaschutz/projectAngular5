@@ -102,7 +102,7 @@ export class QuestionnaireService {
   }
 
   getAllEpisodeOfCare() {
-    return this.http.get(environment.queryURI + '/EpisodeOfCare', {headers: this.getHeaders()});
+    return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*', {headers: this.getHeaders()});
   }
 
 }
