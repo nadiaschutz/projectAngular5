@@ -49,7 +49,7 @@ export class DashboardComponent implements OnInit {
   };
 
   clientId = {
-    prefix: '/',
+    prefix: '_id=',
     data: null
   };
 
@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit {
     data: null
   };
 
-  private arrOfVar = [this.givenName, this.familyName, this.dateOfBirth];
+  private arrOfVar = [this.givenName, this.familyName, this.dateOfBirth, this.clientId];
   listOfDepartments = [];
   clientDepartment = null;
   employeeTypeArray = ['Employee', 'Dependent'];
@@ -80,7 +80,15 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.getAllPAtients();
+    
+  }
 
+  refreshSearch() {
+    this.getAllPAtients();
+  }
+
+  getAllPAtients() {
     this.patientService.getPatientData('').subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
@@ -92,6 +100,7 @@ export class DashboardComponent implements OnInit {
   handleSuccess(data) {
     // console.log(data);
     this.qrequest = [];
+    console.log(this.qrequest);
     if (data.total !== 0) {
       if (data.entry) {
         data.entry.forEach(item => {
@@ -110,7 +119,8 @@ export class DashboardComponent implements OnInit {
         }
       }
     }
-    // this.resetSearchParams();
+    console.log(this.qrequest);
+     this.resetSearchParams();
   }
 
   checkForEmployeeTypeAndClientDepartment(individualEntry) {
@@ -162,23 +172,24 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
-    if (this.clientId.data) {
-      searchParams = this.clientId.prefix + this.clientId.data + searchParams;
-    }
+    // if (this.clientId.data) {
+    //   searchParams = this.clientId.prefix + this.clientId.data + searchParams;
+    // }
     console.log(searchParams);
 
     this.patientService.getPatientData(searchParams).subscribe(
       data => this.handleSuccess(data),
       error => this.handleError(error)
     );
+    this.resetSearchParams();
   }
   resetSearchParams() {
-    this.clientDepartment = '';
-    this.employeeType = '';
-    this.givenName.data = '';
-    this.familyName.data = '';
-    this.clientId.data = '';
-    this.dateOfBirth.data = '';
+    this.clientDepartment = null;
+    this.employeeType = null;
+    this.givenName.data = null;
+    this.familyName.data = null;
+    this.clientId.data = null;
+    this.dateOfBirth.data = null;
   }
   getDepartmentsList() {
     this.httpClient.get('../../../assets/departments.json').subscribe(data => {

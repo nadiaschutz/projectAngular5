@@ -36,6 +36,8 @@ import { ServiceRequestSummaryComponent } from './components/service-request-sum
 import { ClientOnsubmitSummaryComponent } from './components/client-onsubmit-summary/client-onsubmit-summary.component';
 import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
 
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService]  },
@@ -96,6 +98,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     NgBootstrapFormValidationModule,
     NgBootstrapFormValidationModule.forRoot(),
+    BsDatepickerModule.forRoot()
   ],
   providers: [
     AuthGuardService,
