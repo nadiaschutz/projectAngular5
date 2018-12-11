@@ -1,11 +1,9 @@
-<div>
+<div class='container'>
   <div class="main-header">
     <h5>clients</h5>
     <h6>client department > Create Employee & Dependent Records</h6>
   </div>
   <div>
-
-    <!-- {{ dependentFormGroup.value | json }} -->
 
 
     <form [formGroup]="dependentFormGroup" novalidate>
@@ -15,17 +13,6 @@
             Dependent Information
           </h6>
         </div>
-
-        <!-- <div class="row">
-      <div class="col-6">
-        <label for="type">Client Type</label>
-        <select class="form-control" formControlName="type" id="type">
-          <option *ngFor="let type of accountTypes" [value]="type.value">
-            {{type.viewValue}}
-          </option>
-        </select>
-      </div>
-    </div> -->
 
         <div class="row">
           <div class="col">
@@ -143,23 +130,6 @@
 
       </section>
 
-      <div class="row">
-        <div class="col-6">
-          <label for="type">Clients on System</label>
-          <select class="form-control" (change)="grabID($event)">
-            <option *ngFor="let employee of employeelist" [value]="employee.id">
-              <div *ngFor="let name of employee.name">
-                <div *ngFor="let extension of employee.extension">
-                  <div *ngIf="extension.url == 'https://bcip.smilecdr.com/fhir/workplace' ">
-                    {{name.given}} {{name.family}} - {{employee.id}} - {{extension.valueString}}
-
-                  </div>
-                </div>
-              </div>
-            </option>
-          </select>
-        </div>
-      </div>
 
       <div class="row">
         <div class="col">
@@ -168,12 +138,10 @@
             <div class="valid-feedback">
               Success!
             </div>
-            <button class="btn regular-button" (click)="backToEmployee()">Employee</button>
           </div>
         </div>
       </div>
     </form>
-
 
   </div>
 </div>

@@ -3,115 +3,119 @@
  
   <div class="main-header">
     <h5>Service Request Form</h5>
-    <h6>service request > new service request > {{clientName}}</h6>
+    <h6 *ngIf="!disableInputsForReview">service request > new service request > {{clientGivenName + ' ' + clientFamilyName}}</h6>
+    <h6 *ngIf="disableInputsForReview">service request > {{clientGivenName + ' ' + clientFamilyName}} > review service request before submission</h6>
   </div>
   
+  <div *ngIf="createdsuccessfully">
+    <div class="row">
+      <div class="alert alert-success">
+        <strong>Service Request for {{clientGivenName + ' ' + clientFamilyName}} created Successfully</strong> 
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn regular-button" type="button" (click)="backToDashboard()">Back to List of Clients</button>  
+    </div>
+  </div>
   
   
       <!-- try [for]="value.text"...
   and value.text has to be the id of the input element or what element you have there -->
-  <form #serReqForm="ngForm">
+  <form #serReqForm="ngForm" *ngIf="!createdsuccessfully">
       <section class="form-section">
-      <!-- <div *ngIf="temp.returnQuestionObject()"> -->
-        <!-- <div *ngFor="let value of temp.returnQuestionObject().item; let i = index" class="col-6-custom"> -->
+
+          <div *ngFor="let question of questionsList; let i =index" class="col-12-custom">
+            <div *ngIf="question.length > 1">
+              <div *ngFor="let eachItem of question ; let x = index">
+                <div *ngIf="eachItem['type']==='choice'">
+                    <label>{{eachItem.text}}</label>
+                    <select class="form-control border-bottom" name='{{eachItem.text}}'
+                    (change)='checkingEnableWhen($event.target.value, i)'
+                    [(ngModel)]="eachItem.answer" disabled="{{disableInputsForReview}}">
+                    <option [ngValue]="null"></option>
+                    <option *ngFor="let object of eachItem['option']"
+                                [value]='object.valueCoding.code'>
           
-          <div *ngFor="let el of qrequest; trackBy: trackByEl; let i=index;" class="col-12-custom">
-          <div class="form-group" *ngIf="el.type==='choice'">
-    
-            <label>{{el.text}}</label>
-            <select class="form-control border-bottom"
-            name='{{el.text}}'
-            [(ngModel)]="items[i].answer"
-            >
-            <!-- <option selected>Open this select menu</option> -->
-              <option *ngFor="let object of el.option"
-                          [value]='object.valueCoding.code'
-                  >
-    
-                {{object.valueCoding.code}}
-              </option>
-            </select>
-          </div>
-    
-    
-          
-          <div class="form-check" *ngIf="el.type==='boolean' && el.text!=='Dependent Involved'">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-            <label class="form-check-label"
-            for="defaultCheck1">
-                {{el.text}}
-            </label>
-    
-          </div>
-          <div class="form-group" *ngIf="el.type==='text'">
-    
-            <label>{{el.text}}</label>
-            <textarea type="text"
-            [(ngModel)]="items[i].answer"
-            name='{{el.text}}' 
-            class="form-control" 
-            placeholder="type your text" rows="1" required></textarea>
-          </div>
-  
-  
-          <div class="form-group" *ngIf="el.type==='open-choice'">
-    
-            <label>{{el.text}}</label>
-                <textarea type="text" 
-                [(ngModel)]="items[i].answer"
-                name='{{el.text}}'
-                class="form-control" 
-                placeholder="type your text" 
-                rows="1" required></textarea>
-          </div> 
-  
-        </div>
-
-      </section>
-
-      <section *ngIf="dependents===true" class="form-section">
-
-      
-  
-        <div *ngIf="dependents===true" class="col-12-custom">
-            <div class='header'>
-              <h6>Dependents</h6>
-            </div>
-            <div class="form-group col-6-custom">
-                
-                
-                <div class="col-6-custom">
-                 <label>Dependents</label>
-                <textarea type="text" 
-                    [(ngModel)]="dependentNumber"
-                    name='dependentsNumber'
-                    class="form-control" 
-                    placeholder="0" 
-                    rows="1" disabled></textarea>
+                      {{object.valueCoding.code}}
+                    </option>
+                  </select>
                 </div>
-  
-                <div class="col-6-custom">
-                    <button class="btn special-button move-dwn" (click)='addDependent()'>
-                      Add Dependent
-                    </button>
-                  </div>
-  
+
+                <div *ngIf="eachItem['type']==='text' && eachItem['enabled']">
+                    <label>{{eachItem.text}}</label>
+                    <textarea type="text"
+                    [(ngModel)]="eachItem.answer"
+                    name='{{eachItem.text}}' 
+                    class="form-control" 
+                    placeholder="type your text" rows="1" required
+                    disabled="{{disableInputsForReview}}"></textarea>
+                </div>
+
+              </div>
             </div>
+            <div *ngIf="question.length === 1">
+
+                <div *ngIf="question[0]['type']==='choice'">
+                    <label>{{question[0].text}}</label>
+                    <select class="form-control border-bottom" name='{{question[0].text}}'
+                    (change)='checkingEnableWhen($event.target.value, i)'
+                    [(ngModel)]="question[0].answer" disabled="{{disableInputsForReview}}">
+                    <option [ngValue]="null"></option>
+                    <option *ngFor="let object of question[0]['option']"
+                                [value]='object.valueCoding.code'>
+          
+                      {{object.valueCoding.code}}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-check" *ngIf="question[0].type==='boolean'">
+                    <input class="form-check-input" type="checkbox" name="{{question[0].text}}"  value="" id="defaultCheck1"
+                    [(ngModel)]="question[0].answer" disabled="{{disableInputsForReview}}">
+                    <label class="form-check-label"
+                    for="defaultCheck1">
+                        {{question[0].text}}
+                    </label>
+                </div>
+        
+                  <div class="form-group" *ngIf="question[0].type==='text'">
             
-        </div>
+                    <label>{{question[0].text}}</label>
+                    <textarea type="text"
+                    [(ngModel)]="question[0].answer"
+                    name='{{question[0].text}}' 
+                    class="form-control" 
+                    placeholder="type your text" rows="1" required disabled="{{disableInputsForReview}}"></textarea>
+                  </div>
+          
+          
+                  <div class="form-group" *ngIf="question[0].type==='open-choice'">
+            
+                    <label>{{question[0].text}}</label>
+                        <textarea type="text" 
+                        [(ngModel)]="question[0].answer"
+                        name='{{question[0].text}}'
+                        class="form-control" 
+                        placeholder="type your text" 
+                        rows="1" required disabled="{{disableInputsForReview}}"></textarea>
+                  </div> 
+
+            </div>
+          </div>
 
       </section>
 
       <section class="form-section">
           <div class="table-list">
-
-      
-  
-              <div class="col-12-custom">
+              <div class="col-12-custom" *ngIf="!disableInputsForReview">
                   <div class='header'>
                   <h6>documents</h6>
                 </div>
-                  <input type="file"  id="uploader" class="btn btn-secondary" (change)='addDocument($event)' placeholder="Add a document">
+                <div class="button-section">
+                    <span class="btn regular-button btn-file" (change)='addDocument($event)'>
+                      Add Documents <input type="file">
+                    </span>
+                  </div>
                     <div>
                         <table class="table">
                             <thead class="header-table">
@@ -124,11 +128,9 @@
                                 <th scope="col">File Size</th>
                                 <th scope="col"></th>
                                 <th scope="col"></th>
-                          
                               </tr>
                             </thead>
                             <tbody class="body-table">
-                              
                               <tr *ngIf="documents">
                                 <td>{{documents.id}}</td>
                                 <td>{{documents.content[0].attachment.creation | date: 'dd/MM/yyyy'}}</td>
@@ -136,12 +138,8 @@
                                 <td>Medical Note</td>
                                 <td>{{documents.content[0].attachment.contentType }}</td>
                                 <td>{{documents.content[0].attachment.size }}</td>
-          
                               </tr>
-                           
                             </tbody>
-                    
-                    
                             <!-- <tbody *ngIf="documents !==null">
                               <tr *ngFor="let q of servRequests">
                                 <td>{{q.resource.id}}</td>
@@ -154,25 +152,22 @@
                                 <td>{{q.resource.status}}</td>
                               </tr>
                             </tbody> -->
-                    
-                    
                           </table>
                     </div>
-          
                 </div>
         </div>
-
       </section>
     
       
      <div class="button-section-line line">
-      <button class="btn action-button float-right" type="button" (click)="onNext()">Next</button>
-      <button class="btn regular-button" type="button" (click)="onSave()">Save</button>  
+      <button class="btn regular-button" type="button" (click)="onNext()" 
+      *ngIf="!disableInputsForReview">Next</button>
+      <button class="btn regular-button" type="button" (click)="onEdit()" 
+      *ngIf="disableInputsForReview">Edit</button>
+      <button class="btn regular-button" type="button" (click)="onSave()">Submit</button>  
       <button class="btn regular-button" type="button" (click)="onCancel()">Cancel</button> 
     </div>
     </form>
-
-
   
 
 <!--   

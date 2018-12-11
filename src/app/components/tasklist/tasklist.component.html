@@ -1,0 +1,93 @@
+<div class="container">
+  <div class="main-header">
+    <h5>admin</h5>
+    <h6>Tasks > Assign a Task</h6>
+  </div>
+  <form [formGroup]="taskFormGroup" novalidate class="center-align">
+
+    <section class="form-section">
+      <div class="row">
+        <div class="col">
+          <label for="description">Task</label>
+          <input type="text" name="description" id="description" formControlName="description" class="form-control"
+            required placeholder="Enter">
+          <div *ngIf="taskFormGroup.controls['description'].invalid
+                     && (taskFormGroup.controls['description'].touched || taskFormGroup.controls['description'].dirty)">
+            <div class="error-message">
+              Cannot be blank
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="practitioners.length > 0">
+        <div class="col">
+          <label for="assignTo">Assign To</label>
+          <select name="assignTo" id="assignTo" formControlName="assignTo" class="form-control" required>
+            <option *ngFor="let practitioner of practitioners" [value]="practitioner.id">
+              <span *ngFor="let name of practitioner.name">{{name.given}} {{name.family}} </span>
+            </option>
+          </select>
+          <div *ngIf="taskFormGroup.controls['assignTo'].invalid
+                     && (taskFormGroup.controls['assignTo'].touched || taskFormGroup.controls['assignTo'].dirty)">
+            <div class="error-message">
+              Cannot be blank
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <label for="instruction">Instructions</label>
+          <input type="text" name="instruction" id="instruction" formControlName="instruction" class="form-control"
+            required placeholder="Enter">
+          <div *ngIf="taskFormGroup.controls['instruction'].invalid
+                     && (taskFormGroup.controls['instruction'].touched || taskFormGroup.controls['instruction'].dirty)">
+            <div class="error-message">
+              Cannot be blank
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <button class="btn special-button" style="margin-bottom: 20px" [disabled]="!taskFormGroup.valid" (click)="setTask()">Assign
+        Task</button>
+
+  </form>
+
+
+  <div class="table-container" *ngIf="tasklist.length > 0">
+    <table class="table  table-hover">
+      <thead class="header-table ">
+        <tr>
+          <th scope="col">Task ID</th>
+          <th scope="col">Task Description</th>
+          <th scope="col">Assigned To</th>
+          <th scope="col">Instructions</th>
+          <th scope="col">Date</th>
+          <th scope="col">Status</th>
+          <!-- <th scope="col">Task Completed</th> -->
+          <th scope="col"></th>
+
+        </tr>
+      </thead>
+      <tbody class="body-table">
+        <tr *ngFor="let task of tasklist ">
+          <td>{{task?.id}}</td>
+          <td>{{task.description}}</td>
+          <td>{{task?.practitionerName}}</td>
+          <td>{{task.note}}</td>    
+          <td>{{task.date}}</td>
+          <td>{{task.status}}</td>
+          <!-- <td><input type="checkbox" name="taskcompleted" id="taskcompleted"></td> -->
+          <td>
+            <button class="btn special-button" (click)="reassignTask(task.description, task.id,  task.note)">Reassign Task</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

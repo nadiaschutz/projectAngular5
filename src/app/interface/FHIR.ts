@@ -119,6 +119,17 @@ export class HumanName extends FHIRElement {
 
 }
 
+export class Extension {
+    url: string;
+    valueString: string;
+    valueCode: string;
+    valueAddress: Address;
+    valueBoolean?: boolean;
+    valueHumanName: HumanName;
+    valueReference: Reference;
+    valueIdentifier: string;
+    valueDecimal?: number;
+}
 
 export class Address extends FHIRElement {
     use: Code;
@@ -236,9 +247,9 @@ export class Contact extends BackboneElement {
 }
 
 export class ContactPoint extends FHIRElement {
-    system: Code;
+    system: string;
     value: string;
-    use: Code;
+    use: string;
     rank: number;
     period: Period;
 }
@@ -255,7 +266,7 @@ export class Reference extends FHIRElement {
 }
 
 export class Identifier extends FHIRElement {
-    use: Code;
+    use: string;
     type: CodeableConcept;
     system: string;
     value: string;
@@ -314,6 +325,7 @@ export class Answer extends BackboneElement {
     valueAttachment: Attachment;
     valueCoding: Coding;
     valueQuantity: Quantity;
+    valueBoolean: boolean;
     valueReference: Reference;
 }
 
@@ -411,6 +423,13 @@ export class Requester extends BackboneElement {
     onBehalfOf: Reference;
 }
 
+export class QuestionnaireResponseItem extends BackboneElement {
+    linkId: string;
+    definition: string;
+    text: string;
+    answer: Answer[];
+}
+
 export class Item extends BackboneElement {
     linkId: string;
     definition: string;
@@ -444,12 +463,13 @@ export class QuestionnaireResponse extends Resource implements Serializable<Ques
     basedOn: Reference[];
     parent: Reference[];
     questionnaire: Reference;
-    status: Code;
+    status: string;
     context: Reference;
     authored: Date;
     author: Reference;
     source: Reference;
-    item: Item[];
+    item: QuestionnaireResponseItem[];
+    subject: Reference;
 
     deserialize(jsonObject: any): QuestionnaireResponse {
         const that = this;
@@ -560,7 +580,7 @@ export class Organization extends Resource implements Serializable<Organization>
 
     identifier: Identifier[];
     active: boolean;
-    status: Code;
+    status: string;
     name: string;
     alias: string[];
     description: string;
@@ -600,6 +620,7 @@ export class Location extends Resource implements Serializable<Location> {
     managingOrganization: Reference;
     partOf: Reference;
     endpoint: Reference[];
+    extension: Extension[];
 
     deserialize(jsonObject: any): Location {
         const that = this;
@@ -722,11 +743,11 @@ export class Task extends Resource implements Serializable<Task> {
     groupIdentifier: Identifier;
     replaces: Reference[];
     partOf: Reference[];
-    status: Code;
+    status: string;
     statusReason: CodeableConcept;
     businessStatus: CodeableConcept;
-    intent: Code;
-    priority: Code;
+    intent: string;
+    priority: string;
     code: CodeableConcept;
     description: string;
     focus: Reference;
@@ -775,3 +796,4 @@ export class Bundle extends Resource implements Serializable<Bundle> {
         return this;
     }
 }
+

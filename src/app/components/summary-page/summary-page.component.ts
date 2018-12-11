@@ -17,6 +17,11 @@ export class SummaryPageComponent implements OnInit {
   responseId = null;
   documentReferenceId = null;
 
+  clientId = null;
+  clientName = null;
+
+
+  documentId;
   documents = null;
   today = new Date();
   myDay;
@@ -40,7 +45,6 @@ export class SummaryPageComponent implements OnInit {
 
   itemToSend: ItemToSend = {
     resourceType: 'string',
-    extension: null,
     questionnaire: null,
     status: null,
     subject: null,
@@ -69,39 +73,17 @@ export class SummaryPageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // get form id
-    this.questionnaireService.newServFormIdSubject.subscribe(
-      data => this.getFormId(data),
-      error => this.handleErrorFormId(error)
-    );
-
     // get response id
     this.questionnaireService.newResponseIdSubject.subscribe(
       data => this.getQuestionnaireResponseId(data),
-      error => this.handleErrorResponseId(error)
-    );
+      error => this.getQuestionnaireResponseIdError(error)
+      );
 
-
-    // get Document Reference based on the ID from the QuestionnaireResponse
-
-    this.questionnaireService.getDocumentReferenceByQuery(this.documentReferenceId).subscribe (
-      data => this.retrieveDocumentReferenceObject(data),
-      error => this.handleError(error)
-    );
-
-    // get service request form
-    this.questionnaireService.getForm(this.formId).subscribe(
-      data => this.handleSuccess(data),
-      error => this.handleError(error)
-    );
-
-
-    // get the response data to show on screen
-    this.questionnaireService.getResponse(this.responseId).subscribe(
-      data => this.getResponseData(data),
-      error => this.handleErrorResponse(error)
-    );
-
+      // call server with the response id to get data
+      this.questionnaireService.getResponse(this.responseId).subscribe(
+        data => this.getResponseData(data),
+        error => this.getResponseDataError(error)
+      );
   }
 
   retrieveDocumentReferenceObject(data) {
@@ -111,8 +93,42 @@ export class SummaryPageComponent implements OnInit {
         this.documentReferenceId = element.answer[0].valueReference.reference;
       }
     });
-
   }
+
+
+
+
+
+
+/************************************************/
+/******************* BUTTONS ********************/
+/************************************************/
+
+
+
+  // FIX ON CANCEL
+  onCancel() {
+      this.questionnaireService.deleteServiceRequest(this.responseId).subscribe(data => {
+        console.log(data);
+      }, error => {
+        console.error(error);
+      });
+
+    this.navigateMain();
+  }
+
+  navigateMain() {
+    if (this.formId === '1952') {
+      this.router.navigate(['/dashboard']);
+    }
+    if (this.formId === '1953') {
+      this.router.navigate(['/servreqmain']);
+    }
+  }
+
+
+
+
   onSubmit() {
     this.itemToSend['id'] = this.responseId;
     this.itemToSend.status = 'completed';
@@ -124,107 +140,170 @@ export class SummaryPageComponent implements OnInit {
     this.navigateMain();
   }
 
+
+
+
+
   onEdit() {
     // send responseId
-
     this.questionnaireService.shareResponseId(this.responseId);
-
-    // navigate the previous service request page
-    console.log(this.formId);
-
-    if (this.formId = '1952') {
-      this.router.navigate(['/newservicerequest']);
-    }
-
-    // if (this.formId = '1953') {
-    //   this.router.navigate(['/newadvicerequest']);
-    // }
-
+    this.router.navigate(['/edit-service-request']);
   }
 
-
-
-  // FIX ON CANCEL
-  onCancel() {
-    this.navigateMain();
-  }
-
-  navigateMain() {
-    this.router.navigate(['/servreqmain']);
-  }
+/************************************************/
 
 
 
-  getFormId(data) {
-    console.log(data);
-    this.formId = data;
-  }
-
-  handleErrorFormId(error) {
-    console.log(error);
-  }
 
 
 
-  getQuestionnaireResponseId(data) {
-    console.log(data);
+
+
+getQuestionnaireResponseId(data) {
+  if (data) {
     this.responseId = data;
+    console.log('response id:', this.responseId);
+  } else {
+    this.router.navigateByUrl('/dashboard');
   }
+}
 
-  handleErrorResponseId(error) {
-    console.log(error);
-  }
+getQuestionnaireResponseIdError(error) {
+  console.log(error);
+}
 
 
 
 
-  getResponseData(data) {
+
+
+
+
+
+
+
+getResponseData(data) {
+  if (data) {
     this.itemToSend = data;
     console.log('this.itemToSend:', this.itemToSend);
-    console.log('this.items BEFORE assigning them to data from server:', this.items);
 
 
-    for (let i = 0; i < 500; i++) {
-      console.log(i);
-    }
 
-    this.items = this.itemToSend.item.map(el => {
-      if (el.text === 'Document') {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueReference.reference
-        };
-      }
-      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved' ) {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueBoolean
-        };
-      } else {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueString
-        };
+    this.itemToSend.item.forEach(element => {
+      if (element.text === 'Document') {
+        this.documentId = element.answer[0].valueReference.reference;
+        this.documentId = this.documentId.substring(this.documentId.indexOf('/') + 1);
+        console.log(this.documentId);
+        this.getDocument(this.documentId);
       }
     });
 
-    console.log('this.items AFTER assigning them to data from server:', this.items);
-  }
+    // mapping items from server to items in angular
 
-  handleErrorResponse(error) {
-    console.log(error);
+    this.formId = data.questionnaire.reference;
+    this.formId = this.formId.substring(this.formId.indexOf('/') + 1);
+    console.log('this.formId:', this.formId);
+    if (this.formId) {
+      this.getForm(this.formId);
+    }
   }
+  if (this.formId !== '1953') {
+    this.clientName = this.itemToSend.subject.display;
+    console.log('clientName:', this.clientName);
 
-  // getFormSum() {
-  //   console.log('getting the form ID');
-  //   this.questionnaireService.getForm(this.formId).subscribe(
-  //     data => this.handleSuccess(data),
-  //     error => this.handleError(error)
-  //   );
+  }
+}
+
+
+
+
+
+
+  // console.log('this.items AFTER assigning them to data from server:', this.items);
+
+getResponseDataError(error) {
+  console.log(error);
+}
+
+
+getForm(formId) {
+  this.questionnaireService
+   .getForm(formId)
+   .subscribe(
+     data => this.getFormData(data),
+     error => this.getFormDataError(error)
+   );
+}
+
+
+
+
+/************************************************/
+/****************** getFormData() ***************/
+/************************************************/
+getFormData(data) {
+  this.qrequest = data.item;
+  console.log(this.qrequest);
+
+  // maping part of the data from the server to item
+  this.items = this.qrequest.map(el => ({
+    ...this.item,
+    linkId: el.linkId,
+    text: el.text
+  }));
+  console.log(this.items);
+  this.mapItems();
+  console.log(this.items);
+
+
+
+  // checking dependents
+  this.checkDependentItem(this.items);
+  // console.log(this.dependents);
+
+  // console.log(this.responseId);
+  // if (this.responseId === null) {
+  //   this.getResponseId();
   // }
+}
+
+getFormDataError(error) {
+  console.log(error);
+}
+
+
+
+mapItems() {
+  this.items = this.itemToSend.item.map(el => {
+    if (el.text === 'Document') {
+      return {
+        linkId: el.linkId,
+        text: el.text,
+        answer: el.answer[0].valueReference.reference
+      };
+    }
+    if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved' ) {
+      return {
+        linkId: el.linkId,
+        text: el.text,
+        answer: el.answer[0].valueBoolean
+      };
+    } else {
+      return {
+        linkId: el.linkId,
+        text: el.text,
+        answer: el.answer[0].valueString
+      };
+    }
+  });
+
+}
+/************************************************/
+
+
+
+
+
 
 
   handleSuccess(data) {
@@ -256,12 +335,26 @@ export class SummaryPageComponent implements OnInit {
     console.log(error);
   }
 
+
+
+
+
+
+
+
+
   handleSuccessSubmit (data) {
     console.log(data);
   }
   handleErrorSubmit(error) {
     console.log(error);
   }
+
+
+
+
+
+
 
   checkDependentItem(itemsServer) {
     itemsServer.forEach(element => {
@@ -270,5 +363,24 @@ export class SummaryPageComponent implements OnInit {
       }
     });
   }
+
+
+
+
+  getDocument(doc) {
+    this.questionnaireService.getDocument(doc).subscribe(
+      data => this.getDocumentData(data),
+      error => this.getDocumentDataError(error)
+    );
+  }
+
+  getDocumentData(data) {
+    console.log(data);
+    this.documents = data;
+  }
+  getDocumentDataError(error) {
+    console.log(error);
+  }
+
 
 }

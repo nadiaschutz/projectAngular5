@@ -20,6 +20,7 @@ export class UserService {
 
 
   selectID = '';
+  selectedIDForEmployeePostSummary = '';
   selectedServiceRequestID = '';
   constructor(
 
@@ -48,6 +49,14 @@ export class UserService {
 
   returnSelectedID() {
     return this.selectID;
+  }
+
+  getEmployeeSummaryID(data) {
+    this.selectedIDForEmployeePostSummary = data;
+  }
+
+  returnEmployeeSummaryID() {
+    return this.selectedIDForEmployeePostSummary;
   }
 
   logout() {
@@ -119,6 +128,11 @@ export class UserService {
     {headers: this.postFHIRHeaders()});
   }
 
+  saveClientDepartmentBranch(locationObj) {
+    return this.httpClient.post(environment.queryURI + '/Location/', locationObj,
+    {headers: this.postFHIRHeaders()});
+  }
+
   fetchAllRegionalOffices() {
     return this.httpClient.get(environment.queryURI + '/Organization?type=team', {headers: this.getHeaders()});
   }
@@ -147,5 +161,12 @@ export class UserService {
   }
   getSelectedServiceRequestID(): string {
     return this.selectedServiceRequestID;
+  }
+  saveClientDepartment(data) {
+    return this.httpClient.post(environment.queryURI + '/Organization/', data,
+    {headers: this.postFHIRHeaders()});
+  }
+  fetchAllClientDepartments() {
+    return this.httpClient.get(environment.queryURI + '/Organization?type=CLIENTDEPT', {headers: this.getHeaders()});
   }
 }

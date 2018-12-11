@@ -13,8 +13,10 @@ import { Element } from '../models/element.model';
 import { forEach } from '@angular/router/src/utils/collection';
 import { ItemToSend } from '../models/itemToSend.model';
 import { PatientService } from 'src/app/service/patient.service';
+import { formatDate } from '@angular/common';
 
 import * as FHIR from '../../interface/FHIR';
+import { link } from 'fs';
 
 @Component({
   selector: 'app-new-service-request',
@@ -26,7 +28,7 @@ export class NewServiceRequestComponent implements OnInit {
   // serviceRequestResponce: ServiceRequestResponce = {
   // };
 
-  formId = '1952';
+  formId = 'TEST1';
   responseId = null;
   clientId = null;
   clientGivenName = null;
@@ -35,7 +37,10 @@ export class NewServiceRequestComponent implements OnInit {
 
   documents = null;
   fileLink = [];
-  itemReference;
+  documentReference = {};
+
+  disableInputsForReview = false;
+  createdsuccessfully = false;
 
   today = new Date();
   myDay;
@@ -53,20 +58,14 @@ export class NewServiceRequestComponent implements OnInit {
   dependentNumber = 0;
   qrequest: any;
 
+  questionsList = [];
+
   submitingFormData: {
     formId: any;
     itemToSend: any;
   };
 
-  itemToSend: ItemToSend = {
-    resourceType: '',
-    extension: null,
-    questionnaire: null,
-    status: null,
-    subject: null,
-    authored: null,
-    item: []
-  };
+  itemToSend: FHIR.QuestionnaireResponse;
 
   items: Item[];
 
@@ -89,10 +88,11 @@ export class NewServiceRequestComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.createdsuccessfully = false;
     this.questionnaireService
       .getForm(this.formId)
       .subscribe(
-        data => this.handleSuccess(data),
+        data => this.processQuestionnaire(data),
         error => this.handleError(error)
       );
     this.clientId = this.userService.returnSelectedID();
@@ -177,12 +177,15 @@ export class NewServiceRequestComponent implements OnInit {
 
       that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
         data =>   {
-          that.retrieveDocuments(data),
-          that.createItemReferenceObject(data);
+          that.documentReference = {
+            linkId: '30',
+            // text: obj.content[0].attachment.title,
+            text: 'Document',
+            type: 'Reference',
+            answer:  'DocumentReference/' + data['id']
+          };
         }
       );
-
-      // console.log (contentAttachment);
       return reader.result;
 
     };
@@ -213,173 +216,159 @@ export class NewServiceRequestComponent implements OnInit {
 
   // }
 
-  createItemReferenceObject(data) {
-    const obj: string = data.id;
-    // const item = new FHIR.Item;
-    // const answer = new FHIR.Answer;
-    // const reference = new FHIR.Reference;
-
-    // reference.reference = 'DocumentReference/' + obj.id;
-
-    // answer.valueReference = reference;
-
-    // item.linkId = '30';
-    // item.text = obj.content[0].attachment.title;
-    // item.answer = answer;
-    // this.itemReference = item;
-    // console.log('here is the object for doc ref:' , item );
-    // return item;
-
-    this.itemReference = {
-      linkId: '30',
-      // text: obj.content[0].attachment.title,
-      text: 'Document',
-      answer:  'DocumentReference/' + obj
-    };
-
-
-  }
-
-  retrieveDocuments(data) {
-    this.documents = data;
-  }
-
 
   onCancel() {
     this.router.navigate(['/servreqmain']);
   }
 
   onSave() {
-    this.savingData();
-    this.questionnaireService.saveRequest(this.itemToSend).subscribe(
+    // this.savingData();
+    const questionnaireResponse = new FHIR.QuestionnaireResponse;
+
+    questionnaireResponse.resourceType = 'QuestionnaireResponse';
+
+    const questionnaireReference = new FHIR.Reference;
+    questionnaireReference.reference = 'Questionnaire/' + this.formId;
+    questionnaireResponse.questionnaire = questionnaireReference;
+
+
+    questionnaireResponse.status = 'in-progress';
+
+    questionnaireResponse.authored = new Date;
+
+    const subjectReference = new FHIR.Reference;
+    subjectReference.reference = 'Patient/' + this.clientId;
+    subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
+    questionnaireResponse.subject = subjectReference;
+
+    const items = [];
+    console.log(this.questionsList);
+
+    for (const questions of this.questionsList) {
+      for (const question of questions) {
+        if (question['answer'] && question['answer'].length > 0) {
+          console.log(question['answer']);
+          console.log(question['answer'].length);
+          const item = new FHIR.QuestionnaireResponseItem;
+          if (!question['enableWhen']) {
+            item.linkId = question['linkId'];
+            item.text = question['text'];
+            item.answer = this.fetchAnswer(question);
+            items.push(item);
+          } else if (question['enableWhen'] && question['enabled']) {
+            item.linkId = question['linkId'];
+            item.text = question['text'];
+            item.answer = this.fetchAnswer(question);
+            items.push(item);
+          }
+        }
+      }
+    }
+    console.log(this.documentReference);
+    if (this.documentReference) {
+      const documentItem = new FHIR.QuestionnaireResponseItem;
+      documentItem.linkId = this.documentReference['linkId'];
+      documentItem.text = this.documentReference['text'];
+      documentItem.answer = this.fetchAnswer(this.documentReference);
+      console.log(documentItem);
+      items.push(documentItem);
+    }
+    questionnaireResponse.item = items;
+    this.questionnaireService.saveRequest(questionnaireResponse).subscribe(
       data => this.handleSuccessOnSave(data),
       error => this.handleErrorOnSave(error)
     );
   }
 
+  fetchAnswer(question): FHIR.Answer[] {
+    const answerArray = new Array<FHIR.Answer>();
+    const answer = new FHIR.Answer;
+    if (question['type'] === 'choice' || question['type'] === 'text') {
+      answer.valueString = question['answer'];
+    }
+    if (question['type'] === 'boolean') {
+      answer.valueBoolean = question['answer'];
+    }
+    if (question['type'] === 'Reference') {
+      const answerReference = new FHIR.Reference;
+      answerReference.reference = question['answer'];
+      answer.valueReference = answerReference;
+    }
+    answerArray.push(answer);
+    return answerArray;
+  }
+
   onNext() {
-    this.savingData();
+    this.disableInputsForReview = true;
+    // this.savingData();
 
-    this.questionnaireService
-      .saveRequest(this.itemToSend)
-      .subscribe(
-        data => this.handleSuccessOnSave(data),
-        error => this.handleErrorOnSave(error)
-      );
+    // this.questionnaireService
+    //   .saveRequest(this.itemToSend)
+    //   .subscribe(
+    //     data => this.handleSuccessOnSave(data),
+    //     error => this.handleErrorOnSave(error)
+    //   );
 
-    console.log(this.itemToSend);
+    // console.log(this.itemToSend);
 
-    this.submitingFormData.itemToSend = this.itemToSend;
-    this.submitingFormData.formId = this.formId;
-    console.log(this.submitingFormData, this.submitingFormData.itemToSend);
-    this.questionnaireService.shareServiceResponseData(this.itemToSend);
+    // this.submitingFormData.itemToSend = this.itemToSend;
+    // this.submitingFormData.formId = this.formId;
+    // console.log(this.submitingFormData, this.submitingFormData.itemToSend);
+    // this.questionnaireService.shareServiceResponseData(this.itemToSend);
 
-    this.questionnaireService.shareServiceResponseData(this.responseId);
+    // this.questionnaireService.shareServiceResponseData(this.responseId);
+  }
+
+  onEdit() {
+    this.disableInputsForReview = false;
+  }
+
+  backToDashboard() {
+    this.router.navigateByUrl('/dashboard');
   }
 
   savingData() {
-    this.getDate();
+    const questionnaireResponse = new FHIR.QuestionnaireResponse;
 
-    // To-Do: check if has dependents => add dependents
+    questionnaireResponse.resourceType = 'QuestionnaireResponse';
 
-    // ToDo: add patient/#, subject, exstention
+    const questionnaireReference = new FHIR.Reference;
+    questionnaireReference.reference = 'Questionnaire/' + this.formId;
 
-    if (this.dependents === true) {
-      this.items.forEach(element => {
-        console.log(element.text);
+    questionnaireResponse.status = 'in-progress';
 
-        if (element.text === 'Dependent Involved') {
-          if (this.dependentNumber === 0) {
-            return (element.answer = false);
-          } else {
-            return (element.answer = true);
-          }
+    questionnaireResponse.authored = new Date;
+
+    const subjectReference = new FHIR.Reference;
+    subjectReference.reference = 'Patient/' + this.clientId;
+    subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
+    questionnaireResponse.subject = subjectReference;
+
+    const items = [];
+
+    for (const questions of this.questionsList) {
+      for (const question of questions) {
+        const item = new FHIR.QuestionnaireResponseItem;
+        if (!question['enableWhen']) {
+          item.linkId = question['linkId'];
+          item.text = question['text'];
+          item.answer = question['answer'];
+          items.push(item);
+        } else if (question['enableWhen'] && question['enabled']) {
+          item.linkId = question['linkId'];
+          item.text = question['text'];
+          item.answer = question['answer'];
+          items.push(item);
         }
-      });
-    }
-
-    // pushing document into itmes arr
-    if (this.itemReference) {
-      this.items.push(this.itemReference);
-    }
-
-
-    this.itemToSend = {
-      resourceType: 'QuestionnaireResponse',
-      questionnaire: {
-        reference: 'Questionnaire/' + this.formId
-      },
-      status: 'in-progress',
-      authored: this.myDay,
-      subject: {
-        reference: 'Patient/' + this.clientId,
-        display: this.clientGivenName + ' ' + this.clientFamilyName
-      },
-      extension: [
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/givenName',
-          valueCode: this.clientGivenName
-        },
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/familyName',
-          valueCode: this.clientFamilyName
-        },
-        {
-          url: 'https://bcip.smilecdr.com/fhir-request/birthDate',
-          valueDateTime: this.clientBoD
-        }
-      ],
-      item: []
-    };
-
-
-    this.itemToSend.item = this.items.map(el => {
-
-      if (el.text === 'Document') {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueReference: {
-                reference: el.answer
-              }
-            }
-          ]
-        };
       }
-      if (
-        el.text === 'Dependent Involved' ||
-        el.text === 'Health Exam Done Externally'
-      ) {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueBoolean: el.answer
-            }
-          ]
-        };
-      } else {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueString: el.answer
-            }
-          ]
-        };
-      }
-
-
-    });
-
+    }
+    if (this.documentReference !== {}) {
+      items.push(this.documentReference);
+    }
+    questionnaireResponse.item = items;
+    this.itemToSend = questionnaireResponse;
     console.log(this.itemToSend);
   }
-
-  addDependent() {}
 
   getClientData(data) {
     console.log(data);
@@ -394,34 +383,73 @@ export class NewServiceRequestComponent implements OnInit {
 
 
   // get form data from the server
-  handleSuccess(data) {
+  // handleSuccess(data) {
+  //   this.qrequest = data.item;
+  //   console.log(this.qrequest);
+  //   // maping part of the data from the server to item
+  //   this.items = this.qrequest.map(el => ({
+  //     ...this.item,
+  //     linkId: el.linkId,
+  //     text: el.text
+  //   }));
+  //   console.log(this.items);
+  //   // checking health exam done externaly
+
+  //   this.items.forEach(el => {
+  //     if (el.text === 'Health Exam Done Externally') {
+  //       el.answer = false;
+  //     }
+  //   });
+
+  //   // checking dependents
+  //   // this.checkDependentItem(this.items);
+  //   // console.log(this.dependents);
+
+  //   console.log(this.responseId);
+  //   if (this.responseId === null) {
+  //     this.getResponseId();
+  //   }
+  // }
+
+  processQuestionnaire(data) {
     this.qrequest = data.item;
-    console.log(this.qrequest);
-    // maping part of the data from the server to item
-    this.items = this.qrequest.map(el => ({
-      ...this.item,
-      linkId: el.linkId,
-      text: el.text
-    }));
-    console.log(this.items);
-    // checking health exam done externaly
-
-    this.items.forEach(el => {
-      if (el.text === 'Health Exam Done Externally') {
-        el.answer = false;
+    const questions = [];
+    const enableWhenList = [];
+    for (const questionnaire of this.qrequest) {
+      if (!questionnaire['enableWhen']) {
+        const temp: any = {};
+        const linkId = questionnaire['linkId'];
+        temp['linkId'] = linkId;
+        temp['text'] = questionnaire['text'];
+        temp['type'] = questionnaire['type'];
+        temp['required'] = questionnaire['required'];
+        temp['option'] = questionnaire['option'];
+        temp['answer'] = '';
+        questions[linkId] = [temp];
+      } else {
+        const temp = {};
+        temp['linkId'] = questionnaire['linkId'];
+        temp['text'] = questionnaire['text'];
+        temp['type'] = questionnaire['type'];
+        temp['answer'] = '';
+        temp['enableWhen'] = questionnaire['enableWhen'];
+        enableWhenList.push(temp);
       }
-    });
-
-
-
-    // checking dependents
-    this.checkDependentItem(this.items);
-    console.log(this.dependents);
-
-    console.log(this.responseId);
-    if (this.responseId === null) {
-      this.getResponseId();
     }
+    console.log(questions);
+    console.log(enableWhenList);
+    for (const enableQuestion of enableWhenList) {
+      const parentQuestionLinkId = enableQuestion.enableWhen[0]['question'];
+      questions[parentQuestionLinkId].push(enableQuestion);
+      console.log(questions[parentQuestionLinkId]);
+    }
+    console.log(questions);
+    if (Object.keys(questions).length > 0) {
+      for (const key of Object.keys(questions)) {
+        this.questionsList.push(questions[key]);
+      }
+    }
+    console.log(this.questionsList);
   }
 
   handleError(error) {
@@ -432,12 +460,11 @@ export class NewServiceRequestComponent implements OnInit {
   // getting response from thr server on "next"
   handleSuccessOnSave(data) {
     console.log(data);
-    this.responseId = data.id;
-    console.log(this.responseId);
-    this.questionnaireService.shareResponseId(this.responseId);
-    this.questionnaireService.shareServiceFormId(this.formId);
-
-    this.router.navigate(['/summary']);
+    this.createdsuccessfully = true;
+    // this.responseId = data.id;
+    // console.log(this.responseId);
+    // this.questionnaireService.shareResponseId(this.responseId);
+    // this.questionnaireService.shareServiceFormId(this.formId);
   }
 
   handleErrorOnSave(error) {
@@ -563,36 +590,19 @@ export class NewServiceRequestComponent implements OnInit {
 
   //  get status for the service request
 
-  checkingEnableWhen() {
-    this.qrequest.forEach((el, index) => {
-      // check if type = "choice"
-      if (el.type === 'choice') {
-        // console.log(el.item);
-        // console.log(el);
-        // check enableWhen data
-        if (el.item) {
-          // forEach loop
-          el.item.forEach((e, i) => {
-            // console.log(i);
-            // console.log(e);
-            // console.log(e.enableWhen[0]);
-            // check if enblewhen.question number === linkId number and enableWhen.answerString === model.data
-
-            // tslint:disable-next-line:no-shadowed-variable
-            this.items.forEach((element, index) => {
-              if (
-                e.enableWhen[i].question === element[index].linkId &&
-                e.enableWhen[i].answerString === element[index].answer
-              ) {
-                console.log(true);
-                // show options
-                console.log(e.option);
-                return e.option;
-              }
-            });
+  checkingEnableWhen(value, index) {
+    if (this.questionsList.length > 0) {
+      this.questionsList[index].forEach(question => {
+        if (question['enableWhen']) {
+          question.enabled = false;
+          question['enableWhen'].forEach(element => {
+            if (element['answerCoding']['code'] === value) {
+              question.enabled = true;
+            }
           });
         }
-      }
-    });
+      });
+    }
   }
 }
+

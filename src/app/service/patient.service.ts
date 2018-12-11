@@ -18,8 +18,6 @@ export class PatientService {
       '/Patient/' + pid, { headers: this.getHeaders() });
   }
   getPatientData(query: string) {
-    console.log(query);
-    console.log(environment.queryURI + '/Patient' + query);
     return this.httpClient.get<JSON>(environment.queryURI +
       '/Patient' + query, { headers: this.getHeaders() });
   }
@@ -30,14 +28,7 @@ export class PatientService {
   }
 
   postPatientData(patient) {
-    this.httpClient.post(environment.queryURI + '/Patient/', patient, { headers: this.postFHIRHeaders() }).subscribe(
-      data => {
-        console.log('POST Request is successful ', data);
-      },
-      error => {
-        console.log('Error', error);
-      }
-    );
+    return this.httpClient.post(environment.queryURI + '/Patient/', patient, { headers: this.postFHIRHeaders() });
   }
 
   sendObjecttoBundle(data) {

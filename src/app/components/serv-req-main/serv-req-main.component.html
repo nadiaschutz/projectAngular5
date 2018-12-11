@@ -1,6 +1,7 @@
+<div class='container'>
 <div class="main-header">
     <h5>Search Service Request</h5>
-    <h6>client department > service request</h6>
+    <h6>client department > search service request</h6>
   </div>
   <div class="search-box">
     <form #form="ngForm" class="center-align">
@@ -10,7 +11,7 @@
         <div class="row ">
   
           <div class="col">
-            <label for="name" class="label-name">Given Name</label>
+            <label for="name" class="label-name">First Name</label>
             <input type="text" 
             name="name" 
             id="name" 
@@ -20,7 +21,7 @@
           </div>
 
           <div class="col">
-              <label for="name" class="label-name">Family Name</label>
+              <label for="name" class="label-name">Last Name</label>
               <input type="text" 
               name="name" 
               id="name" 
@@ -34,12 +35,12 @@
         <div class="row">
   
           <div class="col">
-            <label for="clientid" class="label-name">Client ID</label>
+            <label for="clientid" class="label-name">Service Request ID</label>
             <input type="text" 
-            name="clientid" 
-            id="clientid" 
+            name="serviceRequestId" 
+            id="serviceRequestId" 
             class="form-control"
-            [(ngModel)]="clientId.data"
+            [(ngModel)]="serviceRequestId.data"
             placeholder="Enter">
           </div>
   
@@ -136,10 +137,10 @@
   
   
   <div>
-      <table class="table">
+      <table class="table  table-hover">
           <thead class="header-table">
             <tr>
-              <th scope="col">PRI</th>
+              <th scope="col">Service Request ID</th>
               <th scope="col">Date</th>
               <th scope="col">PSOHP Service</th>
               <th scope="col">Assesment Type</th>
@@ -150,17 +151,17 @@
             </tr>
           </thead>
           <tbody *ngIf="str===null" class="body-table">
-            <tr *ngFor="let q of servRequests" (click)="navigateToSummary(q)" class="request-list">
-              <td>{{q.id}}</td>
+            <tr *ngFor="let q of servRequests"  class="request-list">
+              <td (click)="navigateToSummary(q)" class="cursor">{{q.id}}</td>
               <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
               <td>{{getServiceType(q)}}</td>
               <td>{{getAssessmentType(q)}}</td>
               <td>{{getRegion(q)}}</td>
               <td>{{getCreatedBy(q)}}</td>
-              <td>{{getClientName(q)}}</td>
+              <td>{{q.subject.display}}</td>
               <td>{{q.status}}</td>
             </tr>
           </tbody>
         </table>
   </div>
-  
+</div>
