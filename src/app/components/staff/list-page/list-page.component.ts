@@ -3,7 +3,6 @@ import { QuestionnaireService } from '../../../service/questionnaire.service';
 import * as FHIR from '../../../interface/FHIR';
 import { Reference } from '@angular/compiler/src/render3/r3_ast';
 import { formatDate } from '@angular/common';
-import { start } from 'repl';
 
 @Component({
   selector: 'app-list-page',
@@ -143,6 +142,9 @@ export class ListPageComponent implements OnInit {
 
   assignEpisodeOfCare() {
     console.log(this.selectedItems);
+  }
+
+  getAllPractitioners() {
   }
 
   getIdFromReference(reference) {
