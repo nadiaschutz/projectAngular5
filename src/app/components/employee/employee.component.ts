@@ -195,12 +195,7 @@ export class EmployeeComponent implements OnInit {
       dob: new FormControl('', Validators.required),
 
       // Email
-      email: new FormControl('', [
-        Validators.required,
-        Validators.pattern(
-          /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-        )
-      ]),
+      email: new FormControl('', [Validators.required, Validators.email]),
 
       // Client's phone number (can be any number of their choosing)
       phoneNumber: new FormControl('', [
@@ -219,7 +214,11 @@ export class EmployeeComponent implements OnInit {
       language: new FormControl(null, Validators.required),
 
       // PRI (handled in Patient with an extension)
-      id: new FormControl('', Validators.required),
+      id: new FormControl('', [
+        Validators.required,
+        Validators.minLength(9),
+        Validators.maxLength(9)
+      ]),
 
       // Job title (handled in Patient with an extension)
       jobTitle: new FormControl('', Validators.required),
@@ -286,7 +285,8 @@ export class EmployeeComponent implements OnInit {
 
     this.employee_identifier.use = 'official';
     this.employee_identifier.value = this.employeeFormGroup.get('id').value;
-    this.employee_identifier.system = 'https://bcip.smilecdr.com/fhir/employeeid';
+    this.employee_identifier.system =
+      'https://bcip.smilecdr.com/fhir/employeeid';
 
     // Employee Address
 
@@ -377,16 +377,21 @@ export class EmployeeComponent implements OnInit {
 
     // Language info
 
-    if (this.employeeFormGroup.get('language').value.toLowerCase() === 'english') {
+    if (
+      this.employeeFormGroup.get('language').value.toLowerCase() === 'english'
+    ) {
       this.employee_language_coding.code = 'en';
       this.employee_language_coding.system = 'urn:ietf:bcp:47';
-      this.employee_language_coding.display = this.employeeFormGroup.get('language').value;
+      this.employee_language_coding.display = this.employeeFormGroup.get(
+        'language'
+      ).value;
     } else {
       this.employee_language_coding.code = 'fr';
       this.employee_language_coding.system = 'urn:ietf:bcp:47';
-      this.employee_language_coding.display = this.employeeFormGroup.get('language').value;
+      this.employee_language_coding.display = this.employeeFormGroup.get(
+        'language'
+      ).value;
     }
-
 
     // Telecome (phone)
 
@@ -428,7 +433,7 @@ export class EmployeeComponent implements OnInit {
 
     this.patientService.postPatientData(finalJSON).subscribe(data => {
       this.returnIDFromResponse(data),
-      this.router.navigateByUrl('/clientsummary')
+        this.router.navigateByUrl('/clientsummary');
     });
   }
 
@@ -438,7 +443,7 @@ export class EmployeeComponent implements OnInit {
 
   returnIDFromResponse(data) {
     const tempID = this.userService.getEmployeeSummaryID(data.id);
-    return  tempID;
+    return tempID;
   }
   goToSummary() {
     this.router.navigateByUrl('/employeesummary');
