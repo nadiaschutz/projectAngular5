@@ -1,9 +1,15 @@
 <h1>Work List</h1>
 
 <div class="container">
-  <div class="table-container">
+
+  <div class="row">
+    <button (click)="assignEpisodeOfCare()">Assign</button>
+  </div>
+
+  <div class="table-container" style="margin-top: 25px">
     <table class="officeList table  table-hover">
       <thead class="header-table">
+        <th>Select</th>
         <th>Service Request ID</th>
         <th>Client Name</th>
         <th>Assessment Type</th>
@@ -11,7 +17,10 @@
         <th>Status</th>
       </thead>
       <tbody class="body-table">
-        <tr *ngFor="let result of resultList">
+        <tr *ngFor="let result of resultList; let i = index">
+          <td>
+            <input type="checkbox" [(ngModel)]="selectedItems[i]">
+          </td>
           <td>{{result.episodeOfCareId}}</td>
           <td>{{result.clientName}}</td>
           <td>{{result.serviceAssessmentType}}</td>

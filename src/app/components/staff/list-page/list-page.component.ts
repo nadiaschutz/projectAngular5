@@ -16,6 +16,8 @@ export class ListPageComponent implements OnInit {
   patientList = [];
   questionnaireResponseList = [];
   resultList = [];
+  selectedItems = [];
+  selectedPractitioner = '';
 
   constructor(private questionnaireService: QuestionnaireService) { }
 
@@ -137,6 +139,10 @@ export class ListPageComponent implements OnInit {
       const diff = currentDate.getTime() - startDate.getTime();
       return Math.ceil(diff / (1000 * 3600 * 24));
     }
+  }
+
+  assignEpisodeOfCare() {
+    console.log(this.selectedItems);
   }
 
   getIdFromReference(reference) {
