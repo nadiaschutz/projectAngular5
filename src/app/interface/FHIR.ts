@@ -715,11 +715,11 @@ export class Task extends Resource implements Serializable<Task> {
     groupIdentifier: Identifier;
     replaces: Reference[];
     partOf: Reference[];
-    status: Code;
+    status: string;
     statusReason: CodeableConcept;
     businessStatus: CodeableConcept;
-    intent: Code;
-    priority: Code;
+    intent: string;
+    priority: string;
     code: CodeableConcept;
     description: string;
     focus: Reference;

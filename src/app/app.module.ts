@@ -34,7 +34,9 @@ import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
 import { ClientOnsubmitSummaryComponent } from './components/client-onsubmit-summary/client-onsubmit-summary.component';
-import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
+import { TasklistComponent } from './components/tasklist/tasklist.component';
+import { DatePipe } from '@angular/common';
+// import { EditNewServceRequestComponent } from './components/edit-new-servce-request/edit-new-servce-request.component';
 
 
 const routes: Routes = [
@@ -43,13 +45,14 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
   { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
   { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
-  { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
+  // { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
   { path: 'employeesummary', component: EmployeeSummaryComponent },
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: 'clientdepartment', component: ClientDepartmentComponent },
+  { path: 'assigntasks', component: TasklistComponent },
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
@@ -77,7 +80,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     DistrictOfficeComponent,
     ServiceRequestSummaryComponent,
     ClientOnsubmitSummaryComponent,
-    EditNewServiceRequestComponent
+    TasklistComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -101,7 +104,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     AuthGuardService,
     UserService,
     QuestionnaireService,
-    PatientService
+    PatientService,
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })
