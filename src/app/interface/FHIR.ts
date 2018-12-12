@@ -15,7 +15,7 @@ export class BackboneElement extends FHIRElement {
     modifierExtension: any;
 }
 /* FHIR classes used in resources */
-class Id {
+export class Id {
     private id: string;
 
     constructor(input?: string) {
@@ -669,6 +669,34 @@ export class Account extends Resource implements Serializable<Account> {
     }
 }
 
+export class EpisodeOfCare extends Resource implements Serializable<EpisodeOfCare> {
+
+    identifier: Identifier[];
+    status: string;
+    statusHistory: BackboneElement[];
+    type: CodeableConcept[];
+    diagnosis: BackboneElement[];
+    patient: Reference;
+    mangingOrganization: Reference;
+    period: Period;
+    referralRequest: Reference;
+    careManager: Reference;
+    team: Reference[];
+    account: Reference[];
+
+    deserialize(jsonObject: any): EpisodeOfCare {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+
+}
 export class CarePlan extends Resource implements Serializable<CarePlan> {
 
     identifier: Identifier[];

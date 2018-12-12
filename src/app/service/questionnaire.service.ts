@@ -58,8 +58,8 @@ export class QuestionnaireService {
   saveRequest(data: any) {
     return this.http.post(environment.queryURI + '/QuestionnaireResponse', data, { headers: this.getHeaders() });
   }
-  changeRequest(id, data: any) {
-    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, data, { headers: this.getHeaders() });
+  changeRequest(data: any) {
+    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + data['id'], data, { headers: this.getHeaders() });
   }
 
   deleteServiceRequest(serviceRequestId: string) {
@@ -96,6 +96,19 @@ export class QuestionnaireService {
     this.newResponseIdSubject.next(data);
     console.log('service response ID from service');
     console.log(data);
+  }
+
+  getAllUnassignedQuestionnaireResponses() {
+    // return this.http.get(environment.queryURI + '/QuestionnaireResponse?context:missing=true', {headers: this.getHeaders()});
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse', {headers: this.getHeaders()});
+  }
+
+  saveEpisodeOfCare(data) {
+    return this.http.post(environment.queryURI + '/EpisodeOfCare', data, {headers: this.getHeaders()});
+  }
+
+  getAllEpisodeOfCare() {
+    return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*', {headers: this.getHeaders()});
   }
 
 }
