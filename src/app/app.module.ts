@@ -18,7 +18,6 @@ import { NewServiceRequestNoClientComponent } from './components/new-service-req
 import { DependentComponent } from './components/dependent/dependent.component';
 import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
 import { ClientDepartmentComponent } from './components/client-department/client-department.component';
-import { NewAccountComponent } from './components/new-account/new-account.component';
 // import {fhir} from './interface/employee.d';
 
 import { FHIRService } from './service/fhir.service';
@@ -85,8 +84,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ServiceRequestSummaryComponent,
     ListPageComponent,
     ClientOnsubmitSummaryComponent,
-    TasklistComponent,
-    NewAccountComponent
+    TasklistComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
