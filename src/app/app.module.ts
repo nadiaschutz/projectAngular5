@@ -33,13 +33,11 @@ import { SummaryPageComponent } from './components/summary-page/summary-page.com
 import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
-<<<<<<< src/app/app.module.ts
 import { ListPageComponent } from './components/staff/list-page/list-page.component';
-=======
 import { ClientOnsubmitSummaryComponent } from './components/client-onsubmit-summary/client-onsubmit-summary.component';
 import { TasklistComponent } from './components/tasklist/tasklist.component';
 import { DatePipe } from '@angular/common';
->>>>>>> src/app/app.module.ts
+import { StaffService } from '../app/service/staff.service';
 // import { EditNewServceRequestComponent } from './components/edit-new-servce-request/edit-new-servce-request.component';
 
 
@@ -111,7 +109,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     UserService,
     QuestionnaireService,
     PatientService,
-    DatePipe
+    DatePipe,
+    StaffService
   ],
   bootstrap: [AppComponent]
 })

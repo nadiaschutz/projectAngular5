@@ -1,9 +1,20 @@
-<h1>Work List</h1>
 
+<div class="main-header">
+    <h5>Work List</h5>
+  </div>
+
+  <h6>Service Requests</h6>
 <div class="container">
 
-  <div class="row">
-    <button (click)="assignEpisodeOfCare()">Assign</button>
+  <div class="row" *ngIf="admins.length > 0" style="margin-left: 8px;">
+        <label style="margin-top: 10px; margin-right: 10px;">Assign an Admin</label>
+        <select class="form-control border-bottom" name="assignedAdmin"
+        [(ngModel)]="selectedAdmin">
+          <option [ngValue]="null">Select an admin</option>
+          <option *ngFor="let admin of admins" [value]="admin.id">{{admin.value}}</option>
+        </select>
+      
+        <button (click)="assignEpisodeOfCare()" class="btn special-button">Assign</button>
   </div>
 
   <div class="table-container" style="margin-top: 25px">
@@ -15,17 +26,27 @@
         <th>Assessment Type</th>
         <th>Total Days in Queue</th>
         <th>Status</th>
+        <th>Assigned to</th>
+        <th>Action</th>
+        <th>Work</th>
       </thead>
       <tbody class="body-table">
         <tr *ngFor="let result of resultList; let i = index">
           <td>
-            <input type="checkbox" [(ngModel)]="selectedItems[i]">
+            <input type="checkbox" [(ngModel)]="selectedEpisodes[i]" value="i">
           </td>
           <td>{{result.episodeOfCareId}}</td>
           <td>{{result.clientName}}</td>
           <td>{{result.serviceAssessmentType}}</td>
           <td>{{result.daysInQueue}}</td>
           <td>{{result.status}}</td>
+          <td>{{result.careManager}}</td>
+          <td>
+            <button (click)="release(result.episodeOfCareId)" class="special-button">Release</button>
+          </td>
+          <td>
+            <button (click)="goToWorkScreen()" class="special-button">Work Screen</button>
+          </td>
         </tr>
       </tbody>
     </table>
