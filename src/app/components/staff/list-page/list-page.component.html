@@ -4,8 +4,22 @@
   </div>
 
   <div class="container">
+
+    <div id="tabs" #tabs>
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" [ngClass]="{ 'active':activeTab==='serviceRequest'}" (click)="serviceRequest('serviceRequest')"
+              data-toggle="tab">Service Requests</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab"
+              (click)="task('task')">Tasks</a>
+        </li>
+      </ul>
+    </div>
     
-  <h6>Service Requests</h6>
+  <section *ngIf="activeTab === 'serviceRequest'" class="section">
+  <h6 class="sub-header">Service Requests</h6>
   <div class="row" *ngIf="admins.length > 0" style="margin-left: 8px;">
         <label style="margin-top: 10px; margin-right: 10px;">Assign an Admin</label>
         <select class="form-control border-bottom" name="selectedEpisodeAdmin"
@@ -25,9 +39,9 @@
         <th>Client Name</th>
         <th>Assessment Type</th>
         <th>Client Department</th>
-        <th>Total Days in Queue</th>
-        <th>Status</th>
         <th>Assigned to</th>
+        <th>Status</th>
+        <th>Total Days in Queue</th>
         <!-- <th>Action</th> -->
         <!-- <th>Work</th> -->
       </thead>
@@ -40,9 +54,9 @@
           <td>{{result.clientName}}</td>
           <td>{{result.serviceAssessmentType}}</td>
           <td>{{result.clientDepartment}}</td>
-          <td>{{result.daysInQueue}}</td>
-          <td>{{result.status}}</td>
           <td>{{result.careManager}}</td>
+          <td>{{result.status}}</td>
+          <td>{{result.daysInQueue}}</td>
           <!-- <td>
             <button (click)="release(result.episodeOfCareId)" class="special-button">Release</button>
           </td> -->
@@ -53,9 +67,10 @@
       </tbody>
     </table>
   </div>
+</section>
 
-  <div>
-      <h6>Task Lists</h6>
+<section *ngIf="activeTab === 'task'" class="section">
+      <h6 class="sub-header">Task Lists</h6>
       <div class="row" *ngIf="admins.length > 0" style="margin-left: 8px;">
           <label style="margin-top: 10px; margin-right: 10px;">Assign an Admin</label>
           <select class="form-control border-bottom" name="selectedTaskAdmin"
@@ -94,5 +109,5 @@
         </table>
     </div>
 
-  </div>
+  </section>
 </div>

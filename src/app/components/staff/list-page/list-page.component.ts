@@ -25,6 +25,7 @@ export class ListPageComponent implements OnInit {
   taskResultList = [];
   selectedTasks = [];
   selectedTaskAdmin = null;
+  activeTab = 'serviceRequest';
 
   constructor(private questionnaireService: QuestionnaireService,
   private tasksService: TasksService, private staffService: StaffService) { }
@@ -171,11 +172,17 @@ export class ListPageComponent implements OnInit {
   assignEpisodeOfCare() {
     for (let i = 0; i < this.selectedEpisodes.length; i++) {
       if (this.selectedEpisodes[i]) {
-        const reference = new FHIR.Reference;
-        reference.reference = 'Practitioner/' + this.selectedEpisodeAdmin;
         const selectedEpisodeOfCareId = this.episodeResultList[i]['episodeOfCareId'];
         const episode = this.episodesOfCareList[selectedEpisodeOfCareId];
-        episode.careManager = reference;
+        console.log(this.selectedEpisodeAdmin);
+        if (this.selectedEpisodeAdmin !== 'none') {
+          const careManagerReference = new FHIR.Reference;
+          careManagerReference.reference = 'Practitioner/' + this.selectedEpisodeAdmin;
+          episode.careManager = careManagerReference;
+        } else {
+          console.log('Hello');
+          delete episode.careManager;
+        }
         this.updateEpisodeOfCare(episode);
       }
     }
@@ -194,6 +201,7 @@ export class ListPageComponent implements OnInit {
     this.tasksService.getAllPractitioners().subscribe(data => {
       data['entry'].forEach(element => {
         const admin = element.resource;
+        this.admins.push({id: 'none', value: 'None'});
         this.admins.push({id: admin.id, value: this.getNameFromResource(admin)});
         this.adminListWithIds[admin.id] = admin;
       });
@@ -288,6 +296,14 @@ export class ListPageComponent implements OnInit {
         this.buildTaskResponseObject(tasks);
       });
     });
+  }
+
+  serviceRequest(activeTab) {
+    this.activeTab = activeTab;
+  }
+
+  task(activeTab) {
+    this.activeTab = activeTab;
   }
 
 }
