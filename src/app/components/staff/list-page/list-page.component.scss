@@ -13,3 +13,18 @@
     vertical-align: middle;
     padding: 10px;
 }
+
+.h6 {
+    margin-top: 20px;
+}
+
+.section {
+    margin-top: 25px;
+}
+.nav-item {
+    cursor: pointer;
+}
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #334f75;
+}
