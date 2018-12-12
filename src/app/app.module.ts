@@ -38,7 +38,8 @@ import { ClientOnsubmitSummaryComponent } from './components/client-onsubmit-sum
 import { TasklistComponent } from './components/tasklist/tasklist.component';
 import { DatePipe } from '@angular/common';
 import { StaffService } from '../app/service/staff.service';
-// import { EditNewServceRequestComponent } from './components/edit-new-servce-request/edit-new-servce-request.component';
+import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
+import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
 
 
 const routes: Routes = [
@@ -47,7 +48,7 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
   { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
   { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
-  // { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
+  { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
