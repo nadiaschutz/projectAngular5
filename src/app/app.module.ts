@@ -85,7 +85,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     ServiceRequestSummaryComponent,
     ListPageComponent,
     ClientOnsubmitSummaryComponent,
-    TasklistComponent
+    TasklistComponent,
+    EditEmployeeComponent,
+    EditNewServiceRequestComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
