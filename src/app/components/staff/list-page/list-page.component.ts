@@ -16,12 +16,15 @@ export class ListPageComponent implements OnInit {
   episodesOfCareList = [];
   patientList = [];
   questionnaireResponseList = [];
-  resultList = [];
+  episodeResultList = [];
   selectedEpisodes = [];
-  selectedPractitioner = '';
   admins = [];
   adminListWithIds = [];
-  selectedAdmin = null;
+  selectedEpisodeAdmin = null;
+  taskList = [];
+  taskResultList = [];
+  selectedTasks = [];
+  selectedTaskAdmin = null;
 
   constructor(private questionnaireService: QuestionnaireService,
   private tasksService: TasksService, private staffService: StaffService) { }
@@ -31,8 +34,11 @@ export class ListPageComponent implements OnInit {
     this.questionnaireService.getAllUnassignedQuestionnaireResponses().subscribe(data => {
       this.mapToEpisodeOfCare(data);
       this.questionnaireService.getAllEpisodeOfCare().subscribe(episodes => {
-        this.buildResponseObject(episodes);
+        this.buildEpisodeResponseObject(episodes);
       });
+    });
+    this.tasksService.getAllTasks().subscribe(tasks => {
+      this.buildTaskResponseObject(tasks);
     });
   }
 
@@ -80,15 +86,13 @@ export class ListPageComponent implements OnInit {
     this.episodesOfCareList = [];
     this.patientList = [];
     this.questionnaireResponseList = [];
-    this.resultList = [];
+    this.episodeResultList = [];
     this.selectedEpisodes = [];
-    this.selectedPractitioner = '';
-    this.selectedAdmin = null;
+    this.selectedEpisodeAdmin = null;
   }
 
-  buildResponseObject(episodes) {
+  buildEpisodeResponseObject(episodes) {
     this.resetData();
-    console.log(episodes);
     episodes.entry.forEach(element => {
       const resource = element.resource;
       if (resource.resourceType === 'EpisodeOfCare') {
@@ -102,14 +106,12 @@ export class ListPageComponent implements OnInit {
         this.patientList[resource.id] = resource;
       }
     });
-    console.log(this.episodesOfCareList);
-    console.log(this.questionnaireResponseList);
-    console.log(this.patientList);
     this.episodesOfCareList.forEach(episode => {
       const temp = {};
       temp['episodeOfCareId'] = episode['id'];
       temp['clientName'] = this.getClientName(episode['patient']['reference']);
       temp['serviceAssessmentType'] = this.getServiceAssessmentType(episode['id']);
+      temp['clientDepartment'] = this.getClientDepartment(episode['id']);
       temp['daysInQueue'] = this.getDaysInQueue(episode['period']['start']);
       temp['status'] = episode['status'];
       if (episode['careManager']) {
@@ -117,10 +119,9 @@ export class ListPageComponent implements OnInit {
       } else {
         temp['careManager'] = 'Unassigned';
       }
-      this.resultList.push(temp);
+      this.episodeResultList.push(temp);
     });
-    this.selectedEpisodes = new Array(this.resultList.length);
-    console.log(this.resultList);
+    this.selectedEpisodes = new Array(this.episodeResultList.length);
   }
 
   getClientName(patientReference: string) {
@@ -138,15 +139,23 @@ export class ListPageComponent implements OnInit {
   }
 
   getServiceAssessmentType(episodeOfCareId) {
-    let serviceAssessmentType = '';
+    return this.getQuestionnaireReponseItem(episodeOfCareId, 'PSOHP Service');
+  }
+
+  getClientDepartment(episodeOfCareId) {
+    return this.getQuestionnaireReponseItem(episodeOfCareId, 'Submitting Department');
+  }
+
+  getQuestionnaireReponseItem(episodeOfCareId, itemText) {
+    let asnwer = '';
     const questionnaireResponse = this.questionnaireResponseList[episodeOfCareId];
     if (questionnaireResponse && questionnaireResponse.item) {
       questionnaireResponse.item.forEach(item => {
-        if (item.text === 'PSOHP Service') {
-          serviceAssessmentType = item['answer'][0]['valueString'];
+        if (item.text === itemText) {
+          asnwer = item['answer'][0]['valueString'];
         }
       });
-      return serviceAssessmentType;
+      return asnwer;
     }
   }
 
@@ -160,21 +169,12 @@ export class ListPageComponent implements OnInit {
   }
 
   assignEpisodeOfCare() {
-    console.log(this.selectedEpisodes);
-    console.log(this.selectedAdmin);
-    const selectedAdmin = this.adminListWithIds[this.selectedAdmin];
-    console.log(this.selectedEpisodes.length);
     for (let i = 0; i < this.selectedEpisodes.length; i++) {
       if (this.selectedEpisodes[i]) {
-        console.log(i);
-        console.log(this.resultList[i]);
-        const selectedEpisodeOfCareId = this.resultList[i]['episodeOfCareId'];
-        console.log(selectedEpisodeOfCareId);
-        console.log(this.episodesOfCareList[selectedEpisodeOfCareId]);
         const reference = new FHIR.Reference;
-        reference.reference = 'Practitioner/' + this.selectedAdmin;
+        reference.reference = 'Practitioner/' + this.selectedEpisodeAdmin;
+        const selectedEpisodeOfCareId = this.episodeResultList[i]['episodeOfCareId'];
         const episode = this.episodesOfCareList[selectedEpisodeOfCareId];
-        console.log(episode);
         episode.careManager = reference;
         this.updateEpisodeOfCare(episode);
       }
@@ -185,7 +185,7 @@ export class ListPageComponent implements OnInit {
     const episodeString = JSON.stringify(episode);
     this.staffService.updateEpisodeOfCare(episode.id, episodeString).subscribe(data => {
       this.questionnaireService.getAllEpisodeOfCare().subscribe(episodes => {
-        this.buildResponseObject(episodes);
+        this.buildEpisodeResponseObject(episodes);
       });
     });
   }
@@ -194,31 +194,30 @@ export class ListPageComponent implements OnInit {
     this.tasksService.getAllPractitioners().subscribe(data => {
       data['entry'].forEach(element => {
         const admin = element.resource;
-        this.admins.push({id: admin.id, value: this.getAdminName(admin)});
+        this.admins.push({id: admin.id, value: this.getNameFromResource(admin)});
         this.adminListWithIds[admin.id] = admin;
       });
-      console.log(this.adminListWithIds);
-      console.log(this.admins);
     });
   }
 
   getAdminNameFromReference(adminReference) {
     const adminId = this.getIdFromReference(adminReference);
     const admin = this.adminListWithIds[adminId];
-    return this.getAdminName(admin);
+    return this.getNameFromResource(admin);
   }
 
-  getAdminName(admin: string) {
+  getNameFromResource(resource: string) {
     let lastName = '';
     let firstName = '';
-    admin['name'].forEach(adminName => {
-      lastName = adminName['family'];
-      adminName.given.forEach(givenName => {
-        firstName += givenName;
+    if (resource && resource['name']) {
+      resource['name'].forEach(resourceName => {
+        lastName = resourceName['family'];
+        resourceName.given.forEach(givenName => {
+          firstName += givenName;
+        });
       });
-      firstName = adminName['given'][0];
-    });
-    return firstName + ' ' + lastName;
+      return firstName + ' ' + lastName;
+    }
   }
 
   release(episodeOfCareId) {
@@ -231,6 +230,64 @@ export class ListPageComponent implements OnInit {
 
   getIdFromReference(reference) {
     return reference.substring(reference.indexOf('/') + 1, reference.length);
+  }
+
+  resetTaskData() {
+    this.taskResultList = [];
+    this.taskList = [];
+    this.selectedTasks = [];
+    this.selectedTaskAdmin = null;
+  }
+
+  buildTaskResponseObject(tasks) {
+    this.resetTaskData();
+    tasks.entry.forEach(element => {
+      const task = element.resource;
+      this.taskList[task.id] = task;
+    });
+    this.taskList.forEach(task => {
+      console.log(task);
+      const temp = {};
+      temp['id'] = task.id;
+      temp['serviceRequestId'] = this.getIdFromReference(task['context']['reference']);
+      temp['from'] = formatDate(new Date(task['meta']['lastUpdated']), 'yyyy-MM-dd', 'en');
+      temp['dateCreated'] = this.getDaysInQueue(task['meta']['lastUpdated']);
+      temp['status'] = task.status;
+      if (task.owner) {
+        temp['owner'] = this.getAdminNameFromReference(task['owner']['reference']);
+      } else {
+        temp['owner'] = 'Unassigned';
+      }
+      this.taskResultList.push(temp);
+    });
+    this.selectedTasks = new Array(this.taskResultList.length);
+    console.log(this.taskResultList);
+  }
+
+  assignTaskToAdmin() {
+    for (let i = 0; i < this.selectedTasks.length; i++) {
+      if (this.selectedTasks[i]) {
+        const ownerReference = new FHIR.Reference;
+        ownerReference.reference = 'Practitioner/' + this.selectedTaskAdmin;
+        const selectedTaskId = this.taskResultList[i]['id'];
+        const task = this.taskList[selectedTaskId];
+        delete task.owner;
+        console.log(task);
+        console.log(this.selectedTaskAdmin);
+        task.owner = ownerReference;
+        console.log(task);
+        this.updateTask(task);
+      }
+    }
+  }
+
+  updateTask(taskData) {
+    const taskDataString = JSON.stringify(taskData);
+    this.tasksService.updateTask(taskData.id, taskDataString).subscribe(data => {
+      this.tasksService.getAllTasks().subscribe(tasks => {
+        this.buildTaskResponseObject(tasks);
+      });
+    });
   }
 
 }
