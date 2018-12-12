@@ -39,7 +39,7 @@ export class NewAccountComponent implements OnInit {
     private patientService: PatientService,
     private router: Router
   ) { }
-  
+
   accountTypes: AccountType[] = [
     { value: 'Client Department', viewValue: 'Client Department' },
     { value: 'PSOHP', viewValue: 'PSOHP' }
