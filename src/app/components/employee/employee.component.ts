@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import {
   FormBuilder,
   FormGroup,
   Validators,
-  FormControl
+  FormControl,
+  NgControlStatusGroup
 } from '@angular/forms';
+
 import { HttpClient } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
 
@@ -32,6 +35,8 @@ export interface LanguageType {
   styleUrls: ['./employee.component.scss']
 })
 export class EmployeeComponent implements OnInit {
+  datePickerConfig: Partial<BsDatepickerConfig>;
+
   // Declaration for Employree form group object
 
   employeeFormGroup: FormGroup;
@@ -125,6 +130,18 @@ export class EmployeeComponent implements OnInit {
   // list of  Languages
   languages = ['English', 'French'];
 
+  // list of Provinces and territories in alphabetical order
+  provinces = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
+
+
+  // list of countries
+  countries = ['Canada'];
+
+  minDate: Date;
+  maxDate: Date;
+
+
+
   i;
   constructor(
     private fb: FormBuilder,
@@ -140,6 +157,12 @@ export class EmployeeComponent implements OnInit {
 
     const browserLang = translate.getBrowserLang();
     translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
+
+
+    this.minDate = new Date();
+    this.maxDate = new Date();
+    this.minDate.setDate(this.minDate.getDate() - 43800);
+    this.maxDate.setDate(this.maxDate.getDate());
   }
 
   accountTypes: AccountType[] = [
@@ -153,6 +176,10 @@ export class EmployeeComponent implements OnInit {
   ];
 
   ngOnInit() {
+
+    this.datePickerConfig = Object.assign({},
+      {containerClass: 'theme-dark-blue'});
+
     this.dependentsArray = new Array();
     this.i = 0;
     // Set Department List

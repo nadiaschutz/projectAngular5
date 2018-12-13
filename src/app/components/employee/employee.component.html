@@ -5,18 +5,9 @@
   </div>
   <div id="content-form">
 
-    <!-- <div class="row">
-            <div class="col-6">
-              <label for="type">Client Type</label>
-              <select class="form-control" formControlName="type" id="type" required>
-                <option *ngFor="let type of accountTypes" [value]="type.value">
-                  {{type.viewValue}}
-                </option>
-              </select>
-            </div>
-          </div> -->
 
-    <form [formGroup]="employeeFormGroup" novalidate>
+
+    <form [formGroup]="employeeFormGroup">
       <section class="form-section">
         <div class='header'>
           <h6>
@@ -26,20 +17,39 @@
         </div>
         <div class="row">
           <div class="col">
+
+
             <label for="givenName">First Name</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName"
-              required>
-            <div class="invalid-feedback">
-              Must be two or more characters long
+            <input type="text"
+              class="form-control"
+              placeholder="Enter"
+              formControlName="givenName"
+              id="givenName"
+              name="givenName">
+
+            <div *ngIf="employeeFormGroup.controls['givenName'].invalid
+            && (employeeFormGroup.controls['givenName'].touched || employeeFormGroup.controls['givenName'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
             </div>
           </div>
           <div class="col">
             <label for="familyName">Last Name</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
+            <input type="text"
+              class="form-control"
+              placeholder="Enter"
+              formControlName="familyName"
+              id="familyName"
               required>
-            <div class="invalid-feedback">
-              Must be two or more characters long
+
+            <div *ngIf="employeeFormGroup.controls['familyName'].invalid
+            && (employeeFormGroup.controls['familyName'].touched || employeeFormGroup.controls['familyName'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
             </div>
+            
           </div>
         </div>
 
@@ -49,17 +59,42 @@
 
         <div class="row">
           <div class="col">
+            <div class="form-group">
+              
             <label for="dob">Date of Birth</label>
-            <input type="date" class="form-control" placeholder="Enter" formControlName="dob" id="dob" required>
+
+              <!-- <input type="text"
+              class="form-control"
+              bsDatePicker
+              formControlName="dob"
+              id="dob"
+              required> -->
+
+              <input class="form-control"
+              type="text"
+              placeholder="Datepicker"
+              formControlName="dob"
+              id="dob"
+              bsDatepicker
+              [bsConfig]='datePickerConfig'
+              [minDate]="minDate"
+              [maxDate]="maxDate"
+              red>
+
             <div class="invalid-feedback">
               Cannot be blank
             </div>
           </div>
+        </div>
           <div class="col">
             <label for="type">Preferred Language</label>
-            <select class="form-control" formControlName="language" id="language" placeholder="Select a language"
+            <select class="form-control"
+              formControlName="language"
+              id="language"
+              placeholder="Select a language"
               required>
-              <option *ngFor="let lang of languageList" [value]="lang.value">
+              <option *ngFor="let lang of languageList"
+                [value]="lang.value">
                 {{lang.viewValue}}
               </option>
               <div class="invalid-feedback">
@@ -86,7 +121,11 @@
         <div class="row">
           <div class="col">
             <label for="email">Email</label>
-            <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email"
+            <input type="text"
+              class="form-control"
+              placeholder="sample@email.com"
+              formControlName="email"
+              id="email"
               required>
             <div class="invalid-feedback">
               Must be of format: email@email.com
@@ -94,7 +133,11 @@
           </div>
           <div class="col">
             <label for="phoneNumber">Phone Number</label>
-            <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber"
+            <input type="text"
+              class="form-control"
+              placeholder="0000000000"
+              formControlName="phoneNumber"
+              id="phoneNumber"
               required>
             <div class="invalid-feedback">
               Must be ten digits long, no spaces, characters or dashes
@@ -105,7 +148,11 @@
         <div class="row">
           <div class="col">
             <label for="addressStreet">Street Address</label>
-            <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet" id="addressStreet"
+            <input type="text"
+              class="form-control"
+              placeholder="123 Lane"
+              formControlName="addressStreet"
+              id="addressStreet"
               required>
             <div class="invalid-feedback">
               Cannot be blank
@@ -113,7 +160,11 @@
           </div>
           <div class="col">
             <label for="addressCity">City</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="addressCity" id="addressCity"
+            <input type="text"
+              class="form-control"
+              placeholder="Enter"
+              formControlName="addressCity"
+              id="addressCity"
               required>
             <div class="invalid-feedback">
               Cannot be blank
@@ -124,22 +175,46 @@
         <div class="row">
           <div class="col-3">
             <label for="addressProv">Province</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="addressProv" id="addressProv"
+            <!-- <input type="text" class="form-control" placeholder="Enter" formControlName="addressProv" id="addressProv"
+              required> -->
+
+
+            <select class="form-control"
+              formControlName="addressProv"
+              placeholder="Enter"
               required>
+              <option [ngValue]="null">Select Type</option>
+              <option *ngFor="let province of provinces"
+                [value]="province">
+                {{province}}
+              </option>
+            </select>
+
+
+
             <div class="invalid-feedback">
               Cannot be blank
             </div>
           </div>
           <div class="col-3">
             <label for="addressPcode">Postal Code</label>
-            <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode" id="addressPcode">
+            <input type="text"
+              class="form-control"
+              placeholder="M1P1P1"
+              formControlName="addressPcode"
+              id="addressPcode"
+              required>
             <div class="invalid-feedback">
               Cannot be blank
             </div>
           </div>
           <div class="col-6">
             <label for="addressCountry">Country</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="addressCountry" id="addressCountry">
+            <input type="text"
+              class="form-control"
+              formControlName="addressCountry"
+              id="addressCountry"
+              required>
             <div class="invalid-feedback">
               Cannot be blank
             </div>
@@ -160,14 +235,24 @@
         <div class="row">
           <div class="col">
             <label for="jobTitle">Job Title</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle">
+            <input type="text"
+              class="form-control"
+              placeholder="Enter"
+              formControlName="jobTitle"
+              id="jobTitle"
+              required>
             <div class="invalid-feedback">
               Cannot be blank
             </div>
           </div>
           <div class="col">
             <label for="id">Associated Employee PRI</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id">
+            <input type="text"
+              class="form-control"
+              placeholder="Enter"
+              formControlName="id"
+              id="id"
+              required>
             <div class="invalid-feedback">
               Cannot be blank
             </div>
@@ -177,16 +262,24 @@
         <div class="row">
           <div class="col">
             <label for="departmentName">Derpartment Name</label>
-            <select class="form-control" formControlName="departmentName" id="departmentName">
-              <option *ngFor="let dept of department" [value]="dept">
+            <select class="form-control"
+              formControlName="departmentName"
+              id="departmentName"
+              required>
+              <option *ngFor="let dept of department"
+                [value]="dept">
                 {{dept}}
               </option>
             </select>
           </div>
           <div class="col">
             <label for="departmentBranch">Department Branch</label>
-            <select class="form-control" formControlName="departmentBranch" id="departmentBranch">
-              <option *ngFor="let branch of branches" [value]="branch">
+            <select class="form-control"
+              formControlName="departmentBranch"
+              id="departmentBranch"
+              required>
+              <option *ngFor="let branch of branches"
+                [value]="branch">
                 {{branch}}
               </option>
             </select>
@@ -196,31 +289,51 @@
         <div class="row">
           <div class="col">
             <label for="referenceOne">Cross-reference No. 1</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne">
+            <input type="text"
+              class="form-control"
+              placeholder="Enter"
+              formControlName="referenceOne"
+              id="referenceOne"
+              required>
           </div>
           <div class="col">
             <label for="referenceTwo">Cross-reference No. 2</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
+            <input type="text"
+              class="form-control"
+              placeholder="Enter"
+              formControlName="referenceTwo"
+              id="referenceTwo">
           </div>
         </div>
 
       </section>
 
     </form>
-  
 
-      <div class="col">
-        <div class="button-section line">
-          <button class="btn regular-button float-right" [disabled]="!employeeFormGroup.valid" (click)="setEmployee()">Submit</button>
-          <div class="valid-feedback">
-            Success!
-          </div>
-          <button class="btn regular-button" (click)="returnToDashboard()">Return to Dashboard</button>
+
+    <div class="col">
+      <div class="button-section line">
+        <button class="btn regular-button float-right"
+          [disabled]="!employeeFormGroup.valid"
+          (click)="setEmployee()">Submit</button>
+        <div class="valid-feedback">
+          Success!
         </div>
+        <button class="btn regular-button"
+          (click)="returnToDashboard()">Return to Dashboard</button>
       </div>
-
-
     </div>
 
-    
+
   </div>
+
+
+</div>
+
+<br>
+<br>
+<br>
+
+Angular/form: {{employeeFormGroup.value | json }}
+<br>
+<br>

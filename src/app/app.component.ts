@@ -7,6 +7,7 @@ import { PatientService } from './service/patient.service';
 import { UserService } from './service/user.service';
 
 import * as Dependent from './interface/patient';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ import * as Dependent from './interface/patient';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  
   title = 'nohis';
 
   sessionObject;
@@ -34,6 +36,7 @@ export class AppComponent implements OnInit {
       oidc: false
     });
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
+    
 
   }
 
