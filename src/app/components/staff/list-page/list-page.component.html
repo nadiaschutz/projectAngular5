@@ -25,6 +25,7 @@
         <select class="form-control border-bottom" name="selectedEpisodeAdmin"
         [(ngModel)]="selectedEpisodeAdmin">
           <option [ngValue]="null">Select an admin</option>
+          <option [value]="'none'">None</option>
           <option *ngFor="let admin of admins" [value]="admin.id">{{admin.value}}</option>
         </select>
       
@@ -34,7 +35,10 @@
   <div class="table-container" style="margin-top: 25px">
     <table class="officeList table  table-hover">
       <thead class="header-table">
-        <th>Select</th>
+        <th>
+            <input type="checkbox" (change)="selectAllEpisodes()" 
+            [(ngModel)]="selectAllEpisodesCheck">
+        </th>
         <th>Service Request ID</th>
         <th>Client Name</th>
         <th>Assessment Type</th>
@@ -85,13 +89,18 @@
     <div class="table-container" style="margin-top: 25px">
         <table class="officeList table  table-hover">
             <thead class="header-table">
-              <th>Select</th>
+              <th>
+                  <input type="checkbox" (change)="selectAllTasks()" 
+                    [(ngModel)]="selectAllTasksCheck">
+              </th>
               <th>ID</th>
               <th>Service Request ID</th>
+              <th>Description</th>
+              <th>Priority</th>
               <th>Created On</th>
-              <th>Total Days in Queue</th>
-              <th>Status</th>
               <th>Assigned To</th>
+              <th>Status</th>
+              <th>Total Days in Queue</th>
             </thead>
             <tbody class="body-table">
               <tr *ngFor="let task of taskResultList; let i = index;">
@@ -100,10 +109,12 @@
                 </td>
                 <td>{{task.id}}</td>
                 <td>{{task.serviceRequestId}}</td>
+                <td>{{task.description}}</td>
+                <td>{{task.priority}}</td>
                 <td>{{task.from}}</td>
-                <td>{{task.dateCreated}}</td>
-                <td>{{task.status}}</td>
                 <td>{{task.owner}}</td>
+                <td>{{task.status}}</td>
+                <td>{{task.dateCreated}}</td>
               </tr>
             </tbody>
         </table>
