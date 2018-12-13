@@ -26,6 +26,8 @@ export class ListPageComponent implements OnInit {
   selectedTasks = [];
   selectedTaskAdmin = null;
   activeTab = 'serviceRequest';
+  selectAllEpisodesCheck = false;
+  selectAllTasksCheck = false;
 
   constructor(private questionnaireService: QuestionnaireService,
   private tasksService: TasksService, private staffService: StaffService) { }
@@ -90,6 +92,7 @@ export class ListPageComponent implements OnInit {
     this.episodeResultList = [];
     this.selectedEpisodes = [];
     this.selectedEpisodeAdmin = null;
+    this.selectAllEpisodesCheck = false;
   }
 
   buildEpisodeResponseObject(episodes) {
@@ -180,7 +183,6 @@ export class ListPageComponent implements OnInit {
           careManagerReference.reference = 'Practitioner/' + this.selectedEpisodeAdmin;
           episode.careManager = careManagerReference;
         } else {
-          console.log('Hello');
           delete episode.careManager;
         }
         this.updateEpisodeOfCare(episode);
@@ -201,7 +203,6 @@ export class ListPageComponent implements OnInit {
     this.tasksService.getAllPractitioners().subscribe(data => {
       data['entry'].forEach(element => {
         const admin = element.resource;
-        this.admins.push({id: 'none', value: 'None'});
         this.admins.push({id: admin.id, value: this.getNameFromResource(admin)});
         this.adminListWithIds[admin.id] = admin;
       });
@@ -245,6 +246,7 @@ export class ListPageComponent implements OnInit {
     this.taskList = [];
     this.selectedTasks = [];
     this.selectedTaskAdmin = null;
+    this.selectAllTasksCheck = false;
   }
 
   buildTaskResponseObject(tasks) {
@@ -254,9 +256,10 @@ export class ListPageComponent implements OnInit {
       this.taskList[task.id] = task;
     });
     this.taskList.forEach(task => {
-      console.log(task);
       const temp = {};
       temp['id'] = task.id;
+      temp['priority'] = task['priority'];
+      temp['description'] = task['description'];
       temp['serviceRequestId'] = this.getIdFromReference(task['context']['reference']);
       temp['from'] = formatDate(new Date(task['meta']['lastUpdated']), 'yyyy-MM-dd', 'en');
       temp['dateCreated'] = this.getDaysInQueue(task['meta']['lastUpdated']);
@@ -304,6 +307,26 @@ export class ListPageComponent implements OnInit {
 
   task(activeTab) {
     this.activeTab = activeTab;
+  }
+
+  selectAllEpisodes() {
+    for (let i = 0; i < this.selectedEpisodes.length; i++) {
+      if (this.selectAllEpisodesCheck) {
+        this.selectedEpisodes[i] = true;
+      } else {
+        this.selectedEpisodes[i] = false;
+      }
+    }
+  }
+
+  selectAllTasks() {
+    for (let i = 0; i < this.selectedTasks.length; i++) {
+      if (this.selectAllTasksCheck) {
+        this.selectedTasks[i] = true;
+      } else {
+        this.selectedTasks[i] = false;
+      }
+    }
   }
 
 }
