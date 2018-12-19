@@ -21,7 +21,6 @@ export class UserService {
 
   selectID = '';
   selectedIDForEmployeePostSummary = '';
-  selectedServiceRequestID = '';
   constructor(
 
     private httpClient: HttpClient,
@@ -156,12 +155,6 @@ export class UserService {
     return headers;
   }
 
-  saveSelectedServiceRequestID(id) {
-    this.selectedServiceRequestID = id;
-  }
-  getSelectedServiceRequestID(): string {
-    return this.selectedServiceRequestID;
-  }
   saveClientDepartment(data) {
     return this.httpClient.post(environment.queryURI + '/Organization/', data,
     {headers: this.postFHIRHeaders()});

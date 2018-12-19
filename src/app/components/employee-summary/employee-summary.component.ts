@@ -54,11 +54,8 @@ export class EmployeeSummaryComponent implements OnInit {
 
   populatePatientArray(data) {
     this.linkID = '';
-    
     this.selected = data;
     console.log(this.selected);
-
-    
 
     if (this.selected.extension) {
       this.selected.extension.forEach(item => {
@@ -163,8 +160,6 @@ export class EmployeeSummaryComponent implements OnInit {
   // }
 
 
-
-
   getServReqData(data) {
     console.log(data.entry);
     if (data.entry) {
@@ -175,13 +170,6 @@ export class EmployeeSummaryComponent implements OnInit {
   getServReqDataError(error) {
     console.log(error);
   }
-
-
-  navigateToSummary(servReqObj) {
-    this.userService.saveSelectedServiceRequestID(servReqObj['resource']['id']);
-    this.router.navigateByUrl('service-request-summary');
-  }
-
 
   getServiceType(serviceRequestObj): string {
     let result = '-';
@@ -199,7 +187,6 @@ export class EmployeeSummaryComponent implements OnInit {
             }
         });
       }
-    
     return result;
   }
 
@@ -207,7 +194,6 @@ export class EmployeeSummaryComponent implements OnInit {
 
   getAssessmentType(serviceRequestObj): string {
       return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
-    
     }
 
     getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
@@ -218,7 +204,6 @@ export class EmployeeSummaryComponent implements OnInit {
           if (item.text === text) {
             if (item['answer']) {
               if (item.answer[0].valueString.indexOf('-') > 0) {
-  
                 if (dashNum === 1) {
                   result = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
                 }

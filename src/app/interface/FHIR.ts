@@ -704,8 +704,8 @@ export class CarePlan extends Resource implements Serializable<CarePlan> {
     basedOn: Reference[];
     replaces: Reference[];
     partOf: Reference[];
-    status: Code;
-    intent: Code;
+    status: string;
+    intent: string;
     category: CodeableConcept[];
     title: string;
     description: string;

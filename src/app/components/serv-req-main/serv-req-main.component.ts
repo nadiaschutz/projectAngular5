@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { UserService } from 'src/app/service/user.service';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { QrequestService } from 'src/app/service/qrequest.service';
 import { Router } from '@angular/router';
@@ -137,7 +136,6 @@ export class ServReqMainComponent implements OnInit {
 
   constructor(
     private oauthService: OAuthService,
-    private userService: UserService,
     private httpClient: HttpClient,
     private qrequestService: QrequestService,
     private patientService: PatientService,
@@ -379,8 +377,6 @@ export class ServReqMainComponent implements OnInit {
 
         });
       } else {
-
-     
         serviceRequestObj.item.forEach(item => {
           if (item.text === 'PSOHP Service') {
             if (item['answer']) {
@@ -476,11 +472,6 @@ export class ServReqMainComponent implements OnInit {
       result = '-';
     }
     return result;
-  }
-
-  navigateToSummary(servReqObj) {
-    this.userService.saveSelectedServiceRequestID(servReqObj['id']);
-    this.router.navigateByUrl('service-request-summary');
   }
 
 }

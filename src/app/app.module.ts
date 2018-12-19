@@ -33,15 +33,16 @@ import { SummaryPageComponent } from './components/summary-page/summary-page.com
 import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
-import { ListPageComponent } from './components/staff/list-page/list-page.component';
 import { ClientOnsubmitSummaryComponent } from './components/client-onsubmit-summary/client-onsubmit-summary.component';
 import { TasklistComponent } from './components/tasklist/tasklist.component';
 import { DatePipe } from '@angular/common';
 import { StaffService } from '../app/service/staff.service';
 import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
 import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
+import { ListPageComponent } from './components/staff/list-page/list-page.component';
 
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
 
 
 const routes: Routes = [
@@ -59,8 +60,9 @@ const routes: Routes = [
   { path: 'clientdepartment', component: ClientDepartmentComponent },
   { path: 'assigntasks', component: TasklistComponent },
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
-  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
+  { path: 'service-request-summary/:id', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/work-screen/:id', component: WorkScreenComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
 ];
 
@@ -89,7 +91,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ClientOnsubmitSummaryComponent,
     TasklistComponent,
     EditEmployeeComponent,
-    EditNewServiceRequestComponent
+    EditNewServiceRequestComponent,
+    WorkScreenComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
