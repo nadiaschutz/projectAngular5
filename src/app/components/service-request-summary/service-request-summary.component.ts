@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../service/user.service';
 import { QrequestService } from '../../service/qrequest.service';
 import { QuestionnaireService } from '../../service/questionnaire.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-service-request-summary',
@@ -15,11 +14,11 @@ export class ServiceRequestSummaryComponent implements OnInit {
   serviceRequestID = null;
   showSuccessMessage = false;
 
-  constructor(private userService: UserService, private qrequestService: QrequestService,
-  private questionnaireService: QuestionnaireService, private router: Router) { }
+  constructor(private qrequestService: QrequestService,
+  private questionnaireService: QuestionnaireService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    const selectedServiceRequestID = this.userService.getSelectedServiceRequestID();
+    const selectedServiceRequestID = this.route.snapshot.paramMap.get('id');
     this.qrequestService.getAllQuestionnaireResponseData(selectedServiceRequestID).subscribe(data => {
       console.log(data);
       if (data['entry']) {

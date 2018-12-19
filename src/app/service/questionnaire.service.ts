@@ -98,17 +98,4 @@ export class QuestionnaireService {
     console.log(data);
   }
 
-  getAllUnassignedQuestionnaireResponses() {
-    // return this.http.get(environment.queryURI + '/QuestionnaireResponse?context:missing=true', {headers: this.getHeaders()});
-    return this.http.get(environment.queryURI + '/QuestionnaireResponse', {headers: this.getHeaders()});
-  }
-
-  saveEpisodeOfCare(data) {
-    return this.http.post(environment.queryURI + '/EpisodeOfCare', data, {headers: this.getHeaders()});
-  }
-
-  getAllEpisodeOfCare() {
-    return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*', {headers: this.getHeaders()});
-  }
-
 }

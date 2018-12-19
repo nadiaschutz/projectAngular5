@@ -1,0 +1,27 @@
+<div class="main-header">
+  <h5>Work Screen</h5>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-6">
+        <div *ngIf = "summary.length > 0">
+            <div *ngFor="let item of summary">
+              <label class="label-name">{{item.id}}</label>
+              <input type="text" value="{{item.value}}" disabled=true class="form-control field-box-name">
+            </div>
+          </div>
+    </div>
+    <div class="col-6">
+        <div *ngIf="carePlanActivities.length > 0" class="search-box">
+            <h6>Activities</h6>
+              <div *ngFor="let carePlanActivity of carePlanActivities">
+                <div style="margin-bottom: 10px">
+                  <input type="checkbox" [checked]="carePlanActivity.value" [(ngModel)]="carePlanActivity.value" name="carePlanActivity.description" (change)="onChange()">
+                  {{carePlanActivity.description}}
+                </div>
+              </div>
+          </div>
+    </div>
+  </div>
+</div>

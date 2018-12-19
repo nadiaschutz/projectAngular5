@@ -152,7 +152,7 @@
           </thead>
           <tbody *ngIf="str===null" class="body-table">
             <tr *ngFor="let q of servRequests"  class="request-list">
-              <td (click)="navigateToSummary(q)" class="cursor">{{q.id}}</td>
+              <td routerLink="/service-request-summary/{{q.id}}" class="cursor" skipLocationChange>{{q.id}}</td>
               <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
               <td>{{getServiceType(q)}}</td>
               <td>{{getAssessmentType(q)}}</td>

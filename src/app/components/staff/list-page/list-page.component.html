@@ -46,6 +46,7 @@
         <th>Assigned to</th>
         <th>Status</th>
         <th>Total Days in Queue</th>
+        <th>Go to Work Screen</th>
         <!-- <th>Action</th> -->
         <!-- <th>Work</th> -->
       </thead>
@@ -61,6 +62,9 @@
           <td>{{result.careManager}}</td>
           <td>{{result.status}}</td>
           <td>{{result.daysInQueue}}</td>
+          <td>
+            <button class="btn special-button" routerLink="/staff/work-screen/{{result.episodeOfCareId}}" skipLocationChange>Work Screen</button>
+          </td>
           <!-- <td>
             <button (click)="release(result.episodeOfCareId)" class="special-button">Release</button>
           </td> -->
