@@ -41,6 +41,17 @@ import { StaffService } from '../app/service/staff.service';
 // import { EditNewServceRequestComponent } from './components/edit-new-servce-request/edit-new-servce-request.component';
 
 
+import { InputComponent } from './components/dynamic-forms/input.component';
+import { ButtonComponent } from './components/dynamic-forms/button.component';
+import { SelectComponent } from './components/dynamic-forms/select.component';
+// import { DateComponent } from './components/dynamic-forms/date.component';
+// import { RadiobuttonComponent } from './components/dynamic-forms/radiobutton.component';
+// import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
+import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
+import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
+// import { DynamicFormModule } from './components/dynamic-forms/dynamic-form.module';
+
+
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService]  },
   { path: 'dependentform', component: DependentComponent, canActivate: [AuthGuardService]  },
@@ -84,7 +95,16 @@ export function HttpLoaderFactory(http: HttpClient) {
     ServiceRequestSummaryComponent,
     ListPageComponent,
     ClientOnsubmitSummaryComponent,
-    TasklistComponent
+    TasklistComponent,
+    InputComponent,
+    ButtonComponent,
+    SelectComponent,
+    // DateComponent,
+    // RadiobuttonComponent,
+    // CheckboxComponent,
+    DynamicFieldDirective,
+    DynamicFormComponent
+
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -112,6 +132,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     DatePipe,
     StaffService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    InputComponent,
+    ButtonComponent,
+    SelectComponent,
+    // DateComponent,
+    // RadiobuttonComponent,
+    // CheckboxComponent
+  ]
 })
 export class AppModule { }

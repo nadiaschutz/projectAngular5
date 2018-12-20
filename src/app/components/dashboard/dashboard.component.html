@@ -1,4 +1,4 @@
-<div class="container">
+<!-- <div class="container">
 <div class="main-header">
   <h5>Search Client</h5>
   <h6>client department > client</h6>
@@ -61,10 +61,10 @@
 
       </div>
     </form>
-  </div>
+  </div> -->
   <!-- List of Clients  -->
 
-  <h6>Clients</h6>
+  <!-- <h6>Clients</h6>
   <div class="button-section">
     <button type="button" class="btn special-button" (click)="newEmployeeButton()">New Client Record</button>
   </div>
@@ -106,15 +106,40 @@
               <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">{{extension.valueString}}</span>
             </span>
           </td>
-          <!-- <ng-container *ngFor="let extension of q.extension">
-                <td *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
-                  {{extension.valueString}}
-                </td>
         
-              </ng-container> -->
         </tr>
       </tbody>
     </table>
   </div>
 </div>
-</div>
+</div> -->
+
+<div >
+    <dynamic-form
+      [config]="config"
+      #form="dynamicForm"
+      (submit)="submit($event)">
+    </dynamic-form>
+    {{ form.valid }}
+    {{ form.value | json }}
+  </div>
+
+
+<!-- <div class="form">
+    <div style="text-align:center">
+      <h1>
+        Registration Form
+      </h1>
+    </div>
+    <dynamic-form [config]="config" (submit)="submit($event)">
+    </dynamic-form>
+    <div class="margin-top">
+        {{ form.valid }}
+        {{ form.value | json }}
+    </div>
+  </div>
+ -->
+
+<!-- </div> -->
+  
+
