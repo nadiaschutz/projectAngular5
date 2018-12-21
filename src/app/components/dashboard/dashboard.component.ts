@@ -14,6 +14,7 @@ import { DynamicFormComponent } from "../dynamic-forms/dynamic-form.component";
     config: FieldConfig[] = [
       {
         type: "input",
+       
         label: "Username",
         inputType: "text",
         placeholder: 'Enter your name',
@@ -33,6 +34,7 @@ import { DynamicFormComponent } from "../dynamic-forms/dynamic-form.component";
         // ]
       },
       {
+        
         type: "input",
         label: "Email Address",
         inputType: "email",
@@ -55,6 +57,7 @@ import { DynamicFormComponent } from "../dynamic-forms/dynamic-form.component";
         // ]
       },
       {
+        
         type: "input",
         label: "Password",
         inputType: "password",
@@ -102,7 +105,7 @@ import { DynamicFormComponent } from "../dynamic-forms/dynamic-form.component";
     //     value: true
     //   },
 
-    {
+    { 
       type: 'select',
       label: 'Favourite Food',
       name: 'food',
@@ -136,11 +139,47 @@ import { DynamicFormComponent } from "../dynamic-forms/dynamic-form.component";
       this.form.setValue('name', 'Todd Motto');
 
     });
+
+
+    // this.wrap(document.querySelector('form-input'), document.createElement('div'));
+
+    this.wrap();
+    this.addDiv();
  
     }
   
     submit(value: {[name: string]: any}) {
       console.log(value);
     }
+
+  //    wrap(el, wrapper) {
+  //     el.parentNode.insertBefore(wrapper, el);
+  //     wrapper.appendChild(el);
+  // }
+  
+  wrap(){
+    var x = $(".field-holder-2 form-input");
+    console.log(x);
+    // for (var i = 0; i < x.length; i += 2) {
+    //   x.slice(i, i + 2).wrapAll("<div class='row'></div>");
+     
+    //   // el.wrapAll("<div class='col'></div>");
+    // }
+    for (var i = 0; i < x.length; i ++) {
+      console.log(x[i]);
+      $(x[i]).wrap("<div class='col'></div>");
+    };
+   
+  }
+  
+  
+
+    addDiv(){
+      var sections = $(".dynamic-form .col");
+
+      for (var i = 0; i < sections.length; i += 2) {
+      sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
+    }
+  }
   }
   

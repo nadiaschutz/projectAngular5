@@ -22,12 +22,14 @@ import { FieldConfig, Validator } from './field-config.interface';
       class="dynamic-form"
       [formGroup]="form"
       (submit)="handleSubmit($event)">
+      <div class="field-holder-2">
       <ng-container
         *ngFor="let field of config;"
         dynamicField
         [config]="field"
         [group]="form">
       </ng-container>
+      </div>
     </form>
   `
 })
