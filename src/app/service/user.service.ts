@@ -18,7 +18,7 @@ export class UserService {
     entry: [],
   };
 
-
+  selectedServiceRequestID;
   selectID = '';
   selectedIDForEmployeePostSummary = '';
   constructor(
@@ -95,9 +95,19 @@ export class UserService {
       + '&redirect_uri=' + environment.redirectUri + '/dashboard' + '&scope=' + environment.scopeUrl,
       { headers: header });
     this.oauthService.fetchTokenUsingPasswordFlowAndLoadUserProfile(user, pass, header).then(() => {
-      console.log(this.oauthService.getIdentityClaims());
+      // console.log(this.oauthService.getIdentityClaims());
       this.router.navigate(['/dashboard']);
     }
+    );
+  }
+
+  createAccount(data) {
+
+    const header = this.getJsonAPIHeaders();
+
+    return this.httpClient.post(
+      environment.jsonAPI + '/user-management/Master/local_security' , data ,
+      { headers: header }
     );
   }
 
@@ -107,15 +117,6 @@ export class UserService {
 
   getBranchList() {
     return this.httpClient.get<JSON>('../../assets/branchlist.json');
-
-  }
-  // Initialize headers for the login section
-  getLoginHeaders(): HttpHeaders {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded ',
-      'Accept': 'application/json'
-    });
-    return headers;
   }
 
   fetchAllDistrictOffices() {
@@ -136,14 +137,28 @@ export class UserService {
     return this.httpClient.get(environment.queryURI + '/Organization?type=team', {headers: this.getHeaders()});
   }
 
+  fetchAllDepartmentNames() {
+    return this.httpClient.get(environment.queryURI + '/Organization?type=CLIENTDEPT', {headers: this.getHeaders()});
+  }
+
+  fetchAllDepartmentBranches() {
+    return this.httpClient.get(environment.queryURI + '/Location?type=DEPTBRANCH', {headers: this.getHeaders()});
+  }
+
+  savePractitioner(data) {
+    return this.httpClient.post(environment.queryURI + '/Practitioner', data, { headers: this.postFHIRHeaders() });
+  }
+
+  savePractitionerRole(data) {
+    return this.httpClient.post(environment.queryURI + '/PractitionerRole', data, { headers: this.postFHIRHeaders() });
+  }
+
+
   // TODO - check if function is in use, and delete if not being used
   postFHIRHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
-
-      // 'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-      // 'Access-Control-Allow-Origin': '*'
     });
     return headers;
   }
@@ -155,6 +170,30 @@ export class UserService {
     return headers;
   }
 
+ // Initialize headers for the login section
+  getLoginHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json'
+    });
+    return headers;
+  }
+
+  getJsonAPIHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      // 'Accept': 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
+  }
+
+  saveSelectedServiceRequestID(id) {
+    this.selectedServiceRequestID = id;
+  }
+  getSelectedServiceRequestID(): string {
+    return this.selectedServiceRequestID;
+  }
   saveClientDepartment(data) {
     return this.httpClient.post(environment.queryURI + '/Organization/', data,
     {headers: this.postFHIRHeaders()});
