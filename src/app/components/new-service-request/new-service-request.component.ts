@@ -175,17 +175,7 @@ export class NewServiceRequestComponent implements OnInit {
       documentReference.content = [content];
 
 
-      that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
-        data =>   {
-          that.documentReference = {
-            linkId: '30',
-            // text: obj.content[0].attachment.title,
-            text: 'Document',
-            type: 'Reference',
-            answer:  'DocumentReference/' + data['id']
-          };
-        }
-      );
+      that.questionnaireService.postDataFile(JSON.stringify(documentReference));
       return reader.result;
 
     };

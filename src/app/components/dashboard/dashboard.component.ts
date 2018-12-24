@@ -81,7 +81,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.getAllPAtients();
-    
   }
 
   refreshSearch() {

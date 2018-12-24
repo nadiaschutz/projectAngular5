@@ -29,7 +29,7 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ServReqMainComponent } from './components/serv-req-main/serv-req-main.component';
 import { SummaryPageComponent } from './components/summary-page/summary-page.component';
-
+import { NewAccountComponent } from './components/new-account/new-account.component';
 import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 import { DistrictOfficeComponent } from './components/district-office/district-office.component';
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
@@ -40,10 +40,9 @@ import { StaffService } from '../app/service/staff.service';
 import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
 import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
 import { ListPageComponent } from './components/staff/list-page/list-page.component';
-
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
-
+import { TasksService } from './service/tasks.service';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService]  },
@@ -56,6 +55,7 @@ const routes: Routes = [
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
   { path: 'employeesummary', component: EmployeeSummaryComponent },
+  { path: 'newaccount', component: NewAccountComponent},
   { path: 'newservicerequest', component: NewServiceRequestComponent },
   { path: 'clientdepartment', component: ClientDepartmentComponent },
   { path: 'assigntasks', component: TasklistComponent },
@@ -92,6 +92,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TasklistComponent,
     EditEmployeeComponent,
     EditNewServiceRequestComponent,
+    NewAccountComponent,
     WorkScreenComponent
   ],
   imports: [
@@ -111,7 +112,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     NgBootstrapFormValidationModule,
     NgBootstrapFormValidationModule.forRoot(),
-    BsDatepickerModule.forRoot()
+    BsDatepickerModule.forRoot(),
   ],
   providers: [
     AuthGuardService,
@@ -119,7 +120,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     QuestionnaireService,
     PatientService,
     DatePipe,
-    StaffService
+    StaffService,
+    TasksService
   ],
   bootstrap: [AppComponent]
 })
