@@ -77,11 +77,10 @@
       <div class="col">
         <label for="role">Role</label>
         <select class="form-control" formControlName="role" id="role" required>
-          <option [ngValue]="null">Select Role</option>
           <option *ngFor="let roles of roleTypes" [value]="roles.value">
             {{roles.viewValue}}
           </option>
-          <div *ngIf="accountFormGroup.controls['role'].invalid 
+          <div *ngIf="accountFormGroup.controls['role'].errors  
                   && (accountFormGroup.controls['role'].touched || accountFormGroup.controls['role'].dirty)">
             <div class="error-message">
               Cannot be blank
@@ -93,7 +92,7 @@
         <label for="roleDescription">Role Description</label>
         <input type="text" class="form-control" placeholder="Role Description" formControlName="roleDescription" id="roleDescription"
           name="roleDescription">
-        <div *ngIf="accountFormGroup.controls['roleDescription'].invalid
+        <div *ngIf="accountFormGroup.controls['roleDescription'].errors
                           && (accountFormGroup.controls['roleDescription'].touched || accountFormGroup.controls['roleDescription'].dirty)">
           <div class="error-message">
             Must be two or more characters long

@@ -111,6 +111,14 @@ export class UserService {
     );
   }
 
+  fetchCurrentUserData(sub) {
+
+    const header = this.getJsonAPIHeaders();
+
+    return this.httpClient.get( environment.jsonAPI + '/user-management/Master/local_security?searchTerm=' + sub  ,
+    { headers: header });
+  }
+
   getDepartmentList() {
     return this.httpClient.get<JSON>('../../assets/departments.json');
   }
@@ -153,7 +161,61 @@ export class UserService {
     return this.httpClient.post(environment.queryURI + '/PractitionerRole', data, { headers: this.postFHIRHeaders() });
   }
 
+  getAllPatientsInSameDepartment(query: string) {
+    return this.httpClient.get(environment.queryURI +
+      '/Patient?workplace=' + query, { headers: this.getHeaders() });
+  }
 
+  getAllPractitioners() {
+    return this.httpClient.get(environment.queryURI +
+      '/Practitioner?_revinclude=PractitionerRole:code=admin', {
+      headers: this.getHeaders()
+    });
+  }
+
+  getPractitionerByID(query: string) {
+    return this.httpClient.get(environment.queryURI + '/Practitioner/' + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getAllPractitionerRoles() {
+    return this.httpClient.get(environment.queryURI + '/PractitionerRole/', {
+      headers: this.getHeaders()
+    });
+  }
+
+  getPractitionerRoleByID(query: string) {
+    return this.httpClient.get(environment.queryURI + '/PractitionerRole/' + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getPractitionerRoleByPractitionerID(query: string) {
+    return this.httpClient.get(environment.queryURI + '/PractitionerRole?practitioner=' + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getAnyFHIRObjectByReference(query: string) {
+    return this.httpClient.get(environment.queryURI + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  saveSelectedServiceRequestID(id) {
+    this.selectedServiceRequestID = id;
+  }
+  getSelectedServiceRequestID(): string {
+    return this.selectedServiceRequestID;
+  }
+  saveClientDepartment(data) {
+    return this.httpClient.post(environment.queryURI + '/Organization/', data,
+    {headers: this.postFHIRHeaders()});
+  }
+  fetchAllClientDepartments() {
+    return this.httpClient.get(environment.queryURI + '/Organization?type=CLIENTDEPT', {headers: this.getHeaders()});
+  }
   // TODO - check if function is in use, and delete if not being used
   postFHIRHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
@@ -188,17 +250,4 @@ export class UserService {
     return headers;
   }
 
-  saveSelectedServiceRequestID(id) {
-    this.selectedServiceRequestID = id;
-  }
-  getSelectedServiceRequestID(): string {
-    return this.selectedServiceRequestID;
-  }
-  saveClientDepartment(data) {
-    return this.httpClient.post(environment.queryURI + '/Organization/', data,
-    {headers: this.postFHIRHeaders()});
-  }
-  fetchAllClientDepartments() {
-    return this.httpClient.get(environment.queryURI + '/Organization?type=CLIENTDEPT', {headers: this.getHeaders()});
-  }
 }
