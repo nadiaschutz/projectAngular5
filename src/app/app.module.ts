@@ -40,7 +40,7 @@ import { StaffService } from '../app/service/staff.service';
 import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
 import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
 import { ListPageComponent } from './components/staff/list-page/list-page.component';
-// import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
 import { TasksService } from './service/tasks.service';
 
@@ -141,7 +141,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     NgBootstrapFormValidationModule,
     NgBootstrapFormValidationModule.forRoot(),
-    // BsDatepickerModule.forRoot(),
+    BsDatepickerModule.forRoot(),
   ],
   providers: [
     AuthGuardService,
