@@ -44,9 +44,11 @@ import { StaffService } from '../app/service/staff.service';
 import { InputComponent } from './components/dynamic-forms/input.component';
 import { ButtonComponent } from './components/dynamic-forms/button.component';
 import { SelectComponent } from './components/dynamic-forms/select.component';
-// import { DateComponent } from './components/dynamic-forms/date.component';
+import { LineComponent } from './components/dynamic-forms/line.component';
+import { HeaderComponent } from './components/dynamic-forms/header.component';
+import { DateComponent } from './components/dynamic-forms/date.component';
 // import { RadiobuttonComponent } from './components/dynamic-forms/radiobutton.component';
-// import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
+import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
 import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
 import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
 // import { DynamicFormModule } from './components/dynamic-forms/dynamic-form.module';
@@ -99,9 +101,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     InputComponent,
     ButtonComponent,
     SelectComponent,
-    // DateComponent,
+    LineComponent,
+    HeaderComponent,
+    DateComponent,
     // RadiobuttonComponent,
-    // CheckboxComponent,
+    CheckboxComponent,
     DynamicFieldDirective,
     DynamicFormComponent
 
@@ -137,9 +141,11 @@ export function HttpLoaderFactory(http: HttpClient) {
     InputComponent,
     ButtonComponent,
     SelectComponent,
-    // DateComponent,
+    LineComponent,
+    HeaderComponent,
+    DateComponent,
     // RadiobuttonComponent,
-    // CheckboxComponent
+    CheckboxComponent
   ]
 })
 export class AppModule { }

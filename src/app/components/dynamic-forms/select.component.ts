@@ -16,6 +16,9 @@ import { FieldConfig } from './field-config.interface';
             {{ option }}
           </option>
         </select>
+        <div *ngIf="group.get(config.name).errors && !group.get(config.name).pristine" class="invalid-feedback">
+          <div [hidden]="!group.get(config.name).errors.required">{{config.label | titlecase}} is required.</div>
+        </div>
       </div>
       </div>
             

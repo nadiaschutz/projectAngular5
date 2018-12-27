@@ -6,17 +6,23 @@ import { FieldConfig } from './field-config.interface';
 import { InputComponent } from './input.component';
 import { ButtonComponent } from './button.component';
 import { SelectComponent } from './select.component';
-// import { DateComponent } from './date.component';
+import { DateComponent } from './date.component';
 // import { RadiobuttonComponent } from './radiobutton.component';
-// import { CheckboxComponent } from './checkbox.component';
+import { CheckboxComponent } from './checkbox.component';
+import { LineComponent } from './line.component';
+import { HeaderComponent } from './header.component';
+
+
 
 const components = {
   input: InputComponent,
   button: ButtonComponent,
   select: SelectComponent,
-  // date: DateComponent,
+  date: DateComponent,
   // radiobutton: RadiobuttonComponent,
-  // checkbox: CheckboxComponent
+  checkbox: CheckboxComponent,
+  line: LineComponent,
+  header: HeaderComponent
 };
 @Directive({
   selector: '[dynamicField]'

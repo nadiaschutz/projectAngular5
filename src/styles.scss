@@ -179,6 +179,12 @@ select{
     padding-top: 35px;
 }
 
+.input-group.is-invalid {
+    ~ .invalid-feedback {
+      display: block;
+    }
+  }
+
 .was-validated .form-control:valid,
 .was-validated .form-control:valid:focus,
 .form-control.is-valid, 
