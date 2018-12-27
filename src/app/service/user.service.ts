@@ -111,6 +111,14 @@ export class UserService {
     );
   }
 
+  fetchCurrentUserData(sub) {
+
+    const header = this.getJsonAPIHeaders();
+
+    return this.httpClient.get( environment.jsonAPI + '/user-management/Master/local_security?searchTerm=' + sub  ,
+    { headers: header });
+  }
+
   getDepartmentList() {
     return this.httpClient.get<JSON>('../../assets/departments.json');
   }

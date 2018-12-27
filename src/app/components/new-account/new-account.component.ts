@@ -192,8 +192,8 @@ export class NewAccountComponent implements OnInit {
           console.log('Success! A practitioner has been created: ', data);
           this.capturePractitionerPieces(data);
           this.createUser(this.practitionerPieces);
-          this.createPractitionerRoleForOffices(this.practitionerPieces);
-          this.createPractitionerRoleForDepartments(this.practitionerPieces);
+          // this.createPractitionerRoleForOffices(this.practitionerPieces);
+          // this.createPractitionerRoleForDepartments(this.practitionerPieces);
         },
         error => this.handleError(error)
       );

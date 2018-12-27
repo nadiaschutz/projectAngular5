@@ -81,6 +81,13 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.getAllPAtients();
+
+    const userID = this.oauthService.getIdentityClaims()['sub'];
+
+    this.userService.fetchCurrentUserData(userID).subscribe(
+      data => console.log('The users FHIR ID is: ', data['users'][0]['defaultLaunchContexts'][0]['resourceId'])
+    );
+
   }
 
   refreshSearch() {
@@ -99,7 +106,7 @@ export class DashboardComponent implements OnInit {
   handleSuccess(data) {
     // console.log(data);
     this.qrequest = [];
-    console.log(this.qrequest);
+    // console.log(this.qrequest);
     if (data.total !== 0) {
       if (data.entry) {
         data.entry.forEach(item => {
@@ -118,7 +125,7 @@ export class DashboardComponent implements OnInit {
         }
       }
     }
-    console.log(this.qrequest);
+    // console.log(this.qrequest);
      this.resetSearchParams();
   }
 
