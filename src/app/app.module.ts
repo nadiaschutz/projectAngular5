@@ -40,9 +40,23 @@ import { StaffService } from '../app/service/staff.service';
 import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
 import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
 import { ListPageComponent } from './components/staff/list-page/list-page.component';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+// import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
 import { TasksService } from './service/tasks.service';
+
+import { InputComponent } from './components/dynamic-forms/input.component';
+import { ButtonComponent } from './components/dynamic-forms/button.component';
+import { SelectComponent } from './components/dynamic-forms/select.component';
+import { LineComponent } from './components/dynamic-forms/line.component';
+import { HeaderComponent } from './components/dynamic-forms/header.component';
+import { DateComponent } from './components/dynamic-forms/date.component';
+// import { RadiobuttonComponent } from './components/dynamic-forms/radiobutton.component';
+import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
+import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
+import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
+import { DemoComponent } from './components/demo/demo.component';
+// import { DynamicFormModule } from './components/dynamic-forms/dynamic-form.module';
+
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService]  },
@@ -63,6 +77,9 @@ const routes: Routes = [
   { path: 'service-request-summary/:id', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'staff/work-screen/:id', component: WorkScreenComponent, canActivate: [AuthGuardService]},
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
+  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
+  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
 ];
 
@@ -93,7 +110,19 @@ export function HttpLoaderFactory(http: HttpClient) {
     EditEmployeeComponent,
     EditNewServiceRequestComponent,
     NewAccountComponent,
-    WorkScreenComponent
+    WorkScreenComponent,
+    InputComponent,
+    ButtonComponent,
+    SelectComponent,
+    LineComponent,
+    HeaderComponent,
+    DateComponent,
+    // RadiobuttonComponent,
+    CheckboxComponent,
+    DynamicFieldDirective,
+    DynamicFormComponent,
+    DemoComponent
+
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -112,7 +141,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     NgBootstrapFormValidationModule,
     NgBootstrapFormValidationModule.forRoot(),
-    BsDatepickerModule.forRoot(),
+    // BsDatepickerModule.forRoot(),
   ],
   providers: [
     AuthGuardService,
@@ -123,6 +152,16 @@ export function HttpLoaderFactory(http: HttpClient) {
     StaffService,
     TasksService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    InputComponent,
+    ButtonComponent,
+    SelectComponent,
+    LineComponent,
+    HeaderComponent,
+    DateComponent,
+    // RadiobuttonComponent,
+    CheckboxComponent
+  ]
 })
 export class AppModule { }
