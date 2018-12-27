@@ -51,6 +51,7 @@ import { DateComponent } from './components/dynamic-forms/date.component';
 import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
 import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
 import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
+import { DemoComponent } from './components/demo/demo.component';
 // import { DynamicFormModule } from './components/dynamic-forms/dynamic-form.module';
 
 
@@ -71,6 +72,7 @@ const routes: Routes = [
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
+  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
 ];
 
@@ -107,7 +109,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     // RadiobuttonComponent,
     CheckboxComponent,
     DynamicFieldDirective,
-    DynamicFormComponent
+    DynamicFormComponent,
+    DemoComponent
 
   ],
   imports: [

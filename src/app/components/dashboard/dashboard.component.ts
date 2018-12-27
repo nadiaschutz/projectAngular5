@@ -1,168 +1,206 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, ChangeDetectorRef, AfterContentInit } from '@angular/core';
+import { UserService } from '../../service/user.service';
+import { PatientService } from '../../service/patient.service';
+import { environment } from '../../../environments/environment';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { Router } from '@angular/router';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+
 import { Validators } from "@angular/forms";
-import { Field } from '../dynamic-forms/field.interface';
-import { FieldConfig } from '../dynamic-forms/field-config.interface';
+import { FieldConfig } from "../dynamic-forms/field-config.interface";
 import { DynamicFormComponent } from "../dynamic-forms/dynamic-form.component";
-import { CustomValidator } from '../dynamic-forms/custom-validator';
+
+
+
+export interface AccountElement {
+  type: string;
+  id: string;
+  name: string;
+  number: string;
+  dateCreated: string;
+  dateModified: string;
+  // TODO change date variables to date type
+
+}
+
+export interface EmployeeElement {
+  name: string;
+  id: string;
+  dependent: boolean;
+  department: string;
+  dateCreated: string;
+  dateModified: string;
+  // TODO change date variables to date type
+
+}
+
+
 @Component({
-    selector: 'app-dashboard',
-    templateUrl: './dashboard.component.html',
-    styleUrls: ['./dashboard.component.scss']
-  })
-  // export class DashboardComponent implements AfterContentInit, AfterViewInit{
-    export class DashboardComponent {
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss']
+})
 
-      // var for styling each form field
-      style = 'col-5';
+  export class DashboardComponent {
 
 
+  
 
-    @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
-    config: FieldConfig[] = [
-      {
-        type: "header",
-        label: "New Form"
-      },
-      {
-        type: "input",
-        label: "Username",
-        inputType: "text",
-        placeholder: 'Enter your name',
-        name: "name",
-        validation: [Validators.required, Validators.minLength(4)]
-      },
-      {
-        type: "input",
-        label: "Phone",
-        inputType: "text",
-        placeholder: 'Enter your phone',
-        name: "phone",
-        validation: [
-          Validators.required,
-          // CustomValidator.numberValidator,
-          Validators.pattern("^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$")
-        ]
-      },
-      {
-        
-        type: "input",
-        label: "Email Address",
-        inputType: "email",
-        placeholder: 'Enter your email',
-        name: "email",
-        validation: [Validators.required, Validators.email]
-      },
-      {
-        
-        type: "input",
-        label: "Password",
-        inputType: "password",
-        name: "password",
-        placeholder: 'Enter your ps',
-        validation: [Validators.required]
-        // validations: [
-        //   {
-        //     name: "required",
-        //     validator: Validators.required,
-        //     message: "Password Required"
-        //   }
-        // ]
-      },
-      // {
-      //   type: "radiobutton",
-      //   label: "Gender",
-      //   name: "gender",
-      //   options: ["Male", "Female"],
-      //   value: "Male"
-      // },
-      {
-        type: "date",
-        label: "Date",
-        name: "dob",
-        validation: [Validators.required]
-      },
-      {
-        type: 'select',
-        label: 'Country',
-        name: 'country',
-        value: 'UK',
-        options: ['India', 'UAE', 'UK', 'US'],
-        placeholder: 'Select an option',
-        validation: [Validators.required]
-      },
-      {
-        type: 'checkbox',
-        label: 'Accept Terms',
-        name: 'term',
-        validation: [Validators.required]
-      },
+  previousValid;
 
-    { 
-      type: 'select',
-      label: 'Favourite Food',
-      name: 'food',
-      options: ['Pizza', 'Hot Dogs', 'Knakworstje', 'Coffee'],
-      placeholder: 'Select an option',
-      validation: [Validators.required]
-    },
-    {
-      type: "line"
-    },
-      {
-        type: "button",
-        name: 'submit',
-        label: "Save"
+
+  
+
+  givenName = {
+    prefix: 'given=',
+    data: null
+  };
+
+  familyName = {
+    prefix: 'family=',
+    data: null
+  };
+
+  clientId = {
+    prefix: '/',
+    data: null
+  };
+
+  dateOfBirth = {
+    prefix: 'birthdate=',
+    data: null
+  };
+
+  private arrOfVar = [this.givenName, this.familyName, this.dateOfBirth];
+  listOfDepartments = [];
+  clientDepartment = null;
+  employeeTypeArray = ['Employee', 'Dependent'];
+  employeeType = null;
+
+  // patientSubscription: subscription;
+  displayedColumns: string[] = ['type', 'id', 'name', 'number', 'dateCreated', 'dateModified'];
+
+  displayedColumnsTwo: string[] = ['name', 'id', 'dependent', 'department', 'dateCreated', 'dateModified'];
+
+  qrequest = [];
+
+  constructor(
+    private oauthService: OAuthService,
+    private userService: UserService,
+    private httpClient: HttpClient,
+    private patientService: PatientService,
+    private router: Router,
+    private cd: ChangeDetectorRef
+  ) { }
+
+
+  
+
+  ngOnInit() {
+      this.patientService.getPatientData('').subscribe(
+          data => this.handleSuccess(data),
+          error => this.handleError(error)
+        );
+        this.getDepartmentsList();
       }
-    ];
-
-
-
-    ngAfterViewInit() {
-      setTimeout(() => {
-
-      let previousValid = this.form.valid;
-      this.form.changes.subscribe(() => {
-        if (this.form.valid !== previousValid) {
-          previousValid = this.form.valid;
-          this.form.setDisabled('submit', !previousValid);
-        }
-
-
-      });
-  
-      this.form.setDisabled('submit', true);
-      this.form.setValue('name', 'Nadia');
-
-    });
-
-
-    // if you want to style 2 form fields per a row do these :
-    this.wrap();
-    this.addDiv();
-    // the end 
  
+  handleSuccess(data) {
+    // console.log(data);
+    this.qrequest = [];
+    if (data.total !== 0) {
+      if (data.entry) {
+        data.entry.forEach(item => {
+          const individualEntry = item.resource;
+          if (this.employeeType || this.clientDepartment) {
+            this.checkForEmployeeTypeAndClientDepartment(individualEntry);
+          } else {
+            this.qrequest.push(individualEntry);
+          }
+        });
+      } else {
+        if (this.employeeType || this.clientDepartment) {
+          this.checkForEmployeeTypeAndClientDepartment(data);
+        } else {
+          this.qrequest.push(data);
+        }
+      }
     }
-  
-    submit(value: {[name: string]: any}) {
-      console.log(value);
+    // this.resetSearchParams();
+  }
+
+  checkForEmployeeTypeAndClientDepartment(individualEntry) {
+    individualEntry.extension.forEach(individualExtension => {
+      if (this.employeeType && individualExtension.url === 'https://bcip.smilecdr.com/fhir/employeetype') {
+        if (individualExtension.valueString === this.employeeType) {
+          this.qrequest.push(individualEntry);
+        }
+      } else if (this.clientDepartment && individualExtension.url === 'https://bcip.smilecdr.com/fhir/workplace') {
+        if (individualExtension.valueString === this.clientDepartment) {
+          this.qrequest.push(individualEntry);
+        }
+      }
+    });
+  }
+
+  handleError(error) {
+    console.log(error);
+  }
+
+  routeToSummary(data) {
+   this.userService.getSelectedID(data);
+   this.router.navigateByUrl('/employeesummary');
+  }
+  newPSOHPButton() {
+    this.router.navigate(['/psohpform']);
+  }
+
+  newAccountButton() {
+    this.router.navigate(['/newaccount']);
+  }
+
+  newEmployeeButton() {
+
+    this.router.navigateByUrl('/employeeform');
+  }
+
+  checkRegionalOfficeButtion() {
+    this.router.navigate(['/region-summary']);
+  }
+  employeeSearch() {
+    let searchParams = '';
+    this.arrOfVar.forEach((element, index) => {
+      if ( element.data !== null) {
+        if (searchParams.length === 0) {
+          searchParams = '?' + element.prefix + element.data;
+        } else {
+          searchParams += '&' + element.prefix + element.data;
+        }
+      }
+    });
+    if (this.clientId.data) {
+      searchParams = this.clientId.prefix + this.clientId.data + searchParams;
     }
+    console.log(searchParams);
 
+    this.patientService.getPatientData(searchParams).subscribe(
+      data => this.handleSuccess(data),
+      error => this.handleError(error)
+    );
+  }
+  resetSearchParams() {
+    this.clientDepartment = '';
+    this.employeeType = '';
+    this.givenName.data = '';
+    this.familyName.data = '';
+    this.clientId.data = '';
+    this.dateOfBirth.data = '';
+  }
+  getDepartmentsList() {
+    this.httpClient.get('../../../assets/departments.json').subscribe(data => {
+      this.listOfDepartments = data['department'];
+    });
+  }
 
-  wrap(){
-    var x = $(".field-holder-2 form-input");
-    for (var i = 0; i < x.length; i ++) {
-      console.log(x[i]);
-      $(x[i]).wrap("<div class='" + this.style +"'></div>");
-    };
-  }
-  
   
 
-    addDiv(){
-      var sections = $(".dynamic-form ." + this.style);
-      for (var i = 0; i < sections.length; i += 2) {
-      sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
-    }
-  }
-  }
-  
+}
