@@ -8,7 +8,7 @@ export interface Serializable<T> {
 /* This is base class from which other elements are derived */
 export class FHIRElement {
     id: string;
-    extension: any;
+    extension: Extension[];
 }
 
 export class BackboneElement extends FHIRElement {
@@ -221,6 +221,13 @@ export class Attachment extends FHIRElement {
     creation: string;
 }
 
+export class Qualification extends BackboneElement {
+    identifier: Identifier[];
+    code: CodeableConcept;
+    period: Period;
+    issuer: Reference;
+}
+
 export class Content extends BackboneElement {
     attachment: Attachment;
     format: Coding;
@@ -397,6 +404,18 @@ export class Restriction extends BackboneElement {
     recipient: Reference[];
 }
 
+export class AvailableTime extends BackboneElement {
+    daysOfWeek: string[];
+    allDay: boolean;
+    availableStartTime: string;
+    availableEndTime: string;
+}
+
+export class NotAvailable extends BackboneElement {
+    description: string;
+    during: Period;
+}
+
 export class Detail extends BackboneElement {
     category: CodeableConcept;
     definition: Reference;
@@ -452,10 +471,11 @@ export class Item extends BackboneElement {
 /* This is the base FHIR Resource from which others are derived */
 export class Resource {
     resourceType: string;
-    id: Id;
+    id: string;
     meta: Meta;
     implicitRules: string;
     language: Code;
+    extension: Extension[];
 }
 
 export class QuestionnaireResponse extends Resource implements Serializable<QuestionnaireResponse> {
@@ -791,6 +811,62 @@ export class Task extends Resource implements Serializable<Task> {
     output: Output[];
 
     deserialize(jsonObject: any): Task {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+
+export class PractitionerRole extends Resource implements Serializable<PractitionerRole> {
+
+    active: boolean;
+    period: Period;
+    practitioner: Reference;
+    organization: Reference;
+    code: CodeableConcept[];
+    specialty: CodeableConcept[];
+    location: Reference[];
+    healthcareService: Reference[];
+    telecom: ContactPoint[];
+    availableTime: AvailableTime[];
+    notAvailable: NotAvailable[];
+    availabilityExceptions: string;
+    endpoint: Reference[];
+
+    deserialize(jsonObject: any): PractitionerRole {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+export class Practitioner extends Resource implements Serializable<Practitioner> {
+
+    identifier: Identifier[];
+    active: boolean;
+    name: HumanName[];
+    telecom: ContactPoint[];
+    address: Address[];
+    gender: string;
+    birthDate: string;
+    photo: Attachment[];
+    qualification: Qualification[];
+    communication: CodeableConcept[];
+
+    deserialize(jsonObject: any): Practitioner {
         const that = this;
         Object.entries(jsonObject).forEach(function (value) {
             if (!(typeof value[1] === 'object')) {

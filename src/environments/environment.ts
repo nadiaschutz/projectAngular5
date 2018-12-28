@@ -14,8 +14,8 @@ export const environment = {
   clientId: 'NOHIS',
   scope: 'launch/patient openid profile cdr_all_user_authorities',
   scopeUrl: 'launch%2Fpatient%20openid%20profile%20cdr_all_user_authorities',
-  loginLink: 'https://bcip.smilecdr.com/smartauth/oauth/token'
-
+  loginLink: 'https://bcip.smilecdr.com/smartauth/oauth/token',
+  jsonAPI: 'https://bcip.smilecdr.com/json-admin'
 };
 
 /*

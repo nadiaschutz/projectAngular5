@@ -9,15 +9,22 @@ import { Router } from '@angular/router';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
+  constructor(
+    private oauthService: OAuthService,
+    private userService: UserService,
+    private router: Router
+  ) {}
 
-  constructor(private oauthService: OAuthService, private userService: UserService, private router: Router) { }
-
+  userID: string;
   ngOnInit() {
+    this.userID = this.oauthService.getIdentityClaims()['name'];
   }
-    logout() {
-        this.userService.logout();
-    }
-    redirectToDashboard() {
-      this.router.navigateByUrl('/dashboard');
-    }
+
+  logout() {
+    this.userService.logout();
+    this.userID = '';
+  }
+  redirectToDashboard() {
+    this.router.navigateByUrl('/dashboard');
+  }
 }

@@ -38,5 +38,8 @@ export class SidebarComponent implements OnInit {
     this.router.navigateByUrl('/clientdepartment');
   }
 
+  acccountCreation() {
+    this.router.navigateByUrl('/newaccount');
+  }
 
 }
