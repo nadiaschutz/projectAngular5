@@ -43,7 +43,6 @@ import { ListPageComponent } from './components/staff/list-page/list-page.compon
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
 import { CreateTaskComponent } from './components/staff/create-task/create-task.component';
-import { TasksService } from './service/tasks.service';
 
 import { InputComponent } from './components/dynamic-forms/input.component';
 import { ButtonComponent } from './components/dynamic-forms/button.component';
@@ -151,8 +150,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     QuestionnaireService,
     PatientService,
     DatePipe,
-    StaffService,
-    TasksService
+    StaffService
   ],
   bootstrap: [AppComponent],
   entryComponents: [
