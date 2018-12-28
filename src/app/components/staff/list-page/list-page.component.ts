@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { QuestionnaireService } from '../../../service/questionnaire.service';
-import { TasksService } from '../../../service/tasks.service';
 import * as FHIR from '../../../interface/FHIR';
 import { Reference } from '@angular/compiler/src/render3/r3_ast';
 import { formatDate } from '@angular/common';
@@ -32,7 +31,7 @@ export class ListPageComponent implements OnInit {
   selectAllTasksCheck = false;
 
   constructor(private questionnaireService: QuestionnaireService,
-  private tasksService: TasksService, private staffService: StaffService, private utilService: UtilService, private router: Router) { }
+  private staffService: StaffService, private utilService: UtilService, private router: Router) { }
 
   ngOnInit() {
     this.getAllAdmins();
@@ -42,7 +41,7 @@ export class ListPageComponent implements OnInit {
         this.buildEpisodeResponseObject(episodes);
       });
     });
-    this.tasksService.getAllTasks().subscribe(tasks => {
+    this.staffService.getAllTasks().subscribe(tasks => {
       this.buildTaskResponseObject(tasks);
     });
   }
@@ -53,6 +52,7 @@ export class ListPageComponent implements OnInit {
       // mapped to Episode of Care
       const questionnaireResponse = entry.resource;
       if (questionnaireResponse.subject && !questionnaireResponse.context) {
+        console.log(questionnaireResponse);
 
         const episodeOfCare = new FHIR.EpisodeOfCare;
         episodeOfCare.resourceType = 'EpisodeOfCare';
@@ -85,6 +85,17 @@ export class ListPageComponent implements OnInit {
           }, error => console.error(error));
         }, error => {
           console.error(error);
+        });
+      } else {
+        // Check if all Questionnaire Responses have Care Plans associated to them
+        const associatedEpisodeOfCareId = this.utilService.getIdFromReference(questionnaireResponse['context'].reference);
+        this.staffService.getCarePlanForEpisodeOfCareId(associatedEpisodeOfCareId).
+        subscribe(data => {
+          if (!data['entry']) {
+            this.staffService.getEpisodeOfCareFromId(associatedEpisodeOfCareId).subscribe(episodeOfCare => {
+              this.associateCarePlanToEpisodeOfCare(episodeOfCare, questionnaireResponse);
+            });
+          }
         });
       }
     });
@@ -207,7 +218,7 @@ export class ListPageComponent implements OnInit {
   }
 
   getAllAdmins() {
-    this.tasksService.getAllPractitioners().subscribe(data => {
+    this.staffService.getAllPractitioners().subscribe(data => {
       data['entry'].forEach(element => {
         const admin = element.resource;
         this.admins.push({id: admin.id, value: this.utilService.getNameFromResource(admin)});
@@ -285,8 +296,8 @@ export class ListPageComponent implements OnInit {
 
   updateTask(taskData) {
     const taskDataString = JSON.stringify(taskData);
-    this.tasksService.updateTask(taskData.id, taskDataString).subscribe(data => {
-      this.tasksService.getAllTasks().subscribe(tasks => {
+    this.staffService.updateTask(taskData.id, taskDataString).subscribe(data => {
+      this.staffService.getAllTasks().subscribe(tasks => {
         this.buildTaskResponseObject(tasks);
       });
     });
@@ -333,6 +344,8 @@ export class ListPageComponent implements OnInit {
   }
 
   associateCarePlanToEpisodeOfCare(episodeOfCare: FHIR.EpisodeOfCare, questionnaireResponse: FHIR.QuestionnaireResponse) {
+    console.log(episodeOfCare);
+    console.log(questionnaireResponse);
     const psohpServiceType = this.getServiceTypeFromQuestionnaireResponse(questionnaireResponse);
     const searchParams = '_';
     this.staffService.fetchAllCarePlanTemplates().subscribe(carePlanTemplates => {

@@ -1,5 +1,35 @@
+.left-style{
+    float:left;
+    width:48.5%;
+}
+.right-style{
+    float:right;
+    width:48.5%;
+}
+.row {
+    margin-top: 20px;
+}
+// .fixed{
+//     position: sticky;
+//     top:0;
+//     z-index: 999;
+// }
+
+.fixed {
+    position: fixed;
+}
+
+.scrollit {
+    float: left;
+}
+
 .search-box {
-    // width: 50%;
-    // height: 50%;
-    // float: right;
+    padding: 30px;
+}
+
+div.card:nth-child(even) {
+    background: rgb(74, 175, 28);
+}
+div.card:nth-child(odd) { 
+    background: rgb(71, 164, 207);
 }

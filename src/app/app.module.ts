@@ -42,6 +42,7 @@ import { EditEmployeeComponent } from './components/edit-employee/edit-employee.
 import { ListPageComponent } from './components/staff/list-page/list-page.component';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
+import { CreateTaskComponent } from './components/staff/create-task/create-task.component';
 import { TasksService } from './service/tasks.service';
 
 import { InputComponent } from './components/dynamic-forms/input.component';
@@ -109,6 +110,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     TasklistComponent,
     EditEmployeeComponent,
     EditNewServiceRequestComponent,
+    WorkScreenComponent,
+    CreateTaskComponent,
     NewAccountComponent,
     WorkScreenComponent,
     InputComponent,
@@ -122,7 +125,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     DynamicFieldDirective,
     DynamicFormComponent,
     DemoComponent
-
   ],
   imports: [
     RouterModule.forRoot(routes),

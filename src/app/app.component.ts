@@ -15,7 +15,7 @@ import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  
+
   title = 'nohis';
 
   sessionObject;
@@ -36,8 +36,6 @@ export class AppComponent implements OnInit {
       oidc: false
     });
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
-    
-
   }
 
   returnTokenStatus() {
