@@ -452,7 +452,7 @@ export class NewAccountComponent implements OnInit {
    * @param role
    */
   cleanRoleValue(role: string) {
-    return role.toLowerCase().trim();
+    return role.toLowerCase().replace(/\s/g, '');
   }
 
   /**
