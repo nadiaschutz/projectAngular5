@@ -162,4 +162,8 @@ export class UserService {
   fetchAllClientDepartments() {
     return this.httpClient.get(environment.queryURI + '/Organization?type=CLIENTDEPT', {headers: this.getHeaders()});
   }
+  fetchProfile() {
+    return this.httpClient.get('https://bcip.smilecdr.com/json-admin/user-management/Master/local_security',
+    {headers: this.getHeaders()});
+  }
 }

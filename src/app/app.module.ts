@@ -43,6 +43,7 @@ import { ListPageComponent } from './components/staff/list-page/list-page.compon
 
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
+import { CreateTaskComponent } from './components/staff/create-task/create-task.component';
 
 
 const routes: Routes = [
@@ -92,7 +93,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     TasklistComponent,
     EditEmployeeComponent,
     EditNewServiceRequestComponent,
-    WorkScreenComponent
+    WorkScreenComponent,
+    CreateTaskComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

@@ -231,7 +231,7 @@ export class Link extends BackboneElement {
     type: Code;
 }
 
-export class Communication extends BackboneElement {
+export class PatientCommunication extends BackboneElement {
     language: CodeableConcept;
     preferred: boolean;
 }
@@ -349,7 +349,7 @@ export class FHIROption extends BackboneElement {
 export class Annotation extends FHIRElement {
     authorReference: Reference;
     authorString: string;
-    time: string;
+    time: Date;
     text: string;
 }
 
@@ -533,7 +533,7 @@ export class Patient extends Resource implements Serializable<Patient> {
     address: Address;
     maritalStatus: CodeableConcept;
     contact: Contact[];
-    communication: Communication[];
+    communication: PatientCommunication[];
     generalPractitioner: Reference[];
     managingOrganization: Reference;
     link: Link[];
@@ -722,6 +722,30 @@ export class CarePlan extends Resource implements Serializable<CarePlan> {
 
 
     deserialize(jsonObject: any): CarePlan {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+export class Communication extends Resource implements Serializable<Communication> {
+
+    identifier: Identifier[];
+    defintion: Reference[];
+    basedOn: Reference[];
+    partOf: Reference[];
+    status: string;
+    subject: Reference;
+    context: Reference;
+    note: Annotation[];
+
+    deserialize(jsonObject: any): Communication {
         const that = this;
         Object.entries(jsonObject).forEach(function (value) {
             if (!(typeof value[1] === 'object')) {

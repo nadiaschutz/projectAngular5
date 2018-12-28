@@ -22,20 +22,12 @@ export class StaffService {
     return this.selectedEpisodeId;
   }
 
+  getEpisodeOfCareFromId(episodeOfCareId) {
+    return this.http.get<FHIR.EpisodeOfCare>(environment.queryURI + '/EpisodeOfCare/' + episodeOfCareId, {headers: this.getHeaders()});
+  }
+
   updateEpisodeOfCare(id, data) {
-    return this.http.put(environment.queryURI + '/EpisodeOfCare/' + id, data, {headers: this.getHeaders()});
-  }
-
-  getHeaders(): HttpHeaders {
-    const headers = new HttpHeaders({
-      'Content-Type' : 'application/json',
-      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
-    });
-    return headers;
-  }
-
-  delete(id) {
-    return this.http.delete(environment.queryURI + '/EpisodeOfCare/' + id, {headers: this.getHeaders()});
+    return this.http.put(environment.queryURI + '/EpisodeOfCare/' + id, data, {headers: this.getPostHeaders()});
   }
 
   fetchAllCarePlanTemplates() {
@@ -43,16 +35,27 @@ export class StaffService {
   }
 
   postCarePlan(carePlanData) {
-    return this.http.post(environment.queryURI + '/CarePlan', carePlanData, {headers: this.getHeaders()});
+    return this.http.post(environment.queryURI + '/CarePlan', carePlanData, {headers: this.getPostHeaders()});
+  }
+
+  getCarePlan(id) {
+    return this.http.get<FHIR.CarePlan>(environment.queryURI + '/CarePlan/' + id, {headers: this.getHeaders()});
+  }
+
+  getCarePlanForEpisodeOfCareId(episodeOfCareId) {
+    return this.http.get(environment.queryURI + '/CarePlan?context=' + episodeOfCareId, {headers: this.getHeaders()});
+  }
+
+  updateCarePlan(id, carePlanData) {
+    return this.http.put(environment.queryURI + '/CarePlan/' + id, carePlanData, {headers: this.getPostHeaders()});
   }
 
   getAllUnassignedQuestionnaireResponses() {
-    // return this.http.get(environment.queryURI + '/QuestionnaireResponse?context:missing=true', {headers: this.getHeaders()});
     return this.http.get(environment.queryURI + '/QuestionnaireResponse', {headers: this.getHeaders()});
   }
 
   saveEpisodeOfCare(data) {
-    return this.http.post<FHIR.EpisodeOfCare>(environment.queryURI + '/EpisodeOfCare', data, {headers: this.getHeaders()});
+    return this.http.post<FHIR.EpisodeOfCare>(environment.queryURI + '/EpisodeOfCare', data, {headers: this.getPostHeaders()});
   }
 
   getAllEpisodeOfCare() {
@@ -62,6 +65,93 @@ export class StaffService {
   getEpisodeOfCareAndRelatedData(episodeOfCareId) {
     return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*&_id='
     + episodeOfCareId, {headers: this.getHeaders()});
+  }
+
+  getAllPractitioners() {
+    return this.http.get(environment.queryURI +
+      '/Practitioner?_revinclude=PractitionerRole:code=admin', {
+      headers: this.getHeaders()
+    });
+  }
+
+  getPractitionerByID(query: string) {
+    return this.http.get(environment.queryURI + '/Practitioner/' + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getAllPractitionerRoles() {
+    return this.http.get(environment.queryURI + '/PractitionerRole/', {
+      headers: this.getHeaders()
+    });
+  }
+
+  getPractitionerRoleByID(query: string) {
+    return this.http.get(environment.queryURI + '/PractitionerRole/' + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getAllTasksForEpisodeOfCare(episodeOfCareId) {
+    return this.http.get(environment.queryURI + '/Task?_context=' + episodeOfCareId, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getAnyFHIRObjectByReference(query: string) {
+    return this.http.get(environment.queryURI + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  updateTask(id, data) {
+    return this.http.put(environment.queryURI + '/Task/' + id, data, {
+      headers: this.getPostHeaders()
+    });
+  }
+
+  postTask(data) {
+    return this.http.post(environment.queryURI + '/Task/', data, { headers: this.getPostHeaders() });
+  }
+
+  getTaskByID(query: string) {
+    return this.http.get(environment.queryURI + '/Task/' + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getAllTasks() {
+    return this.http.get(environment.queryURI + '/Task', {headers: this.getHeaders()});
+  }
+
+  getHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      Authorization: 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
+  }
+
+  getPostHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Content-Type' : 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
+  }
+
+  getCommunicationRelatedToEpisodeOfCare(episodeOfCareId) {
+    return this.http.get(environment.queryURI +
+      '/Communication?context=' + episodeOfCareId, {headers: this.getHeaders()});
+  }
+
+  createCommunication(communicationData) {
+    return this.http.post<FHIR.Communication>(environment.queryURI +
+      '/Communication/', communicationData, {headers: this.getPostHeaders()});
+  }
+
+  updateCommunication(id, communicationData) {
+    return this.http.put<FHIR.Communication>(environment.queryURI +
+      '/Communication/' + id, communicationData, {headers: this.getPostHeaders()});
   }
 
 }
