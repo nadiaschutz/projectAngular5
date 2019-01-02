@@ -71,7 +71,7 @@ const routes: Routes = [
   { path: 'employeesummary', component: EmployeeSummaryComponent },
   { path: 'newaccount', component: NewAccountComponent},
   { path: 'newservicerequest', component: NewServiceRequestComponent },
-  { path: 'clientdepartment', component: ClientDepartmentComponent },
+  { path: 'clientdepartment', component: ClientDepartmentComponent, canActivate: [AuthGuardService] },
   { path: 'assigntasks', component: TasklistComponent },
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'service-request-summary/:id', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},

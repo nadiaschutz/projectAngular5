@@ -3,27 +3,68 @@
 </div>
 
 <div class="container">
+
+  <div class="row">
+    <h6 class="col-3">History</h6>
+
+    <!-- Tool Bar -->
+
+    <div class="col-4">
+        <button class="btn special-button tool-button" (click)="showNewTool = !showNewTool" >New</button>
+        <ul *ngIf="showNewTool" class="tools">
+          <li class="tool-item">
+            <a (click)="openTaskForm()">New Task</a>
+          </li>
+          <li class="tool-item">
+            <a (click)="openNoteForm()">New Note</a>
+          </li>
+        </ul>
+      </div>
+  </div>
+
+      <div id="tabs" #tabs>
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link active" [ngClass]="{ 'active':activeTab==='all'}" (click)="displayAll()"
+                  data-toggle="tab">All</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab"
+                  (click)="displayOnlyTasks()">Tasks</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [ngClass]="{ 'active':activeTab==='notes'}" data-toggle="tab"
+                    (click)="displayOnlyNotes()">Notes</a>
+              </li>
+          </ul>
+        </div>
   
   <div class="row">
-    
-    
     <!-- 1. History -->
-    <div class="col-5">
-      <h6>History</h6>
-      <button class="btn special-button" (click)="openTaskForm()">New Task</button>
-      <button class="btn special-button" (click)="openNoteForm()">New Note</button>
-      <div *ngIf="showNoteForm" style="margin: 15px;">
-        <label>Enter Notes:</label>
-        <input type="text" [(ngModel)]="note"/> <br>
-        <button class="btn special-button" (click)="saveNotes()">Save</button>
-        <button class="btn special-button" (click)="showNoteForm = !showNoteForm">Cancel</button>
+    <div class="col-4">
+      <div *ngIf="showNoteForm">
+        <form [formGroup]="noteFormGroup" novalidate>
+          <section class="form-section">
+            
+            <label for="title">Note Title</label>
+            <input type="text" name="title" id="title" formControlName="title" class="form-control" required placeholder="Enter Note Title">
+            
+            <label for="note">Note</label>
+            <input type="text" name="note" id="note" formControlName="note" class="form-control note" required placeholder="Enter Notes">
+            
+          </section>
+
+          <section class="form-buttons">
+            <button class="btn special-button" (click)="saveNotes()">Save</button>
+            <button class="btn special-button" (click)="showNoteForm = !showNoteForm">Cancel</button>
+          </section>
+        </form>
+      <hr>
       </div>
-      <!-- <button class="btn special-button" (click)="showTaskForm = !showTaskForm">New Task</button> -->
       <!-- Task Form -->
       <div *ngIf="showTaskForm">
-        <!-- <app-create-task episodeOfCareId="{{episodeOfCareId}}"></app-create-task> -->
         <!-- Task Form -->
-        <form [formGroup]="taskFormGroup" novalidate class="center-align">
+        <form [formGroup]="taskFormGroup" novalidate>
   
             <section class="form-section">
               <div class="row">
@@ -71,35 +112,44 @@
                 </div>
               </div>
             </section>
-            
-            <div class="row">
-              <button class="btn special-button" (click)="setTask()" [disabled]="!taskFormGroup.valid">
-              Create Task</button>
-              <button class="btn special-button" (click)="showTaskForm = !showTaskForm"
-              [disabled]="taskFormGroup.valid" style="margin-left: 10px;">Cancel</button>
-            </div>
-        
+
+            <section class="form-buttons">
+                <button class="btn special-button" (click)="saveTask()" [disabled]="!taskFormGroup.valid">
+                    Create Task</button>
+                    <button class="btn special-button" (click)="showTaskForm = !showTaskForm"
+                    [disabled]="taskFormGroup.valid">Cancel</button>
+            </section>
+
           </form>
+          <hr>
       </div>
 
       <!-- Showing History -->
-      <div class="card" *ngFor="let item of history" style="margin-top: 15px">
-        <div class="card-body">
-            <div class="card-title">{{item.title}}</div>
-            <p class="card-text">{{item.note}}</p>
-            <p class="card-text">{{item.date}}</p>
-        </div>
+      <div class="card" *ngFor="let item of historyToDisplay">
+          <div class="card-body">
+              <div class="card-title">
+                {{item.title}}
+                <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
+              </div>
+              <p class="card-text">{{item.note}}</p>
+              <p class="card-text">{{item.date}}</p>
+              <div class="card-link">
+                  <a *ngIf="item.type==='task' && item.status==='in-progress'"
+                  (click)="completeTask(item.id)">Mark as done</a>
+              </div>
+          </div>
       </div>
     </div>
   
     <!-- 2. Care Plan section, shown only when needed -->
 
-    <div class="col-4">
+    <div class="col-5">
       <div class="search-box">
-        <!-- <div *ngFor="let item of carePlanActivities; trackBy: onChecklistChange"> -->
         <div *ngFor="let item of carePlanActivities; let i = index">
-          <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}">
-          {{item.description}}
+          <label>
+            <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}" id="i">
+            <span class="checklist-label">{{item.description}}</span>
+          </label>
         </div>
       </div>
     </div>
@@ -110,10 +160,9 @@
       <!-- 3a. Status of Care Plan -->
   
       <!-- 3b. Summary: Client information -->
-      <div class="search-box">
+      <div>
           <div *ngFor="let item of summary">
               <label class="label-name"><strong>{{item.id | titlecase}}</strong></label>
-              <!-- <input disabled=true class="form-control field-box-name" placeholder="{{item.value | titlecase}}"/> -->
               <p>{{item.value | titlecase}}</p>
           </div>
       </div>
