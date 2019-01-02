@@ -154,12 +154,12 @@ export class WorkScreenComponent implements OnInit {
       const annotation = new FHIR.Annotation;
       annotation.time = new Date();
       if (this.carePlanActivities[index]['value']) {
-        annotation.text = 'User ' + this.fetchCurrentUsername() +
-         ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as complete';
+        annotation.text = 'COMPLETED: User ' + this.fetchCurrentUsername() +
+         ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as Completed';
         this.carePlan['activity'][index]['detail']['status'] = 'completed';
       } else {
-        annotation.text = 'User ' + this.fetchCurrentUsername() +
-         ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as in-complete';
+        annotation.text = 'IN-COMPLETE: User ' + this.fetchCurrentUsername() +
+         ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as In-complete';
         this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
         console.log(this.carePlan['activity'][index]);
       }
@@ -184,7 +184,7 @@ export class WorkScreenComponent implements OnInit {
         const temp = {};
         temp['type'] = 'checklistItem';
         temp['status'] = carePlanActivity['detail']['status'];
-        temp['title'] = carePlanActivity['detail']['description'];
+        temp['title'] = 'Item: ' + carePlanActivity['detail']['description'];
         temp['note'] = element['text'];
         temp['lastUpdated'] = element['time'];
         this.history.push(temp);
@@ -199,7 +199,7 @@ export class WorkScreenComponent implements OnInit {
       const temp = {};
       temp['type'] = 'checklistItem';
       temp['status'] = carePlanActivity['detail']['status'];
-      temp['title'] = carePlanActivity['detail']['description'];
+      temp['title'] = 'Item: ' + carePlanActivity['detail']['description'];
       temp['note'] = recentActivity['text'];
       temp['lastUpdated'] = recentActivity['time'];
       this.history.push(temp);
