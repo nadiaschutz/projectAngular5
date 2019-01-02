@@ -158,7 +158,7 @@ export class WorkScreenComponent implements OnInit {
          ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as Completed';
         this.carePlan['activity'][index]['detail']['status'] = 'completed';
       } else {
-        annotation.text = 'IN-COMPLETE: User ' + this.fetchCurrentUsername() +
+        annotation.text = 'INCOMPLETE: User ' + this.fetchCurrentUsername() +
          ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as In-complete';
         this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
         console.log(this.carePlan['activity'][index]);
