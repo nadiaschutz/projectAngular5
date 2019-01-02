@@ -282,3 +282,24 @@ select:-webkit-autofill:focus {
 .button-row {
     padding: 20px;
 }
+
+.businessuser {
+    display: none;
+}
+
+.registry {
+    @extend .businessuser;
+}
+
+.manager {
+    display: inline;
+    display: unset;
+}
+
+.superuser {
+    @extend .manager;
+}
+
+.emptyClass {
+    display: none;
+}

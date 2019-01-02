@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 import { UserService } from '../../service/user.service';
 
@@ -20,13 +21,20 @@ export class DistrictOfficeComponent implements OnInit {
   locationFormGroup: FormGroup;
   showFormElement = false;
 
+  roleInSession = 'emptyClass';
+
   constructor(
     private formBuilder: FormBuilder,
     private httpClient: HttpClient,
-    private userService: UserService
+    private oauthService: OAuthService,
+    private userService: UserService,
   ) {}
 
   ngOnInit() {
+
+    this.userService.subscribeRoleData().subscribe(data => {
+      this.roleInSession = data;
+    });
     this.showFormElement = false;
     this.fetchAllDistrictOffices();
     this.fetchAllRegionalOffices();
@@ -48,13 +56,13 @@ export class DistrictOfficeComponent implements OnInit {
 
   addNewDistrictOffice() {
     this.showFormElement = true;
-    const districtOffice = new FHIR.Location;
+    const districtOffice = new FHIR.Location();
     districtOffice.resourceType = 'Location';
     districtOffice.name = this.locationFormGroup.get('name').value;
 
     districtOffice.status = new FHIR.Code('active').code;
 
-    const organizationReference = new FHIR.Reference;
+    const organizationReference = new FHIR.Reference();
     organizationReference.reference =
       'Organization/' +
       this.regionalOfficesWithId[
@@ -62,12 +70,12 @@ export class DistrictOfficeComponent implements OnInit {
       ];
     districtOffice.managingOrganization = organizationReference;
 
-    const codingForType = new FHIR.Coding;
+    const codingForType = new FHIR.Coding();
     codingForType.system = 'http://hl7.org/fhir/organization-type';
     codingForType.code = 'team';
     codingForType.display = 'Regional Office';
 
-    const type = new FHIR.CodeableConcept;
+    const type = new FHIR.CodeableConcept();
     type.text = 'District Office';
     districtOffice.type = type;
     type.coding = [codingForType];

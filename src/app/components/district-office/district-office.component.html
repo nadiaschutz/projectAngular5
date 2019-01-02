@@ -1,11 +1,11 @@
 <div class='container'>
   <div class="main-header">
-    <h5>Add PSOHP Office</h5>
+    <h5>PSOHP Office</h5>
   </div>
 
   <div>
-    <div *ngIf="!showFormElement">
-      <div class="button-section">
+    <div *ngIf="!showFormElement" >
+      <div class="button-section" [ngClass]="roleInSession">
         <button (click)="showAddDisctrictOfficeForm()" class="btn special-button">
           Add new PSOHP Office</button>
       </div>

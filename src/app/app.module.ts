@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -35,7 +35,7 @@ import { DistrictOfficeComponent } from './components/district-office/district-o
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
 import { ClientOnsubmitSummaryComponent } from './components/client-onsubmit-summary/client-onsubmit-summary.component';
 import { TasklistComponent } from './components/tasklist/tasklist.component';
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { StaffService } from '../app/service/staff.service';
 import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
 import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
@@ -150,7 +150,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     QuestionnaireService,
     PatientService,
     DatePipe,
-    StaffService
+    TitleCasePipe,
+    StaffService,
   ],
   bootstrap: [AppComponent],
   entryComponents: [

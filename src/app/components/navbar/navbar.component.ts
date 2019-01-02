@@ -17,12 +17,13 @@ export class NavbarComponent implements OnInit {
 
   userID: string;
   ngOnInit() {
-    this.userID = this.oauthService.getIdentityClaims()['name'];
+    if (this.oauthService.hasValidAccessToken()) {
+      this.userID = this.oauthService.getIdentityClaims()['name'];
+    }
   }
 
   logout() {
     this.userService.logout();
-    this.userID = '';
   }
   redirectToDashboard() {
     this.router.navigateByUrl('/dashboard');
