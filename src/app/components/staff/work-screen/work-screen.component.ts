@@ -22,20 +22,23 @@ export class WorkScreenComponent implements OnInit {
   showNoteForm = false;
   taskFormGroup: FormGroup;
   noteFormGroup: FormGroup;
-  episodeOfCareId = '2965';
+  episodeOfCareId = '';
   practitioners = [];
   practitionersWithId = [];
   history = [];
   historyToDisplay = [];
   communication = {};
   showNewTool = false;
+  activeTab = 'all';
+  showOnlyTasks = false;
+  showOnlyNotes = false;
 
   constructor(private staffService: StaffService, private utilService: UtilService,
   private route: ActivatedRoute, private formBuilder: FormBuilder, private oAuthService: OAuthService) { }
 
   ngOnInit() {
-    // console.log(this.route.snapshot.paramMap.get('id'));
-    // this.episodeOfCareId = this.route.snapshot.paramMap.get('id');
+    console.log(this.route.snapshot.paramMap.get('id'));
+    this.episodeOfCareId = this.route.snapshot.paramMap.get('id');
     this.staffService.getAllPractitioners().subscribe(
       data => this.subscribePractitioners(data),
       error => console.error(error)
@@ -46,11 +49,13 @@ export class WorkScreenComponent implements OnInit {
   fetchAllData() {
     this.staffService.getEpisodeOfCareAndRelatedData(this.episodeOfCareId).subscribe(data => {
       this.processResponse(data);
+      this.displayAll();
     });
   }
 
   processResponse(data) {
     console.log(data);
+    this.history = [];
     if (data && data.entry) {
       data.entry.forEach(element => {
         if (element.resource.resourceType === 'CarePlan') {
@@ -74,7 +79,6 @@ export class WorkScreenComponent implements OnInit {
           });
         }
       });
-      this.displayAll();
     }
   }
 
@@ -91,13 +95,14 @@ export class WorkScreenComponent implements OnInit {
       }
       this.carePlanActivities.push(temp);
     });
-    console.log(this.carePlanActivities);
   }
 
   sortHistory() {
-    this.history.sort(function(a, b) {
+    console.log(this.historyToDisplay);
+    this.historyToDisplay.sort(function(a, b) {
       return new Date(b['lastUpdated']).getTime() - new Date(a['lastUpdated']).getTime();
     });
+    console.log(this.historyToDisplay);
   }
 
   processPatientForSummary(patient) {
@@ -140,6 +145,7 @@ export class WorkScreenComponent implements OnInit {
     temp['owner'] = this.utilService.getNameFromResource(this.practitionersWithId[practitionerId]);
     temp['lastUpdated'] = task['meta']['lastUpdated'];
     temp['date'] = this.utilService.getDateTime(task['meta']['lastUpdated']);
+    temp['id'] = task['id'];
     this.history.push(temp);
   }
 
@@ -167,6 +173,7 @@ export class WorkScreenComponent implements OnInit {
         this.processRecentCarePlanActivityForHistory(data['activity'][index]);
         this.carePlan = data;
         this.processCarePlanForDisplay();
+        this.displayAll();
       });
     }
   }
@@ -181,7 +188,6 @@ export class WorkScreenComponent implements OnInit {
         temp['note'] = element['text'];
         temp['lastUpdated'] = element['time'];
         this.history.push(temp);
-        this.sortHistory();
       });
     }
   }
@@ -197,7 +203,6 @@ export class WorkScreenComponent implements OnInit {
       temp['note'] = recentActivity['text'];
       temp['lastUpdated'] = recentActivity['time'];
       this.history.push(temp);
-      this.sortHistory();
     }
   }
 
@@ -212,7 +217,6 @@ export class WorkScreenComponent implements OnInit {
     temp['note'] = communicationItem.text;
     temp['lastUpdated'] = communicationItem.time;
     this.history.push(temp);
-    this.sortHistory();
   }
 
   openTaskForm() {
@@ -257,6 +261,9 @@ export class WorkScreenComponent implements OnInit {
       this.showNoteForm = false;
       // This needs to use the date coming from the server, in this case, the var 'data'
       this.processCommunicationNotesForHistory(annotation);
+      if (this.showOnlyNotes) {
+        this.displayOnlyNotes();
+      }
     });
   }
 
@@ -307,7 +314,11 @@ export class WorkScreenComponent implements OnInit {
       .postTask(JSON.stringify(task)).subscribe((data) => {
         this.showTaskForm = false;
         this.processTaskForHistory(data);
-        this.sortHistory();
+        if (this.showOnlyTasks) {
+          this.displayOnlyTasks();
+        } else {
+          this.displayAll();
+        }
       });
   }
 
@@ -317,7 +328,6 @@ export class WorkScreenComponent implements OnInit {
       for (const task of data['entry']) {
         this.processTaskForHistory(task['resource']);
       }
-      this.sortHistory();
     });
   }
 
@@ -326,15 +336,19 @@ export class WorkScreenComponent implements OnInit {
   }
 
   displayAll() {
+    this.showOnlyNotes = false;
+    this.showOnlyTasks = false;
     this.historyToDisplay = [];
     this.historyToDisplay = this.history;
     this.sortHistory();
   }
 
   displayOnlyTasks() {
+    this.showOnlyNotes = false;
+    this.showOnlyTasks = true;
     this.historyToDisplay = [];
     this.history.forEach(item => {
-      if (item['type'] === '') {
+      if (item['type'] === 'task') {
         this.historyToDisplay.push(item);
       }
     });
@@ -342,13 +356,30 @@ export class WorkScreenComponent implements OnInit {
   }
 
   displayOnlyNotes() {
+    this.showOnlyNotes = true;
+    this.showOnlyTasks = false;
     this.historyToDisplay = [];
     this.history.forEach(item => {
-      if (item['type'] === '') {
+      if (item['type'] === 'note') {
         this.historyToDisplay.push(item);
       }
     });
     this.sortHistory();
+  }
+
+  completeTask(id) {
+    this.staffService.getTaskByID(id).subscribe(task => {
+      task['status'] = 'completed';
+      this.staffService.updateTask(task['id'], JSON.stringify(task)).subscribe(updatedTask => {
+        this.processTaskForHistory(updatedTask);
+        // if (this.showOnlyTasks) {
+        //   this.displayOnlyTasks();
+        // } else {
+        //   this.displayAll();
+        // }
+        this.fetchAllData();
+      });
+    });
   }
 
 }

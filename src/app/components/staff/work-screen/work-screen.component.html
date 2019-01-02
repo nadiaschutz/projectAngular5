@@ -11,20 +11,37 @@
 
     <div class="col-4">
         <button class="btn special-button tool-button" (click)="showNewTool = !showNewTool" >New</button>
-        <ul *ngIf="showNewTool" class="ul" style="z-index: 1;">
-          <li class="li">
+        <ul *ngIf="showNewTool" class="tools">
+          <li class="tool-item">
             <a (click)="openTaskForm()">New Task</a>
           </li>
-          <li class="li">
+          <li class="tool-item">
             <a (click)="openNoteForm()">New Note</a>
           </li>
         </ul>
       </div>
   </div>
+
+      <div id="tabs" #tabs>
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link active" [ngClass]="{ 'active':activeTab==='all'}" (click)="displayAll()"
+                  data-toggle="tab">All</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab"
+                  (click)="displayOnlyTasks()">Tasks</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [ngClass]="{ 'active':activeTab==='notes'}" data-toggle="tab"
+                    (click)="displayOnlyNotes()">Notes</a>
+              </li>
+          </ul>
+        </div>
   
   <div class="row">
     <!-- 1. History -->
-    <div class="col-5">
+    <div class="col-4">
       <div *ngIf="showNoteForm">
         <form [formGroup]="noteFormGroup" novalidate>
           <section class="form-section">
@@ -41,8 +58,8 @@
             <button class="btn special-button" (click)="saveNotes()">Save</button>
             <button class="btn special-button" (click)="showNoteForm = !showNoteForm">Cancel</button>
           </section>
-
         </form>
+      <hr>
       </div>
       <!-- Task Form -->
       <div *ngIf="showTaskForm">
@@ -104,27 +121,35 @@
             </section>
 
           </form>
+          <hr>
       </div>
 
       <!-- Showing History -->
-      <div class="card" *ngFor="let item of history">
+      <div class="card" *ngFor="let item of historyToDisplay">
           <div class="card-body">
-              <div class="card-title">{{item.title}}</div>
+              <div class="card-title">
+                {{item.title}}
+                <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
+              </div>
               <p class="card-text">{{item.note}}</p>
               <p class="card-text">{{item.date}}</p>
-              <a href="#" class="card-link" *ngIf="">Mark as done</a>
+              <div class="card-link">
+                  <a *ngIf="item.type==='task' && item.status==='in-progress'"
+                  (click)="completeTask(item.id)">Mark as done</a>
+              </div>
           </div>
       </div>
     </div>
   
     <!-- 2. Care Plan section, shown only when needed -->
 
-    <div class="col-4">
+    <div class="col-5">
       <div class="search-box">
-        <!-- <div *ngFor="let item of carePlanActivities; trackBy: onChecklistChange"> -->
         <div *ngFor="let item of carePlanActivities; let i = index">
-          <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}">
-          {{item.description}}
+          <label>
+            <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}" id="i">
+            <span class="checklist-label">{{item.description}}</span>
+          </label>
         </div>
       </div>
     </div>
@@ -136,7 +161,6 @@
   
       <!-- 3b. Summary: Client information -->
       <div>
-        <h6>Summary</h6>
           <div *ngFor="let item of summary">
               <label class="label-name"><strong>{{item.id | titlecase}}</strong></label>
               <p>{{item.value | titlecase}}</p>
