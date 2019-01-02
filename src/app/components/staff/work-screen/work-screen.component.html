@@ -3,27 +3,51 @@
 </div>
 
 <div class="container">
+
+  <div class="row">
+    <h6 class="col-3">History</h6>
+
+    <!-- Tool Bar -->
+
+    <div class="col-4">
+        <button class="btn special-button tool-button" (click)="showNewTool = !showNewTool" >New</button>
+        <ul *ngIf="showNewTool" class="ul" style="z-index: 1;">
+          <li class="li">
+            <a (click)="openTaskForm()">New Task</a>
+          </li>
+          <li class="li">
+            <a (click)="openNoteForm()">New Note</a>
+          </li>
+        </ul>
+      </div>
+  </div>
   
   <div class="row">
-    
-    
     <!-- 1. History -->
     <div class="col-5">
-      <h6>History</h6>
-      <button class="btn special-button" (click)="openTaskForm()">New Task</button>
-      <button class="btn special-button" (click)="openNoteForm()">New Note</button>
-      <div *ngIf="showNoteForm" style="margin: 15px;">
-        <label>Enter Notes:</label>
-        <input type="text" [(ngModel)]="note"/> <br>
-        <button class="btn special-button" (click)="saveNotes()">Save</button>
-        <button class="btn special-button" (click)="showNoteForm = !showNoteForm">Cancel</button>
+      <div *ngIf="showNoteForm">
+        <form [formGroup]="noteFormGroup" novalidate>
+          <section class="form-section">
+            
+            <label for="title">Note Title</label>
+            <input type="text" name="title" id="title" formControlName="title" class="form-control" required placeholder="Enter Note Title">
+            
+            <label for="note">Note</label>
+            <input type="text" name="note" id="note" formControlName="note" class="form-control note" required placeholder="Enter Notes">
+            
+          </section>
+
+          <section class="form-buttons">
+            <button class="btn special-button" (click)="saveNotes()">Save</button>
+            <button class="btn special-button" (click)="showNoteForm = !showNoteForm">Cancel</button>
+          </section>
+
+        </form>
       </div>
-      <!-- <button class="btn special-button" (click)="showTaskForm = !showTaskForm">New Task</button> -->
       <!-- Task Form -->
       <div *ngIf="showTaskForm">
-        <!-- <app-create-task episodeOfCareId="{{episodeOfCareId}}"></app-create-task> -->
         <!-- Task Form -->
-        <form [formGroup]="taskFormGroup" novalidate class="center-align">
+        <form [formGroup]="taskFormGroup" novalidate>
   
             <section class="form-section">
               <div class="row">
@@ -71,24 +95,25 @@
                 </div>
               </div>
             </section>
-            
-            <div class="row">
-              <button class="btn special-button" (click)="setTask()" [disabled]="!taskFormGroup.valid">
-              Create Task</button>
-              <button class="btn special-button" (click)="showTaskForm = !showTaskForm"
-              [disabled]="taskFormGroup.valid" style="margin-left: 10px;">Cancel</button>
-            </div>
-        
+
+            <section class="form-buttons">
+                <button class="btn special-button" (click)="saveTask()" [disabled]="!taskFormGroup.valid">
+                    Create Task</button>
+                    <button class="btn special-button" (click)="showTaskForm = !showTaskForm"
+                    [disabled]="taskFormGroup.valid">Cancel</button>
+            </section>
+
           </form>
       </div>
 
       <!-- Showing History -->
-      <div class="card" *ngFor="let item of history" style="margin-top: 15px">
-        <div class="card-body">
-            <div class="card-title">{{item.title}}</div>
-            <p class="card-text">{{item.note}}</p>
-            <p class="card-text">{{item.date}}</p>
-        </div>
+      <div class="card" *ngFor="let item of history">
+          <div class="card-body">
+              <div class="card-title">{{item.title}}</div>
+              <p class="card-text">{{item.note}}</p>
+              <p class="card-text">{{item.date}}</p>
+              <a href="#" class="card-link" *ngIf="">Mark as done</a>
+          </div>
       </div>
     </div>
   
@@ -110,10 +135,10 @@
       <!-- 3a. Status of Care Plan -->
   
       <!-- 3b. Summary: Client information -->
-      <div class="search-box">
+      <div>
+        <h6>Summary</h6>
           <div *ngFor="let item of summary">
               <label class="label-name"><strong>{{item.id | titlecase}}</strong></label>
-              <!-- <input disabled=true class="form-control field-box-name" placeholder="{{item.value | titlecase}}"/> -->
               <p>{{item.value | titlecase}}</p>
           </div>
       </div>

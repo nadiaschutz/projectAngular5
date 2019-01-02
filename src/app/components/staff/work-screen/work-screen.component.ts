@@ -21,19 +21,21 @@ export class WorkScreenComponent implements OnInit {
   showTaskForm = false;
   showNoteForm = false;
   taskFormGroup: FormGroup;
-  episodeOfCareId = '';
+  noteFormGroup: FormGroup;
+  episodeOfCareId = '2965';
   practitioners = [];
   practitionersWithId = [];
   history = [];
+  historyToDisplay = [];
   communication = {};
-  note = '';
+  showNewTool = false;
 
   constructor(private staffService: StaffService, private utilService: UtilService,
   private route: ActivatedRoute, private formBuilder: FormBuilder, private oAuthService: OAuthService) { }
 
   ngOnInit() {
-    console.log(this.route.snapshot.paramMap.get('id'));
-    this.episodeOfCareId = this.route.snapshot.paramMap.get('id');
+    // console.log(this.route.snapshot.paramMap.get('id'));
+    // this.episodeOfCareId = this.route.snapshot.paramMap.get('id');
     this.staffService.getAllPractitioners().subscribe(
       data => this.subscribePractitioners(data),
       error => console.error(error)
@@ -72,11 +74,12 @@ export class WorkScreenComponent implements OnInit {
           });
         }
       });
-      this.sortHistory();
+      this.displayAll();
     }
   }
 
   processCarePlanForDisplay() {
+    this.carePlanActivities = [];
     this.carePlan['activity'].forEach(activity => {
       const temp = {};
       temp['description'] = activity['detail']['description'];
@@ -88,6 +91,7 @@ export class WorkScreenComponent implements OnInit {
       }
       this.carePlanActivities.push(temp);
     });
+    console.log(this.carePlanActivities);
   }
 
   sortHistory() {
@@ -130,7 +134,7 @@ export class WorkScreenComponent implements OnInit {
     const temp = {};
     temp['type'] = 'task';
     temp['status'] = task['status'];
-    temp['title'] = task['description'];
+    temp['title'] = 'Task: ' + task['description'];
     temp['note'] = task['note'][0]['text'];
     const practitionerId = this.utilService.getIdFromReference(task['owner']['reference']);
     temp['owner'] = this.utilService.getNameFromResource(this.practitionersWithId[practitionerId]);
@@ -151,6 +155,7 @@ export class WorkScreenComponent implements OnInit {
         annotation.text = 'User ' + this.fetchCurrentUsername() +
          ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as in-complete';
         this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
+        console.log(this.carePlan['activity'][index]);
       }
       if (this.carePlan['activity'][index]['progress']) {
         this.carePlan['activity'][index]['progress'].push(annotation);
@@ -198,8 +203,12 @@ export class WorkScreenComponent implements OnInit {
 
   processCommunicationNotesForHistory(communicationItem) {
     const temp = {};
-    temp['type'] = 'Note';
-    temp['title'] = 'Note';
+    temp['type'] = 'note';
+    if (communicationItem['id']) {
+      temp['title'] = 'Note: ' + communicationItem['id'];
+    } else {
+      temp['title'] = 'Note';
+    }
     temp['note'] = communicationItem.text;
     temp['lastUpdated'] = communicationItem.time;
     this.history.push(temp);
@@ -209,6 +218,7 @@ export class WorkScreenComponent implements OnInit {
   openTaskForm() {
     this.showTaskForm = true;
     this.showNoteForm = false;
+    this.showNewTool = false;
     this.taskFormGroup = this.formBuilder.group({
       description: new FormControl(''),
       assignTo: new FormControl(''),
@@ -219,6 +229,11 @@ export class WorkScreenComponent implements OnInit {
   openNoteForm() {
     this.showNoteForm = true;
     this.showTaskForm = false;
+    this.showNewTool = false;
+    this.noteFormGroup = this.formBuilder.group({
+      title: new FormControl(''),
+      note: new FormControl('')
+    });
     this.staffService.getCommunicationRelatedToEpisodeOfCare(this.episodeOfCareId).
       subscribe(data => {
         if (data['entry']) {
@@ -231,14 +246,14 @@ export class WorkScreenComponent implements OnInit {
 
   saveNotes() {
     const annotation = new FHIR.Annotation;
+    annotation.id = this.noteFormGroup.get('title').value;
     annotation.time = new Date();
-    annotation.text = this.note;
+    annotation.text = this.noteFormGroup.get('note').value;
     if (!this.communication['note']) {
       this.communication['note'] = new Array<FHIR.Annotation>();
     }
     this.communication['note'].push(annotation);
     this.staffService.updateCommunication(this.communication['id'], JSON.stringify(this.communication)).subscribe(data => {
-      this.note = '';
       this.showNoteForm = false;
       // This needs to use the date coming from the server, in this case, the var 'data'
       this.processCommunicationNotesForHistory(annotation);
@@ -271,7 +286,7 @@ export class WorkScreenComponent implements OnInit {
     });
   }
 
-  setTask() {
+  saveTask() {
     const task = new FHIR.Task();
     const context = new FHIR.Reference();
     const taskOwner = new FHIR.Reference();
@@ -308,6 +323,32 @@ export class WorkScreenComponent implements OnInit {
 
   fetchCurrentUsername() {
     return this.oAuthService.getIdentityClaims()['name'];
+  }
+
+  displayAll() {
+    this.historyToDisplay = [];
+    this.historyToDisplay = this.history;
+    this.sortHistory();
+  }
+
+  displayOnlyTasks() {
+    this.historyToDisplay = [];
+    this.history.forEach(item => {
+      if (item['type'] === '') {
+        this.historyToDisplay.push(item);
+      }
+    });
+    this.sortHistory();
+  }
+
+  displayOnlyNotes() {
+    this.historyToDisplay = [];
+    this.history.forEach(item => {
+      if (item['type'] === '') {
+        this.historyToDisplay.push(item);
+      }
+    });
+    this.sortHistory();
   }
 
 }

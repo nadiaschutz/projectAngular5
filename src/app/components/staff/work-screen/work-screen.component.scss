@@ -25,11 +25,76 @@
 
 .search-box {
     padding: 30px;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px 0 rgba(181, 181, 181, 0.5);
+    background-color: #ffffff;
+}
+.card {
+    margin-bottom: 15px;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px 0 rgba(215, 215, 215, 0.5);
+    background-color: #ffffff;
 }
 
-div.card:nth-child(even) {
-    background: rgb(74, 175, 28);
+// div.card:nth-child(even) {
+//     background: rgb(74, 175, 28);
+// }
+// div.card:nth-child(odd) { 
+//     background: rgb(71, 164, 207);
+// }
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 150px;
+  background-color: white;
+  border: 1px solid #dee2e6;
 }
-div.card:nth-child(odd) { 
-    background: rgb(71, 164, 207);
+
+li a {
+    display: block;
+    color: #000;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    background-color: lightgray;
+    // color: white;
+    cursor: pointer;
+}
+.special-button {
+    background-color: #398ef2;
+    color: white;
+}
+
+.form-buttons {
+    margin-bottom: 15px;
+}
+
+.form-section {
+    padding-bottom: 40px;
+}
+
+.note {
+    height: 90px;
+}
+
+.summary {
+    width: 25%;
+    position: fixed;
+}
+
+.careplan {
+    width: 33.333333%;
+    position: fixed;
+}
+
+.tool-button {
+    width: 150px;
+}
+
+.card-link {
+    color: #398ef2;
 }
