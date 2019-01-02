@@ -10,16 +10,13 @@ import {
 } from '@angular/forms';
 
 import { HttpClient } from '@angular/common/http';
-import { OAuthService } from 'angular-oauth2-oidc';
-
+import { TitleCasePipe } from '@angular/common';
 import { UserService } from '../../service/user.service';
-import { PatientService } from '../../service/patient.service';
 
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as FHIR from '../../interface/FHIR';
 import * as SMILE from '../../interface/SMILE';
-import * as uuid from 'uuid';
 
 export interface AccountType {
   value: string;
@@ -53,10 +50,9 @@ export class NewAccountComponent implements OnInit {
     private fb: FormBuilder,
     private httpClient: HttpClient,
     public translate: TranslateService,
-    private oauthService: OAuthService,
     private userService: UserService,
-    private patientService: PatientService,
-    private router: Router
+    private router: Router,
+    private titleCase: TitleCasePipe
   ) {}
 
   accountTypes: AccountType[] = [
@@ -276,7 +272,9 @@ export class NewAccountComponent implements OnInit {
 
 
     practitionerCoding.system = 'https://bcip.smilecdr.com/fhir/practitionerrole';
-    practitionerCoding.display = this.accountFormGroup.get('role').value;
+    practitionerCoding.display = this.titleCase.transform (
+      this.accountFormGroup.get('role').value
+    );
 
     if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'superuser') {
       practitionerCoding.code = 'superuser';
@@ -360,7 +358,9 @@ export class NewAccountComponent implements OnInit {
 
 
     practitionerCoding.system = 'https://bcip.smilecdr.com/fhir/practitionerrole';
-    practitionerCoding.display = this.accountFormGroup.get('role').value;
+    practitionerCoding.display = this.titleCase.transform (
+      this.accountFormGroup.get('role').value
+    );
 
     if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'superuser') {
       practitionerCoding.code = 'superuser';
