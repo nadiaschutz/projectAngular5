@@ -125,7 +125,7 @@
       </div>
 
       <!-- Showing History -->
-      <div class="card" *ngFor="let item of historyToDisplay">
+      <div class="card" *ngFor="let item of historyToDisplay;let i = index;">
           <div class="card-body">
               <div class="card-title">
                 {{item.title}}
@@ -135,7 +135,7 @@
               <p class="card-text">{{item.date}}</p>
               <div class="card-link">
                   <a *ngIf="item.type==='task' && item.status==='in-progress'"
-                  (click)="completeTask(item.id)">Mark as done</a>
+                  (click)="completeTask(i)">Mark as done</a>
               </div>
           </div>
       </div>
