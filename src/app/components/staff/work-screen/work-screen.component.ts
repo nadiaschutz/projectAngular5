@@ -98,11 +98,11 @@ export class WorkScreenComponent implements OnInit {
   }
 
   sortHistory() {
-    console.log(this.historyToDisplay);
     this.historyToDisplay.sort(function(a, b) {
-      return new Date(b['lastUpdated']).getTime() - new Date(a['lastUpdated']).getTime();
+      if (a['lastUpdated'] && b['lastUpdated']) {
+        return new Date(b['lastUpdated']).getTime() - new Date(a['lastUpdated']).getTime();
+      }
     });
-    console.log(this.historyToDisplay);
   }
 
   processPatientForSummary(patient) {
@@ -158,7 +158,7 @@ export class WorkScreenComponent implements OnInit {
          ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as Completed';
         this.carePlan['activity'][index]['detail']['status'] = 'completed';
       } else {
-        annotation.text = 'IN-COMPLETE: User ' + this.fetchCurrentUsername() +
+        annotation.text = 'INCOMPLETE: User ' + this.fetchCurrentUsername() +
          ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as In-complete';
         this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
         console.log(this.carePlan['activity'][index]);
@@ -314,6 +314,7 @@ export class WorkScreenComponent implements OnInit {
       .postTask(JSON.stringify(task)).subscribe((data) => {
         this.showTaskForm = false;
         this.processTaskForHistory(data);
+        console.log(this.showOnlyTasks);
         if (this.showOnlyTasks) {
           this.displayOnlyTasks();
         } else {
@@ -367,17 +368,22 @@ export class WorkScreenComponent implements OnInit {
     this.sortHistory();
   }
 
-  completeTask(id) {
-    this.staffService.getTaskByID(id).subscribe(task => {
+  completeTask(index) {
+    const item = this.historyToDisplay[index];
+    this.staffService.getTaskByID(item.id).subscribe(task => {
       task['status'] = 'completed';
       this.staffService.updateTask(task['id'], JSON.stringify(task)).subscribe(updatedTask => {
-        this.processTaskForHistory(updatedTask);
-        // if (this.showOnlyTasks) {
-        //   this.displayOnlyTasks();
-        // } else {
-        //   this.displayAll();
-        // }
-        this.fetchAllData();
+        task['status'] = 'completed';
+        this.history.forEach(element => {
+          if (element['id'] === item['id']) {
+            element['status'] = 'completed';
+          }
+        });
+        if (this.showOnlyTasks) {
+          this.displayOnlyTasks();
+        } else {
+          this.displayAll();
+        }
       });
     });
   }
