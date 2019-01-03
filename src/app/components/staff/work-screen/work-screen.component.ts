@@ -263,6 +263,8 @@ export class WorkScreenComponent implements OnInit {
       this.processCommunicationNotesForHistory(annotation);
       if (this.showOnlyNotes) {
         this.displayOnlyNotes();
+      } else {
+        this.displayAll();
       }
     });
   }
