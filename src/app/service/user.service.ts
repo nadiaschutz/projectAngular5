@@ -59,12 +59,7 @@ export class UserService {
     this.router.navigate(['']);
   }
 
-  getLogoutHeaders(): HttpHeaders {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded'
-    });
-    return headers;
-  }
+  
 
   login(user: string, pass: string) {
     // Get headers for the login portion of the site
@@ -298,22 +293,33 @@ export class UserService {
   saveSelectedServiceRequestID(id) {
     this.selectedServiceRequestID = id;
   }
+
   getSelectedServiceRequestID(): string {
     return this.selectedServiceRequestID;
   }
+
   saveClientDepartment(data) {
     return this.httpClient.post(environment.queryURI + '/Organization/', data, {
       headers: this.postFHIRHeaders()
     });
   }
+
   fetchAllClientDepartments() {
     return this.httpClient.get(
       environment.queryURI + '/Organization?type=CLIENTDEPT',
       { headers: this.getHeaders() }
     );
   }
-  // TODO - check if function is in use, and delete if not being used
+
   postFHIRHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
+  }
+
+  getJsonAPIHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + this.oauthService.getAccessToken()
@@ -337,12 +343,11 @@ export class UserService {
     return headers;
   }
 
-  getJsonAPIHeaders(): HttpHeaders {
+  getLogoutHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      // 'Accept': 'application/json',
-      Authorization: 'Bearer ' + this.oauthService.getAccessToken()
+      'Content-Type': 'application/x-www-form-urlencoded'
     });
     return headers;
   }
+
 }
