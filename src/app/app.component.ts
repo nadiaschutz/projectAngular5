@@ -17,7 +17,7 @@ import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 export class AppComponent implements OnInit {
 
   title = 'nohis';
-
+  showNavBars;
   sessionObject;
 
   constructor(private oauthService: OAuthService,
@@ -36,6 +36,14 @@ export class AppComponent implements OnInit {
       oidc: false
     });
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
+
+    this.router.events.subscribe(() => {
+      if (this.oauthService.getAccessToken()) {
+        this.showNavBars = true;
+      } else {
+        this.showNavBars = false;
+      }
+    });
   }
 
   returnTokenStatus() {

@@ -147,6 +147,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgBootstrapFormValidationModule,
     NgBootstrapFormValidationModule.forRoot(),
     BsDatepickerModule.forRoot(),
+    AvatarModule
   ],
   providers: [
     AuthGuardService,
