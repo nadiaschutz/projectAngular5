@@ -9,6 +9,7 @@ import * as Rx from 'rxjs';
 @Injectable()
 export class UserService {
   private newRoleSubject = new Rx.BehaviorSubject<string>(null);
+  private newUserNameSubject = new Rx.BehaviorSubject<string>(null);
 
   selectedServiceRequestID;
   selectID = '';
@@ -55,11 +56,10 @@ export class UserService {
       );
     // TODO - remove this after designing cleaner solution
     this.newRoleSubject.next('emptyClass');
+    this.newUserNameSubject.next('');
     this.oauthService.logOut();
     this.router.navigate(['']);
   }
-
-  
 
   login(user: string, pass: string) {
     // Get headers for the login portion of the site
@@ -86,9 +86,7 @@ export class UserService {
     this.oauthService
       .fetchTokenUsingPasswordFlowAndLoadUserProfile(user, pass, header)
       .then(() => {
-        // this.fetchCurrentRole();
-        // console.log(this.subscribeRoleData() );
-        // console.log(this.oauthService.getIdentityClaims());
+        this.newUserNameSubject.next(this.oauthService.getIdentityClaims()['name']);
         this.router.navigate(['/dashboard']);
       });
   }
@@ -102,6 +100,7 @@ export class UserService {
       { headers: header }
     );
   }
+
 
   fetchCurrentUserData(sub) {
     const header = this.getJsonAPIHeaders();
@@ -151,23 +150,27 @@ export class UserService {
     // this.getUserRoleInSession();
   }
 
+  fetchUserName() {
+    this.newUserNameSubject.next(this.oauthService.getIdentityClaims()['name']);
+  }
+
+  subscribeUserNameData() {
+    return this.newUserNameSubject.asObservable();
+  }
+
+  unsubscribeUserNameData() {
+    this.newUserNameSubject.unsubscribe();
+  }
+
+
   subscribeRoleData() {
     return this.newRoleSubject.asObservable();
   }
 
   unsubscribeRoleData() {
-    return this.newRoleSubject.unsubscribe();
+    this.newRoleSubject.unsubscribe();
   }
 
-  setUserRoleInSession(data) {
-    this.userRoleInSession = data;
-    // console.log('el o el', this.userRoleInSession);
-    // console.log(this.userRoleInSession);
-  }
-
-  getUserRoleInSession() {
-    return this.userRoleInSession;
-  }
 
   getDepartmentList() {
     return this.httpClient.get<JSON>('../../assets/departments.json');

@@ -98,6 +98,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.sortUsersObjects();
+    this.userService.fetchUserName();
 
     this.userService.fetchCurrentRole();
     this.userService.subscribeRoleData().subscribe(data => {

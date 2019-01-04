@@ -16,10 +16,27 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   userID: string;
+  hasLoggedIn = false;
   ngOnInit() {
-    if (this.oauthService.hasValidAccessToken()) {
-      this.userID = this.oauthService.getIdentityClaims()['name'];
-    }
+    // if (this.oauthService.hasValidAccessToken()) {
+      
+    //   console.log(this.hasLoggedIn);
+    // } else {
+    //   this.hasLoggedIn = false;
+    //   console.log(this.hasLoggedIn);
+    // }
+    this.userID = 'asd';
+
+    this.userService.subscribeUserNameData().subscribe (
+      data => {
+        if (data) {
+          this.hasLoggedIn = true;
+          this.userID = data;
+        } else {
+          this.hasLoggedIn = false;
+        }
+      }
+    );
   }
 
   logout() {
