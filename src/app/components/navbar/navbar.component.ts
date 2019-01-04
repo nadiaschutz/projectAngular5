@@ -15,11 +15,20 @@ export class NavbarComponent implements OnInit {
     private router: Router
   ) {}
 
-  userID: string;
+  userID;
+  hasLoggedIn = false;
   ngOnInit() {
-    if (this.oauthService.hasValidAccessToken()) {
-      this.userID = this.oauthService.getIdentityClaims()['name'];
-    }
+
+    this.userService.subscribeUserNameData().subscribe (
+      data => {
+        if (data) {
+          this.hasLoggedIn = true;
+          this.userID = data;
+        } else {
+          this.hasLoggedIn = false;
+        }
+      }
+    );
   }
 
   logout() {
