@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, SkipSelf } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -35,7 +35,7 @@ export class NewServiceRequestComponent implements OnInit {
   clientFamilyName = null;
   clientBoD = null;
 
-  documents = null;
+  documents;
   fileLink = [];
   documentReference = {};
 
@@ -143,7 +143,7 @@ export class NewServiceRequestComponent implements OnInit {
       type = fileList[0].type;
       reader.readAsDataURL(fileList[0]);
     }
-    const that = this;
+    const self = this;
     reader.onloadend = function() {
 
       file = reader.result;
@@ -174,8 +174,11 @@ export class NewServiceRequestComponent implements OnInit {
       documentReference.type = documentReferenceCodeableConcept;
       documentReference.content = [content];
 
-
-      that.questionnaireService.postDataFile(JSON.stringify(documentReference));
+  
+      self.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
+        data => self.documents = data,
+        error => self.handleError(error)
+      );
       return reader.result;
 
     };
