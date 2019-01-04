@@ -58,6 +58,8 @@ import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.co
 import { DemoComponent } from './components/demo/demo.component';
 // import { DynamicFormModule } from './components/dynamic-forms/dynamic-form.module';
 
+import { AvatarModule } from 'ngx-avatar';
+
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService]  },
@@ -69,11 +71,11 @@ const routes: Routes = [
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
-  { path: 'employeesummary', component: EmployeeSummaryComponent },
-  { path: 'newaccount', component: NewAccountComponent},
-  { path: 'newservicerequest', component: NewServiceRequestComponent },
+  { path: 'employeesummary', component: EmployeeSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'newaccount', component: NewAccountComponent, canActivate: [AuthGuardService]},
+  { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: 'clientdepartment', component: ClientDepartmentComponent, canActivate: [AuthGuardService] },
-  { path: 'assigntasks', component: TasklistComponent },
+  { path: 'assigntasks', component: TasklistComponent, canActivate: [AuthGuardService] },
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'service-request-summary/:id', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
