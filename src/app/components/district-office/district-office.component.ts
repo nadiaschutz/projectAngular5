@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 import { UserService } from '../../service/user.service';
 
@@ -27,6 +28,8 @@ export class DistrictOfficeComponent implements OnInit {
   locationFormGroup: FormGroup;
   showFormElement = false;
 
+  roleInSession = 'emptyClass';
+
   constructor(
     private formBuilder: FormBuilder,
     private httpClient: HttpClient,
@@ -37,6 +40,10 @@ export class DistrictOfficeComponent implements OnInit {
 
 
   ngOnInit() {
+
+    this.userService.subscribeRoleData().subscribe(data => {
+      this.roleInSession = data;
+    });
     this.showFormElement = false;
     this.fetchAllDistrictOffices();
     this.fetchAllRegionalOffices();

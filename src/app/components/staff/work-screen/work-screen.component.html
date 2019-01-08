@@ -3,25 +3,172 @@
 </div>
 
 <div class="container">
+
   <div class="row">
-    <div class="col-6">
-        <div *ngIf = "summary.length > 0">
-            <div *ngFor="let item of summary">
-              <label class="label-name">{{item.id}}</label>
-              <input type="text" value="{{item.value}}" disabled=true class="form-control field-box-name">
-            </div>
-          </div>
-    </div>
-    <div class="col-6">
-        <div *ngIf="carePlanActivities.length > 0" class="search-box">
-            <h6>Activities</h6>
-              <div *ngFor="let carePlanActivity of carePlanActivities">
-                <div style="margin-bottom: 10px">
-                  <input type="checkbox" [checked]="carePlanActivity.value" [(ngModel)]="carePlanActivity.value" name="carePlanActivity.description" (change)="onChange()">
-                  {{carePlanActivity.description}}
+    <h6 class="col-3">History</h6>
+
+    <!-- Tool Bar -->
+
+    <div class="col-4">
+        <button class="btn special-button tool-button" (click)="showNewTool = !showNewTool" >New</button>
+        <ul *ngIf="showNewTool" class="tools">
+          <li class="tool-item">
+            <a (click)="openTaskForm()">New Task</a>
+          </li>
+          <li class="tool-item">
+            <a (click)="openNoteForm()">New Note</a>
+          </li>
+        </ul>
+      </div>
+  </div>
+
+      <div id="tabs" #tabs>
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link active" [ngClass]="{ 'active':activeTab==='all'}" (click)="displayAll()"
+                  data-toggle="tab">All</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab"
+                  (click)="displayOnlyTasks()">Tasks</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [ngClass]="{ 'active':activeTab==='notes'}" data-toggle="tab"
+                    (click)="displayOnlyNotes()">Notes</a>
+              </li>
+          </ul>
+        </div>
+  
+  <div class="row">
+    <!-- 1. History -->
+    <div class="col-4">
+      <div *ngIf="showNoteForm">
+        <form [formGroup]="noteFormGroup" novalidate>
+          <section class="form-section">
+            
+            <label for="title">Note Title</label>
+            <input type="text" name="title" id="title" formControlName="title" class="form-control" required placeholder="Enter Note Title">
+            
+            <label for="note">Note</label>
+            <input type="text" name="note" id="note" formControlName="note" class="form-control note" required placeholder="Enter Notes">
+            
+          </section>
+
+          <section class="form-buttons">
+            <button class="btn special-button" (click)="saveNotes()">Save</button>
+            <button class="btn special-button" (click)="showNoteForm = !showNoteForm">Cancel</button>
+          </section>
+        </form>
+      <hr>
+      </div>
+      <!-- Task Form -->
+      <div *ngIf="showTaskForm">
+        <!-- Task Form -->
+        <form [formGroup]="taskFormGroup" novalidate>
+  
+            <section class="form-section">
+              <div class="row">
+                <div class="col">
+                  <label for="description">Task</label>
+                  <input type="text" name="description" id="description" formControlName="description" class="form-control"
+                    required placeholder="Enter">
+                  <div *ngIf="taskFormGroup.controls['description'].invalid
+                             && (taskFormGroup.controls['description'].touched || taskFormGroup.controls['description'].dirty)">
+                    <div class="error-message">
+                      Cannot be blank
+                    </div>
+                  </div>
                 </div>
               </div>
+        
+              <div class="row" *ngIf="practitioners.length > 0">
+                <div class="col">
+                  <label for="assignTo">Assign To</label>
+                  <select name="assignTo" id="assignTo" formControlName="assignTo" class="form-control" required>
+                    <option *ngFor="let practitioner of practitioners" [value]="practitioner.id">
+                      <span *ngFor="let name of practitioner.name">{{name.given}} {{name.family}} </span>
+                    </option>
+                  </select>
+                  <div *ngIf="taskFormGroup.controls['assignTo'].invalid
+                             && (taskFormGroup.controls['assignTo'].touched || taskFormGroup.controls['assignTo'].dirty)">
+                    <div class="error-message">
+                      Cannot be blank
+                    </div>
+                  </div>
+                </div>
+              </div>
+        
+              <div class="row">
+                <div class="col">
+                  <label for="instruction">Instructions</label>
+                  <input type="text" name="instruction" id="instruction" formControlName="instruction" class="form-control"
+                    required placeholder="Enter">
+                  <div *ngIf="taskFormGroup.controls['instruction'].invalid
+                             && (taskFormGroup.controls['instruction'].touched || taskFormGroup.controls['instruction'].dirty)">
+                    <div class="error-message">
+                      Cannot be blank
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-buttons">
+                <button class="btn special-button" (click)="saveTask()" [disabled]="!taskFormGroup.valid">
+                    Create Task</button>
+                    <button class="btn special-button" (click)="showTaskForm = !showTaskForm"
+                    [disabled]="taskFormGroup.valid">Cancel</button>
+            </section>
+
+          </form>
+          <hr>
+      </div>
+
+      <!-- Showing History -->
+      <div class="card" *ngFor="let item of historyToDisplay;let i = index;">
+          <div class="card-body">
+              <div class="card-title">
+                {{item.title}}
+                <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
+              </div>
+              <p class="card-text">{{item.note}}</p>
+              <p class="card-text">{{item.date}}</p>
+              <div class="card-link">
+                  <a *ngIf="item.type==='task' && item.status==='in-progress'"
+                  (click)="completeTask(i)">Mark as done</a>
+              </div>
           </div>
+      </div>
     </div>
+  
+    <!-- 2. Care Plan section, shown only when needed -->
+
+    <div class="col-5">
+      <div class="search-box">
+        <div *ngFor="let item of carePlanActivities; let i = index">
+          <label>
+            <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}" id="i">
+            <span class="checklist-label">{{item.description}}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  
+    <!-- 3. Right fixed section -->
+
+    <div class="col-3">
+      <!-- 3a. Status of Care Plan -->
+  
+      <!-- 3b. Summary: Client information -->
+      <div>
+          <div *ngFor="let item of summary">
+              <label class="label-name"><strong>{{item.id | titlecase}}</strong></label>
+              <p>{{item.value | titlecase}}</p>
+          </div>
+      </div>
+    </div>
+  
+
   </div>
+
 </div>

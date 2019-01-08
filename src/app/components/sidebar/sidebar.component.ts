@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,  OnDestroy } from '@angular/core';
+import { UserService } from '../../service/user.service';
 import { Router } from '@angular/router';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Component({
   selector: 'app-sidebar',
@@ -7,14 +9,27 @@ import { Router } from '@angular/router';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-
-  constructor(
+  constructor (
+    private userService: UserService,
+    private oauthService: OAuthService,
     private router: Router
-  ) { }
+  ) {}
 
+
+  roleInSession = 'emptyClass';
   ngOnInit() {
+
+    this.userService.subscribeRoleData().subscribe(data => {
+      console.log(data);
+      this.roleInSession = data;
+    });
+      // this.userService.fetchCurrentRole();
+
   }
 
+  // ngOnDestroy() {
+  //   this.userService.unsubscribeRoleData();
+  // }
 
   clientPage() {
     this.router.navigate(['/dashboard']);
@@ -41,5 +56,4 @@ export class SidebarComponent implements OnInit {
   acccountCreation() {
     this.router.navigateByUrl('/newaccount');
   }
-
 }

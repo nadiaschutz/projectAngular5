@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, Input } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -8,38 +8,38 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
 
-import { UserService } from '../../service/user.service';
-import { PatientService } from '../../service/patient.service';
-import { StaffService } from '../../service/staff.service';
+import { StaffService } from '../../../service/staff.service';
+import { UtilService } from '../../../service/util.service';
 
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import * as FHIR from '../../interface/FHIR';
+import * as FHIR from '../../../interface/FHIR';
 import * as uuid from 'uuid';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-tasklist',
-  templateUrl: './tasklist.component.html',
-  styleUrls: ['./tasklist.component.scss']
+  selector: 'app-create-task',
+  templateUrl: './create-task.component.html',
+  styleUrls: ['./create-task.component.scss']
 })
-export class TasklistComponent implements OnInit {
+export class CreateTaskComponent implements OnInit {
+
+  @Input() episodeOfCareId: string;
+
   taskFormGroup: FormGroup;
-  epsOfCare;
   practitioners = [];
   practitionersWithId = [];
   tasklist = [];
   taskID;
   practitionerForClass = {};
-  updatingCheck = false;
-  constructor(
-    private fb: FormBuilder,
+
+  constructor(private fb: FormBuilder,
     public translate: TranslateService,
     private staffService: StaffService,
     private router: Router,
-    private datepipe: DatePipe
-  ) {}
+    private datepipe: DatePipe,
+    private utilService: UtilService) { }
 
   ngOnInit() {
     this.taskFormGroup = this.fb.group({
@@ -49,18 +49,12 @@ export class TasklistComponent implements OnInit {
       // episodeOfCare: new FormControl('', Validators.required)
     });
 
-    const epsID = '2486';
-
-    this.staffService
-      .getAllPractitioners()
-      .subscribe(
+    this.staffService.getAllPractitioners().subscribe(
         data => this.subscribePractitioners(data),
         error => this.handleError(error)
       );
 
-    this.staffService
-      .getAllTasksForEpisodeOfCare(epsID)
-      .subscribe(
+    this.staffService.getAllTasksForEpisodeOfCare(this.episodeOfCareId).subscribe(
         data => this.loadTasks(data),
         error => this.handleError(error)
       );
@@ -89,7 +83,7 @@ export class TasklistComponent implements OnInit {
     taskAnnotation.text = this.taskFormGroup.get('instruction').value;
     taskOwner.reference =
       'Practitioner/' + this.taskFormGroup.get('assignTo').value;
-    context.reference = 'EpisodeOfCare/' + this.epsOfCare.id;
+    context.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     task.description = this.taskFormGroup.get('description').value;
     task.status = 'in-progress';
     task.intent = 'order';
@@ -100,33 +94,11 @@ export class TasklistComponent implements OnInit {
     task.resourceType = 'Task';
     // console.log(task);
     // console.log(finalJSON);
-
-    if (!this.updatingCheck) {
-      this.staffService
-        .postTask(JSON.stringify(task))
-        .subscribe(() => {
-          // reset here
-          this.staffService
-            .getAllTasksForEpisodeOfCare('')
-            .subscribe(
-              data => this.loadTasks(data),
-              error => this.handleError(error)
-            );
-        });
-    } else {
-      task.id = this.taskID;
-      this.staffService
-        .updateTask(this.taskID, JSON.stringify(task))
-        .subscribe(() => {
-          // reset here
-          this.staffService
-            .getAllTasksForEpisodeOfCare('')
-            .subscribe(
-              data => this.loadTasks(data),
-              error => this.handleError(error)
-            );
-        });
-    }
+    this.staffService
+      .postTask(JSON.stringify(task))
+      .subscribe(() => {
+        this.router.navigateByUrl('/staff/work-screen');
+      });
   }
 
   loadTasks(data) {
@@ -154,7 +126,7 @@ export class TasklistComponent implements OnInit {
   getPractitionerName(practitionerReference) {
     let lastName = '';
     let firstName = '';
-    const practitionerId = this.getIdFromReference(practitionerReference);
+    const practitionerId = this.utilService.getIdFromReference(practitionerReference);
     const practitioner = this.practitionersWithId[practitionerId];
     if (practitioner) {
       practitioner.name.forEach(name => {
@@ -167,14 +139,8 @@ export class TasklistComponent implements OnInit {
     }
   }
 
-  getIdFromReference(reference) {
-    return reference.substring(reference.indexOf('/') + 1, reference.length);
-  }
-
   getPractitionerAssigned(query) {
-    this.staffService
-      .getAnyFHIRObjectByReference('/' + query)
-      .subscribe(data => this.buildNameOfPractitioner(data));
+    this.staffService.getAnyFHIRObjectByReference('/' + query).subscribe(data => this.buildNameOfPractitioner(data));
   }
 
   buildNameOfPractitioner(data) {
@@ -188,4 +154,5 @@ export class TasklistComponent implements OnInit {
     // console.log(tempObj)
     // return this.practitionerForClass;
   }
+
 }

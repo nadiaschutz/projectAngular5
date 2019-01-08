@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 export interface AccountElement {
   type: string;
@@ -82,9 +82,11 @@ export class DashboardComponent implements OnInit {
     'dateModified'
   ];
 
-  qrequest = [];
+  patientList = [];
 
   department: string;
+  doneFlag;
+  roleInSession = 'emptyClass';
 
   constructor(
     private oauthService: OAuthService,
@@ -95,24 +97,18 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.getAllPatients();
+    this.sortUsersObjects();
+    this.userService.fetchUserName();
 
-    console.log(this.oauthService.getAccessToken());
-    const userID = this.oauthService.getIdentityClaims();
-    console.log(userID);
-
-    this.userService
-      .fetchCurrentUserData(userID)
-      .subscribe(data => this.getPractitionerRoleInfow(data));
-  }
-
-  refreshSearch() {
-    this.getAllPatients();
+    this.userService.fetchCurrentRole();
+    this.userService.subscribeRoleData().subscribe(data => {
+      this.roleInSession = data;
+    });
   }
 
   getAllPatients() {
     this.patientService
-      .getPatientData('')
+      .getAllPatientData()
       .subscribe(
         data => this.handleSuccess(data),
         error => this.handleError(error)
@@ -120,82 +116,69 @@ export class DashboardComponent implements OnInit {
     this.getDepartmentsList();
   }
 
-
-  getPractitionerRoleInfow(userId) {
-
-  this.userService.fetchCurrentUserData(this.oauthService.getIdentityClaims()['sub']).subscribe (
-    user => this.sortUsersObjects(user)
-  );
-
-  this.userService.getPractitionerRoleByPractitionerID(userId).subscribe(
-    data => {
-      if (data['total'] === 0) {
-        this.getAllPatients();
-      }
-    });
-  }
-
-  sortUsersObjects(data) {
-    data.users.forEach(element => {
-      if (element['familyName'] === this.oauthService.getIdentityClaims()['family_name'] &&
-          element['givenName'] === this.oauthService.getIdentityClaims()['given_name'] &&
-          element['username'] === this.oauthService.getIdentityClaims()['sub']) {
-            console.log('DING DING DING', element);
-            this.getPractitionerRoleInfo(element);
-      }
-    });
-  }
-  getPractitionerRoleInfo(userId) {
-    let pracID ;
-    if (userId['defaultLaunchContexts']){
-      pracID = userId['defaultLaunchContexts'][0]['resourceId'];
-      this.userService
-      .getPractitionerRoleByPractitionerID(pracID)
-      .subscribe(data => {
-        if (data['total'] === 0) {
-          this.getAllPatients();
-          console.log('nothing here chief');
-        } else {
-          data['entry'].forEach(element => {
-            const individualEntry = element.resource;
-            // console.log(individualEntry)
-            this.userService
-              .getAnyFHIRObjectByReference(
-                '/' + individualEntry['organization']['reference']
-              )
-              .subscribe(role => {
-                if (!role['id'].includes('PSOHP')) {
-                  this.department = role['name'];
-                  console.log(
-                    'Offices associated with this account: ',
-                    role['name']
-                  );
-                  this.userService.getAllPatientsInSameDepartment(this.department).subscribe(
-                    patients => {
-                      this.handleSuccess(patients);
-                      console.log(patients);
-                    }
-                  );
-                }
-              });
-
-            // individualEntry['location'].forEach(location => {
-            // this.userService.getAnyFHIRObjectByReference('/' + location['reference']).subscribe(
-            //   loc => console.log('Departments associated with this account: ', loc['name'])
-            // )
-            // });
-          });
-        }
+  sortUsersObjects() {
+    this.userService
+      .fetchCurrentUserData(this.oauthService.getIdentityClaims()['sub'])
+      .subscribe(user => {
+        user['users'].forEach(element => {
+          if (
+            element['familyName'] ===
+              this.oauthService.getIdentityClaims()['family_name'] &&
+            element['givenName'] ===
+              this.oauthService.getIdentityClaims()['given_name'] &&
+            element['username'] === this.oauthService.getIdentityClaims()['sub']
+          ) {
+            this.setViewForPractitionerRole(element);
+          }
+        });
       });
+  }
+
+  setViewForPractitionerRole(userId: any) {
+    let pracID: any;
+    if (userId['defaultLaunchContexts']) {
+      pracID = userId['defaultLaunchContexts'][0]['resourceId'];
+      console.log(pracID);
+      this.userService
+        .getPractitionerRoleByPractitionerID(pracID)
+        .subscribe(data => {
+          if (data['total'] > 0) {
+            data['entry'].forEach(element => {
+              const individualEntry = element.resource;
+              // console.log(individualEntry)
+              this.userService
+                .getAnyFHIRObjectByReference(
+                  '/' + individualEntry['organization']['reference']
+                )
+                .subscribe(role => {
+                  if (!role['id'].includes('PSOHP')) {
+                    this.department = role['name'];
+                    this.userService
+                      .getAllPatientsInSameDepartment(this.department)
+                      .subscribe(patients => {
+                        this.handleSuccess(patients);
+                      });
+                  }
+                });
+
+              // individualEntry['location'].forEach(location => {
+              // this.userService.getAnyFHIRObjectByReference('/' + location['reference']).subscribe(
+              //   loc => console.log('Departments associated with this account: ', loc['name'])
+              // )
+              // });
+            });
+          }
+        });
     } else {
-      console.log('nothing here, my dude');
+      this.getAllPatients();
+      console.log('nothing here chief');
     }
   }
 
   handleSuccess(data) {
     // console.log(data);
-    this.qrequest = [];
-    // console.log(this.qrequest);
+    this.patientList = [];
+    // console.log(this.patientList);
     if (data.total !== 0) {
       if (data.entry) {
         data.entry.forEach(item => {
@@ -203,18 +186,18 @@ export class DashboardComponent implements OnInit {
           if (this.employeeType || this.clientDepartment) {
             this.checkForEmployeeTypeAndClientDepartment(individualEntry);
           } else {
-            this.qrequest.push(individualEntry);
+            this.patientList.push(individualEntry);
           }
         });
       } else {
         if (this.employeeType || this.clientDepartment) {
           this.checkForEmployeeTypeAndClientDepartment(data);
         } else {
-          this.qrequest.push(data);
+          this.patientList.push(data);
         }
       }
     }
-    // console.log(this.qrequest);
+    console.log(this.patientList);
     this.resetSearchParams();
   }
 
@@ -226,14 +209,14 @@ export class DashboardComponent implements OnInit {
           'https://bcip.smilecdr.com/fhir/employeetype'
       ) {
         if (individualExtension.valueString === this.employeeType) {
-          this.qrequest.push(individualEntry);
+          this.patientList.push(individualEntry);
         }
       } else if (
         this.clientDepartment &&
         individualExtension.url === 'https://bcip.smilecdr.com/fhir/workplace'
       ) {
         if (individualExtension.valueString === this.clientDepartment) {
-          this.qrequest.push(individualEntry);
+          this.patientList.push(individualEntry);
         }
       }
     });

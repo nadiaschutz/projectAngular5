@@ -1,5 +1,139 @@
+.left-style{
+    float:left;
+    width:48.5%;
+}
+.right-style{
+    float:right;
+    width:48.5%;
+}
+.row {
+    margin-top: 20px;
+}
+// .fixed{
+//     position: sticky;
+//     top:0;
+//     z-index: 999;
+// }
+
+.fixed {
+    position: fixed;
+}
+
+.scrollit {
+    float: left;
+}
+
 .search-box {
-    // width: 50%;
-    // height: 50%;
-    // float: right;
+    padding: 30px;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px 0 rgba(181, 181, 181, 0.5);
+    background-color: #ffffff;
+}
+.card {
+    margin-bottom: 15px;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px 0 rgba(215, 215, 215, 0.5);
+    background-color: #ffffff;
+}
+
+// div.card:nth-child(even) {
+//     background: rgb(74, 175, 28);
+// }
+// div.card:nth-child(odd) { 
+//     background: rgb(71, 164, 207);
+// }
+
+.tools {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 150px;
+  background-color: white;
+  border: 1px solid #dee2e6;
+}
+
+.tool-item a {
+    display: block;
+    color: #000;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+.tool-item a:hover {
+    background-color: lightgray;
+    // color: white;
+    cursor: pointer;
+}
+.special-button {
+    background-color: #398ef2;
+    color: white;
+}
+
+.form-buttons {
+    margin-bottom: 15px;
+}
+
+.form-section {
+    padding-bottom: 40px;
+}
+
+.note {
+    height: 90px;
+}
+
+.summary {
+    width: 25%;
+    position: fixed;
+}
+
+.careplan {
+    width: 33.333333%;
+    position: fixed;
+}
+
+.tool-button {
+    width: 150px;
+}
+
+.checklist-label {
+    margin-left: 10px;
+}
+
+.nav-pills {
+  background-color: white;
+}
+
+.nav-link {
+    color: #8a8a8a;
+    background-color: white;
+}
+
+.nav-item a {
+    color: #8a8a8a;
+    background-color: white;
+}
+
+.nav-item a:hover{
+    color: black;
+    cursor: pointer;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: black;
+    border-bottom: 4px solid #7fd6ed;
+}
+
+hr {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border: 1px solid #398ef2;
+}
+.task-status {
+    float: right;
+    color: #5aa107;
+}
+
+.card-link a {
+    color: #398ef2;
+    cursor: pointer;
 }

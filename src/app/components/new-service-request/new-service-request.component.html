@@ -126,8 +126,7 @@
                                 <th scope="col">Document Type</th>
                                 <th scope="col">File Type</th>
                                 <th scope="col">File Size</th>
-                                <th scope="col"></th>
-                                <th scope="col"></th>
+                                
                               </tr>
                             </thead>
                             <tbody class="body-table">
@@ -135,7 +134,7 @@
                                 <td>{{documents.id}}</td>
                                 <td>{{documents.content[0].attachment.creation | date: 'dd/MM/yyyy'}}</td>
                                 <td>{{documents.content[0].attachment.title }}</td>
-                                <td>Medical Note</td>
+                                <td>{{documents.type.text }}</td>
                                 <td>{{documents.content[0].attachment.contentType }}</td>
                                 <td>{{documents.content[0].attachment.size }}</td>
                               </tr>
