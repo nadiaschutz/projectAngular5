@@ -11,6 +11,14 @@ import * as FHIR from '../../interface/FHIR';
 import { Router } from '@angular/router';
 import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
 import { FieldConfig } from '../dynamic-forms/field-config.interface';
+import { element } from '@angular/core/src/render3/instructions';
+
+
+
+// interface Department {
+//   name: string;
+//   id: number;
+// }
 
 @Component({
   selector: 'app-client-department',
@@ -20,12 +28,28 @@ import { FieldConfig } from '../dynamic-forms/field-config.interface';
 export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
 
+  districtOffices = [];
+
+
+
+  // departments: Department[];
+  // department: Department;
+  deptName = [];
+  deptId = [];
+
+  deptBranch = [];
+  practitionerPieces = {};
+  managingOrg;
+
+
+
+
       // var for styling each form field
       style = 'col-5';
 
 
       clientDepartmentFormGroup: FormGroup;
-      departments = [];
+      // departments = [];
       regionalOffices = [];
       regionalOfficesWithId = {};
       clientDepartments = [];
@@ -43,9 +67,9 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
       config: FieldConfig[] = [
         {
-          type: 'input',
+          type: 'select',
           label: 'Department Branch',
-          inputType: 'text',
+          options: this.deptBranch,
           placeholder: 'Enter Department Branch',
           name: 'branch',
           validation: [Validators.required]
@@ -54,7 +78,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
           type: 'select',
           label: 'PSOHP Region',
           name: 'region',
-          options: [],
+          options: this.regionalOffices,
           placeholder: 'Select Region',
           validation: [Validators.required]
         },
@@ -62,7 +86,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
           type: 'select',
           label: 'Department Name',
           name: 'department',
-          options: [],
+          options: this.deptName,
           placeholder: 'Select Department Name',
           validation: [Validators.required]
         },
@@ -119,9 +143,9 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
           validation: [Validators.required]
         },
         {
-          type: 'input',
+          type: 'select',
           label: 'Province',
-          inputType: 'text',
+          options: this.regionalOffices,
           placeholder: 'Enter Province',
           name: 'province',
           validation: [Validators.required]
@@ -137,7 +161,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
         {
           type: 'checkbox',
           label: 'Chargeback Client',
-          name: 'ChargebackClient',
+          name: 'chargebackClient',
           validation: [Validators.required]
         },
         {
@@ -172,14 +196,14 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
       }
 
-      submit(value: {[name: string]: any}) {
-        console.log(value);
-      }
+      // submit(value: {[name: string]: any}) {
+      //   console.log(value);
+      // }
 
     wrap() {
       const x = $('.field-holder-2 form-input');
       for (let i = 0; i < x.length; i ++) {
-        console.log(x[i]);
+        // console.log(x[i]);
         $(x[i]).wrap("<div class='" + this.style +"'></div>");
       }
     }
@@ -193,36 +217,61 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
 
   ngOnInit() {
+    /**
+     * Initializes the list of branches from our system
+     */
+    this.userService.fetchAllDepartmentBranches().subscribe (
+      data => this.populateDeptBranches(data),
+      error => this.handleError(error)
+    );
+
+
+        /**
+     * Initializes the names of all departments on our system
+     */
+    this.userService.fetchAllDepartmentNames().subscribe (
+      data => this.populateDeptNames(data),
+      error => this.handleError(error)
+    );
+
+      /**
+     * Initializes list for regional offices on our system
+     */
+    this.userService
+      .fetchAllRegionalOffices()
+      .subscribe(
+        data => this.populateRegionalOffices(data),
+        error => this.handleError(error)
+      );
+
+
     this.fetchAllRegionalOffices();
     this.fetchAllClientDepartments();
   }
 
-  setClientDepartment() {
+  // setClientDepartment() {
+    submit(value) {
     const branchLocation = new FHIR.Location();
-
     branchLocation.resourceType = 'Location';
-    branchLocation.name = this.clientDepartmentFormGroup.get(
-      'departmentBranch'
-    ).value;
-
+    branchLocation.name = value.branch;
     branchLocation.status = 'active';
 
     const extension = [];
 
     const chargeBackExtension = new FHIR.Extension();
     chargeBackExtension.url = 'https:bcip.smilecdr.com/fhir/chargebackClient';
-    chargeBackExtension.valueBoolean = this.clientDepartmentFormGroup.get('chargebackClient').value;
+    chargeBackExtension.valueBoolean = value.chargebackClient;
     extension.push(chargeBackExtension);
 
     const regionExtension = new FHIR.Extension();
     regionExtension.url = 'https:bcip.smilecdr.com/fhir/psohpRegion';
-    regionExtension.valueString = 'Organization/' + this.clientDepartmentFormGroup.get('psohpRegion').value;
+    regionExtension.valueString = 'Organization/' + value.region;
     extension.push(regionExtension);
 
     branchLocation.extension = extension;
 
     const organizationReference = new FHIR.Reference;
-    organizationReference.reference = 'Organization/' + this.clientDepartmentFormGroup.get('departmentName').value;
+    organizationReference.reference = 'Organization/' + value.department;
     branchLocation.managingOrganization = organizationReference;
 
     const typeCoding = new FHIR.Coding();
@@ -237,34 +286,37 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
     branchLocation.type = type;
 
     const address = new FHIR.Address();
-    address.line = [this.clientDepartmentFormGroup.get('addressStreet').value];
-    address.city = this.clientDepartmentFormGroup.get('addressCity').value;
-    address.postalCode = this.clientDepartmentFormGroup.get(
-      'addressPostalCode'
-    ).value;
-    address.state = this.clientDepartmentFormGroup.get('addressProvince').value;
+    address.line = [value.address];
+    address.city = value.city;
+    address.postalCode = value.postalCode;
+    address.state = value.province;
     branchLocation.address = address;
 
     const email = new FHIR.ContactPoint();
     email.system = 'email';
-    email.value = this.clientDepartmentFormGroup.get('email').value;
+    email.value = value.email;
 
     const phoneNumber = new FHIR.ContactPoint();
     phoneNumber.system = 'phone';
-    phoneNumber.value = this.clientDepartmentFormGroup.get('phoneNumber').value;
+    phoneNumber.value = value.phone;
 
     const faxNumber = new FHIR.ContactPoint();
     faxNumber.system = 'fax';
-    faxNumber.value = this.clientDepartmentFormGroup.get('faxNumber').value;
+    faxNumber.value = value.fax;
 
     branchLocation.telecom = [email, phoneNumber, faxNumber];
     // clientDepartment
 
     const managingOrganization = new FHIR.Reference();
 
-    managingOrganization.reference = 'Organization/' + this.clientDepartmentFormGroup.get('psohpRegion').value;
-
-    console.log(branchLocation);
+    const a: number = this.deptName.indexOf(value.department);
+    
+    this.managingOrg = this.deptId[a];
+    managingOrganization.reference = 'Organization/' + this.managingOrg;
+    branchLocation.managingOrganization = managingOrganization;
+    // console.log (this.managingOrg);
+    // console.log(managingOrganization.reference);
+    // console.log(branchLocation);
     console.log(JSON.stringify(branchLocation));
 
     this.userService
@@ -279,10 +331,19 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
   fetchAllRegionalOffices() {
     this.userService.fetchAllRegionalOffices().subscribe(data => {
-      data['entry'].forEach(element => {
-        const individualEntry = element.resource;
-        this.regionalOffices.push(individualEntry);
-      });
+      // data['entry'].forEach(element => {
+        // const individualEntry = element.resource;
+        // this.regionalOffices.push(individualEntry);
+
+        // this.regionalOffices = individualEntry.map(el => (
+        //   console.log(el)
+        // ));
+
+
+        // console.log(this.regionalOffices);
+      // });
+
+      // console.log(data);
     });
   }
 
@@ -332,7 +393,59 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       data['entry'].forEach(element => {
         this.clientDepartments.push(element['resource']);
       });
-      console.log(this.clientDepartments);
+      // console.log(this.clientDepartments);
     });
+  }
+
+   populateRegionalOffices(data: any) {
+    data.entry.forEach(element => {
+      this.regionalOffices.push(element.resource.name);
+    });
+  }
+
+    /**
+   * Used in conjunction with the user service. Gets all Department Branches
+   * stored on the server to link to a Practitioner.
+   * @param data
+   */
+  populateDeptBranches(data: any) {
+    // console.log(data.entry);
+    data.entry.forEach(element => {
+      // console.log(element.resource.name);
+      this.deptBranch.push(element.resource.name);
+    });
+
+    // this.deptBranch = data.entry.map(el =>
+    //   el.resource.name
+    //  );
+  }
+
+
+  populateDeptNames(data: any) {
+    console.log(data);
+    data.entry.forEach(element1 => {
+      // console.log(element1);
+      this.deptName.push(element1.resource.name);
+      this.deptId.push(element1.resource.id);
+    });
+    // this.deptName = data.entry.map(el =>
+    //  el['resource']['name']
+    // );
+    // this.deptId = data.entry.map(el =>
+    //   el.resource.id
+    //  );
+
+    // console.log(this.deptName);
+    // console.log(this.deptId);
+
+  }
+
+
+    /**
+   * Displays the error message from the server in the case a subscription fails.
+   * @param error
+   */
+  handleError(error: any) {
+    console.log(error);
   }
 }

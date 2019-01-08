@@ -1,10 +1,11 @@
 <div class='container'>
+  
   <div class="main-header">
-    <h5>Add PSOHP Office</h5>
+    <h5>PSOHP Offices</h5>
   </div>
 
-  <div>
-    <div *ngIf="!showFormElement">
+  
+   
       <div class="button-section">
         <button (click)="showAddDisctrictOfficeForm()" class="btn special-button">
           Add new PSOHP Office</button>
@@ -35,23 +36,3 @@
             </table>
         </div>
     </div>
-    
-        <div class="row">
-          <button class="back-button btn special-button" (click)="hideAddDisctrictOfficeForm()">
-            Back to List of Offices</button>
-        </div>
-
-        <div >
-            <dynamic-form
-              [config]="config"
-              #form="dynamicForm"
-              (submit)="submit($event)">
-            </dynamic-form>
-            {{ form.valid }}
-            {{ form.value | json }}
-          </div>
-
-      <!-- <button class="btn special-button" style="margin-top: 20px" (click)="addNewDistrictOffice()">Add</button> -->
-
-</div>
-</div>

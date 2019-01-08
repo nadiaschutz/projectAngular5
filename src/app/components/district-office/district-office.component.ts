@@ -14,10 +14,9 @@ import { FieldConfig } from '../dynamic-forms/field-config.interface';
   templateUrl: './district-office.component.html',
   styleUrls: ['./district-office.component.scss']
 })
-export class DistrictOfficeComponent implements OnInit, AfterViewInit {
+export class DistrictOfficeComponent implements OnInit {
 
-  // var for styling each form field
-  style = 'col-5';
+
 
 
 
@@ -31,139 +30,11 @@ export class DistrictOfficeComponent implements OnInit, AfterViewInit {
   constructor(
     private formBuilder: FormBuilder,
     private httpClient: HttpClient,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router,
   ) {}
 
-  @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
-      config: FieldConfig[] = [
-        {
-          type: 'input',
-          label: 'PSOHP Office',
-          inputType: 'text',
-          placeholder: 'Enter District Office',
-          name: 'officeName',
-          validation: [Validators.required]
-        },
-        {
-          type: 'select',
-          label: 'Region',
-          name: 'region',
-          options: this.regionalOffices,
-          placeholder: 'Select Region',
-          validation: [Validators.required]
-        },
-        {
-          type: 'input',
-          label: 'Phone Number',
-          inputType: 'text',
-          placeholder: 'Enter Phone Number',
-          name: 'phoneNumber',
-          validation: [
-            Validators.required,
-            // CustomValidator.numberValidator,
-            Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
-          ]
-        },
-        {
-          type: 'input',
-          label: 'Fax Number',
-          inputType: 'text',
-          placeholder: 'Enter Fax Number',
-          name: 'faxNumber',
-          validation: [
-            Validators.required,
-            // CustomValidator.numberValidator,
-            Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
-          ]
-        },
-        {
-          type: 'input',
-          label: 'Email Address',
-          inputType: 'email',
-          placeholder: 'Enter Email',
-          name: 'email',
-          validation: [Validators.required, Validators.email]
-        },
-        {
-          type: 'input',
-          label: 'Address',
-          inputType: 'text',
-          placeholder: 'Enter Address',
-          name: 'addressStreet',
-          validation: [Validators.required]
-        },
-        {
-          type: 'input',
-          label: 'City',
-          inputType: 'text',
-          placeholder: 'Enter City',
-          name: 'city',
-          validation: [Validators.required]
-        },
-        {
-          type: 'select',
-          label: 'Province',
-          inputType: 'text',
-          name: 'province',
-          placeholder: 'Enter Province',
-          options: this.regionalOffices,
-          validation: [Validators.required]
-        },
-        {
-          type: 'input',
-          label: 'Postal Code',
-          inputType: 'text',
-          placeholder: 'Enter Postal Code',
-          name: 'postalCode',
-          validation: [Validators.required]
-        },
-        {
-          type: 'line'
-        },
-        {
-          type: 'button',
-          name: 'submit',
-          label: 'Save'
-        }
-      ];
 
-      ngAfterViewInit() {
-        setTimeout(() => {
-        let previousValid = this.form.valid;
-        this.form.changes.subscribe(() => {
-          if (this.form.valid !== previousValid) {
-            previousValid = this.form.valid;
-            this.form.setDisabled('submit', !previousValid);
-          }
-
-        });
-
-        this.form.setDisabled('submit', true);
-
-      });
-
-      // if you want to style 2 form fields per a row do these :
-      this.wrap();
-      this.addDiv();
-      // the end
-
-      }
-
-
-    wrap() {
-      const x = $('.field-holder-2 form-input');
-      for (let i = 0; i < x.length; i ++) {
-        console.log(x[i]);
-        $(x[i]).wrap("<div class='" + this.style +"'></div>");
-      }
-    }
-
-      addDiv() {
-        const sections = $('.dynamic-form .' + this.style);
-        for (let i = 0; i < sections.length; i += 2) {
-        sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
-      }
-    }
 
   ngOnInit() {
     this.showFormElement = false;
@@ -172,60 +43,8 @@ export class DistrictOfficeComponent implements OnInit, AfterViewInit {
   }
 
 
-
-  submit(value) {
-    this.showFormElement = true;
-    console.log(value);
-    console.log(value.officeName);
-
-    const districtOffice = new FHIR.Location;
-    districtOffice.resourceType = 'Location';
-    districtOffice.name = value.officeName;
-
-    districtOffice.status = new FHIR.Code('active').code;
-
-    const organizationReference = new FHIR.Reference;
-    organizationReference.reference =
-      'Organization/' +
-      this.regionalOfficesWithId[
-        value.region
-      ];
-    districtOffice.managingOrganization = organizationReference;
-
-    const codingForType = new FHIR.Coding;
-    codingForType.system = 'http://hl7.org/fhir/organization-type';
-    codingForType.code = 'team';
-    codingForType.display = 'Regional Office';
-
-    const type = new FHIR.CodeableConcept;
-    type.text = 'District Office';
-    districtOffice.type = type;
-    type.coding = [codingForType];
-
-    const address = new FHIR.Address();
-    address.line = value.addressStreet;
-    address.city = value.city;
-    address.postalCode = value.postalCode;
-    address.state = value.province;
-    districtOffice.address = address;
-
-    const email = new FHIR.ContactPoint();
-    email.system = 'email';
-    email.value = value.email;
-
-    const phoneNumber = new FHIR.ContactPoint();
-    phoneNumber.system = 'phone';
-    phoneNumber.value = value.phoneNumber;
-
-    const faxNumber = new FHIR.ContactPoint();
-    faxNumber.system = 'fax';
-    faxNumber.value = value.faxNumber;
-
-    districtOffice.telecom = [email, phoneNumber, faxNumber];
-
-    console.log(districtOffice);
-
-    this.saveDistrictOffice(JSON.stringify(districtOffice));
+  showAddDisctrictOfficeForm() {
+    this.router.navigate(['/district-office-add']);
   }
 
   editNewDistrictOffice(districtOffice: FHIR.Location) {
@@ -236,31 +55,18 @@ export class DistrictOfficeComponent implements OnInit, AfterViewInit {
     this.locationFormGroup.value.addressProvince = districtOffice.address.state;
   }
 
-  showAddDisctrictOfficeForm() {
-    this.showFormElement = true;
-  }
 
-  hideAddDisctrictOfficeForm() {
-    this.showFormElement = false;
-  }
 
-  saveDistrictOffice(locationObj) {
-    this.userService.saveDistrictOffice(locationObj).subscribe(data => {
-      this.showFormElement = false;
-      this.fetchAllDistrictOffices();
-    });
-  }
+
 
   fetchAllRegionalOffices() {
     this.userService.fetchAllRegionalOffices().subscribe(data => {
       data['entry'].forEach(element => {
         // const id = element.resource.id;
         const name = element.resource.name;
-        console.log(name);
-        // this.regionalOfficesWithId[name] = element.resource.id;
+        this.regionalOfficesWithId[name] = element.resource.id;
         // console.log(this.regionalOfficesWithId);
         this.regionalOffices.push(name);
-        console.log(this.regionalOffices);
       });
     });
   }
@@ -282,8 +88,9 @@ export class DistrictOfficeComponent implements OnInit, AfterViewInit {
       const organizationId = organizationReference.substring(
         organizationReference.indexOf('/') + 1,
         organizationReference.length
-      );
-      for (const regionName of Object.keys(this.regionalOfficesWithId)) {
+        );
+
+        for (const regionName of Object.keys(this.regionalOfficesWithId)) {
         if (this.regionalOfficesWithId[regionName] === organizationId) {
           return regionName;
         }

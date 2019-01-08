@@ -55,6 +55,7 @@ import { CheckboxComponent } from './components/dynamic-forms/checkbox.component
 import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
 import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
 import { DemoComponent } from './components/demo/demo.component';
+import { DistrictOfficeAddComponent } from './components/district-office-add/district-office-add.component';
 // import { DynamicFormModule } from './components/dynamic-forms/dynamic-form.module';
 
 
@@ -67,6 +68,7 @@ const routes: Routes = [
   { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
   { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
+  { path: 'district-office-add', component: DistrictOfficeAddComponent, canActivate: [AuthGuardService]},
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
   { path: 'employeesummary', component: EmployeeSummaryComponent },
   { path: 'newaccount', component: NewAccountComponent},
@@ -121,7 +123,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CheckboxComponent,
     DynamicFieldDirective,
     DynamicFormComponent,
-    DemoComponent
+    DemoComponent,
+    DistrictOfficeAddComponent
 
   ],
   imports: [
