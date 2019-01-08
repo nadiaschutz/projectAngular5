@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { UtilService } from '../../service/util.service';
 
 export interface AccountElement {
   type: string;
@@ -83,24 +84,26 @@ export class DashboardComponent implements OnInit {
   ];
 
   patientList = [];
-
+  order;
   department: string;
   doneFlag;
   roleInSession = 'emptyClass';
-
+  switchSortChoice = true;
+ 
   constructor(
     private oauthService: OAuthService,
     private userService: UserService,
     private httpClient: HttpClient,
     private patientService: PatientService,
-    private router: Router
+    private router: Router,
+    private utilService: UtilService
   ) {}
 
   ngOnInit() {
-    this.sortUsersObjects();
     this.userService.fetchUserName();
-
     this.userService.fetchCurrentRole();
+
+    this.sortUsersObjects();
     this.userService.subscribeRoleData().subscribe(data => {
       this.roleInSession = data;
     });
@@ -153,11 +156,8 @@ export class DashboardComponent implements OnInit {
                 .subscribe(role => {
                   if (!role['id'].includes('PSOHP')) {
                     this.department = role['name'];
-                    this.userService
-                      .getAllPatientsInSameDepartment(this.department)
-                      .subscribe(patients => {
-                        this.handleSuccess(patients);
-                      });
+                    console.log(this.department);
+                    this.getAllPatients();
                   }
                 });
 
@@ -186,7 +186,29 @@ export class DashboardComponent implements OnInit {
           if (this.employeeType || this.clientDepartment) {
             this.checkForEmployeeTypeAndClientDepartment(individualEntry);
           } else {
-            this.patientList.push(individualEntry);
+            const temp = {};
+            temp ['id'] =  individualEntry['id'];
+            temp ['given'] = individualEntry['name'][0]['given'][0];
+            temp ['family'] = individualEntry['name'][0]['family'];
+            temp ['dob'] = individualEntry['birthDate'];
+            individualEntry['extension'].forEach(extension => {
+              if (extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
+                temp['department'] = extension.valueString;
+              }
+            }) ;
+            individualEntry['extension'].forEach(extension => {
+              if (extension['url'] === 'https://bcip.smilecdr.com/fhir/employeetype') {
+                temp['employeeType'] = extension.valueString;
+              }
+            });
+            individualEntry['extension'].forEach(extension => {
+              if (extension['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
+                temp['branch'] = extension.valueString;
+              }
+            });
+            console.log('given name' , temp);
+            this.patientList.push(temp);
+
           }
         });
       } else {
@@ -201,6 +223,10 @@ export class DashboardComponent implements OnInit {
     this.resetSearchParams();
   }
 
+  sorterFunction(colName) {
+    this.patientList = this.utilService.sortArray(colName, this.patientList);
+  }
+
   checkForEmployeeTypeAndClientDepartment(individualEntry) {
     individualEntry.extension.forEach(individualExtension => {
       if (
@@ -209,6 +235,7 @@ export class DashboardComponent implements OnInit {
           'https://bcip.smilecdr.com/fhir/employeetype'
       ) {
         if (individualExtension.valueString === this.employeeType) {
+          console.log('a', individualEntry);
           this.patientList.push(individualEntry);
         }
       } else if (
@@ -216,6 +243,7 @@ export class DashboardComponent implements OnInit {
         individualExtension.url === 'https://bcip.smilecdr.com/fhir/workplace'
       ) {
         if (individualExtension.valueString === this.clientDepartment) {
+          console.log('b', individualEntry);
           this.patientList.push(individualEntry);
         }
       }
@@ -259,7 +287,6 @@ export class DashboardComponent implements OnInit {
     // if (this.clientId.data) {
     //   searchParams = this.clientId.prefix + this.clientId.data + searchParams;
     // }
-    console.log(searchParams);
 
     this.patientService
       .getPatientData(searchParams)

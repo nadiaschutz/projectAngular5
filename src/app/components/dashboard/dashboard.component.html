@@ -71,56 +71,52 @@
         <button type="button" class="btn special-button" (click)="newEmployeeButton()">New Client Record</button>
       </div>
       <div class="table-container">
-        <table class="table  table-hover">
+        <table class="table table-hover">
           <thead class="header-table ">
             <tr>
-              <th scope="col">Employee PRI</th>
-              <th scope="col">First Name</th>
-              <th scope="col">Last Name</th>
-              <th scope="col">Date of Birth</th>
-              <th scope="col">Client Type</th>
-              <th scope="col" style="width: 390px;">Department</th>
-              <th scope="col">Branch</th>
+              <th scope="col" (click)="sorterFunction('id')">Employee PRI</th>
+              <th scope="col" (click)="sorterFunction('given')">First Name</th>
+              <th scope="col" (click)="sorterFunction('last')">Last Name</th>
+              <th scope="col" (click)="sorterFunction('dob')">Date of Birth</th>
+              <th scope="col" (click)="sorterFunction('employeeType')">Client Type</th>
+              <th scope="col" (click)="sorterFunction('department')" style="width:390px">
+                Department</th>
+              <th scope="col" (click)="sorterFunction('branch')">Branch</th>
 
             </tr>
           </thead>
           <tbody class="body-table">
             <tr *ngFor="let patient of patientList">
+
               <td>{{patient.id}}</td>
-              <td *ngFor="let name of patient.name" (click)="routeToSummary(patient.id)" class="cursor">{{name.given}}</td>
-              <td *ngFor="let name of patient.name" (click)="routeToSummary(patient.id)" class="cursor">{{name.family}}</td>
-              <td>{{patient.birthDate | date: 'dd/MM/yyyy'}}</td>
+              <td (click)="routeToSummary(patient.id)" class="cursor">{{patient.given}}</td>
+              <td (click)="routeToSummary(patient.id)" class="cursor">{{patient.family}}</td>
+              <td>{{patient.dob | date: 'dd/MM/yyyy'}}</td>
 
-              <td>
-                <span *ngFor="let extension of patient.extension">
-                  <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/employeetype'">{{extension.valueString}}</span>
-                </span>
-              </td>
+              <td>{{patient.employeeType}}</td>
+              <td>{{patient.department}}</td>
+              <td>{{patient.branch}}</td>
 
-              <td>
-                <span *ngFor="let extension of patient.extension">
-                  <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">{{extension.valueString}}</span>
-                </span>
-              </td>
-
-              <td>
-                <span *ngFor="let extension of patient.extension">
-                  <span *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">{{extension.valueString}}</span>
-                </span>
-              </td>
-              <!-- <ng-container *ngFor="let extension of q.extension">
-                        <td *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
-                          {{extension.valueString}}
-                        </td>
-                
-                      </ng-container> -->
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <ng-template #noneFound>
-      <h5>No employees associated with this user</h5>
+    <ng-template #noneFound class="center-align">
+      <div class="lds-spinner">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
     </ng-template>
   </div>
 </div>
