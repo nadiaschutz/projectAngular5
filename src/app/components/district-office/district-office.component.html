@@ -1,11 +1,12 @@
 <div class='container'>
+  
   <div class="main-header">
-    <h5>PSOHP Office</h5>
+    <h5>PSOHP Offices</h5>
   </div>
 
-  <div>
-    <div *ngIf="!showFormElement" >
-      <div class="button-section" [ngClass]="roleInSession">
+  
+   
+      <div class="button-section">
         <button (click)="showAddDisctrictOfficeForm()" class="btn special-button">
           Add new PSOHP Office</button>
       </div>
@@ -35,77 +36,3 @@
             </table>
         </div>
     </div>
-    <form [formGroup]="locationFormGroup" class="center-align" *ngIf="showFormElement">
-      <div class="form-group">
-        <div class="row">
-          <button class="back-button btn special-button" (click)="hideAddDisctrictOfficeForm()">
-            Back to List of Offices</button>
-        </div>
-
-      <div class="row">
-        <div class="col">
-          <label class="label-name" for="office-name">District Office</label>
-          <input type="text" name="office-name" id="office-name" formControlName="name" class="form-control field-box-name"
-            placeholder="Enter" >
-        </div>
-        <div class="col">
-          <label class="label-name" for="office-name">Parent Regional Office</label>
-          <select class="form-control field-box-name" (ngModelChange)="region = $event" name="region" formControlName="managingOrganization">
-            <option [value]="">Select Category</option>
-            <option *ngFor="let region of regionalOffices" [value]="region">{{region}}</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <label class="label-name" for="email">Email</label>
-          <input type="text" name="email" id="email" class="form-control field-box-name" placeholder="Enter"
-            formControlName="email" >
-        </div>
-        <div class="col">
-          <label class="label-name" for="phone-number">Phone number</label>
-          <input type="text" name="phone-number" id="phone-number" class="form-control field-box-name" placeholder="Enter"
-            formControlName="phoneNumber">
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <label class="label-name" for="fax-number">Fax number</label>
-          <input type="text" name="fax-number" id="fax-number" class="form-control field-box-name" placeholder="Enter"
-            formControlName="faxNumber" >
-        </div>
-        <div class="col">
-          <label class="label-name" for="address">Address</label>
-          <input type="text" name="address" id="address" class="form-control field-box-name" placeholder="Enter"
-            formControlName="addressStreet" >
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <label class="label-name" for="city">City</label>
-          <input type="text" name="city" id="city" class="form-control field-box-name" placeholder="Enter"
-            formControlName="addressCity" >
-        </div>
-        <div class="col">
-          <label class="label-name" for="province">Province</label>
-          <input type="text" name="province" id="province" class="form-control field-box-name" placeholder="Enter"
-            formControlName="addressProvince" >
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-12">
-          <label class="label-name" for="postal-code">Postal code</label>
-          <input type="text" name="postal-code" id="postal-code" class="form-control field-box-name" placeholder="Enter"
-            formControlName="addressPostalCode" >
-        </div>
-      </div>
-
-      <button class="btn special-button" style="margin-top: 20px" (click)="addNewDistrictOffice()">Add</button>
-
-    </div>
-  </form>
-</div>

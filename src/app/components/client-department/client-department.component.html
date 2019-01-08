@@ -1,6 +1,4 @@
-<div class="container">
-
- 
+<!-- <div class="container">
     <div class="main-header">
       <h5>Client Department</h5>
       <h6>Add Client department</h6>
@@ -82,22 +80,7 @@
                 </div>
               </div>
 
-        <!-- <div class="col-4">
-          <label for="contactName">Contact Name</label>
-          <input type="text" name="contactName" id="contactName" class="form-control " placeholder="Enter"
-            formControlName="contactName">
-          <div *ngIf="clientDepartmentFormGroup.controls['contactName'].invalid
-                && (clientDepartmentFormGroup.controls['contactName'].touched || clientDepartmentFormGroup.controls['contactName'].dirty)">
-            <div class="error-message">
-              <p>Cannot be blank</p>
-            </div>
-          </div>
-        </div> -->
-        
-        <!-- <div class="col-6">
-          <input type="checkbox" id="chargebackClient" name="chargebackClient" class="form-check-input" formControlName="chargebackClient">
-          <label for="chargebackClient" class="form-check-label">Chargeback Client</label>
-        </div> -->
+
       </div>
 
 
@@ -174,8 +157,7 @@
       </div>
     </section>
 
-    <!-- <button class="btn special-button" style="margin-top: 20px" [disabled]="!clientDepartmentFormGroup.valid" (click)="setClientDepartment()">Add</button> -->
-    <!-- <button class="btn special-button" style="margin-top: 20px" (click)="setClientDepartment()">Add</button> -->
+    
 
     <button class="btn special-button"  [disabled]="!clientDepartmentFormGroup.valid" (click)="setClientDepartment()">Add</button>
   </form>
@@ -203,4 +185,24 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
+
+
+<div class="container">
+    <div class="main-header">
+      <h5>Client Department</h5>
+      <h6>Create Client department</h6>
+    </div>
+
+    <div >
+        <dynamic-form
+          [config]="config"
+          #form="dynamicForm"
+          (submit)="submit($event)">
+        </dynamic-form>
+        <!-- {{ form.valid }}
+        {{ form.value | json }} -->
+      </div>
+
+
+  </div>   

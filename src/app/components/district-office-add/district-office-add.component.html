@@ -1,0 +1,28 @@
+<div class='container'>
+
+          <div class="main-header">
+              <h5>Add PSOHP Office</h5>
+            </div>
+  
+        <div>
+          <button class="back-button btn special-button" (click)="hideAddDisctrictOfficeForm()">
+            Back to List of Offices
+          </button>
+        </div>
+    
+        <div >
+            <dynamic-form
+              [config]="config"
+              #form="dynamicForm"
+              (submit)="submit($event)">
+            </dynamic-form>
+           
+          </div>
+  
+      
+      
+  
+        <!-- <button class="btn special-button" style="margin-top: 20px" (click)="addNewDistrictOffice()">Add</button> -->
+  
+  </div>
+  
