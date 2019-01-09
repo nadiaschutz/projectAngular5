@@ -28,10 +28,12 @@ districtOffices = [];
 locationFormGroup: FormGroup;
 
 
+
 constructor(
   private formBuilder: FormBuilder,
   private httpClient: HttpClient,
-  private userService: UserService
+  private userService: UserService,
+  private router: Router
 ) {}
 
 @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
@@ -223,6 +225,13 @@ constructor(
 
     this.saveDistrictOffice(JSON.stringify(districtOffice));
   }
+
+
+  backToList() {
+    this.router.navigate(['/district-office']);
+  }
+
+
   saveDistrictOffice(locationObj) {
     this.userService.saveDistrictOffice(locationObj).subscribe(data => {
       this.fetchAllDistrictOffices();

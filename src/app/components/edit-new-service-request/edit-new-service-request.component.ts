@@ -236,7 +236,7 @@ getResponseData(data) {
   if (data) {
     this.itemToSend = data;
     console.log('this.itemToSend:', this.itemToSend);
-    
+
     this.itemToSend.item.forEach(element => {
       if (element.text === 'Document') {
         this.documentId = element.answer[0].valueReference.reference;
@@ -245,9 +245,9 @@ getResponseData(data) {
         this.getDocument(this.documentId);
       }
     });
-    
+
     // mapping items from server to items in angular
-    
+
     this.formId = data.questionnaire.reference;
     this.formId = this.formId.substring(this.formId.indexOf('/') + 1);
     console.log('this.formId:', this.formId);
