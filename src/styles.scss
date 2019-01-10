@@ -5,6 +5,7 @@
 
 /* variables */
 $denim: #334f75;
+$blue-special: #398ef2;
 $grey: #ced4da;
 $light-grey: rgba(0, 0, 0, 0.18);
 $light-grey-2: #f8f8f8;
@@ -90,6 +91,8 @@ row:after,
 }
 
 
+
+
 /* buttons */
 
 .signIn-button {
@@ -108,6 +111,15 @@ row:after,
 .regular-button {
     @include buttons-global;
 }
+
+.regular-dark-button {
+    @include buttons-global;
+    background-color: $blue-special;
+    border: 1px solid $blue-special;
+    color: white;
+}
+
+
 
 .move-dwn {
     margin-top: 66px;
@@ -408,3 +420,14 @@ select:-webkit-autofill:focus {
         opacity: 0;
     }
 }
+
+/* responsive styling for medium devices */
+// @media screen and (max-width: 992px) {
+//     .show-medium {
+//         display: block;
+//     }
+//     .hide-medium {
+//         display: none;
+//     }
+// }
+

@@ -18,7 +18,6 @@ export class NavbarComponent implements OnInit {
   userID;
   hasLoggedIn = false;
   ngOnInit() {
-
     this.userService.subscribeUserNameData().subscribe (
       data => {
         if (data) {
@@ -31,10 +30,13 @@ export class NavbarComponent implements OnInit {
     );
   }
 
+
   logout() {
     this.userService.logout();
   }
   redirectToDashboard() {
     this.router.navigateByUrl('/dashboard');
   }
+
+
 }
