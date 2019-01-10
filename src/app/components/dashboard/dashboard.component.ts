@@ -89,6 +89,10 @@ export class DashboardComponent implements OnInit {
   doneFlag;
   roleInSession = 'emptyClass';
   switchSortChoice = true;
+
+
+  showParams = '';
+  
  
   constructor(
     private oauthService: OAuthService,
@@ -284,9 +288,31 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
+    console.log(searchParams);
     // if (this.clientId.data) {
     //   searchParams = this.clientId.prefix + this.clientId.data + searchParams;
     // }
+
+    this.arrOfVar.forEach((element, index) => {
+      if (element.data !== null) {
+        if (this.showParams.length === 0) {
+          this.showParams = element.data;
+        } else {
+          this.showParams += ', ' + element.data;
+        }
+      }
+    });
+
+    if (this.employeeType) {
+      this.addParams (this.employeeType);
+    }
+    if (this.department) {
+      this.addParams (this.department);
+    }
+
+    
+
+    console.log(this.showParams);
 
     this.patientService
       .getPatientData(searchParams)
@@ -296,6 +322,11 @@ export class DashboardComponent implements OnInit {
       );
     this.resetSearchParams();
   }
+
+  addParams(params) {
+    this.showParams = this.showParams + ', ' +  params;
+  }
+
   resetSearchParams() {
     this.clientDepartment = null;
     this.employeeType = null;

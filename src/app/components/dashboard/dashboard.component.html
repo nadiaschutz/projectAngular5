@@ -57,7 +57,7 @@
               </div>
             </div>
           </div>
-          <button type="submit" class="btn regular-button" (click)="employeeSearch()">Search</button>
+          <button type="submit" class="btn regular-dark-button" (click)="employeeSearch()">Search</button>
           <!-- <button type="button" class="btn regular-button" (click)="refreshSearch()">Refresh Search</button> -->
 
         </div>
@@ -65,18 +65,23 @@
     </div>
     <!-- List of Clients  -->
 
-    <div *ngIf="patientList.length > 0; else noneFound">
+    <div *ngIf="patientList.length > 0">
       <h6>Clients</h6>
-      <div class="button-section" [ngClass]="roleInSession">
-        <button type="button" class="btn special-button" (click)="newEmployeeButton()">New Client Record</button>
+      <div [ngClass]="roleInSession">
+        <div class="button-section" >
+          <button type="button" class="btn special-button" (click)="newEmployeeButton()">New Client Record</button>
+        </div>
       </div>
+
+      <!-- <h6>{{patientList.length}} Results Found for "{{showParams}}"</h6> -->
       <div class="table-container">
-        <table class="table table-hover">
+        <table class="tablesaw tablesaw-stack table table-hover table-custom" data-tablesaw-mode="stack">
+        <!-- <table class="table table-hover"> -->
           <thead class="header-table ">
             <tr>
               <th scope="col" (click)="sorterFunction('id')">Employee PRI</th>
               <th scope="col" (click)="sorterFunction('given')">First Name</th>
-              <th scope="col" (click)="sorterFunction('last')">Last Name</th>
+              <th scope="col" (click)="sorterFunction('family')">Last Name</th>
               <th scope="col" (click)="sorterFunction('dob')">Date of Birth</th>
               <th scope="col" (click)="sorterFunction('employeeType')">Client Type</th>
               <th scope="col" (click)="sorterFunction('department')" style="width:390px">
@@ -102,21 +107,9 @@
         </table>
       </div>
     </div>
-    <ng-template #noneFound class="center-align">
-      <div class="lds-spinner">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    </ng-template>
+    <div *ngIf="patientList.length === 0">
+      <h6>0 Results Found for "{{showParams}}"</h6>
+    </div>
+   
   </div>
 </div>

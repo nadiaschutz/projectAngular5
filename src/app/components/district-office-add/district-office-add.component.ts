@@ -171,6 +171,9 @@ constructor(
     this.fetchAllDistrictOffices();
     this.fetchAllRegionalOffices();
   }
+  goBackToList() {
+    this.router.navigate(['/district-office']);
+  }
 
   submit(value) {
     console.log(value);
