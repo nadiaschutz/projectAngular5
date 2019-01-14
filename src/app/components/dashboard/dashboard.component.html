@@ -1,4 +1,6 @@
 <div class="container">
+  <h6>Department: {{departmentOfUser}}</h6>
+  <h6>Current Role: {{roleInSession | uppercase}}</h6>
   <div class="main-header">
     <h5>Search Client</h5>
     <h6>client department > client</h6>
@@ -67,13 +69,14 @@
 
     <div *ngIf="patientList.length > 0">
       <h6>Clients</h6>
-      <div [ngClass]="roleInSession">
-        <div class="button-section" >
-          <button type="button" class="btn special-button" (click)="newEmployeeButton()">New Client Record</button>
-        </div>
-      </div>
 
-      <!-- <h6>{{patientList.length}} Results Found for "{{showParams}}"</h6> -->
+      <div class="button-section" [ngClass]="roleInSession">
+        <button type="button" class="btn special-button" (click)="newEmployeeButton()">New Client Record</button>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" [(ngModel)]="enableAll" type="checkbox" id="enableBox">
+        <label class="form-check-label" for="enableBox">Enable All</label>
+      </div>
       <div class="table-container">
         <table class="tablesaw tablesaw-stack table table-hover table-custom" data-tablesaw-mode="stack">
         <!-- <table class="table table-hover"> -->
@@ -87,24 +90,78 @@
               <th scope="col" (click)="sorterFunction('department')" style="width:390px">
                 Department</th>
               <th scope="col" (click)="sorterFunction('branch')">Branch</th>
-
             </tr>
           </thead>
           <tbody class="body-table">
-            <tr *ngFor="let patient of patientList">
+            <ng-container *ngFor="let patient of patientList">
+              <ng-container *ngIf="!enableAll; else showAll">
+                <tr *ngIf="patient.department === departmentOfUser && !enableAll">
+                  <td>{{patient.id}}</td>
+                  <ng-container *ngIf="roleInSession !== 'businessuser'; else plainFirstName">
+                    <td (click)="routeToSummary(patient)" 
+                    
+                  [ngClass]="{cursor: showCursor(patient)}">
+                    
+                      {{patient.given}}</td>
+                  </ng-container>
 
-              <td>{{patient.id}}</td>
-              <td (click)="routeToSummary(patient.id)" class="cursor">{{patient.given}}</td>
-              <td (click)="routeToSummary(patient.id)" class="cursor">{{patient.family}}</td>
-              <td>{{patient.dob | date: 'dd/MM/yyyy'}}</td>
+                  <ng-template #plainFirstName>
+                    <td>{{patient.given}}</td>
+                  </ng-template>
 
-              <td>{{patient.employeeType}}</td>
-              <td>{{patient.department}}</td>
-              <td>{{patient.branch}}</td>
+                  <ng-container *ngIf="roleInSession !== 'businessuser'; else plainLastName">
+                    <td (click)="routeToSummary(patient)" 
+                    
+                  [ngClass]="{cursor: showCursor(patient)}">
+                    
+                    {{patient.family}}</td>
+                  </ng-container>
 
-            </tr>
+                  <ng-template #plainLastName>
+                    <td>{{patient.family}}</td>
+                  </ng-template>
+
+                  <td>{{patient.dob | date: 'dd/MM/yyyy'}}</td>
+                  <td>{{patient.employeeType}}</td>
+                  <td>{{patient.department}}</td>
+                  <td>{{patient.branch}}</td>
+
+                </tr>
+
+              </ng-container>
+
+              <ng-template #showAll>
+                <!-- <ng-container  *ngFor="let patient of patientList"> -->
+                <tr>
+                  <td>{{patient.id}}</td>
+                  <td *ngIf="roleInSession !== 'businessuser' ; else plainFirstName" (click)="routeToSummary(patient)"
+                  [ngClass]="{cursor: showCursor(patient)}">
+                  
+                    {{patient.given}}</td>
+                  <ng-template #plainFirstName>
+                    <td>{{patient.given}}</td>
+                  </ng-template>
+
+                  <td *ngIf="roleInSession !== 'businessuser'; else plainLastName" (click)="routeToSummary(patient)"
+                     [ngClass]="{cursor: showCursor(patient)}">
+                      {{patient.family}}</td>
+                  <ng-template #plainLastName>
+                    <td>{{patient.family}}</td>
+                  </ng-template>
+
+                  <td>{{patient.dob | date: 'dd/MM/yyyy'}}</td>
+                  <td>{{patient.employeeType}}</td>
+                  <td>{{patient.department}}</td>
+                  <td>{{patient.branch}}</td>
+                </tr>
+                <!-- </ng-container> -->
+
+
+              </ng-template>
+            </ng-container>
           </tbody>
         </table>
+
       </div>
     </div>
     <div *ngIf="patientList.length === 0">

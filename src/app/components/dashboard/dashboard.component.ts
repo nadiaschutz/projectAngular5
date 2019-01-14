@@ -85,15 +85,12 @@ export class DashboardComponent implements OnInit {
 
   patientList = [];
   order;
-  department: string;
+  departmentOfUser: string;
   doneFlag;
   roleInSession = 'emptyClass';
   switchSortChoice = true;
-
-
-  showParams = '';
-  
- 
+  enableAll;
+  cursorClassEnables;
   constructor(
     private oauthService: OAuthService,
     private userService: UserService,
@@ -110,6 +107,14 @@ export class DashboardComponent implements OnInit {
     this.sortUsersObjects();
     this.userService.subscribeRoleData().subscribe(data => {
       this.roleInSession = data;
+      if (this.roleInSession === 'superuser') {
+        this.enableAll = true;
+      }
+
+      if (this.roleInSession === 'businessuser' || 'clientdept') {
+          this.cursorClassEnables = false;
+        // console.log(this.cursorClassEnables);
+      }
     });
   }
 
@@ -145,7 +150,6 @@ export class DashboardComponent implements OnInit {
     let pracID: any;
     if (userId['defaultLaunchContexts']) {
       pracID = userId['defaultLaunchContexts'][0]['resourceId'];
-      console.log(pracID);
       this.userService
         .getPractitionerRoleByPractitionerID(pracID)
         .subscribe(data => {
@@ -159,8 +163,7 @@ export class DashboardComponent implements OnInit {
                 )
                 .subscribe(role => {
                   if (!role['id'].includes('PSOHP')) {
-                    this.department = role['name'];
-                    console.log(this.department);
+                    this.departmentOfUser = role['name'];
                     this.getAllPatients();
                   }
                 });
@@ -175,7 +178,6 @@ export class DashboardComponent implements OnInit {
         });
     } else {
       this.getAllPatients();
-      console.log('nothing here chief');
     }
   }
 
@@ -210,8 +212,9 @@ export class DashboardComponent implements OnInit {
                 temp['branch'] = extension.valueString;
               }
             });
-            console.log('given name' , temp);
-            this.patientList.push(temp);
+            // if (this.department === temp['department']) {
+              this.patientList.push(temp);
+            // }
 
           }
         });
@@ -223,7 +226,6 @@ export class DashboardComponent implements OnInit {
         }
       }
     }
-    console.log(this.patientList);
     this.resetSearchParams();
   }
 
@@ -239,7 +241,6 @@ export class DashboardComponent implements OnInit {
           'https://bcip.smilecdr.com/fhir/employeetype'
       ) {
         if (individualExtension.valueString === this.employeeType) {
-          console.log('a', individualEntry);
           this.patientList.push(individualEntry);
         }
       } else if (
@@ -247,7 +248,6 @@ export class DashboardComponent implements OnInit {
         individualExtension.url === 'https://bcip.smilecdr.com/fhir/workplace'
       ) {
         if (individualExtension.valueString === this.clientDepartment) {
-          console.log('b', individualEntry);
           this.patientList.push(individualEntry);
         }
       }
@@ -259,8 +259,34 @@ export class DashboardComponent implements OnInit {
   }
 
   routeToSummary(data) {
-    this.userService.getSelectedID(data);
-    this.router.navigateByUrl('/employeesummary');
+    if (this.roleInSession === 'clientdept') {
+      if (this.departmentOfUser === data['department']) {
+        this.userService.getSelectedID(data.id);
+        this.router.navigateByUrl('/employeesummary');
+      }
+    } else {
+      if (this.roleInSession !== 'businessuser') {
+        if (this.roleInSession !== 'clientdept') {
+          this.userService.getSelectedID(data.id);
+          this.router.navigateByUrl('/employeesummary');
+        }
+      }
+    }
+
+  }
+
+  showCursor(data) {
+    if (this.roleInSession === 'clientdept') {
+      if (this.departmentOfUser === data['department']) {
+        return true;
+      }
+    } else {
+      if (this.roleInSession !== 'businessuser') {
+        if (this.roleInSession !== 'clientdept') {
+          return true;
+        }
+      }
+    }
   }
   newPSOHPButton() {
     this.router.navigate(['/psohpform']);
