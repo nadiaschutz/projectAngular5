@@ -689,6 +689,28 @@ export class Account extends Resource implements Serializable<Account> {
     }
 }
 
+export class ProcessRequest extends Resource implements Serializable<ProcessRequest> {
+
+    identifier: Identifier[];
+    status: string;
+    created: Date;
+    provider: Reference;
+    request: Reference;
+
+    deserialize(jsonObject: any): ProcessRequest {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+
+}
+
 export class EpisodeOfCare extends Resource implements Serializable<EpisodeOfCare> {
 
     identifier: Identifier[];

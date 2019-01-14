@@ -103,7 +103,7 @@ export class TasklistComponent implements OnInit {
 
     if (!this.updatingCheck) {
       this.staffService
-        .postTask(JSON.stringify(task))
+        .saveTask(JSON.stringify(task))
         .subscribe(() => {
           // reset here
           this.staffService

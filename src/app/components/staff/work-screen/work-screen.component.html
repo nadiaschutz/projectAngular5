@@ -4,21 +4,36 @@
 
 <div class="container">
 
+  <div class="row" *ngIf="clinicians.length>0">
+    <div class="assigned" style="float: right;">
+      <label>Clinian Assigned</label>
+      <select class="form-control" required (change)="showClinicianButtons=!showClinicianButtons" [(ngModel)]="selectedClinician" [compareWith]="compareClinicians">
+        <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
+          <span>{{clinician.name}}</span>
+        </option>
+      </select>
+      <section *ngIf="showClinicianButtons">
+          <button class="btn special-button" (click)="assignClinicianToEpisodeOfCare()">
+          Assign</button>
+          <button class="btn special-button" (click)="showClinicianButtons = !showClinicianButtons"
+          >Cancel</button>
+      </section>
+    </div>
+  </div>
+
   <div class="row">
     <h6 class="col-3">History</h6>
 
     <!-- Tool Bar -->
 
-    <div class="col-4">
-        <button class="btn special-button tool-button" (click)="showNewTool = !showNewTool" >New</button>
-        <ul *ngIf="showNewTool" class="tools">
-          <li class="tool-item">
-            <a (click)="openTaskForm()">New Task</a>
-          </li>
-          <li class="tool-item">
-            <a (click)="openNoteForm()">New Note</a>
-          </li>
-        </ul>
+    <div class="dropdown">
+        <button class="btn special-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" (click)="showNewTool = !showNewTool">
+          New
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" (click)="openTaskForm()">New Task</a>
+          <a class="dropdown-item" (click)="openNoteForm()">New Note</a>
+        </div>
       </div>
   </div>
 
@@ -75,7 +90,7 @@
                   <div *ngIf="taskFormGroup.controls['description'].invalid
                              && (taskFormGroup.controls['description'].touched || taskFormGroup.controls['description'].dirty)">
                     <div class="error-message">
-                      Cannot be blank
+                      Title cannot be empty
                     </div>
                   </div>
                 </div>
@@ -92,7 +107,7 @@
                   <div *ngIf="taskFormGroup.controls['assignTo'].invalid
                              && (taskFormGroup.controls['assignTo'].touched || taskFormGroup.controls['assignTo'].dirty)">
                     <div class="error-message">
-                      Cannot be blank
+                      Assignee cannot be empty
                     </div>
                   </div>
                 </div>
@@ -106,7 +121,7 @@
                   <div *ngIf="taskFormGroup.controls['instruction'].invalid
                              && (taskFormGroup.controls['instruction'].touched || taskFormGroup.controls['instruction'].dirty)">
                     <div class="error-message">
-                      Cannot be blank
+                      Instructions cannot be blank
                     </div>
                   </div>
                 </div>
@@ -115,9 +130,9 @@
 
             <section class="form-buttons">
                 <button class="btn special-button" (click)="saveTask()" [disabled]="!taskFormGroup.valid">
-                    Create Task</button>
-                    <button class="btn special-button" (click)="showTaskForm = !showTaskForm"
-                    [disabled]="taskFormGroup.valid">Cancel</button>
+                Create Task</button>
+                <button class="btn special-button" (click)="showTaskForm = !showTaskForm"
+                [disabled]="taskFormGroup.valid">Cancel</button>
             </section>
 
           </form>
@@ -133,6 +148,7 @@
               </div>
               <p class="card-text">{{item.note}}</p>
               <p class="card-text">{{item.date}}</p>
+              <p class="card-text" *ngIf="item.author">{{item.author}}</p>
               <div class="card-link">
                   <a *ngIf="item.type==='task' && item.status==='in-progress'"
                   (click)="completeTask(i)">Mark as done</a>
@@ -153,6 +169,7 @@
         </div>
       </div>
     </div>
+
   
     <!-- 3. Right fixed section -->
 
@@ -161,6 +178,14 @@
   
       <!-- 3b. Summary: Client information -->
       <div>
+
+          <div class="card">
+              <div class="card-body">
+                <label class="card-title"><strong>Assigned Admin</strong></label>
+                <p>{{assignedAdmin}}</p>
+              </div>
+            </div>
+
           <div *ngFor="let item of summary">
               <label class="label-name"><strong>{{item.id | titlecase}}</strong></label>
               <p>{{item.value | titlecase}}</p>

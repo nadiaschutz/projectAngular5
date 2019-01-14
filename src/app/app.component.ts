@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
 
   title = 'nohis';
   sessionObject;
+  showNavBars = false;
 
   constructor(private oauthService: OAuthService,
     private userService: UserService,
@@ -35,7 +36,13 @@ export class AppComponent implements OnInit {
       oidc: false
     });
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
-
+    this.router.events.subscribe(() => {
+      if (this.oauthService.getAccessToken()) {
+        this.showNavBars = true;
+      } else {
+        this.showNavBars = false;
+      }
+    });
   }
 
   returnTokenStatus() {
