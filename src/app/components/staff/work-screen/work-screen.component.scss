@@ -9,11 +9,11 @@
 .row {
     margin-top: 20px;
 }
-// .fixed{
-//     position: sticky;
-//     top:0;
-//     z-index: 999;
-// }
+.fixed-old {
+    position: sticky;
+    top:0;
+    z-index: 999;
+}
 
 .fixed {
     position: fixed;
@@ -136,4 +136,18 @@ hr {
 .card-link a {
     color: #398ef2;
     cursor: pointer;
+}
+
+.dropdown-item {
+    color: black;
+    cursor: pointer;
+}
+
+button {
+    outline: none;
+}
+
+.assigned {
+    width: 150px;
+    float: right;
 }

@@ -88,15 +88,17 @@ export class ListPageComponent implements OnInit {
         });
       } else {
         // Check if all Questionnaire Responses have Care Plans associated to them
-        const associatedEpisodeOfCareId = this.utilService.getIdFromReference(questionnaireResponse['context'].reference);
-        this.staffService.getCarePlanForEpisodeOfCareId(associatedEpisodeOfCareId).
-        subscribe(data => {
-          if (!data['entry']) {
-            this.staffService.getEpisodeOfCareFromId(associatedEpisodeOfCareId).subscribe(episodeOfCare => {
-              this.associateCarePlanToEpisodeOfCare(episodeOfCare, questionnaireResponse);
-            });
-          }
-        });
+        if (questionnaireResponse.context) {
+          const associatedEpisodeOfCareId = this.utilService.getIdFromReference(questionnaireResponse['context'].reference);
+          this.staffService.getCarePlanForEpisodeOfCareId(associatedEpisodeOfCareId).
+          subscribe(data => {
+            if (!data['entry']) {
+              this.staffService.getEpisodeOfCareFromId(associatedEpisodeOfCareId).subscribe(episodeOfCare => {
+                this.associateCarePlanToEpisodeOfCare(episodeOfCare, questionnaireResponse);
+              });
+            }
+          });
+        }
       }
     });
   }
@@ -368,7 +370,7 @@ export class ListPageComponent implements OnInit {
           carePlan.identifier = carePlanTemplate['identifier'];
 
           console.log(carePlan);
-          this.staffService.postCarePlan(JSON.stringify(carePlan)).subscribe(data => {
+          this.staffService.saveCarePlan(JSON.stringify(carePlan)).subscribe(data => {
             console.log(data);
           });
         }

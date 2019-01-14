@@ -24,6 +24,10 @@ export class AuthComponent implements OnInit {
 
   ngOnInit() {
 
+    if (this.oauthService.getAccessToken()) {
+      this.router.navigateByUrl('/dashboard');
+    }
+
     this.logInForm = this.fb.group({
       username: ['', [Validators.required]],
       password: [

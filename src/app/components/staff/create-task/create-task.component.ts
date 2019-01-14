@@ -95,7 +95,7 @@ export class CreateTaskComponent implements OnInit {
     // console.log(task);
     // console.log(finalJSON);
     this.staffService
-      .postTask(JSON.stringify(task))
+      .saveTask(JSON.stringify(task))
       .subscribe(() => {
         this.router.navigateByUrl('/staff/work-screen');
       });

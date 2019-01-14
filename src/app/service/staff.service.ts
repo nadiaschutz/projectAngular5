@@ -34,7 +34,7 @@ export class StaffService {
     return this.http.get(environment.queryURI + '/CarePlan?status=draft', {headers: this.getHeaders()});
   }
 
-  postCarePlan(carePlanData) {
+  saveCarePlan(carePlanData) {
     return this.http.post(environment.queryURI + '/CarePlan', carePlanData, {headers: this.getPostHeaders()});
   }
 
@@ -93,7 +93,7 @@ export class StaffService {
   }
 
   getAllTasksForEpisodeOfCare(episodeOfCareId) {
-    return this.http.get(environment.queryURI + '/Task?_context=' + episodeOfCareId, {
+    return this.http.get(environment.queryURI + '/Task?context=' + episodeOfCareId, {
       headers: this.getHeaders()
     });
   }
@@ -110,7 +110,7 @@ export class StaffService {
     });
   }
 
-  postTask(data) {
+  saveTask(data) {
     return this.http.post(environment.queryURI + '/Task/', data, { headers: this.getPostHeaders() });
   }
 
@@ -152,6 +152,26 @@ export class StaffService {
   updateCommunication(id, communicationData) {
     return this.http.put<FHIR.Communication>(environment.queryURI +
       '/Communication/' + id, communicationData, {headers: this.getPostHeaders()});
+  }
+
+  getAllClinicians() {
+    return this.http.get(environment.queryURI +
+      '/Practitioner?_has:PractitionerRole:practitioner:role=clinician', {
+      headers: this.getHeaders()
+    });
+  }
+
+  getClinicianById(id: string) {
+    return this.http.get(environment.queryURI +
+      '/Practitioner/' +  id, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getClinicianAssignedToEpisode(episodeOfCareId) {
+    return this.http.get(environment.queryURI + '/Task?code=clinician&status=ready&context=' + episodeOfCareId, {
+      headers: this.getHeaders()
+    });
   }
 
 }

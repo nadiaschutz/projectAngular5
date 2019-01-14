@@ -1,17 +1,18 @@
-
-    <app-navbar></app-navbar>
-
-    <div id="container">
-        <div class="row">
-            <div class="col-1 col-lg-2 col-md-2">
-                <!-- <div fxFlexFill fxLayout="column">
-                    <div fxFlex style="background-color:blue;"> -->
-                        <app-sidebar style="min-height:100vh;"> </app-sidebar>
-            </div>
-                    <!-- </div>
-                    </div> -->
-            <div class="col-11 col-lg-10 col-md-10">
-                <router-outlet style="min-height:100vh;"></router-outlet>
-            </div> 
+<app-navbar *ngIf="showNavBars"></app-navbar>
+<div *ngIf="!showNavBars">
+        <nav class="navbar navbar-light bg-light">
+            <img src="../assets/healthcanada-logo.png" alt="" id="logo">
+        </nav>
+        <nav class="navbar navbar-expand-md navbar-dark dark-blue">    
+            <a href="#" class="navbar-brand">NOHIS</a>
+        </nav> 
+</div>
+<div id="container">
+    <div class="row">
+        <div class="col-1 col-lg-2 col-md-3" *ngIf="showNavBars">
+            <app-sidebar style="min-height:100vh;"> </app-sidebar>
         </div>
+        <div [ngClass]="showNavBars? 'col-11 col-lg-10 col-md-9' : 'col-12'">
+            <router-outlet style="min-height:100vh;"></router-outlet>
+        </div> 
     </div>

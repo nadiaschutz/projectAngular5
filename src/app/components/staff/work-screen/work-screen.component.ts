@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
+import { UserService } from '../../../service/user.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
+import { log } from 'util';
 
 
 @Component({
@@ -33,17 +35,27 @@ export class WorkScreenComponent implements OnInit {
   showOnlyTasks = false;
   showOnlyNotes = false;
 
+  assignedAdmin = '';
+  assignedClinician = {};
+  selectedClinician = {};
+  clinicians = [];
+  cliniciansWithId = [];
+  showClinicianButtons = false;
+  assignClinicianTask = {};
+
   constructor(private staffService: StaffService, private utilService: UtilService,
-  private route: ActivatedRoute, private formBuilder: FormBuilder, private oAuthService: OAuthService) { }
+  private route: ActivatedRoute, private formBuilder: FormBuilder, private oAuthService: OAuthService, private userService: UserService) { }
 
   ngOnInit() {
     console.log(this.route.snapshot.paramMap.get('id'));
     this.episodeOfCareId = this.route.snapshot.paramMap.get('id');
-    this.staffService.getAllPractitioners().subscribe(
-      data => this.subscribePractitioners(data),
+    this.staffService.getAllPractitioners().subscribe(data => {
+        this.subscribePractitioners(data);
+        this.fetchAllClinicians();
+        this.fetchAllData();
+      },
       error => console.error(error)
     );
-    this.fetchAllData();
   }
 
   fetchAllData() {
@@ -53,8 +65,104 @@ export class WorkScreenComponent implements OnInit {
     });
   }
 
+  fetchAllClinicians() {
+    this.staffService.getAllClinicians().subscribe(data => {
+      if (data['entry']) {
+        data['entry'].forEach(element => {
+          const clinician = element['resource'];
+          this.clinicians.push({id: clinician['id'],
+          name: this.utilService.getNameFromResource(clinician)});
+          this.cliniciansWithId[clinician.id] = clinician;
+        });
+        console.log(this.cliniciansWithId);
+        this.fetchAssignedClinician();
+      }
+    });
+  }
+
+  fetchAssignedClinician() {
+    this.staffService.getClinicianAssignedToEpisode(this.episodeOfCareId).subscribe(data => {
+      data['entry'].forEach(element => {
+        const task = element['resource'];
+        if (task['status'] === 'ready') {
+          console.log(task);
+          console.log(task['id']);
+          this.assignClinicianTask = task;
+          const clinicianId = this.utilService.getIdFromReference(task.owner.reference);
+          const clinician = this.cliniciansWithId[clinicianId];
+          console.log(clinicianId);
+          console.log(typeof(this.cliniciansWithId));
+          console.log(clinician);
+          this.assignedClinician = {id: clinician.id, name: this.utilService.getNameFromResource(clinician)};
+          console.log(this.utilService.getNameFromResource(clinician));
+          this.selectedClinician = this.assignedClinician;
+          console.log(this.assignedClinician);
+          console.log(this.selectedClinician);
+        } else {
+          console.log('No assigned clinician');
+        }
+      });
+    });
+  }
+
+  compareClinicians(clinician1, clinician2): boolean {
+    return clinician1 && clinician2 && clinician1.name === clinician2.name ;
+  }
+
+  assignClinicianToEpisodeOfCare() {
+    // When assigning a Clinician to an episode of care, a Task is created with the status set to ready
+    // When reassigning an Episode of Care, the previous Task's status needs to be set to completed
+    console.log(this.assignedClinician);
+    if (this.assignedClinician !== {}) {
+      console.log('Reassigning');
+      this.releaseClinicanFromEpisodeOfCare();
+    } else {
+      console.log('Create task for first time');
+      this.createTaskToAssignClinician();
+    }
+  }
+
+  releaseClinicanFromEpisodeOfCare() {
+    this.assignClinicianTask['status'] = 'completed';
+    this.staffService.updateTask(this.assignClinicianTask['id'], JSON.stringify(this.assignClinicianTask)).subscribe(data => {
+      console.log(data);
+      this.createTaskToAssignClinician();
+    });
+  }
+
+  createTaskToAssignClinician() {
+    this.assignClinicianTask = {};
+    console.log(this.selectedClinician);
+    const task = new FHIR.Task;
+    const episodeOfCareReference = new FHIR.Reference;
+    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    task.context = episodeOfCareReference;
+
+    const ownerReference = new FHIR.Reference;
+    ownerReference.reference = 'Practitioner/' + this.selectedClinician['id'];
+    task.owner = ownerReference;
+
+    task.status = 'ready';
+    task.resourceType = 'Task';
+
+    const code = new FHIR.Coding;
+    code.code = 'clinician';
+    const coding = new FHIR.CodeableConcept;
+    coding.coding = new Array<FHIR.Coding>();
+    coding.coding.push(code);
+    task.code = coding;
+
+    this.staffService.saveTask(JSON.stringify(task)).subscribe(savedTask => {
+      this.assignClinicianTask = savedTask;
+      this.showClinicianButtons = false;
+      this.assignedClinician = this.selectedClinician;
+      console.log(savedTask);
+      console.log(this.assignedClinician);
+      console.log(this.selectedClinician);
+    });
+  }
+
   processResponse(data) {
-    console.log(data);
     this.history = [];
     if (data && data.entry) {
       data.entry.forEach(element => {
@@ -70,16 +178,22 @@ export class WorkScreenComponent implements OnInit {
           this.processQuestionnaireResponseForSummary(element.resource);
         } else if (element.resource.resourceType === 'EpisodeOfCare') {
           this.episodeOfCare = element.resource;
+          this.getCurrentlyAssignedUsername();
         } else if (element.resource.resourceType === 'Task') {
           this.processTaskForHistory(element.resource);
         } else if (element.resource.resourceType === 'Communication') {
           const communication = element.resource;
           communication.note.forEach(note => {
-            this.processCommunicationNotesForHistory(note);
+            this.processNoteForHistory(note);
           });
         }
       });
     }
+  }
+
+  getCurrentlyAssignedUsername() {
+    const userId = this.utilService.getIdFromReference(this.episodeOfCare['careManager']['reference']);
+    this.assignedAdmin = this.utilService.getNameFromResource(this.practitionersWithId[userId]);
   }
 
   processCarePlanForDisplay() {
@@ -140,7 +254,9 @@ export class WorkScreenComponent implements OnInit {
     temp['type'] = 'task';
     temp['status'] = task['status'];
     temp['title'] = 'Task: ' + task['description'];
-    temp['note'] = task['note'][0]['text'];
+    if (temp['note']) {
+      temp['note'] = task['note'][0]['text'];
+    }
     const practitionerId = this.utilService.getIdFromReference(task['owner']['reference']);
     temp['owner'] = this.utilService.getNameFromResource(this.practitionersWithId[practitionerId]);
     temp['lastUpdated'] = task['meta']['lastUpdated'];
@@ -159,7 +275,7 @@ export class WorkScreenComponent implements OnInit {
         this.carePlan['activity'][index]['detail']['status'] = 'completed';
       } else {
         annotation.text = 'INCOMPLETE: User ' + this.fetchCurrentUsername() +
-         ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as In-complete';
+         ' marked item ' + this.carePlan['activity'][index]['detail']['description'] + ' as Incomplete';
         this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
         console.log(this.carePlan['activity'][index]);
       }
@@ -206,13 +322,21 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
-  processCommunicationNotesForHistory(communicationItem) {
+  processNoteForHistory(communicationItem) {
     const temp = {};
     temp['type'] = 'note';
     if (communicationItem['id']) {
       temp['title'] = 'Note: ' + communicationItem['id'];
     } else {
       temp['title'] = 'Note';
+    }
+    if (communicationItem['author']) {
+      const authorId = this.utilService.getIdFromReference(communicationItem['author']['reference']);
+      if (this.practitionersWithId[authorId]) {
+        temp['author'] = this.utilService.getNameFromResource(this.practitionersWithId[authorId]);
+      } else {
+        temp['author'] = this.utilService.getNameFromResource(this.cliniciansWithId[authorId]);
+      }
     }
     temp['note'] = communicationItem.text;
     temp['lastUpdated'] = communicationItem.time;
@@ -250,6 +374,9 @@ export class WorkScreenComponent implements OnInit {
 
   saveNotes() {
     const annotation = new FHIR.Annotation;
+    const authorReference = new FHIR.Reference;
+    authorReference.reference = 'Practitioner/';
+    // annotation.authorReference = '';
     annotation.id = this.noteFormGroup.get('title').value;
     annotation.time = new Date();
     annotation.text = this.noteFormGroup.get('note').value;
@@ -260,7 +387,7 @@ export class WorkScreenComponent implements OnInit {
     this.staffService.updateCommunication(this.communication['id'], JSON.stringify(this.communication)).subscribe(data => {
       this.showNoteForm = false;
       // This needs to use the date coming from the server, in this case, the var 'data'
-      this.processCommunicationNotesForHistory(annotation);
+      this.processNoteForHistory(annotation);
       if (this.showOnlyNotes) {
         this.displayOnlyNotes();
       } else {
@@ -313,7 +440,7 @@ export class WorkScreenComponent implements OnInit {
     task.note = [taskAnnotation];
     task.resourceType = 'Task';
     this.staffService
-      .postTask(JSON.stringify(task)).subscribe((data) => {
+      .saveTask(JSON.stringify(task)).subscribe((data) => {
         this.showTaskForm = false;
         this.processTaskForHistory(data);
         console.log(this.showOnlyTasks);
@@ -323,15 +450,6 @@ export class WorkScreenComponent implements OnInit {
           this.displayAll();
         }
       });
-  }
-
-  fetchTasksRelatedToEpisodeOfCare() {
-    this.staffService.getAllTasksForEpisodeOfCare(this.episodeOfCareId).subscribe(data => {
-      console.log(data);
-      for (const task of data['entry']) {
-        this.processTaskForHistory(task['resource']);
-      }
-    });
   }
 
   fetchCurrentUsername() {
