@@ -2,7 +2,7 @@
   <li (click)="clientPage()" class="menu-item">
     <a (click)="clientPage()">Clients</a>
   </li>
-
+ 
   <div [ngClass]="roleInSession">
     <li (click)="serviceRequestPage()" class="menu-item">
       <a (click)="serviceRequestPage()">Search for Service Request</a>
@@ -11,11 +11,11 @@
   <li (click)="districtOfficePage()" class="menu-item">
     <a (click)="districtOfficePage()">PSOHP Office</a>
   </li>
-  <div [ngClass]="roleInSession">
+  <!-- <div [ngClass]="roleInSession"> -->
     <li (click)="clientDepartmentPage()" class="menu-item">
       <a>Client Department</a>
     </li>
-  </div>
+  <!-- </div> -->
   <li (click)="adviceRequestPage()" class="menu-item">
     <a (click)="adviceRequestPage()">Contact Us</a>
   </li>
@@ -24,11 +24,11 @@
       <a (click)="staffUI()">Staff UI</a>
     </li>
   </div>
-  <div [ngClass]="roleInSession">
+  <!-- <div [ngClass]="roleInSession"> -->
     <li (click)="acccountCreation()" class="menu-item">
       <a (click)="acccountCreation()">Add New Account</a>
     </li>
-  </div>
+  <!-- </div> -->
 
 </ul>
 <!-- <li class="menu-item">

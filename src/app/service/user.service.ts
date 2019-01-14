@@ -10,6 +10,7 @@ import * as Rx from 'rxjs';
 export class UserService {
   private newRoleSubject = new Rx.BehaviorSubject<string>(null);
   private newUserNameSubject = new Rx.BehaviorSubject<string>(null);
+  private newUserFHIRIDSubject = new Rx.BehaviorSubject<string>(null);
 
   selectedServiceRequestID;
   selectID = '';
@@ -57,6 +58,7 @@ export class UserService {
     // TODO - remove this after designing cleaner solution
     this.newRoleSubject.next('emptyClass');
     this.newUserNameSubject.next('');
+    this.newUserFHIRIDSubject.next('');
     this.oauthService.logOut();
     this.router.navigate(['']);
   }
@@ -129,6 +131,8 @@ export class UserService {
 
           if (element['defaultLaunchContexts']) {
             pracID = element['defaultLaunchContexts'][0]['resourceId'];
+            this.newUserFHIRIDSubject.next(pracID);
+
             this.getPractitionerRoleByPractitionerID(pracID).subscribe(
               roledata => {
                 if (roledata['total'] > 0) {
@@ -157,6 +161,11 @@ export class UserService {
   subscribeUserNameData() {
     return this.newUserNameSubject.asObservable();
   }
+
+  subscribeUserFHIRID() {
+    return this.newUserFHIRIDSubject.asObservable();
+  }
+
 
   unsubscribeUserNameData() {
     this.newUserNameSubject.unsubscribe();

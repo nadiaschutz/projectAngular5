@@ -20,7 +20,6 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
 
     this.userService.subscribeRoleData().subscribe(data => {
-      console.log(data);
       this.roleInSession = data;
     });
       // this.userService.fetchCurrentRole();
