@@ -83,6 +83,7 @@ export class DashboardComponent implements OnInit {
     'dateModified'
   ];
 
+
   patientList = [];
   order;
   departmentOfUser: string;
@@ -91,6 +92,7 @@ export class DashboardComponent implements OnInit {
   switchSortChoice = true;
   enableAll;
   cursorClassEnables;
+  showParams;
   constructor(
     private oauthService: OAuthService,
     private userService: UserService,
@@ -332,12 +334,9 @@ export class DashboardComponent implements OnInit {
     if (this.employeeType) {
       this.addParams (this.employeeType);
     }
-    if (this.department) {
-      this.addParams (this.department);
+    if (this.departmentOfUser) {
+      this.addParams (this.departmentOfUser);
     }
-
-    
-
     console.log(this.showParams);
 
     this.patientService
