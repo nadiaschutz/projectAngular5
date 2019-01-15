@@ -33,6 +33,10 @@ export class UtilService {
     return formatDate(new Date(), 'dd-MM-yyyy, HH:mm:ss', 'en');
   }
 
+  getCurrentDate() {
+    return formatDate(new Date(), 'yyyy-MM-dd', 'en');
+  }
+
   getDate(dateTime) {
     return formatDate(new Date(dateTime), 'yyyy-MM-dd', 'en');
   }
