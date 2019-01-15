@@ -123,6 +123,26 @@ row:after,
     color: white;
 }
 
+.view-button {
+    // @include buttons-global;
+    // width: 100px;
+    width: 200px;
+    margin: 31px 0 0 -119px;
+    border-radius: 2px;
+    background-color: $white;
+    font-size: 13px;
+    border: 1px solid $grey;
+    // padding: 5px;
+    // margin: 5px;
+    // padding-left: 30px;
+    // padding-right: 30px;
+    // background-color: #334f75;
+}
+
+.view-summary-name-box {
+    // width: auto;
+    width: 80%;
+}
 
 
 .move-dwn {

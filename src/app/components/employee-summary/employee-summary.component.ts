@@ -19,6 +19,7 @@ export class EmployeeSummaryComponent implements OnInit {
   employeetype;
   dependentArray = [];
   servceRequestDatas = [];
+  cursorClassEnables;
 
   jobTitle;
 
@@ -55,11 +56,13 @@ export class EmployeeSummaryComponent implements OnInit {
     temp['family'] = data['name'][0]['family'];
     temp['dob'] = data['birthDate'];
     temp['identifier'] = {};
-    data['identifier'].forEach(identifier => {
-      temp['identifier']['use'] = identifier['use'];
-      temp['identifier']['system'] = identifier['system'];
-      temp['identifier']['value'] = identifier['value'];
-    });
+    if (data['identifier']) {
+      data['identifier'].forEach(identifier => {
+        temp['identifier']['use'] = identifier['use'];
+        temp['identifier']['system'] = identifier['system'];
+        temp['identifier']['value'] = identifier['value'];
+      });
+    }
     data['extension'].forEach(extension => {
       if (extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
         temp['department'] = {};
@@ -128,10 +131,9 @@ export class EmployeeSummaryComponent implements OnInit {
     });
     temp['telecom'] = data['telecom'];
     this.selected = temp;
-    console.log('type', this.selected['employeeType']['valueString']);
 
     this.patientService
-      .getPatientByLinkID(this.linkID)
+      .getPatientByLinkID(this.selected['linkID']['valueString'])
       .subscribe(
         dataPatient => this.populateDependentArray(dataPatient),
         error => this.handleError(error)
@@ -166,23 +168,26 @@ export class EmployeeSummaryComponent implements OnInit {
 
   populateDependentArray(data) {
     this.dependentArray = [];
+    if (this.selected['employeeType']['valueString'] === 'Employee') {
 
-    if (this.selected['employeeType'] === 'Dependent') {
       data.entry.forEach(element => {
         const individualEntry = element.resource;
         for (const extensions of individualEntry.extension) {
-          if (extensions.valueString === 'Employee') {
+          if (extensions.valueString === 'Dependent') {
+            console.log('yup, theres a dependent');
             const temp = {};
-
+            temp['id'] = individualEntry['id'];
             temp['given'] = individualEntry['name'][0]['given'][0];
             temp['family'] = individualEntry['name'][0]['family'];
             temp['dob'] = individualEntry['birthDate'];
             temp['identifier'] = {};
-            individualEntry['identifier'].forEach(identifier => {
-              temp['identifier']['use'] = identifier['use'];
-              temp['identifier']['system'] = identifier['system'];
-              temp['identifier']['value'] = identifier['value'];
-            });
+            if (individualEntry['identifer']) {
+              individualEntry['identifier'].forEach(identifier => {
+                temp['identifier']['use'] = identifier['use'];
+                temp['identifier']['system'] = identifier['system'];
+                temp['identifier']['value'] = identifier['value'];
+              });
+            }
             individualEntry['extension'].forEach(extension => {
               if (
                 extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace'
@@ -264,36 +269,142 @@ export class EmployeeSummaryComponent implements OnInit {
               temp['telecom'].push(telecom);
             });
             temp['telecom'] = individualEntry['telecom'];
+            console.log(temp);
+            this.dependentArray.push(temp);
+          }
+        }
+      });
+    } else {
+      this.dependentArray = [];
+
+      data.entry.forEach(element => {
+        const individualEntry = element.resource;
+        for (const extensions of individualEntry.extension) {
+          if (extensions.valueString === 'Employee') {
+            const temp = {};
+            temp['id'] = individualEntry['id'];
+            temp['given'] = individualEntry['name'][0]['given'][0];
+            temp['family'] = individualEntry['name'][0]['family'];
+            temp['dob'] = individualEntry['birthDate'];
+            temp['identifier'] = {};
+            if (individualEntry['identifer']) {
+              individualEntry['identifier'].forEach(identifier => {
+                temp['identifier']['use'] = identifier['use'];
+                temp['identifier']['system'] = identifier['system'];
+                temp['identifier']['value'] = identifier['value'];
+              });
+            }
+            individualEntry['extension'].forEach(extension => {
+              if (
+                extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace'
+              ) {
+                temp['department'] = {};
+                temp['department']['url'] = extension.url;
+                temp['department']['valueString'] = extension.valueString;
+              }
+            });
+            individualEntry['extension'].forEach(extension => {
+              if (
+                extension['url'] === 'https://bcip.smilecdr.com/fhir/jobtile'
+              ) {
+                temp['jobtitle'] = {};
+                temp['jobtitle']['url'] = extension.url;
+                temp['jobtitle']['valueString'] = extension.valueString;
+              }
+            });
+            individualEntry['extension'].forEach(extension => {
+              if (
+                extension['url'] ===
+                'https://bcip.smilecdr.com/fhir/employeetype'
+              ) {
+                temp['employeeType'] = {};
+                temp['employeeType']['url'] = extension.url;
+                temp['employeeType']['valueString'] = extension.valueString;
+              }
+            });
+            individualEntry['extension'].forEach(extension => {
+              if (
+                extension['url'] === 'https://bcip.smilecdr.com/fhir/branch'
+              ) {
+                temp['branch'] = {};
+                temp['branch']['url'] = extension.url;
+                temp['branch']['valueString'] = extension.valueString;
+              }
+            });
+            individualEntry['extension'].forEach(extension => {
+              if (
+                extension['url'] ===
+                'https://bcip.smilecdr.com/fhir/dependentlink'
+              ) {
+                temp['linkID'] = {};
+                temp['linkID']['url'] = extension.url;
+                temp['linkID']['valueString'] = extension.valueString;
+              }
+            });
+            individualEntry['extension'].forEach(extension => {
+              if (
+                extension['url'] ===
+                'https://bcip.smilecdr.com/fhir/crossreferenceone'
+              ) {
+                temp['crossref1'] = {};
+                temp['crossref1']['url'] = extension.url;
+                temp['crossref1']['valueString'] = extension.valueString;
+              }
+            });
+            individualEntry['extension'].forEach(extension => {
+              if (
+                extension['url'] ===
+                'https://bcip.smilecdr.com/fhir/crossreferencetwo'
+              ) {
+                temp['crossref2'] = {};
+                temp['crossref2']['url'] = extension.url;
+                temp['crossref2']['valueString'] = extension.valueString;
+              }
+            });
+
+            temp['telecom'] = [];
+            temp['address'] = [];
+
+            individualEntry['address'].forEach(address => {
+              individualEntry['address'].push(address);
+            });
+
+            temp['communication'] = individualEntry['communication'];
+
+            individualEntry['telecom'].forEach(telecom => {
+              temp['telecom'].push(telecom);
+            });
+            temp['telecom'] = individualEntry['telecom'];
+            console.log('Dependent is relate to:', temp);
             this.dependentArray.push(temp);
           }
         }
       });
     }
-    if (data.entry) {
-      data.entry.forEach(element => {
-        const individualEntry = element.resource;
-        for (const extension of individualEntry.extension) {
-          if (extension.valueString === 'Dependent') {
-            this.dependentArray.push(individualEntry);
-          }
-        }
-      });
-    }
+    // if (data.entry) {
+    //   data.entry.forEach(element => {
+    //     const individualEntry = element.resource;
+    //     for (const extension of individualEntry.extension) {
+    //       if (extension.valueString === 'Dependent') {
+    //         this.dependentArray.push(individualEntry);
+    //       }
+    //     }
+    //   });
+    // }
   }
 
-  // checkEmployeeType() {
-  //   for (const extension of this.selected.extension) {
-  //     if (extension.url === 'https://bcip.smilecdr.com/fhir/employeetype' && extension.valueString === 'Employee') {
-  //       this.employeetype = true;
-  //       console.log(this.employeetype);
-  //     } else {
-  //       this.employeetype = false;
-  //       console.log(this.employeetype);
-
-  //     }
-  //   }
-  // }
-
+  routeToSummary(data) {
+    this.selected = '';
+    this.dependentArray = [];
+    this.id = data;
+    this.userService.getSelectedID(data);
+    this.patientService
+        .getPatientDataByID(this.id)
+        .subscribe(
+          dataNew => this.populatePatientArray(dataNew),
+          error => this.handleError(error)
+        );
+  }
   getServReqData(data) {
     console.log(data.entry);
     if (data.entry) {
