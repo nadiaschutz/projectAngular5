@@ -321,15 +321,15 @@ export class DashboardComponent implements OnInit {
     //   searchParams = this.clientId.prefix + this.clientId.data + searchParams;
     // }
 
-    this.arrOfVar.forEach((element, index) => {
-      if (element.data !== null) {
-        if (this.showParams.length === 0) {
-          this.showParams = element.data;
-        } else {
-          this.showParams += ', ' + element.data;
-        }
-      }
-    });
+    // this.arrOfVar.forEach((element, index) => {
+    //   if (element.data !== null) {
+    //     if (this.showParams.length === 0) {
+    //       this.showParams = element.data;
+    //     } else {
+    //       this.showParams += ', ' + element.data;
+    //     }
+    //   }
+    // });
 
     if (this.employeeType) {
       this.addParams (this.employeeType);
