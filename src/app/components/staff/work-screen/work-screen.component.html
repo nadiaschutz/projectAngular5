@@ -217,34 +217,34 @@
         <div class="card">
           <div class="card-body">
             <label class="card-title"><strong>Summary</strong></label>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.clientName">
               <strong>Client Name: </strong> {{summary.clientName}}
             </p>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.clientDOB">
               <strong>Client Date of Birth: </strong> {{summary.clientDOB}}
             </p>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.clientDepartment">
               <strong>Client Department: </strong> {{summary.clientDepartment}}
             </p>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.jobTitle">
               <strong>Job Title: </strong> {{summary.jobTitle}}
             </p>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.clientBranch">
               <strong>Client Branch: </strong> {{summary.clientBranch}}
             </p>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.psohpService">
               <strong>PSOHP Service: </strong> {{summary.psohpService}}
             </p>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.submittingDepartment">
               <strong>Submitting Department: </strong> {{summary.submittingDepartment}}
             </p>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.receivingDepartment">
               <strong>Receiving Department: </strong> {{summary.receivingDepartment}}
             </p>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.ohagOccupation">
               <strong>OHAG Occupation: </strong> {{summary.ohagOccupation}}
             </p>
-            <p class="card-text">
+            <p class="card-text" *ngIf="summary.ohagEnvironmentalModifier">
               <strong>OHAG Environmental Modifier: </strong> {{summary.ohagEnvironmentalModifier}}
             </p>
           </div>
