@@ -146,7 +146,9 @@
                 {{item.title}}
                 <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
               </div>
-              <p class="card-text">{{item.note}}</p>
+              <p class="card-text" *ngIf="item.note && item.type!=='task'">
+                {{item.note}}
+              </p>
               <p class="card-text" *ngIf="item.author">
                 <strong>Author: </strong>{{item.author}}
               </p>

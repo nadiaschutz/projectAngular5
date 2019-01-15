@@ -160,6 +160,8 @@ export class WorkScreenComponent implements OnInit {
       this.clinicalAssignmentTask = savedTask;
       this.showClinicianButtons = false;
       this.assignedClinician = this.selectedClinician;
+      this.processClinicalAssignmentForHistory(savedTask);
+      this.displayAll();
       console.log(savedTask);
       console.log(this.assignedClinician);
       console.log(this.selectedClinician);
