@@ -52,7 +52,6 @@ export class ListPageComponent implements OnInit {
       // mapped to Episode of Care
       const questionnaireResponse = entry.resource;
       if (questionnaireResponse.subject && !questionnaireResponse.context) {
-        console.log(questionnaireResponse);
 
         const episodeOfCare = new FHIR.EpisodeOfCare;
         episodeOfCare.resourceType = 'EpisodeOfCare';
@@ -346,15 +345,12 @@ export class ListPageComponent implements OnInit {
   }
 
   associateCarePlanToEpisodeOfCare(episodeOfCare: FHIR.EpisodeOfCare, questionnaireResponse: FHIR.QuestionnaireResponse) {
-    console.log(episodeOfCare);
-    console.log(questionnaireResponse);
     const psohpServiceType = this.getServiceTypeFromQuestionnaireResponse(questionnaireResponse);
     const searchParams = '_';
     this.staffService.fetchAllCarePlanTemplates().subscribe(carePlanTemplates => {
       carePlanTemplates['entry'].forEach(element => {
         const carePlanTemplate = element.resource;
         if (psohpServiceType === carePlanTemplate['description']) {
-          console.log(carePlanTemplate);
           const carePlan = new FHIR.CarePlan;
           carePlan.resourceType = 'CarePlan';
           carePlan.status = 'active';
