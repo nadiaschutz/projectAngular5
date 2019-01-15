@@ -1,53 +1,52 @@
-
 <div class='container'>
 
 
-<div *ngIf="selected">
-
-  <div *ngFor="let name of selected.name">
-
+  <div *ngIf="selected">
 
     <div class="main-header">
       <h5>Client Summary</h5>
-      <h6>CLIENT DEPARTMENT > {{name.given}} {{name.family}}</h6>
+      <h6>CLIENT DEPARTMENT > {{selected['given']}} {{selected['family']}}</h6>
     </div>
 
     <!-- general info -->
     <section class="form-section">
 
 
-      <div class="row">
-        <div class="col-6">
-          <label>First Name</label>
-          <textarea type="text" class="form-control" rows="1" disabled placeholder="{{name.given}}"></textarea>
-        </div>
+      <div *ngIf="selected">
+        <div class="row">
+          <div class="col-6">
+            <label>First Name</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['given']}}</textarea>
+          </div>
 
 
-        <div class="col-6">
-          <label>Last Name</label>
-          <textarea type="text" class="form-control" rows="1" disabled>{{name.family}}</textarea>
+          <div class="col-6">
+            <label>Last Name</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['family']}}</textarea>
+          </div>
         </div>
       </div>
 
 
-
+      <div *ngIf="selected">
       <div class="row">
 
         <div class="col-6">
           <label>Date of Birth</label>
-          <textarea type="text" class="form-control"  rows="1" disabled>{{selected.birthDate}}</textarea>
+          <textarea type="text" class="form-control" rows="1" disabled>{{selected['dob']}}</textarea>
         </div>
 
 
         <div class="col-6">
           <label>Language</label>
-          <div *ngFor="let language of selected?.communication">
-            <div *ngFor="let usedLanguage of language.language.coding">
+          <div *ngFor="let language of selected['communication']">
+            <div *ngFor="let usedLanguage of language['language']['coding']">
               <textarea type="text" class="form-control" rows="1" disabled>{{usedLanguage.display}}</textarea>
             </div>
           </div>
         </div>
       </div>
+    </div>
     </section>
 
     <!-- contact info -->
@@ -57,53 +56,53 @@
       </div>
 
 
-      <div *ngIf="selected?.telecom">
+     <div *ngIf="selected">
         <div class="row">
-          <div class="col-6" *ngFor="let telecom of selected.telecom">
-
-            <label>{{telecom.system}}</label>
-            <textarea type="text" class="form-control"  rows="1" disabled>{{telecom.value}}</textarea>
+            <div class="col-6" *ngFor="let telecom of selected['telecom']">
+    
+              <label class="telecom-title ">{{telecom.system}}</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{telecom.value}}</textarea>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div *ngFor="let address of selected?.address">
-        <div class="row">
-          <div class="col-6">
-
-            <label>Street Address</label>
-            <textarea type="text" class="form-control"  rows="1" disabled *ngFor="let line of address.line">{{line}}</textarea>
-
+    
+          <div *ngFor="let address of selected['address']">
+            <div class="row">
+              <div class="col-6">
+    
+                <label>Street Address</label>
+                <textarea type="text" class="form-control" rows="1" disabled>{{address['line'][0]}}</textarea>
+    
+              </div>
+              <div class="col-6">
+    
+                <label>City</label>
+                <textarea type="text" class="form-control" rows="1" disabled>{{address.city}}</textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+    
+                <label>Province</label>
+                <textarea type="text" class="form-control" rows="1" disabled>{{address.state}}</textarea>
+    
+              </div>
+              <div class="col-6">
+    
+                <label>Postal Code</label>
+                <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
+    
+    
+              </div>
+              <div class="col-6">
+    
+                <label>Country</label>
+                <textarea type="text" class="form-control" rows="1" disabled>{{address.country}}</textarea>
+    
+    
+              </div>
+            </div>
           </div>
-          <div class="col-6">
-
-            <label>City</label>
-            <textarea type="text" class="form-control"  rows="1" disabled>{{address.city}}</textarea>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-6">
-
-            <label>Province</label>
-            <textarea type="text" class="form-control" rows="1" disabled>{{address.state}}</textarea>
-
-          </div>
-          <div class="col-6">
-
-            <label>Postal Code</label>
-            <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
-
-
-          </div>
-          <div class="col-6">
-
-            <label>Country</label>
-            <textarea type="text" class="form-control"  rows="1" disabled>{{address.country}}</textarea>
-
-
-          </div>
-        </div>
-      </div>
+     </div>
     </section>
 
 
@@ -111,179 +110,60 @@
     <section class="form-section">
 
 
-      <div *ngFor="let extension of selected?.extension">
-        <div *ngIf="extension.valueString=='Employee'">
-          <div class='header'>
-            <h6>Employment Information</h6>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="row">
-        <div class="col-6">
-
-          
-            <div>
-              
-              <label>Job Title</label>
-              <textarea type="text" class="form-control" rows="1" disabled>{{jobTitle}}</textarea>
-            </div>
-          </div>
-
-          
-<!-- 
-              <label>Postal Code</label>
-              <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
-   -->
-  
-            
-
-
-        <div class="col-6">
-          <div *ngFor="let identifier of selected?.identifier">
-              <label>Employee PRI</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{identifier?.value}}</textarea>
-          </div>
-        </div>
-
-      </div>
-      <div class="row">
-        <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
-              <label>Employing Department Name</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
-            </div>
-          </div>
-
-
-        </div>
-        <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">
-              <label>Employing Department Branch</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
-            </div>
-          </div>
-        </div>
-
-      </div>
-      <div class="row">
-        <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferenceone'">
-              <label>Cross Reference</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
-            </div>
-          </div>
-
-
-        </div>
-        <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferencetwo'">
-              <label>Cross Reference</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-
-
-    <section class="form-section">
-    <div *ngFor="let item of selected?.extension">
-      <!-- dependents -->
-      <!-- Display this list of related clients if the selected client in the summary is an Employee -->
-      <div *ngIf="item.valueString == 'Employee'; else dependentRelatedList">
-        <div *ngIf="dependentArray.length > 0">
-          <div class='header'>
-            <h6>Dependents</h6>
-          </div>
-          <div class="row">
-          <div class="col-6">
-          <div *ngFor="let dependent of dependentArray">
-            <div *ngFor="let name of dependent?.name">
-              
-                <label>Dependent</label>
-                <textarea type="text" class="form-control"  rows="1" disabled>{{name.given}} {{name.family}}</textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-
-          
-        </div>
-      
-      <!-- Only show this section if the selected client is a Dependent -->
-      <ng-template #dependentRelatedList>
-        <div *ngIf="item.valueString == 'Dependent'">
-          <div *ngIf="dependentArray.length > 0">
-            <div class='header'>
-              <h6>Related to</h6>
-            </div>
-            <div *ngFor="let dependent of dependentArray">
-              <div *ngFor="let extension of dependent.extension">
-                <div *ngIf="extension.valueString =='Employee'">
-                  <div *ngFor="let name of dependent?.name">
-                    <div class="col-6">
-                      <label>Employee</label>
-                      <textarea type="text" class="form-control"  rows="1" disabled>{{name.given}} {{name.family}}</textarea>
-                    </div>
+      <div *ngIf="selected">
+          <div *ngIf="selected['employeeType']['valueString'] === 'Employee'">
+              <div class="row">
+                <div class="col-6">
+                  <div>
+                    <label>Job Title</label>
+                    <textarea type="text" class="form-control" rows="1" disabled>{{selected['jobtitle']['valueString']}}</textarea>
                   </div>
+                </div>
+                <div class="col-6">
+                  <label>Employee PRI</label>
+                  <textarea type="text" class="form-control" rows="1" disabled>{{selected['identifier']['value']}}</textarea>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-6">
+                  <div>
+                    <label>Employing Department Name</label>
+                    <textarea type="text" class="form-control" rows="1" disabled>{{selected['department']['valueString']}}</textarea>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <label>Employing Department Branch</label>
+                  <textarea type="text" class="form-control" rows="1" disabled>{{selected['branch']['valueString']}}</textarea>
+                </div>
+              </div>
+      
+              <div class="row">
+                <div class="col-6" *ngIf="selected['crossref1']">
+                  <div>
+                    <label>Cross Reference</label>
+                    <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref1']['valueString']}}</textarea>
+                  </div>
+                </div>
+                <div class="col-6"  *ngIf="selected['crossref2']">
+                  <label>Cross Reference</label>
+                  <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref2']['valueString']}}</textarea>
                 </div>
               </div>
             </div>
-
-          </div>
-
-        </div>
-      </ng-template>
-    </div>
-  </div>
+      </div>
+    
     </section>
 
-    <section class="form-section">
-          <div class='header'>
-            <h6>Service Requests</h6>
-          </div>
-          <div>
-              <table class="table  table-hover">
-                  <thead class="header-table">
-                    <tr>
-                      <th scope="col">Service Request ID</th>
-                      <th scope="col">Date</th>
-                      <th scope="col">PSOHP Service</th>
-                      <th scope="col">Assesment Type</th>
-                      <th scope="col">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody class="body-table">
-                    <tr *ngFor="let q of servceRequestDatas"  class="request-list">
-                      <td routerLink="/service-request-summary/{{q.resource.id}}" class="cursor">{{q.resource.id}}</td>
-                      <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
-                      <td>{{getServiceType(q)}}</td>
-                      <td>{{getAssessmentType(q)}}</td>
-                      <td>{{q.resource.status}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-          </div>
-    </section>
 
-  </div>
+
+
 
     <!-- buttons -->
-    <div  *ngFor="let item of selected?.extension">
-      <button *ngIf="item.valueString == 'Employee'" class="btn regular-button" (click)="addDependent()">Add a
+      <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-button" (click)="addDependent()">Add a
         Dependent</button>
-      <button *ngIf="item.valueString == 'Employee' || item.valueString == 'Dependent'" class="btn regular-button"
+      <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'" class="btn regular-button"
         (click)="newServiceRequest()">Create a Service Request</button>
-      <button *ngIf="item.valueString == 'Employee' || item.valueString == 'Dependent'" class="btn regular-button float-right"
+      <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'" class="btn regular-button float-right"
         (click)="backToDashboard()">Back to Dashboard</button>
-    </div>
-</div>
+  </div>
 </div>
