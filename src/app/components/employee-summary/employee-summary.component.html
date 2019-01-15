@@ -107,11 +107,10 @@
 
 
     <!-- employment info -->
-    <section class="form-section">
+    <section class="form-section" *ngIf="selected['employeeType']['valueString'] === 'Employee'">
 
 
       <div *ngIf="selected">
-        <div *ngIf="selected['employeeType']['valueString'] === 'Employee'">
           <div class="row">
             <div class="col-6">
               <div>
@@ -149,7 +148,6 @@
               <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref2']['valueString']}}</textarea>
             </div>
           </div>
-        </div>
       </div>
 
     </section>
@@ -173,11 +171,8 @@
               </div>
             </div>
 
-            <!-- <div class="col-sm-6">
-               
-              </div> -->
           </div>
-          <!-- </div> -->
+
 
         </div>
 
@@ -187,25 +182,59 @@
 
     <ng-template #employeeListSection>
       <section class="form-section">
-        <div *ngIf="dependentArray.length > 0">
           <div class='header'>
-            <h6>Related to</h6>
-          </div>
-
-          <div *ngFor="let dependent of dependentArray" class="col-6">
-            <button (click)="routeToSummary(dependent['id'])" class="btn view-button">{{dependent['given']}}
-              {{dependent['family']}}</button>
-
-          </div>
-        </div>
+              <h6>Related to</h6>
+            </div>
+          <div *ngFor="let dependent of dependentArray">
+              <div class="row">
+                <div class="col-sm-5">
+                  <label>Employee</label>
+                  <textarea type="text" class="form-control view-summary-name-box" rows="1" disabled>{{dependent['given']}} {{dependent['family']}}</textarea>
+                </div>
+                <div class="col-sm-5">
+                  <button (click)="routeToSummary(dependent['id'])" class="btn view-button">View</button>
+                </div>
+              </div>
+  
+              <!-- <div class="col-sm-6">
+                 
+                </div> -->
+            </div>
       </section>
     </ng-template>
 
 
+    <section class="form-section" *ngIf="servceRequestDatas.length > 0">
+        <div class='header'>
+          <h6>Service Requests</h6>
+        </div>
+        <div>
+          <table class="table  table-hover">
+            <thead class="header-table">
+              <tr>
+                <th scope="col">Service Request ID</th>
+                <th scope="col">Date</th>
+                <th scope="col">PSOHP Service</th>
+                <th scope="col">Assesment Type</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody class="body-table">
+              <tr *ngFor="let q of servceRequestDatas" class="request-list">
+                <td routerLink="/service-request-summary/{{q.resource.id}}" class="cursor">{{q.resource.id}}</td>
+                <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
+                <td>{{getServiceType(q)}}</td>
+                <td>{{getAssessmentType(q)}}</td>
+                <td>{{q.resource.status}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
     <!-- buttons -->
-    <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-button" (click)="addDependent()">Add
-      a
-      Dependent</button>
+    <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-button" (click)="addDependent()">
+      Add a Dependent</button>
     <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
       class="btn regular-button" (click)="newServiceRequest()">Create a Service Request</button>
     <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"

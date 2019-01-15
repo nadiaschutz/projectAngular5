@@ -307,7 +307,7 @@ export class DashboardComponent implements OnInit {
   }
   employeeSearch() {
     let searchParams = '';
-    this.arrOfVar.forEach((element, index) => {
+    this.arrOfVar.forEach((element) => {
       if (element.data !== null) {
         if (searchParams.length === 0) {
           searchParams = '?' + element.prefix + element.data;
