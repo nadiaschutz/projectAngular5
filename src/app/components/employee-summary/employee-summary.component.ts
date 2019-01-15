@@ -1,18 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+  NgControlStatusGroup
+} from '@angular/forms';
 import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 import { Router } from '@angular/router';
 import { QrequestService } from 'src/app/service/qrequest.service';
-import { TitleCasePipe } from '@angular/common';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { TranslateService } from '@ngx-translate/core';
+
+import * as Employee from '../../interface/patient';
 
 @Component({
   selector: 'app-employee-summary',
   templateUrl: './employee-summary.component.html',
   styleUrls: ['./employee-summary.component.scss']
 })
+
 export class EmployeeSummaryComponent implements OnInit {
-  id = '';
+  summaryId = '';
   // linkID = 'a44109ad-e58b-47cd-b348-7556e4d2c117';
   linkID = '';
   selected;
@@ -21,30 +32,254 @@ export class EmployeeSummaryComponent implements OnInit {
   servceRequestDatas = [];
   cursorClassEnables;
 
-  jobTitle;
+  // jobTitle;
+
+  regionalOffices = [];
+  districtOffices = [];
+  deptName = [];
+  deptBranch = [];
+
+  confirmSubmit = false;
+  successHeaderCheck;
+  activateSubmitButton = null;
+
+
+  datePickerConfig: Partial<BsDatepickerConfig>;
+
+  // Declaration for Employree form group object
+
+  employeeFormGroup: FormGroup;
+
+  // Declarations for objects related Patients and Extensions
+
+  // Employee base object
+
+  employee;
+
+  // Employee name object
+
+  employee_name;
+
+  // Employee address object
+
+  employee_address;
+
+  // Employee Contact (Phone)
+
+  employee_telecom_phone;
+
+  // Employee Contact (Email)
+
+  employee_telecom_email;
+
+  // Employee Extension object (Dependent Link)
+
+  employee_extension_dependentlink;
+
+  // Employee Extension object (Job Title)
+
+  employee_extension_jobtitle;
+
+  // Employee Extension object (Workplace)
+
+  employee_extension_workplace;
+
+  // Employee Extension object (Branch)
+
+  employee_extension_branch;
+
+  // Employee Extension object (Type)
+
+  employee_extension_type;
+
+  // Employee Extension object (Cross Reference One)
+
+  employee_extension_crossreferenceone;
+
+  // Employee Extension object (Cross Reference Two)
+
+  employee_extension_crossreferencetwo;
+
+  // Employe Language Object
+
+  employee_language;
+
+  // Employee Language Coding Object
+
+  employee_language_coding;
+
+  // Employee Communication Object
+
+  employee_communication;
+
+  // Employee Identifier object
+
+  employee_identifier;
+
+  // Employee Identifier Type subobject
+
+  employee_identifier_type;
+
+  // Array for Dependent Objects
+
+  dependentsArray: any[];
+
+  // Store list of Departments
+
+  department: any;
+
+  // Store list of Branches
+
+  branches: any;
+
+  // Store a UUID to link Employee and Dependent objects
+
+  linkId;
+
+  // list of  Languages
+  languages = ['English', 'French'];
+
+  // list of Provinces and territories in alphabetical order
+  // tslint:disable-next-line:max-line-length
+  provinces = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
+
+
+  // list of countries
+  countries = ['Canada'];
+
+  minDate: Date;
+  maxDate: Date;
 
   constructor(
+    public translate: TranslateService,
+    private fb: FormBuilder,
     private userService: UserService,
     private patientService: PatientService,
     private router: Router,
     private qrequestService: QrequestService
-  ) {}
+  ) {
+
+    translate.addLangs(['en', 'fr']);
+    translate.setDefaultLang('fr');
+
+    const browserLang = translate.getBrowserLang();
+    translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
+
+    this.minDate = new Date();
+    this.maxDate = new Date();
+    this.minDate.setDate(this.minDate.getDate() - 43800);
+    this.maxDate.setDate(this.maxDate.getDate());
+  }
 
   ngOnInit() {
-    this.id = this.userService.returnSelectedID();
-    this.userService.getEmployeeSummaryID(this.id);
-    if (this.id) {
+
+    /**
+     * Initializes list for regional offices on our system
+     */
+    this.userService
+      .fetchAllRegionalOffices()
+      .subscribe(
+        data => this.populateRegionalOffices(data),
+        error => this.handleError(error)
+      );
+
+    /**
+     * Initializes list for district offices on our system
+     */
+    this.userService
+      .fetchAllDistrictOffices()
+      .subscribe(
+        data => this.populateDistrictOffices(data),
+        error => this.handleError(error)
+      );
+
+    /**
+     * Initializes the names of all departments on our system
+     */
+    this.userService.fetchAllDepartmentNames().subscribe (
+      data => this.populateDeptNames(data),
+      error => this.handleError(error)
+    );
+
+    /**
+     * Initializes the list of branches from our system
+     */
+    this.userService.fetchAllDepartmentBranches().subscribe (
+      data => this.populateDeptBranches(data),
+      error => this.handleError(error)
+    );
+
+    this.summaryId = this.userService.returnSelectedID();
+    this.userService.getEmployeeSummaryID(this.summaryId);
+    if (this.summaryId) {
       this.patientService
-        .getPatientDataByID(this.id)
+        .getPatientDataByID(this.summaryId)
         .subscribe(
           data => this.populatePatientArray(data),
           error => this.handleError(error)
         );
-    } else if (!this.id) {
+    } else if (!this.summaryId) {
       this.router.navigateByUrl('/dashboard');
     }
 
-    // this.setDependentLinkID();
+    this.employeeFormGroup = this.fb.group({
+      // Employee type
+      // type: new FormControl(null, Validators.required),
+
+      // Last Name
+      familyName: new FormControl('', [
+        Validators.required,
+        Validators.minLength(2)
+      ]),
+
+      // First Name
+      givenName: new FormControl('', [
+        Validators.required,
+        Validators.minLength(2)
+      ]),
+
+      // Date of Birth
+      dob: new FormControl('', Validators.required),
+
+      // Email
+      email: new FormControl('', [Validators.required, Validators.email]),
+
+      // Client's phone number (can be any number of their choosing)
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        Validators.pattern('^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$')
+      ]),
+
+      // Address section
+      addressStreet: new FormControl('', Validators.required),
+      addressCity: new FormControl('', Validators.required),
+      addressProv: new FormControl('', Validators.required),
+      addressPcode: new FormControl('', [Validators.required]),
+      addressCountry: new FormControl('', Validators.required),
+
+      // Clients preferred language
+      language: new FormControl('', Validators.required),
+
+      // PRI (handled in Patient with an extension)
+      id: new FormControl('', [
+        Validators.required,
+        Validators.minLength(9),
+        Validators.maxLength(9)
+      ]),
+
+      // Job title (handled in Patient with an extension)
+      jobTitle: new FormControl('', Validators.required),
+
+      // Department they work in (handled in Patient with an extension)
+      departmentName: new FormControl('', Validators.required),
+
+      // Branch they work in (handled in Patient with an extension)
+      departmentBranch: new FormControl('', Validators.required),
+
+      // References related to the employee (handled in Patient with an extension)
+      referenceOne: [''],
+      referenceTwo: ['']
+    });
   }
 
   populatePatientArray(data) {
@@ -140,7 +375,7 @@ export class EmployeeSummaryComponent implements OnInit {
       );
 
     this.qrequestService
-      .getServReqForClient(this.id)
+      .getServReqForClient(this.summaryId)
       .subscribe(
         dataSerReq => this.getServReqData(dataSerReq),
         error => this.getServReqDataError(error)
@@ -152,12 +387,10 @@ export class EmployeeSummaryComponent implements OnInit {
   }
 
   addDependent() {
-    // window.scroll(0, 0);
     this.router.navigateByUrl('/dependentform');
   }
 
   newServiceRequest() {
-    // window.scroll(0, 0);
     this.router.navigate(['/newservicerequest']);
   }
   handleError(error) {
@@ -181,104 +414,12 @@ export class EmployeeSummaryComponent implements OnInit {
             temp['id'] = individualEntry['id'];
             temp['given'] = individualEntry['name'][0]['given'][0];
             temp['family'] = individualEntry['name'][0]['family'];
-            temp['dob'] = individualEntry['birthDate'];
-            temp['identifier'] = {};
-            if (individualEntry['identifer']) {
-              individualEntry['identifier'].forEach(identifier => {
-                temp['identifier']['use'] = identifier['use'];
-                temp['identifier']['system'] = identifier['system'];
-                temp['identifier']['value'] = identifier['value'];
-              });
-            }
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace'
-              ) {
-                temp['department'] = {};
-                temp['department']['url'] = extension.url;
-                temp['department']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] === 'https://bcip.smilecdr.com/fhir/jobtile'
-              ) {
-                temp['jobtitle'] = {};
-                temp['jobtitle']['url'] = extension.url;
-                temp['jobtitle']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] ===
-                'https://bcip.smilecdr.com/fhir/employeetype'
-              ) {
-                temp['employeeType'] = {};
-                temp['employeeType']['url'] = extension.url;
-                temp['employeeType']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] === 'https://bcip.smilecdr.com/fhir/branch'
-              ) {
-                temp['branch'] = {};
-                temp['branch']['url'] = extension.url;
-                temp['branch']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] ===
-                'https://bcip.smilecdr.com/fhir/dependentlink'
-              ) {
-                temp['linkID'] = {};
-                temp['linkID']['url'] = extension.url;
-                temp['linkID']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] ===
-                'https://bcip.smilecdr.com/fhir/crossreferenceone'
-              ) {
-                temp['crossref1'] = {};
-                temp['crossref1']['url'] = extension.url;
-                temp['crossref1']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] ===
-                'https://bcip.smilecdr.com/fhir/crossreferencetwo'
-              ) {
-                temp['crossref2'] = {};
-                temp['crossref2']['url'] = extension.url;
-                temp['crossref2']['valueString'] = extension.valueString;
-              }
-            });
-
-            temp['telecom'] = [];
-            temp['address'] = [];
-
-            individualEntry['address'].forEach(address => {
-              individualEntry['address'].push(address);
-            });
-
-            temp['communication'] = individualEntry['communication'];
-
-            individualEntry['telecom'].forEach(telecom => {
-              temp['telecom'].push(telecom);
-            });
-            temp['telecom'] = individualEntry['telecom'];
-            console.log(temp);
             this.dependentArray.push(temp);
           }
         }
       });
     } else {
       this.dependentArray = [];
-
       data.entry.forEach(element => {
         const individualEntry = element.resource;
         for (const extensions of individualEntry.extension) {
@@ -287,97 +428,6 @@ export class EmployeeSummaryComponent implements OnInit {
             temp['id'] = individualEntry['id'];
             temp['given'] = individualEntry['name'][0]['given'][0];
             temp['family'] = individualEntry['name'][0]['family'];
-            temp['dob'] = individualEntry['birthDate'];
-            temp['identifier'] = {};
-            if (individualEntry['identifer']) {
-              individualEntry['identifier'].forEach(identifier => {
-                temp['identifier']['use'] = identifier['use'];
-                temp['identifier']['system'] = identifier['system'];
-                temp['identifier']['value'] = identifier['value'];
-              });
-            }
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace'
-              ) {
-                temp['department'] = {};
-                temp['department']['url'] = extension.url;
-                temp['department']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] === 'https://bcip.smilecdr.com/fhir/jobtile'
-              ) {
-                temp['jobtitle'] = {};
-                temp['jobtitle']['url'] = extension.url;
-                temp['jobtitle']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] ===
-                'https://bcip.smilecdr.com/fhir/employeetype'
-              ) {
-                temp['employeeType'] = {};
-                temp['employeeType']['url'] = extension.url;
-                temp['employeeType']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] === 'https://bcip.smilecdr.com/fhir/branch'
-              ) {
-                temp['branch'] = {};
-                temp['branch']['url'] = extension.url;
-                temp['branch']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] ===
-                'https://bcip.smilecdr.com/fhir/dependentlink'
-              ) {
-                temp['linkID'] = {};
-                temp['linkID']['url'] = extension.url;
-                temp['linkID']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] ===
-                'https://bcip.smilecdr.com/fhir/crossreferenceone'
-              ) {
-                temp['crossref1'] = {};
-                temp['crossref1']['url'] = extension.url;
-                temp['crossref1']['valueString'] = extension.valueString;
-              }
-            });
-            individualEntry['extension'].forEach(extension => {
-              if (
-                extension['url'] ===
-                'https://bcip.smilecdr.com/fhir/crossreferencetwo'
-              ) {
-                temp['crossref2'] = {};
-                temp['crossref2']['url'] = extension.url;
-                temp['crossref2']['valueString'] = extension.valueString;
-              }
-            });
-
-            temp['telecom'] = [];
-            temp['address'] = [];
-
-            individualEntry['address'].forEach(address => {
-              individualEntry['address'].push(address);
-            });
-
-            temp['communication'] = individualEntry['communication'];
-
-            individualEntry['telecom'].forEach(telecom => {
-              temp['telecom'].push(telecom);
-            });
-            temp['telecom'] = individualEntry['telecom'];
-            console.log('Dependent is relate to:', temp);
             this.dependentArray.push(temp);
           }
         }
@@ -398,10 +448,10 @@ export class EmployeeSummaryComponent implements OnInit {
   routeToSummary(data) {
     this.selected = '';
     this.dependentArray = [];
-    this.id = data;
+    this.summaryId = data;
     this.userService.getSelectedID(data);
     this.patientService
-        .getPatientDataByID(this.id)
+        .getPatientDataByID(this.summaryId)
         .subscribe(
           dataNew => this.populatePatientArray(dataNew),
           error => this.handleError(error)
@@ -473,4 +523,133 @@ export class EmployeeSummaryComponent implements OnInit {
     }
     return result;
   }
+
+  /**
+   * Used in conjunction with the user service. Gets all Regional Offices
+   * stored on the server to link to a Practitioner.
+   * @param data
+   */
+  populateRegionalOffices(data: any) {
+    data.entry.forEach(element => {
+      this.regionalOffices.push(element.resource);
+    });
+  }
+
+  /**
+   * Used in conjunction with the user service. Gets all District Offices
+   * stored on the server to link to a Practitioner.
+   * @param data
+   */
+  populateDistrictOffices(data: any) {
+    data.entry.forEach(element => {
+      this.districtOffices.push(element.resource);
+    });
+  }
+
+  /**
+   * Used in conjunction with the user service. Gets all Department Names
+   * stored on the server to link to a Practitioner.
+   * @param data
+   */
+  populateDeptNames(data: any) {
+    data.entry.forEach(element => {
+      this.deptName.push(element.resource);
+    });
+  }
+
+  /**
+   * Used in conjunction with the user service. Gets all Department Branches
+   * stored on the server to link to a Practitioner.
+   * @param data
+   */
+  populateDeptBranches(data: any) {
+    data.entry.forEach(element => {
+      this.deptBranch.push(element.resource);
+    });
+  }
+
+  get resourceType() {
+    return this.employeeFormGroup.get('resourceType');
+  }
+
+  get type() {
+    return this.employeeFormGroup.get('type');
+  }
+
+  get dob() {
+    return this.employeeFormGroup.get('dob');
+  }
+
+  get phoneNumber() {
+    return this.employeeFormGroup.get('phoneNumber');
+  }
+
+  get password() {
+    return this.employeeFormGroup.get('password');
+  }
+
+  get email() {
+    return this.employeeFormGroup.get('email');
+  }
+
+  get givenName() {
+    return this.employeeFormGroup.get('givenName');
+  }
+
+  get familyName() {
+    return this.employeeFormGroup.get('familyName');
+  }
+
+  get addressCity() {
+    return this.employeeFormGroup.get('addressCity');
+  }
+
+  get addressStreet() {
+    return this.employeeFormGroup.get('addressStreet');
+  }
+  get addressProv() {
+    return this.employeeFormGroup.get('addressProv');
+  }
+  get addressPcode() {
+    return this.employeeFormGroup.get('addressPcode');
+  }
+  get addressCountry() {
+    return this.employeeFormGroup.get('addressCountry');
+  }
+  get language() {
+    return this.employeeFormGroup.get('language');
+  }
+
+  get userName() {
+    return this.employeeFormGroup.get('userName');
+  }
+
+  get agree() {
+    return this.employeeFormGroup.get('agree');
+  }
+
+  get id() {
+    return this.employeeFormGroup.get('id');
+  }
+
+  get jobTitle() {
+    return this.employeeFormGroup.get('jobTitle');
+  }
+
+  get departmentName() {
+    return this.employeeFormGroup.get('departmentName');
+  }
+
+  get departmentBranch() {
+    return this.employeeFormGroup.get('departmentBranch');
+  }
+
+  get referenceOne() {
+    return this.employeeFormGroup.get('referenceOne');
+  }
+
+  get referenceTwo() {
+    return this.employeeFormGroup.get('referenceTwo');
+  }
+
 }
