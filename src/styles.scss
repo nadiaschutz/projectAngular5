@@ -46,7 +46,11 @@ h2 {
 }
 
 h4,
-h5,
+h5 {
+    text-transform: capitalize;
+}
+
+
 h6 {
     text-transform: uppercase;
 }
@@ -260,13 +264,13 @@ select:-webkit-autofill:focus {
 
 .table {
     thead {
-        background-color: $light-grey;
+        background-color: #f8f8f8;
         border: 1px solid $grey;
-
+        color: #6F6F6F;
         th {
             font-size: 11px;
             font-weight: normal;
-            text-transform: uppercase;
+            text-transform: capitalize;
         }
     }
 
@@ -302,6 +306,11 @@ select:-webkit-autofill:focus {
     margin-top: .25rem;
     font-size: 80%;
     color: #dc3545;
+}
+
+
+.telecom-title {
+    text-transform: capitalize;
 }
 
 .button-row {
