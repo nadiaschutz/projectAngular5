@@ -29,24 +29,24 @@
 
 
       <div *ngIf="selected">
-      <div class="row">
+        <div class="row">
 
-        <div class="col-6">
-          <label>Date of Birth</label>
-          <textarea type="text" class="form-control" rows="1" disabled>{{selected['dob']}}</textarea>
-        </div>
+          <div class="col-6">
+            <label>Date of Birth</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['dob']}}</textarea>
+          </div>
 
 
-        <div class="col-6">
-          <label>Language</label>
-          <div *ngFor="let language of selected['communication']">
-            <div *ngFor="let usedLanguage of language['language']['coding']">
-              <textarea type="text" class="form-control" rows="1" disabled>{{usedLanguage.display}}</textarea>
+          <div class="col-6">
+            <label>Language</label>
+            <div *ngFor="let language of selected['communication']">
+              <div *ngFor="let usedLanguage of language['language']['coding']">
+                <textarea type="text" class="form-control" rows="1" disabled>{{usedLanguage.display}}</textarea>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </section>
 
     <!-- contact info -->
@@ -56,53 +56,53 @@
       </div>
 
 
-     <div *ngIf="selected">
+      <div *ngIf="selected">
         <div class="row">
-            <div class="col-6" *ngFor="let telecom of selected['telecom']">
-    
-              <label class="telecom-title ">{{telecom.system}}</label>
-              <textarea type="text" class="form-control" rows="1" disabled>{{telecom.value}}</textarea>
+          <div class="col-6" *ngFor="let telecom of selected['telecom']">
+
+            <label class="telecom-title ">{{telecom.system}}</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{telecom.value}}</textarea>
+          </div>
+        </div>
+
+        <div *ngFor="let address of selected['address']">
+          <div class="row">
+            <div class="col-6">
+
+              <label>Street Address</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address['line'][0]}}</textarea>
+
+            </div>
+            <div class="col-6">
+
+              <label>City</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address.city}}</textarea>
             </div>
           </div>
-    
-          <div *ngFor="let address of selected['address']">
-            <div class="row">
-              <div class="col-6">
-    
-                <label>Street Address</label>
-                <textarea type="text" class="form-control" rows="1" disabled>{{address['line'][0]}}</textarea>
-    
-              </div>
-              <div class="col-6">
-    
-                <label>City</label>
-                <textarea type="text" class="form-control" rows="1" disabled>{{address.city}}</textarea>
-              </div>
+          <div class="row">
+            <div class="col-6">
+
+              <label>Province</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address.state}}</textarea>
+
             </div>
-            <div class="row">
-              <div class="col-6">
-    
-                <label>Province</label>
-                <textarea type="text" class="form-control" rows="1" disabled>{{address.state}}</textarea>
-    
-              </div>
-              <div class="col-6">
-    
-                <label>Postal Code</label>
-                <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
-    
-    
-              </div>
-              <div class="col-6">
-    
-                <label>Country</label>
-                <textarea type="text" class="form-control" rows="1" disabled>{{address.country}}</textarea>
-    
-    
-              </div>
+            <div class="col-6">
+
+              <label>Postal Code</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
+
+
+            </div>
+            <div class="col-6">
+
+              <label>Country</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address.country}}</textarea>
+
+
             </div>
           </div>
-     </div>
+        </div>
+      </div>
     </section>
 
 
@@ -111,59 +111,104 @@
 
 
       <div *ngIf="selected">
-          <div *ngIf="selected['employeeType']['valueString'] === 'Employee'">
-              <div class="row">
-                <div class="col-6">
-                  <div>
-                    <label>Job Title</label>
-                    <textarea type="text" class="form-control" rows="1" disabled>{{selected['jobtitle']['valueString']}}</textarea>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <label>Employee PRI</label>
-                  <textarea type="text" class="form-control" rows="1" disabled>{{selected['identifier']['value']}}</textarea>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-6">
-                  <div>
-                    <label>Employing Department Name</label>
-                    <textarea type="text" class="form-control" rows="1" disabled>{{selected['department']['valueString']}}</textarea>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <label>Employing Department Branch</label>
-                  <textarea type="text" class="form-control" rows="1" disabled>{{selected['branch']['valueString']}}</textarea>
-                </div>
-              </div>
-      
-              <div class="row">
-                <div class="col-6" *ngIf="selected['crossref1']">
-                  <div>
-                    <label>Cross Reference</label>
-                    <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref1']['valueString']}}</textarea>
-                  </div>
-                </div>
-                <div class="col-6"  *ngIf="selected['crossref2']">
-                  <label>Cross Reference</label>
-                  <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref2']['valueString']}}</textarea>
-                </div>
+        <div *ngIf="selected['employeeType']['valueString'] === 'Employee'">
+          <div class="row">
+            <div class="col-6">
+              <div>
+                <label>Job Title</label>
+                <textarea type="text" class="form-control" rows="1" disabled>{{selected['jobtitle']['valueString']}}</textarea>
               </div>
             </div>
+            <div class="col-6">
+              <label>Employee PRI</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{selected['identifier']['value']}}</textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div>
+                <label>Employing Department Name</label>
+                <textarea type="text" class="form-control" rows="1" disabled>{{selected['department']['valueString']}}</textarea>
+              </div>
+            </div>
+            <div class="col-6">
+              <label>Employing Department Branch</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{selected['branch']['valueString']}}</textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-6" *ngIf="selected['crossref1']">
+              <div>
+                <label>Cross Reference</label>
+                <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref1']['valueString']}}</textarea>
+              </div>
+            </div>
+            <div class="col-6" *ngIf="selected['crossref2']">
+              <label>Cross Reference</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref2']['valueString']}}</textarea>
+            </div>
+          </div>
+        </div>
       </div>
-    
+
     </section>
 
+    <section class="form-section">
+      <div *ngIf="selected['employeeType']['valueString'] === 'Employee'; else employeeListSection">
+        <div *ngIf="dependentArray.length > 0">
+          <div class='header'>
+            <h6>Related to</h6>
+          </div>
+
+          <!-- <div class="row"> -->
+          <div *ngFor="let dependent of dependentArray">
+            <div class="row">
+              <div class="col-sm-5">
+                <label>Dependent</label>
+                <textarea type="text" class="form-control view-summary-name-box" rows="1" disabled>{{dependent['given']}} {{dependent['family']}}</textarea>
+              </div>
+              <div class="col-sm-5">
+                <button (click)="routeToSummary(dependent['id'])" class="btn view-button">View</button>
+              </div>
+            </div>
+
+            <!-- <div class="col-sm-6">
+               
+              </div> -->
+          </div>
+          <!-- </div> -->
+
+        </div>
 
 
+      </div>
+    </section>
+
+    <ng-template #employeeListSection>
+      <section class="form-section">
+        <div *ngIf="dependentArray.length > 0">
+          <div class='header'>
+            <h6>Related to</h6>
+          </div>
+
+          <div *ngFor="let dependent of dependentArray" class="col-6">
+            <button (click)="routeToSummary(dependent['id'])" class="btn view-button">{{dependent['given']}}
+              {{dependent['family']}}</button>
+
+          </div>
+        </div>
+      </section>
+    </ng-template>
 
 
     <!-- buttons -->
-      <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-button" (click)="addDependent()">Add a
-        Dependent</button>
-      <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'" class="btn regular-button"
-        (click)="newServiceRequest()">Create a Service Request</button>
-      <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'" class="btn regular-button float-right"
-        (click)="backToDashboard()">Back to Dashboard</button>
+    <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-button" (click)="addDependent()">Add
+      a
+      Dependent</button>
+    <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
+      class="btn regular-button" (click)="newServiceRequest()">Create a Service Request</button>
+    <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
+      class="btn regular-button float-right" (click)="backToDashboard()">Back to Dashboard</button>
   </div>
 </div>
