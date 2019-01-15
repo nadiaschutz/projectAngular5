@@ -17,7 +17,7 @@ import { log } from 'util';
 export class WorkScreenComponent implements OnInit {
 
   carePlanActivities = [];
-  summary = {};
+  summary = {} as any;
   episodeOfCare = {};
   carePlan = {};
   showTaskForm = false;
