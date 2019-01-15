@@ -152,10 +152,12 @@ export class EmployeeSummaryComponent implements OnInit {
   }
 
   addDependent() {
+    // window.scroll(0, 0);
     this.router.navigateByUrl('/dependentform');
   }
 
   newServiceRequest() {
+    // window.scroll(0, 0);
     this.router.navigate(['/newservicerequest']);
   }
   handleError(error) {

@@ -53,6 +53,9 @@ export class AppComponent implements OnInit {
 
   }
 
+  onActivate(event) {
+    window.scroll(0, 0);
+  }
   private configureWithNewConfigApi() {
     this.oauthService.redirectUri = environment.redirectUri;
     this.oauthService.clientId = environment.clientId;
