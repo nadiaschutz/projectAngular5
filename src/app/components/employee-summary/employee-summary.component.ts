@@ -13,8 +13,10 @@ import { Router } from '@angular/router';
 import { QrequestService } from 'src/app/service/qrequest.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { TranslateService } from '@ngx-translate/core';
+import { TitleCasePipe } from '@angular/common';
 
 import * as Employee from '../../interface/patient';
+// import { Language } from 'src/app/interface/employee';
 export interface LanguageType {
   value: string;
   viewValue: string;
@@ -146,7 +148,7 @@ export class EmployeeSummaryComponent implements OnInit {
 
   // list of Provinces and territories in alphabetical order
   // tslint:disable-next-line:max-line-length
-  provinces = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
+  // provinces = 
 
 
   // list of countries
@@ -159,6 +161,7 @@ export class EmployeeSummaryComponent implements OnInit {
 
   constructor(
     public translate: TranslateService,
+    private titleCase: TitleCasePipe,
     private fb: FormBuilder,
     private userService: UserService,
     private patientService: PatientService,
@@ -183,6 +186,21 @@ export class EmployeeSummaryComponent implements OnInit {
     { value: 'French', viewValue: 'French' }
   ];
 
+  provinces: LanguageType[] = [
+    { value: 'Alberta', viewValue: 'Alberta' },
+    { value: 'British Columbia', viewValue: 'British Columbia' },
+    { value: 'Manitoba', viewValue: 'Manitoba' },
+    { value: 'New Brunswick', viewValue: 'New Brunswick' },
+    { value: 'Newfoundland and Labrador', viewValue: 'Newfoundland and Labrador' },
+    { value: 'Northwest Territories', viewValue: 'Northwest Territories' },
+    { value: 'Nova Scotia', viewValue: 'Nova Scotia' },
+    { value: 'Nunavut', viewValue: 'Nunavut' },
+    { value: 'Ontario', viewValue: 'Ontario' },
+    { value: 'Prince Edward Island', viewValue: 'Prince Edward Island' },
+    { value: 'Quebec', viewValue: 'Quebec' },
+    { value: 'Saskatchewan', viewValue: 'Saskatchewan' },
+    { value: 'Yukon', viewValue: 'Yukon' }]; 
+    
   ngOnInit() {
 
     /**
@@ -588,6 +606,7 @@ export class EmployeeSummaryComponent implements OnInit {
     this.employeeFormGroup.controls['familyName'].patchValue(this.selected['family']);
     this.employeeFormGroup.controls['givenName'].patchValue(this.selected['given']);
     this.employeeFormGroup.controls['dob'].patchValue(this.selected['dob']);
+    this.employeeFormGroup.controls['id'].patchValue(this.selected['id']);
     this.selected['telecom'].forEach(tele => {
       if (tele['system'] === 'email') {
         this.employeeFormGroup.controls['email'].patchValue(tele['value']);
@@ -596,13 +615,19 @@ export class EmployeeSummaryComponent implements OnInit {
         this.employeeFormGroup.controls['phoneNumber'].patchValue(tele['value']);
       }
     });
-    this.employeeFormGroup.controls['addressStreet'].patchValue(this.selected['given']);
-    this.employeeFormGroup.controls['addressCity'].patchValue(this.selected['given']);
-    this.employeeFormGroup.controls['addressProv'].patchValue(this.selected['given']);
-    this.employeeFormGroup.controls['addressPcode'].patchValue(this.selected['given']);
-    this.employeeFormGroup.controls['addressCountry'].patchValue(this.selected['given']);
-    this.employeeFormGroup.controls['language'].patchValue(this.selected['given']);
-    this.employeeFormGroup.controls['id'].patchValue(this.selected['given']);
+    this.selected['communication'].forEach(language => {
+      language['language']['coding'].forEach(usedLanguage => {
+        this.employeeFormGroup.controls['language'].patchValue(usedLanguage['display']);
+      });
+    });
+    this.selected['address'].forEach(address => {
+      this.employeeFormGroup.controls['addressStreet'].patchValue(address['line'][0]);
+      this.employeeFormGroup.controls['addressCity'].patchValue(address.city);
+      this.employeeFormGroup.controls['addressProv'].patchValue(this.titleCase.transform(address.state));
+      this.employeeFormGroup.controls['addressPcode'].patchValue(address.postalCode);
+      this.employeeFormGroup.controls['addressCountry'].patchValue(address.country);
+    });
+    
     console.log(this.employeeFormGroup['value']);
   }
 

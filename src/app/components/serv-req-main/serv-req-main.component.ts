@@ -5,6 +5,7 @@ import { QrequestService } from 'src/app/service/qrequest.service';
 import { Router } from '@angular/router';
 import { multicast } from 'rxjs/operators';
 import { PatientService } from 'src/app/service/patient.service';
+import { UtilService } from 'src/app/service/util.service';
 import { FormsModule } from '@angular/forms';
 import { link } from 'fs';
 
@@ -139,6 +140,7 @@ export class ServReqMainComponent implements OnInit {
     private httpClient: HttpClient,
     private qrequestService: QrequestService,
     private patientService: PatientService,
+    private utilService: UtilService,
     private router: Router
   ) {}
 
@@ -227,6 +229,9 @@ export class ServReqMainComponent implements OnInit {
   //   );
   // }
 
+  sorterFunction(colName) {
+    this.servRequests = this.utilService.sortArray(colName, this.servRequests);
+  }
 
   handleSuccessAll(data) {
     console.log(data);
@@ -235,7 +240,6 @@ export class ServReqMainComponent implements OnInit {
         this.servRequests.push(individualRecord.resource);
       }
     }
-    console.log(this.servRequests);
   }
 
   handleErrorAll(error) {
@@ -371,7 +375,6 @@ export class ServReqMainComponent implements OnInit {
             if (item['answer']) {
               result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('(') + 1, item.answer[0].valueString.length);
               result = result.substring(0, result.length - 1);
-              console.log(result);
               }
             }
 
@@ -382,7 +385,6 @@ export class ServReqMainComponent implements OnInit {
             if (item['answer']) {
               result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('(') + 1, item.answer[0].valueString.length);
               result = result.substring(0, result.length - 1);
-              console.log(result);
               }
             }
 
