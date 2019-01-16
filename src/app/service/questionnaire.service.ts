@@ -32,6 +32,9 @@ export class QuestionnaireService {
   public newResponseIdSubject = new BehaviorSubject<Object>(null);
   newResponseIdSubject$ = this.newResponseIdSubject.asObservable();
 
+  public newDocumentSubject = new BehaviorSubject<Object>(null);
+  newDocumentSubject$ = this.newDocumentSubject.asObservable();
+
 
   constructor(private http: HttpClient, private oauthService: OAuthService) {}
 
@@ -97,5 +100,12 @@ export class QuestionnaireService {
     console.log('service response ID from service');
     console.log(data);
   }
+
+  shareDocument(data) {
+    this.newDocumentSubject.next(data);
+    console.log('newDocument from service');
+    console.log(data);
+  }
+
 
 }
