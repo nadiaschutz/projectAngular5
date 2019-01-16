@@ -188,7 +188,8 @@
     <!-- 2. Care Plan section, shown only when needed -->
 
     <div class="col-5">
-      <div class="search-box">
+      <div #spacer></div>
+      <div class="search-box" stickyThing marginTop="30" [spacer]="spacer">
         <div *ngFor="let item of carePlanActivities; let i = index">
           <label>
             <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}" id="i">
@@ -205,7 +206,7 @@
       <!-- 3a. Status of Care Plan -->
   
       <!-- 3b. Summary: Client information -->
-      <div>
+      <div stickyThing marginTop="30">
 
         <div class="card">
           <div class="card-body">

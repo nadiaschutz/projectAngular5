@@ -6,6 +6,7 @@ import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { OAuthModule } from 'angular-oauth2-oidc';
+import { AngularStickyThingsModule } from '@w11k/angular-sticky-things';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -149,7 +150,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgBootstrapFormValidationModule,
     NgBootstrapFormValidationModule.forRoot(),
     BsDatepickerModule.forRoot(),
-    AvatarModule
+    AvatarModule,
+    AngularStickyThingsModule
   ],
   providers: [
     AuthGuardService,
