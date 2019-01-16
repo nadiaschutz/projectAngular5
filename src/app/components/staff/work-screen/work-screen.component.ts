@@ -572,6 +572,8 @@ export class WorkScreenComponent implements OnInit {
     this.clinicalAssignmentTask['note'] = [taskAnnotation];
     this.clinicalAssignmentTask['status'] = 'completed';
     this.staffService.updateTask(this.clinicalAssignmentTask['id'], JSON.stringify(this.clinicalAssignmentTask)).subscribe(task => {
+      this.assignedClinician = {};
+      this.selectedClinician = {};
       let length = this.history.length;
       while (length--) {
         if (this.history[length]['id'] === task['id']) {
