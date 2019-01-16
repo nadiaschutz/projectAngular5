@@ -4,7 +4,7 @@
 
 <div class="container">
 
-  <div class="row" *ngIf="clinicians.length>0">
+  <div *ngIf="clinicians.length>0">
     <div class="assigned" style="float: right;">
       <label><strong>Clinician Assigned</strong></label>
       <select class="form-control" required (change)="showClinicianButtons=!showClinicianButtons" [(ngModel)]="selectedClinician" [compareWith]="compareClinicians">
@@ -204,9 +204,9 @@
 
     <div class="col-3">
       <!-- 3a. Status of Care Plan -->
-  
+      
       <!-- 3b. Summary: Client information -->
-      <div stickyThing marginTop="30">
+      <div stickyThing marginTop="30" [spacer]="spacer">
 
         <div class="card">
           <div class="card-body">

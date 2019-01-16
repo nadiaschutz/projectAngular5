@@ -24,7 +24,7 @@ export class WorkScreenComponent implements OnInit {
   showNoteForm = false;
   taskFormGroup: FormGroup;
   noteFormGroup: FormGroup;
-  episodeOfCareId = '';
+  episodeOfCareId = '2965';
   practitioners = [];
   practitionersWithId = [];
   history = [];
@@ -47,8 +47,8 @@ export class WorkScreenComponent implements OnInit {
   private route: ActivatedRoute, private formBuilder: FormBuilder, private oAuthService: OAuthService, private userService: UserService) { }
 
   ngOnInit() {
-    console.log(this.route.snapshot.paramMap.get('id'));
-    this.episodeOfCareId = this.route.snapshot.paramMap.get('id');
+    // console.log(this.route.snapshot.paramMap.get('id'));
+    // this.episodeOfCareId = this.route.snapshot.paramMap.get('id');
     this.userService.fetchCurrentRole();
     this.staffService.getAllPractitioners().subscribe(data => {
         this.subscribePractitioners(data);
