@@ -50,6 +50,7 @@ import { SelectComponent } from './components/dynamic-forms/select.component';
 import { LineComponent } from './components/dynamic-forms/line.component';
 import { HeaderComponent } from './components/dynamic-forms/header.component';
 import { DateComponent } from './components/dynamic-forms/date.component';
+import { DocComponent } from './components/dynamic-forms/doc.components';
 // import { RadiobuttonComponent } from './components/dynamic-forms/radiobutton.component';
 import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
 import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
@@ -123,6 +124,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     LineComponent,
     HeaderComponent,
     DateComponent,
+    DocComponent,
     // RadiobuttonComponent,
     CheckboxComponent,
     DynamicFieldDirective,
@@ -168,6 +170,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     LineComponent,
     HeaderComponent,
     DateComponent,
+    DocComponent,
     // RadiobuttonComponent,
     CheckboxComponent
   ]

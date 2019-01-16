@@ -2,194 +2,23 @@
 
  
   <div class="main-header">
-    <h5>Advice Request Form</h5>
+    <h5>Contact us</h5>
     <h6>service request > new advice consulation</h6>
   </div>
-  
-  
-  
-      <!-- try [for]="value.text"...
-  and value.text has to be the id of the input element or what element you have there -->
-  <form #serReqForm="ngForm">
-      <section class="form-section">
-      <!-- <div *ngIf="temp.returnQuestionObject()"> -->
-        <!-- <div *ngFor="let value of temp.returnQuestionObject().item; let i = index" class="col-6-custom"> -->
+
+      <div class="form-section">
+          <dynamic-form
+            [config]="config"
+            #form="dynamicForm"
+            (submit)="submit($event)">
+          </dynamic-form>
           
-          <div *ngFor="let el of qrequest; trackBy: trackByEl; let i=index;" class="col-12-custom">
-          <div class="form-group" *ngIf="el.type==='choice'">
-    
-            <label>{{el.text}}</label>
-            <select class="form-control"
-            name='{{el.text}}'
-            [(ngModel)]="items[i].answer"
-            >
-            <!-- <option selected>Open this select menu</option> -->
-              <option *ngFor="let object of el.option"
-                          [value]='object.valueCoding.code'
-                  >
-    
-                {{object.valueCoding.code}}
-              </option>
-            </select>
-          </div>
-    
-    
-          
-          <div class="form-check" *ngIf="el.type==='boolean' && el.text!=='Dependent Involved'">
-            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-            <label class="form-check-label"
-            for="defaultCheck1">
-                {{el.text}}
-            </label>
-    
-          </div>
-          <div class="form-group" *ngIf="el.type==='text'">
-    
-            <label>{{el.text}}</label>
-            <textarea type="text"
-            [(ngModel)]="items[i].answer"
-            name='{{el.text}}' 
-            class="form-control" 
-            placeholder="type your text" rows="1" required></textarea>
-          </div>
-  
-  
-          <div class="form-group" *ngIf="el.type==='open-choice'">
-    
-            <label>{{el.text}}</label>
-                <textarea type="text" 
-                [(ngModel)]="items[i].answer"
-                name='{{el.text}}'
-                class="form-control" 
-                placeholder="type your text" 
-                rows="1" required></textarea>
-          </div> 
-  
-        </div>
-
-      </section>
-
-      <section *ngIf="dependents===true" class="form-section">
-
+      </div>
       
+
+              {{ form.valid }}
+              <br>
+          {{ form.value | json }}
   
-        <div *ngIf="dependents===true" class="col-12-custom">
-            <div class='header'>
-              <h6>Dependents</h6>
-            </div>
-            <div class="form-group col-6-custom">
-                
-                
-                <div class="col-6-custom">
-                 <label>Dependents</label>
-                <textarea type="text" 
-                    [(ngModel)]="dependentNumber"
-                    name='dependentsNumber'
-                    class="form-control" 
-                    placeholder="0" 
-                    rows="1" disabled></textarea>
-                </div>
   
-                <div class="col-6-custom">
-                    <button class="btn special-button move-dwn" (click)='addDependent()'>
-                      add dependent
-                    </button>
-                  </div>
-  
-            </div>
-            
-        </div>
-
-      </section>
-
-      <section class="form-section">
-          <div class="table-list">
-
-      
-  
-        <div class="col-12-custom">
-            <h6>documents</h6>
-            <div class="button-section">
-                <span class="btn regular-button btn-file" (change)='addDocument($event)'>
-                  Add Documents <input type="file">
-                </span>
-              </div>
-              <div>
-                  <table class="table">
-                      <thead class="header-table">
-                        <tr>
-                          <th scope="col">#ID</th>
-                          <th scope="col">Date</th>
-                          <th scope="col">Document Name</th>
-                          <th scope="col">Document Type</th>
-                          <th scope="col">File Type</th>
-                          <th scope="col">File Size</th>
-                          <th scope="col"></th>
-                          <th scope="col"></th>
-                    
-                        </tr>
-                      </thead>
-                      <tbody class="body-table">
-                        
-                        <tr *ngIf="documents">
-                          <td>{{documents.id}}</td>
-                          <td>{{documents.content[0].attachment.creation | date: 'dd/MM/yyyy'}}</td>
-                          <td>{{documents.content[0].attachment.title }}</td>
-                          <td>Medical Note</td>
-                          <td>{{documents.content[0].attachment.contentType }}</td>
-                          <td>{{documents.content[0].attachment.size }}</td>
-                        </tr>
-                      </tbody>
-              
-              
-                      <!-- <tbody *ngIf="documents !==null">
-                        <tr *ngFor="let q of servRequests">
-                          <td>{{q.resource.id}}</td>
-                          <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
-                          <td>{{q}}</td>
-                          <td>{{q}}</td>
-                          <td>{{q}}</td>
-                          <td>{{q}}</td>
-                          <td>{{q.resource.subject.display}}</td>
-                          <td>{{q.resource.status}}</td>
-                        </tr>
-                      </tbody> -->
-              
-              
-                    </table>
-              </div>
-    
-          </div>
-          </div>
-          </section>
-      
-     <div class="button-section-line line">
-      <button class="btn action-button float-right" type="button" (click)="onNext()">Next</button>
-      <!-- <button class="btn regular-button" type="button" (click)="onSave()">Save</button>   -->
-      <button class="btn regular-button" type="button" (click)="onCancel()">Cancel</button> 
-    </div>
-  </form>
-
-
-  
-
-<!--   
-    <br>
-    <br>
-    <br>
-    
-    Angular/form: {{serReqForm.value | json }}
-    <br>
-    <br>
-    {{item | json }}
-    <br>
-    <br>
-    
-    {{items | json }}
-    
-    <br>
-    <br>
-    Model/qrequest: {{qrequest | json}}
-     -->
-    <!-- <button class="button button-primary" (click)="deserializethis(object.valueCoding.code)">Click me!</button> -->
-  </div> 
+      </div> 

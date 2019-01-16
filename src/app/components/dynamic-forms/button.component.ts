@@ -6,8 +6,6 @@ import { FieldConfig } from './field-config.interface';
 @Component({
   selector: 'form-button',
   template: `
- 
-  <div [class]="config.class">
     <div
       [formGroup]="group">
       <button
@@ -16,7 +14,6 @@ import { FieldConfig } from './field-config.interface';
         type="submit">
         {{ config.label }}
       </button>
-    </div>
     </div>
   `
 })
