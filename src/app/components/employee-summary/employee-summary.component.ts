@@ -15,6 +15,10 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { TranslateService } from '@ngx-translate/core';
 
 import * as Employee from '../../interface/patient';
+export interface LanguageType {
+  value: string;
+  viewValue: string;
+}
 
 @Component({
   selector: 'app-employee-summary',
@@ -43,6 +47,7 @@ export class EmployeeSummaryComponent implements OnInit {
   successHeaderCheck;
   activateSubmitButton = null;
 
+  editEmployee;
 
   datePickerConfig: Partial<BsDatepickerConfig>;
 
@@ -150,6 +155,8 @@ export class EmployeeSummaryComponent implements OnInit {
   minDate: Date;
   maxDate: Date;
 
+
+
   constructor(
     public translate: TranslateService,
     private fb: FormBuilder,
@@ -170,6 +177,11 @@ export class EmployeeSummaryComponent implements OnInit {
     this.minDate.setDate(this.minDate.getDate() - 43800);
     this.maxDate.setDate(this.maxDate.getDate());
   }
+
+  languageList: LanguageType[] = [
+    { value: 'English', viewValue: 'English' },
+    { value: 'French', viewValue: 'French' }
+  ];
 
   ngOnInit() {
 
@@ -222,64 +234,67 @@ export class EmployeeSummaryComponent implements OnInit {
       this.router.navigateByUrl('/dashboard');
     }
 
-    this.employeeFormGroup = this.fb.group({
-      // Employee type
-      // type: new FormControl(null, Validators.required),
+    // if (this.selected) {
+      this.employeeFormGroup = this.fb.group({
+        // Employee type
+        // type: new FormControl(null, Validators.required),
 
-      // Last Name
-      familyName: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2)
-      ]),
+        // Last Name
+        familyName: new FormControl('', [
+          Validators.required,
+          Validators.minLength(2)
+        ]),
 
-      // First Name
-      givenName: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2)
-      ]),
+        // First Name
+        givenName: new FormControl('', [
+          Validators.required,
+          Validators.minLength(2)
+        ]),
 
-      // Date of Birth
-      dob: new FormControl('', Validators.required),
+        // Date of Birth
+        dob: new FormControl('', Validators.required),
 
-      // Email
-      email: new FormControl('', [Validators.required, Validators.email]),
+        // Email
+        email: new FormControl('', [Validators.required, Validators.email]),
 
-      // Client's phone number (can be any number of their choosing)
-      phoneNumber: new FormControl('', [
-        Validators.required,
-        Validators.pattern('^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$')
-      ]),
+        // Client's phone number (can be any number of their choosing)
+        phoneNumber: new FormControl('', [
+          Validators.required,
+          Validators.pattern('^\d{3}-?\d{3}-?\d{4}$')
+        ]),
 
-      // Address section
-      addressStreet: new FormControl('', Validators.required),
-      addressCity: new FormControl('', Validators.required),
-      addressProv: new FormControl('', Validators.required),
-      addressPcode: new FormControl('', [Validators.required]),
-      addressCountry: new FormControl('', Validators.required),
+        // Address section
+        addressStreet: new FormControl('', Validators.required),
+        addressCity: new FormControl('', Validators.required),
+        addressProv: new FormControl('', Validators.required),
+        addressPcode: new FormControl('', [Validators.required]),
+        addressCountry: new FormControl('', Validators.required),
 
-      // Clients preferred language
-      language: new FormControl('', Validators.required),
+        // Clients preferred language
+        language: new FormControl('', Validators.required),
 
-      // PRI (handled in Patient with an extension)
-      id: new FormControl('', [
-        Validators.required,
-        Validators.minLength(9),
-        Validators.maxLength(9)
-      ]),
+        // PRI (handled in Patient with an extension)
+        id: new FormControl('', [
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(9)
+        ]),
 
-      // Job title (handled in Patient with an extension)
-      jobTitle: new FormControl('', Validators.required),
+        // Job title (handled in Patient with an extension)
+        jobTitle: new FormControl('', Validators.required),
 
-      // Department they work in (handled in Patient with an extension)
-      departmentName: new FormControl('', Validators.required),
+        // Department they work in (handled in Patient with an extension)
+        departmentName: new FormControl('', Validators.required),
 
-      // Branch they work in (handled in Patient with an extension)
-      departmentBranch: new FormControl('', Validators.required),
+        // Branch they work in (handled in Patient with an extension)
+        departmentBranch: new FormControl('', Validators.required),
 
-      // References related to the employee (handled in Patient with an extension)
-      referenceOne: [''],
-      referenceTwo: ['']
-    });
+        // References related to the employee (handled in Patient with an extension)
+        referenceOne: [''],
+        referenceTwo: ['']
+      });
+    // }
+
   }
 
   populatePatientArray(data) {
@@ -566,6 +581,29 @@ export class EmployeeSummaryComponent implements OnInit {
     data.entry.forEach(element => {
       this.deptBranch.push(element.resource);
     });
+  }
+
+  editEmployeeToggle() {
+    this.editEmployee = !this.editEmployee;
+    this.employeeFormGroup.controls['familyName'].patchValue(this.selected['family']);
+    this.employeeFormGroup.controls['givenName'].patchValue(this.selected['given']);
+    this.employeeFormGroup.controls['dob'].patchValue(this.selected['dob']);
+    this.selected['telecom'].forEach(tele => {
+      if (tele['system'] === 'email') {
+        this.employeeFormGroup.controls['email'].patchValue(tele['value']);
+      }
+      if (tele['system'] === 'phone') {
+        this.employeeFormGroup.controls['phoneNumber'].patchValue(tele['value']);
+      }
+    });
+    this.employeeFormGroup.controls['addressStreet'].patchValue(this.selected['given']);
+    this.employeeFormGroup.controls['addressCity'].patchValue(this.selected['given']);
+    this.employeeFormGroup.controls['addressProv'].patchValue(this.selected['given']);
+    this.employeeFormGroup.controls['addressPcode'].patchValue(this.selected['given']);
+    this.employeeFormGroup.controls['addressCountry'].patchValue(this.selected['given']);
+    this.employeeFormGroup.controls['language'].patchValue(this.selected['given']);
+    this.employeeFormGroup.controls['id'].patchValue(this.selected['given']);
+    console.log(this.employeeFormGroup['value']);
   }
 
   get resourceType() {
