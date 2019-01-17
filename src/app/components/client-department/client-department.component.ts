@@ -90,10 +90,10 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
           placeholder: 'Select Department Name',
           validation: [Validators.required]
         },
-        {
-          type: 'header',
-          label: 'Don\'t see a Client Department in this list? to add one'
-        },
+        // {
+        //   type: 'header',
+        //   label: 'Don\'t see a Client Department in this list? to add one'
+        // },
         {
           type: 'input',
           label: 'Phone Number',

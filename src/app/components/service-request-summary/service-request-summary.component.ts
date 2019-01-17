@@ -64,45 +64,45 @@ export class ServiceRequestSummaryComponent implements OnInit {
           }
           if (element['resource']['resourceType'] === 'Questionnaire') {
             this.questId = element.resource.id;
-            // console.log(this.questId);
           }
           if (element['resource']['resourceType'] === 'Patient') {
             this.processPatientDetails(element['resource']);
           }
         });
       }
-      if (this.questId === 'TEST1') {
-        // console.log('the questId = TEST1' );
-        this.useListOrder(this.serviceRequestObject, this.listOrderTest1);
+
+
+      for (let i = 0; i < this.serviceRequestObject.length; i++) {
+        console.log(this.serviceRequestObject[i].name.replace(/\s+/g, ''));
+        console.log(this.serviceRequestObject[i].value);
+        this.newArr[this.serviceRequestObject[i].name.replace(/\s+/g, '')] = this.serviceRequestObject[i].value;
       }
+      console.log(this.serviceRequestObject);
+      console.log(this.newArr);
+      // if (this.questId === 'TEST1') {
+      //   // console.log('the questId = TEST1' );
+      //   this.useListOrder(this.serviceRequestObject, this.listOrderTest1);
+      // }
     });
 
-    
   }
 
 
-   useListOrder(data, list) {
-    console.log('SR object length', data.length, data, list.length, list);
+  //  useListOrder(data, list) {
+  //   console.log('SR object length', data.length, data, list.length, list);
 
-  //   data.forEach( elem => {
-  //     console.log ('data:', elem.name);
-  // });
-    
-    list.map( order => {
-      // console.log(order.toLowerCase());
-        data.forEach( elem => {
-            // console.log(elem.name.toLowerCase());
-            const x = order.toLowerCase();
-            const y = elem.name.toLowerCase();
-          if (x === y) {
-            // console.log('I am here: ', elem);
-            this.newArr.push(elem);
-          }
-      });
-    });
-    console.log(this.newArr);
+  //   list.map( order => {
+  //       data.forEach( elem => {
+  //           const x = order.toLowerCase();
+  //           const y = elem.name.toLowerCase();
+  //         if (x === y) {
+  //           this.newArr.push(elem);
+  //         }
+  //     });
+  //   });
+  //   console.log(this.newArr);
 
-  }
+  // }
 
 
 
