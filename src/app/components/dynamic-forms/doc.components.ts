@@ -163,14 +163,15 @@ export class DocComponent implements Field {
   }
 
   downloadFile(name) {
-    const linkSource =
+    const sourceData =
       'data:' + name['content'][0]['attachment']['contentType'] +
       ';base64,' + name['content'][0]['attachment']['data'];
-    console.log(linkSource);
-    const downloadLink = document.createElement('a');
+    console.log(sourceData);
+    const downloadElement = document.createElement('a');
     const fileName = name['content'][0]['attachment']['title'] ;
 
-    downloadLink.href = linkSource;
-    downloadLink.download = fileName;
+    downloadElement.href = sourceData;
+    downloadElement.download = fileName;
+    downloadElement.click();
   }
 }
