@@ -55,7 +55,4 @@ export class SidebarComponent implements OnInit {
   acccountCreation() {
     this.router.navigateByUrl('/newaccount');
   }
-  workScreen() {
-    this.router.navigateByUrl('/staff/work-screen');
-  }
 }
