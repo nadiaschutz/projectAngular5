@@ -227,9 +227,10 @@ export class EmployeeComponent implements OnInit {
       // Client's phone number (can be any number of their choosing)
       phoneNumber: new FormControl('', [
         Validators.required,
-        Validators.pattern('^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$')
+        // Validators.pattern('/^[1-9]{1}[0-9]{9}$/')
+        Validators.minLength(10),
+        Validators.maxLength(10),
       ]),
-
       // Address section
       addressStreet: new FormControl('', Validators.required),
       addressCity: new FormControl('', Validators.required),
