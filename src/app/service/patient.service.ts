@@ -31,7 +31,7 @@ export class PatientService {
     return this.httpClient.post(environment.queryURI + '/Patient/', patient, { headers: this.postFHIRHeaders() });
   }
 
-  updatePatient(data, id) {
+  updatePatient(id, data) {
     return this.httpClient.put(environment.queryURI + '/Patient/' + id, data,  { headers: this.postFHIRHeaders() });
 
   }
