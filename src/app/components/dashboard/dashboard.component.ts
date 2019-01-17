@@ -120,6 +120,10 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  enableAllFunction() {
+    this.enableAll = !this.enableAll;
+  }
+
   getAllPatients() {
     this.patientService
       .getAllPatientData()

@@ -66,23 +66,25 @@
     <!-- List of Clients  -->
 
     <div *ngIf="patientList.length > 0">
+      <h5>Clients</h5>
 
-      <div class="row client-heading-row">
-        <div class="col-8">
-          <h5>Clients</h5>
-        </div>
+      <div>
 
-        <div class="col-3">
-          <div class="button-section" [ngClass]="roleInSession">
-            <button type="button" class="btn  regular-dark-button " (click)="newEmployeeButton()">New Client Record</button>
+
+        <div class="client-button-row">
+          <div>
+            <div class="col">
+              <button type="button" id="new-client-button" class="btn  float-right regular-dark-button " (click)="enableAllFunction()">Show All Record</button>
+
+            </div>
+          </div>
+          <div class="col">
+            <div class="button-section" [ngClass]="roleInSession">
+              <button type="button" class="btn  float-right regular-dark-button show-all-records-button " (click)="newEmployeeButton()">New Client Record</button>
+            </div>
           </div>
         </div>
-        <div class="col">
-          <div class=" ">
-            <input class="form-check-input" [(ngModel)]="enableAll" type="checkbox" id="enableBox">
-            <label class="form-check-label" for="enableBox">Enable All</label>
-          </div>
-        </div>
+
 
       </div>
       <div class="table-container">
