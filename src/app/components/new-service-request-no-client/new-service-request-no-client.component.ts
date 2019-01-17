@@ -50,6 +50,9 @@ export class NewServiceRequestNoClientComponent implements OnInit {
   sec: any;
   msec: any;
 
+
+  fileString;
+
   dependents = false;
   dependentBoolean = false;
   dependentNumber = 0;
@@ -516,6 +519,7 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     reader.onloadend = function() {
 
       file = reader.result;
+      that.fileString = file;
       trimmedFile = file.split(',').pop();
 
       documentReference.resourceType = 'DocumentReference';
@@ -557,7 +561,15 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     };
   }
 
+  showPdf(name) {
+    const linkSource = this.fileString;
+    const downloadLink = document.createElement('a');
+    const fileName = name ;
 
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+    downloadLink.click();
+}
 
   createItemReferenceObject(data) {
     const obj: string = data.id;
