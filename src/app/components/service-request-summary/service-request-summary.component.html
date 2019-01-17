@@ -13,11 +13,11 @@
     </button>
   </div>
   
-  <div *ngFor="let item of serviceRequestObject; let x = index">
-    <div [ngClass]="{'left-style': x%2 != 0, 'right-style': x%2 === 0 }">
+  <div *ngFor="let item of newArr; let x = index">
+    <!-- <div [ngClass]="{'left-style': x%2 != 0, 'right-style': x%2 === 0 }"> -->
       <label class="label-name">{{item.name | titlecase}}</label>
       <input disabled=true class="form-control field-box-name" placeholder="{{item.value | titlecase}}"/>
-    </div>
+    <!-- </div> -->
   </div>
   
 </div>
