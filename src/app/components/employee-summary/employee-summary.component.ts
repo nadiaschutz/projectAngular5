@@ -300,7 +300,9 @@ export class EmployeeSummaryComponent implements OnInit {
         // Client's phone number (can be any number of their choosing)
         phoneNumber: new FormControl('', [
           Validators.required,
-          Validators.pattern('^\d{3}-?\d{3}-?\d{4}$')
+          // Validators.pattern('/^[1-9]{1}[0-9]{9}$/')
+          Validators.minLength(10),
+          Validators.maxLength(10),
         ]),
 
         // Address section
