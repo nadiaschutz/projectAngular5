@@ -147,9 +147,14 @@ button {
     outline: none;
 }
 
-.assigned {
-    width: 150px;
-    float: right;
+.select-clinician {
+    width: 220px;
+    margin-left: 10px;
+}
+.assign-clinician {
+    position: relative;
+    top:50%;
+    left:50%; 
 }
 .cancel-activity {
     margin-left: 15px;
@@ -162,4 +167,10 @@ button {
 }
 .main-header {
     margin-bottom: 40px;
+}
+.assign-buttons {
+    margin-top: 10px;
+}
+.clinician {
+    padding-right: 250px;
 }

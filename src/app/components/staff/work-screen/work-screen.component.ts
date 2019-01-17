@@ -296,6 +296,7 @@ export class WorkScreenComponent implements OnInit {
       const temp = {};
       temp['title'] = 'Clinical Assignment';
       temp['type'] = 'task';
+      temp['intent'] = 'plan';
       if (task['status'] === 'ready') {
         temp['status'] = 'Assigned - Waiting';
       } else {
@@ -322,11 +323,12 @@ export class WorkScreenComponent implements OnInit {
         temp['dateCompleted'] = this.utilService.getDate(task['meta']['lastUpdated']);
       }
       if (task['note']) {
-        temp['note'] = task['note'][0]['text'];
+        temp['closingNotes'] = task['note'][0]['text'];
       } else {
         temp['showActivity'] = false;
-        temp['activity'] = '';
+        temp['closingNotes'] = '';
       }
+      console.log(temp);
       this.history.push(temp);
     }
   }
@@ -568,7 +570,7 @@ export class WorkScreenComponent implements OnInit {
 
   completeClinicalAssignment(item) {
     const taskAnnotation = new FHIR.Annotation();
-    taskAnnotation.text = item.activity;
+    taskAnnotation.text = item.closingNotes;
     this.clinicalAssignmentTask['note'] = [taskAnnotation];
     this.clinicalAssignmentTask['status'] = 'completed';
     this.staffService.updateTask(this.clinicalAssignmentTask['id'], JSON.stringify(this.clinicalAssignmentTask)).subscribe(task => {
