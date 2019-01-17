@@ -177,7 +177,8 @@ export class EmployeeComponent implements OnInit {
   ngOnInit() {
 
     this.datePickerConfig = Object.assign({},
-      {containerClass: 'theme-dark-blue'});
+      {containerClass: 'theme-dark-blue',
+      dateInputFormat: 'YYYY-MM-DD'});
 
     this.dependentsArray = new Array();
     this.i = 0;

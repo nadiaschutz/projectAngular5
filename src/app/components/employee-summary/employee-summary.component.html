@@ -247,7 +247,7 @@
       <h5>Client Summary</h5>
       <h6>CLIENT DEPARTMENT > {{selected['given']}} {{selected['family']}}</h6>
     </div>
-    <form [formGroup]="employeeFormGroup">
+    <form [formGroup]="employeeFormGroup" novalidate>
       <section class="form-section">
         <div class='header'>
           <h6>
@@ -417,7 +417,7 @@
         </div>
       </section>
 
-      <section class="form-section">
+      <section class="form-section" *ngIf="selected['employeeType']['valueString'] === 'Employee'">
 
         <div class='header'>
           <h6>
@@ -477,5 +477,19 @@
 
       </section>
     </form>
+
+    <div class="row button-row">
+      <!-- <div class="col">
+        <button class="btn regular-button" (click)="returnToEditInputs()">Back</button>
+        <button class="btn regular-button" (click)="disableInputsBeforeSubmission()">Next</button>
+      </div> -->
+      <div class="col">
+        <button class="btn regular-button  float-right" (click)="updateEmployee()" [disabled]="!employeeFormGroup.invalid">Submit
+          Account Info</button>
+      </div>
+
+
+    </div>
+
   </div>
 </div>
