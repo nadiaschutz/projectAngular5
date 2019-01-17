@@ -120,6 +120,10 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  enableAllFunction() {
+    this.enableAll = !this.enableAll;
+  }
+
   getAllPatients() {
     this.patientService
       .getAllPatientData()
@@ -307,7 +311,7 @@ export class DashboardComponent implements OnInit {
   }
   employeeSearch() {
     let searchParams = '';
-    this.arrOfVar.forEach((element, index) => {
+    this.arrOfVar.forEach((element) => {
       if (element.data !== null) {
         if (searchParams.length === 0) {
           searchParams = '?' + element.prefix + element.data;
@@ -321,15 +325,15 @@ export class DashboardComponent implements OnInit {
     //   searchParams = this.clientId.prefix + this.clientId.data + searchParams;
     // }
 
-    this.arrOfVar.forEach((element, index) => {
-      if (element.data !== null) {
-        if (this.showParams.length === 0) {
-          this.showParams = element.data;
-        } else {
-          this.showParams += ', ' + element.data;
-        }
-      }
-    });
+    // this.arrOfVar.forEach((element, index) => {
+    //   if (element.data !== null) {
+    //     if (this.showParams.length === 0) {
+    //       this.showParams = element.data;
+    //     } else {
+    //       this.showParams += ', ' + element.data;
+    //     }
+    //   }
+    // });
 
     if (this.employeeType) {
       this.addParams (this.employeeType);

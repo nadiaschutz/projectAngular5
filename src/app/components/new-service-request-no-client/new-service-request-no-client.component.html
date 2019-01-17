@@ -1,24 +1,16 @@
 <div class="container">
 
- 
+
   <div class="main-header">
     <h5>Contact us</h5>
     <h6>service request > new advice consulation</h6>
   </div>
 
-      <div class="form-section">
-          <dynamic-form
-            [config]="config"
-            #form="dynamicForm"
-            (submit)="submit($event)">
-          </dynamic-form>
-          
-      </div>
-      
+  <div class="form-section">
+    <dynamic-form [config]="config" #form="dynamicForm" (submit)="submit($event)">
+    </dynamic-form>
 
-              {{ form.valid }}
-              <br>
-          {{ form.value | json }}
-  
-  
-      </div> 
+  </div>
+
+
+</div>
