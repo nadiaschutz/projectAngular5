@@ -1,89 +1,16 @@
 <div class="container">
 
- 
+
   <div class="main-header">
     <h5>Contact us</h5>
     <h6>service request > new advice consulation</h6>
   </div>
 
-      <div class="form-section">
-          <dynamic-form
-            [config]="config"
-            #form="dynamicForm"
-            (submit)="submit($event)">
-          </dynamic-form>
-          
-      </div>
-      
+  <div class="form-section">
+    <dynamic-form [config]="config" #form="dynamicForm" (submit)="submit($event)">
+    </dynamic-form>
 
-              {{ form.valid }}
-              <br>
-          {{ form.value | json }}
-  
-        <div class="col-12-custom">
-            <h6>documents</h6>
-            <div class="button-section">
-                <span class="btn regular-button btn-file" (change)='addDocument($event)'>
-                  Add Documents <input type="file">
-                </span>
-              </div>
-              <div>
-                  <table class="table">
-                      <thead class="header-table">
-                        <tr>
-                          <th scope="col">#ID</th>
-                          <th scope="col">Date</th>
-                          <th scope="col">Document Name</th>
-                          <th scope="col">Document Type</th>
-                          <th scope="col">File Type</th>
-                          <th scope="col">File Size</th>
-                          <th scope="col"></th>
-                          <th scope="col"></th>
-                    
-                        </tr>
-                      </thead>
-                      <tbody class="body-table">
-                        
-                        <tr *ngIf="documents">
-                          <td>{{documents['id']}}</td>
-                          <td >{{documents['content'][0]['attachment']['creation'] | date: 'dd/MM/yyyy'}}</td>
-                          <td class="cursor" (click)="downloadFile(documents)">{{documents['content'][0]['attachment']['title']}}</td>
-                          <td>Medical Note</td>
-                          <td>{{documents['content'][0]['attachment']['contentType']}}</td>
-                          <td>{{documents['content'][0]['attachment']['size'] }}</td>
-                        </tr>
-                      </tbody>
-              
-              
-                      <!-- <tbody *ngIf="documents !==null">
-                        <tr *ngFor="let q of servRequests">
-                          <td>{{q.resource.id}}</td>
-                          <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
-                          <td>{{q}}</td>
-                          <td>{{q}}</td>
-                          <td>{{q}}</td>
-                          <td>{{q}}</td>
-                          <td>{{q.resource.subject.display}}</td>
-                          <td>{{q.resource.status}}</td>
-                        </tr>
-                      </tbody> -->
-              
-              
-                    </table>
-              </div>
-    
-          </div>
-          </div>
-        
-          </section>
-      
-     <div class="button-section-line line">
-      <button class="btn action-button float-right" type="button" (click)="onNext()">Next</button>
-      <!-- <button class="btn regular-button" type="button" (click)="onSave()">Save</button>   -->
-      <button class="btn regular-button" type="button" (click)="onCancel()">Cancel</button> 
-    </div>
-  </form>
+  </div>
 
 
-  
-      </div> 
+</div>

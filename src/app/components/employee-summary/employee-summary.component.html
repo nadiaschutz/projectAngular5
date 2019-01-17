@@ -1,7 +1,12 @@
 <div class='container'>
-  <input class="form-check-input" (change)="editEmployeeToggle()" type="checkbox" id="enableBox">
+  <!-- <input class="form-check-input" (change)="editEmployeeToggle()" type="checkbox" id="enableBox"> -->
 
 
+
+  <div class="edit-button-row">
+      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Edit Client Record</button>
+    </div>
+  
   <div *ngIf="selected && !editEmployee">
 
     <div class="main-header">
@@ -431,15 +436,21 @@
             <label for="jobTitle">Job Title</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle"
               required>
-            <div class="invalid-feedback">
-              Cannot be blank
+              <div *ngIf="employeeFormGroup.controls['jobTitle'].invalid
+              && (employeeFormGroup.controls['jobTitle'].touched || employeeFormGroup.controls['jobTitle'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
             </div>
           </div>
           <div class="col">
             <label for="id">Associated Employee PRI</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id" required>
-            <div class="invalid-feedback">
-              Cannot be blank
+            <div *ngIf="employeeFormGroup.controls['id'].invalid
+              && (employeeFormGroup.controls['id'].touched || employeeFormGroup.controls['id'].dirty)">
+              <div class="error-message">
+                Must be nine digits long
+              </div>
             </div>
           </div>
         </div>
@@ -452,6 +463,12 @@
                 {{dept}}
               </option>
             </select>
+            <div *ngIf="employeeFormGroup.controls['departmentName'].invalid
+              && (employeeFormGroup.controls['departmentName'].touched || employeeFormGroup.controls['departmentName'].dirty)">
+              <div class="error-message">
+                  Cannot be blank
+              </div>
+            </div>
           </div>
           <div class="col">
             <label for="departmentBranch">Department Branch</label>
@@ -460,14 +477,19 @@
                 {{branch}}
               </option>
             </select>
+            <div *ngIf="employeeFormGroup.controls['departmentBranch'].invalid
+              && (employeeFormGroup.controls['departmentBranch'].touched || employeeFormGroup.controls['departmentBranch'].dirty)">
+              <div class="error-message">
+                Cannot be blank
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="row">
           <div class="col">
             <label for="referenceOne">Cross-reference No. 1</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne"
-              required>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne">
           </div>
           <div class="col">
             <label for="referenceTwo">Cross-reference No. 2</label>
@@ -484,8 +506,8 @@
         <button class="btn regular-button" (click)="disableInputsBeforeSubmission()">Next</button>
       </div> -->
       <div class="col">
-        <button class="btn regular-button  float-right" (click)="updateEmployee()" [disabled]="!employeeFormGroup.invalid">Submit
-          Account Info</button>
+        <button class="btn regular-button  float-right" (click)="updateEmployee()" [disabled]="!employeeFormGroup.invalid">Update
+          Client Info</button>
       </div>
 
 
