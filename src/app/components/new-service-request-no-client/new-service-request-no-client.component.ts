@@ -561,10 +561,13 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     };
   }
 
-  showPdf(name) {
-    const linkSource = this.fileString;
+  downloadFile(name) {
+    const linkSource =
+      'data:' + name['content'][0]['attachment']['contentType'] +
+      ';base64,' + name['content'][0]['attachment']['data'];
+    console.log(linkSource);
     const downloadLink = document.createElement('a');
-    const fileName = name ;
+    const fileName = name['content'][0]['attachment']['title'] ;
 
     downloadLink.href = linkSource;
     downloadLink.download = fileName;
