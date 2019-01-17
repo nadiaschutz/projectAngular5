@@ -133,8 +133,8 @@
                         
                         <tr *ngIf="documents">
                           <td>{{documents.id}}</td>
-                          <td>{{documents.content[0].attachment.creation | date: 'dd/MM/yyyy'}}</td>
-                          <td>{{documents.content[0].attachment.title }}</td>
+                          <td >{{documents.content[0].attachment.creation | date: 'dd/MM/yyyy'}}</td>
+                          <td class="cursor" (click)="showPdf(documents['content'][0]['attachment']['title'])">{{documents.content[0].attachment.title }}</td>
                           <td>Medical Note</td>
                           <td>{{documents.content[0].attachment.contentType }}</td>
                           <td>{{documents.content[0].attachment.size }}</td>
@@ -161,6 +161,7 @@
     
           </div>
           </div>
+        
           </section>
       
      <div class="button-section-line line">
