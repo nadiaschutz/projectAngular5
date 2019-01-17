@@ -6,6 +6,7 @@ import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { OAuthModule } from 'angular-oauth2-oidc';
+import { AngularStickyThingsModule } from '@w11k/angular-sticky-things';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -50,6 +51,7 @@ import { SelectComponent } from './components/dynamic-forms/select.component';
 import { LineComponent } from './components/dynamic-forms/line.component';
 import { HeaderComponent } from './components/dynamic-forms/header.component';
 import { DateComponent } from './components/dynamic-forms/date.component';
+import { DocComponent } from './components/dynamic-forms/doc.components';
 // import { RadiobuttonComponent } from './components/dynamic-forms/radiobutton.component';
 import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
 import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
@@ -123,6 +125,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     LineComponent,
     HeaderComponent,
     DateComponent,
+    DocComponent,
     // RadiobuttonComponent,
     CheckboxComponent,
     DynamicFieldDirective,
@@ -149,7 +152,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgBootstrapFormValidationModule,
     NgBootstrapFormValidationModule.forRoot(),
     BsDatepickerModule.forRoot(),
-    AvatarModule
+    AvatarModule,
+    AngularStickyThingsModule
   ],
   providers: [
     AuthGuardService,
@@ -168,6 +172,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     LineComponent,
     HeaderComponent,
     DateComponent,
+    DocComponent,
     // RadiobuttonComponent,
     CheckboxComponent
   ]

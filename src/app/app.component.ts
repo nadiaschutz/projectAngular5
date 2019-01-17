@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
     });
     this.oauthService.loadDiscoveryDocumentAndTryLogin();
     this.router.events.subscribe(() => {
-      if (this.oauthService.getAccessToken()) {
+      if (this.oauthService.hasValidAccessToken()) {
         this.showNavBars = true;
       } else {
         this.showNavBars = false;

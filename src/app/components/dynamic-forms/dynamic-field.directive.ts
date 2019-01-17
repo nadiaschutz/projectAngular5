@@ -11,7 +11,7 @@ import { DateComponent } from './date.component';
 import { CheckboxComponent } from './checkbox.component';
 import { LineComponent } from './line.component';
 import { HeaderComponent } from './header.component';
-
+import { DocComponent } from './doc.components';
 
 
 const components = {
@@ -22,7 +22,8 @@ const components = {
   // radiobutton: RadiobuttonComponent,
   checkbox: CheckboxComponent,
   line: LineComponent,
-  header: HeaderComponent
+  header: HeaderComponent,
+  doc: DocComponent
 };
 @Directive({
   selector: '[dynamicField]'

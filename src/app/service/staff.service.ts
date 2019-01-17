@@ -170,8 +170,17 @@ export class StaffService {
 
   getClinicianAssignedToEpisode(episodeOfCareId) {
     return this.http.get(environment.queryURI + '/Task?code=clinician&status=ready&context=' + episodeOfCareId, {
-      headers: this.getHeaders()
+      headers: this.getNoCacheHeaders()
     });
+  }
+
+  getNoCacheHeaders() {
+    const headers = new HttpHeaders({
+      'Content-Type' : 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken(),
+      'Cache-Control': 'no-cache'
+    });
+    return headers;
   }
 
 }

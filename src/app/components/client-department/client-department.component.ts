@@ -98,7 +98,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
           type: 'input',
           label: 'Phone Number',
           inputType: 'text',
-          placeholder: 'Enter Phone Number',
+          placeholder: '000-000-0000',
           name: 'phone',
           validation: [
             Validators.required,
@@ -110,7 +110,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
           type: 'input',
           label: 'Fax Number',
           inputType: 'text',
-          placeholder: 'Enter Fax Number',
+          placeholder: '000-000-0000',
           name: 'fax',
           validation: [
             Validators.required,

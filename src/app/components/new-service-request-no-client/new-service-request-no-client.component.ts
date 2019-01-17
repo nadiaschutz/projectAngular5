@@ -19,13 +19,46 @@ import { PatientService } from 'src/app/service/patient.service';
 
 
 
+// for custom form components to work
+import { AfterViewInit } from '@angular/core';
+import { Validators } from '@angular/forms';
+import { Field } from '../dynamic-forms/field.interface';
+import { FieldConfig } from '../dynamic-forms/field-config.interface';
+import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
+import { CustomValidator } from '../dynamic-forms/custom-validator';
+import { FileDetector } from 'protractor';
+
+
+class TextInput {
+    static create(event: FieldConfig) {
+        return {
+                    type: event.type,
+                    label: event.label,
+                    inputType: event.inputType,
+                    name: event.name
+        };
+    }
+}
+
+
+
 @Component({
   selector: 'app-new-service-request-no-client',
   templateUrl: './new-service-request-no-client.component.html',
   styleUrls: ['./new-service-request-no-client.component.scss']
 })
-export class NewServiceRequestNoClientComponent implements OnInit {
+export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit  {
   // @ViewChild('serReqForm') form: NgForm;
+
+// var for styling each form field
+style = 'col-5';
+configuration;
+userName;
+
+
+
+@ViewChild(DynamicFormComponent) form: DynamicFormComponent;
+  config: FieldConfig[] = [];
 
   formId = '1953';
 
@@ -80,6 +113,7 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     answer: null
   };
 
+
   trackByEl(index: number, el: any): string {
     return el.linkId;
   }
@@ -89,93 +123,94 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     private questionnaireService: QuestionnaireService,
     private router: Router,
     private userService: UserService,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private oauthService: OAuthService,
+
   ) {}
 
-
-
-
-
-
   ngOnInit() {
+    this.userName = this.oauthService.getIdentityClaims()['name'];
 
-    // getting formId to display form fields
-    this.questionnaireService
-      .getForm(this.formId)
-      .subscribe(
-        data => this.getFormData(data),
-        error => this.getFormDataError(error)
-      );
+  console.log(this.userName);
+
+  // smile user ID
+  console.log(this.oauthService.getIdentityClaims()['sub']);
+  this.userService.subscribeUserFHIRID().subscribe(data =>
+      console.log(data)
+    );
+
+  // getting formId to display form fields
+  this.questionnaireService
+    .getForm(this.formId)
+    .subscribe(
+      data => this.getFormData(data),
+      error => this.getFormDataError(error)
+    );
+
+}
 
 
-      if (this.formId !== '1953') {
-        // getting clientId
-        this.clientId = this.userService.returnSelectedID();
-        console.log(this.clientId);
-        // getting data for client to add to itmesToSend
-        if (this.clientId) {
-          this.patientService
-            .getPatientDataByID(this.clientId)
-            .subscribe(
-              data => this.getClientData(data),
-              error => this.getClientError(error)
-            );
-        } else if (!this.clientId) {
-          this.router.navigateByUrl('/dashboard');
-        }
 
-      }
-
+wrap() {
+  const x = $('.field-holder-2 form-input');
+  for (let i = 0; i < x.length; i ++) {
+    console.log(x[i]);
+    $(x[i]).wrap("<div class='" + this.style +"'></div>");
   }
-  /*********************************************/
+}
+
+
+
+  addDiv() {
+    const sections = $('.dynamic-form .' + this.style);
+    for (let i = 0; i < sections.length; i += 2) {
+    sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
+  }
+}
 
 
 
 
 
-/************************************************/
+
+
 /******************* onCancel() *****************/
-/************************************************/
+
 
   // TO_DO: do post request to delete in-progress service requests
   onCancel() {
-    if (this.formId === '1952') {
-      this.router.navigate(['/dashboard']);
-    }
-    if (this.formId === '1953') {
       this.router.navigate(['/servreqmain']);
-    }
   }
 
 
 
 
-
-/************************************************/
-/******************* onSave() *******************/
-/************************************************/
-
-
-  // TO_DO:  fix save function!!
-  // onSave() {
-  //   this.savingData();
-  //   this.questionnaireService.saveRequest(this.itemToSend).subscribe(
-  //     data => this.handleSuccessOnSave(data),
-  //     error => this.handleErrorOnSave(error)
-  //   );
-  // }
-
-
-
-
-
-/************************************************/
 /******************* onNext() *******************/
-/************************************************/
-  onNext() {
+
+submit(value: {[name: string]: any}) {
+  console.log(value);
+  console.log(this.items);
+  // this.items = value.map(el => console.log(el));
+    
+  // });
+
+  this.items.forEach(element => {
+    console.log(element.text);
+
+     for (const key in value) {
+      if (value.hasOwnProperty(key)) {
+        if (key === element.text) {
+          element.answer = value[key];
+        }
+      }
+    }
+
+  });
+
+  
     this.savingData();
 
-    // sending itemToSend to server
+   //  sending itemToSend to server
     this.questionnaireService
       .saveRequest(this.itemToSend)
       .subscribe(
@@ -183,40 +218,32 @@ export class NewServiceRequestNoClientComponent implements OnInit {
         error => this.onSaveError(error)
       );
 
+    console.log(this.items);
+
     console.log(this.itemToSend);
 
 
   }
-/*********************************************/
 
 
 
+  getDocument(data) {
+    console.log(data);
+    this.itemReference = data;
+  }
 
 
-/************************************************/
 /***************** savingData() *****************/
-/************************************************/
+
 
   savingData() {
     this.getDate();
 
-    // To-Do: check if has dependents => add dependents
-
-    // ToDo: add patient/#, subject, exstention
-
-    if (this.dependents === true) {
-      this.items.forEach(element => {
-        // console.log(element.text);
-        if (element.text === 'Dependent Involved') {
-          if (this.dependentNumber === 0) {
-            return (element.answer = false);
-          } else {
-            return (element.answer = true);
-          }
-        }
-      });
-    }
-
+    // getting itemReference
+    this.questionnaireService.newDocumentSubject.subscribe(
+      data => this.getDocument(data),
+      error => this.responseIdError(error)
+    );
     // pushing document into items arr
     if (this.itemReference) {
       this.items.push(this.itemReference);
@@ -233,9 +260,9 @@ export class NewServiceRequestNoClientComponent implements OnInit {
 
 
 
-/************************************************/
+
 /************** getClientData(data) *************/
-/************************************************/
+
 
   getClientData(data) {
     console.log(data);
@@ -252,12 +279,80 @@ export class NewServiceRequestNoClientComponent implements OnInit {
 
 
 
-/************************************************/
+
 /****************** getFormData() ***************/
-/************************************************/
+
   getFormData(data) {
     this.qrequest = data.item;
-    console.log(this.qrequest);
+    console.log(data);
+
+    this.configuration = this.qrequest.map(el => {
+        // text
+        if (el.type === 'text') {
+            if (el.text === 'Contact Phone No') {
+                const formField = this.textInput(el);
+                formField ['placeholder'] = 'type your phone';
+                formField ['validation'] = [Validators.required,
+                    Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')];
+                return formField;
+
+            } else if (el.text === 'Contact Email') {
+                const formField = this.textInput(el);
+                formField ['placeholder'] = 'type your email';
+                formField ['validation'] = [Validators.required, Validators.email];
+                return formField;
+
+            } else if (el.text === 'Name of the Requester') {
+                const formField = this.textInput(el);
+                formField ['placeholder'] = 'type your text';
+                formField ['value'] = this.userName;
+                formField ['validation'] = [Validators.required , Validators.minLength(4)];
+                return formField;
+
+              } else {
+                return {
+                    type: 'input',
+                    label: el.text,
+                    inputType: 'text',
+                    placeholder: 'type your text',
+                    name: el.text,
+                    validation: [Validators.required, Validators.minLength(4)]
+                };
+              }
+        }
+        if (el.type === 'choice') {
+            const options = [];
+            el.option.forEach(el1 => {
+                options.push(el1.valueCoding.code);
+            });
+            return {
+                type: 'select',
+                label: el.text,
+                name: el.text,
+                options: options,
+                placeholder: 'Select an option',
+                validation: [Validators.required]
+              };
+        }
+    });
+    this.configuration.push(
+        {
+            type: 'doc',
+            class: 'documents'
+           },
+        {
+         type: 'line'
+        },
+        {
+            type: 'button',
+            name: 'submit',
+            label: 'Next'
+        }
+        );
+        console.log(this.configuration);
+        this.config = this.configuration;
+        console.log(this.config);
+        console.log(this.form);
 
     // maping part of the data from the server to item
     this.items = this.qrequest.map(el => ({
@@ -268,17 +363,6 @@ export class NewServiceRequestNoClientComponent implements OnInit {
     console.log(this.items);
 
 
-    // checkingif there are any checkboxes in the form
-    this.items.forEach(el => {
-      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved') {
-        el.answer = false;
-      }
-    });
-
-    // checking dependents
-    this.checkDependentItem(this.items);
-    // console.log(this.dependents);
-
     // console.log(this.responseId);
     // if (this.responseId === null) {
     //   this.getResponseId();
@@ -288,8 +372,46 @@ export class NewServiceRequestNoClientComponent implements OnInit {
   getFormDataError(error) {
     console.log(error);
   }
-/************************************************/
 
+
+//   const formField = this.textInput(el);
+//                 console.log(formField);
+                // formField ['placeholder'] = 'type your phone';
+                // formField ['validation'] = [
+                //     Validators.required , Validators.minLength(4)
+                //   ];
+                // return formField;
+
+
+  textInput(data) {
+    return TextInput.create({
+    type: 'input',
+    label: data.text,
+    inputType: 'text',
+    name: data.text
+});
+}
+/************************************************/
+ngAfterViewInit() {
+    setTimeout(() => {
+    let previousValid = this.form.valid;
+    this.form.changes.subscribe(() => {
+      if (this.form.valid !== previousValid) {
+        previousValid = this.form.valid;
+        this.form.setDisabled('submit', !previousValid);
+      }
+    });
+
+    this.form.setDisabled('submit', true);
+    console.log(this.userName);
+  });
+
+
+  // if you want to style 2 form fields per a row do these :
+  this.wrap();
+  this.addDiv();
+
+  }
 
 
 
@@ -369,26 +491,6 @@ export class NewServiceRequestNoClientComponent implements OnInit {
 
 
 
-
-
-
-
-
-  checkDependentItem(itemsServer) {
-    itemsServer.forEach(element => {
-      if (element.text === 'Dependent Involved') {
-        this.dependents = true;
-        console.log('dependents in the form:', this.dependents);
-      }
-    });
-  }
-
-
-
-
-
-
-
 /************************************************/
 /************* createItemToSend() ***************/
 /************************************************/
@@ -428,170 +530,49 @@ export class NewServiceRequestNoClientComponent implements OnInit {
 /************************************************/
 
 
-  mapItemToItems() {
-    this.itemToSend.item = this.items.map(el => {
+mapItemToItems() {
+  this.itemToSend.item = this.items.map(el => {
 
-      if (el.text === 'Document') {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueReference: {
-                reference: el.answer
-              }
+    if (el.text === 'Document') {
+      return {
+        linkId: el.linkId,
+        text: el.text,
+        answer: [
+          {
+            valueReference: {
+              reference: el.answer
             }
-          ]
-        };
-      }
-      if (
-        el.text === 'Dependent Involved' ||
-        el.text === 'Health Exam Done Externally'
-      ) {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueBoolean: el.answer
-            }
-          ]
-        };
-      } else {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: [
-            {
-              valueString: el.answer
-            }
-          ]
-        };
-      }
-    });
-    console.log(this.itemToSend);
-  }
-
-
-
-
-
-
-
-
-
-
-/************************************************/
-/**************** addDocument() *****************/
-/************************************************/
-
-  /**
-   *
-   * @param $event
-   *s
-   * This function builds a new DocumentReference object,
-   * Inserts the appropriate data from the response into declared
-   * Objects, stringifies the object, and posts said string to the
-   * FHIR server.
-   */
-
-  addDocument($event) {
-    const documentReference = new FHIR.DocumentReference;
-    const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
-    const documentReferenceCoding = new FHIR.Coding;
-    const content = new FHIR.Content;
-    const contentAttachment = new FHIR.Attachment;
-    const contentCode = new FHIR.Coding;
-    let file;
-    let trimmedFile = '';
-    let size: number;
-    let type;
-    const date = new Date().toJSON();
-    console.log(date);
-    const fileList = $event.target.files;
-    const reader = new FileReader();
-    if (fileList[0]) {
-      size = fileList[0].size;
-      type = fileList[0].type;
-      reader.readAsDataURL(fileList[0]);
+          }
+        ]
+      };
     }
-    const that = this;
-    reader.onloadend = function() {
-
-      file = reader.result;
-      that.fileString = file;
-      trimmedFile = file.split(',').pop();
-
-      documentReference.resourceType = 'DocumentReference';
-
-      contentAttachment.size = size;
-      contentAttachment.contentType = type;
-      contentAttachment.data = trimmedFile;
-      contentAttachment.creation = date;
-      contentAttachment.title = fileList[0].name;
-
-      contentCode.code = 'urn:ihe:pcc:xphr:2007';
-      contentCode.display = 'Personal Health Records';
-
-      content.format = contentCode;
-      content.attachment = contentAttachment;
-
-      documentReferenceCoding.code = '51851-4';
-      documentReferenceCoding.system = 'http://loinc.org';
-      documentReferenceCoding.display = 'Administrative note';
-
-      documentReferenceCodeableConcept.coding = [ documentReferenceCoding];
-      documentReferenceCodeableConcept.text = 'Administrative note';
-
-      documentReference.instant = date;
-      documentReference.type = documentReferenceCodeableConcept;
-      documentReference.content = [content];
-
-      that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
-        data =>   {
-          that.retrieveDocuments(data),
-          that.createItemReferenceObject(data);
-        }
-      );
-      // console.log (contentAttachment);
-      return reader.result;
-    };
-    reader.onerror = function (error) {
-      console.log('Error: ', error);
-    };
-  }
-
-  downloadFile(name) {
-    const linkSource =
-      'data:' + name['content'][0]['attachment']['contentType'] +
-      ';base64,' + name['content'][0]['attachment']['data'];
-    console.log(linkSource);
-    const downloadLink = document.createElement('a');
-    const fileName = name['content'][0]['attachment']['title'] ;
-
-    downloadLink.href = linkSource;
-    downloadLink.download = fileName;
-    downloadLink.click();
+    if (
+      el.text === 'Dependent Involved' ||
+      el.text === 'Health Exam Done Externally'
+    ) {
+      return {
+        linkId: el.linkId,
+        text: el.text,
+        answer: [
+          {
+            valueBoolean: el.answer
+          }
+        ]
+      };
+    } else {
+      return {
+        linkId: el.linkId,
+        text: el.text,
+        answer: [
+          {
+            valueString: el.answer
+          }
+        ]
+      };
+    }
+  });
+  console.log(this.itemToSend);
 }
-
-  createItemReferenceObject(data) {
-    const obj: string = data.id;
-
-    this.itemReference = {
-      linkId: '30',
-      // text: obj.content[0].attachment.title,
-      text: 'Document',
-      answer:  'DocumentReference/' + obj
-    };
-  }
-
-  retrieveDocuments(data) {
-    this.documents = data;
-  }
-
-
-
-
 
 
 
@@ -644,53 +625,4 @@ addZero(i) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-/************************************************/
-/******** enableWhen () not finished!! **********/
-/************************************************/
-
-checkingEnableWhen() {
-  this.qrequest.forEach((el, index) => {
-    // check if type = "choice"
-    if (el.type === 'choice') {
-      // console.log(el.item);
-      // console.log(el);
-      // check enableWhen data
-      if (el.item) {
-        // forEach loop
-        el.item.forEach((e, i) => {
-          // console.log(i);
-          // console.log(e);
-          // console.log(e.enableWhen[0]);
-          // check if enblewhen.question number === linkId number and enableWhen.answerString === model.data
-
-          // tslint:disable-next-line:no-shadowed-variable
-          this.items.forEach((element, index) => {
-            if (
-              e.enableWhen[i].question === element[index].linkId &&
-              e.enableWhen[i].answerString === element[index].answer
-            ) {
-              console.log(true);
-              // show options
-              console.log(e.option);
-              return e.option;
-            }
-          });
-        });
-      }
-    }
-  });
-}
-
-
-/***************** the end **********************/
 }

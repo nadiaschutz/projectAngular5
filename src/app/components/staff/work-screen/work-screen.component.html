@@ -1,25 +1,33 @@
 <div class="main-header">
-  <h5>Work Screen</h5>
+
+  <div class="row">
+  <div class="col">
+    <h5>Work Screen</h5>
+  </div>
+
+  <div *ngIf="clinicians.length>0" class="col clinician">
+      <div class="assign-clinician">
+        <section class="form-inline">
+          <label><strong>Clinician Assigned</strong></label>
+          <select class="form-control select-clinician" required (change)="showClinicianButtons=!showClinicianButtons" [(ngModel)]="selectedClinician" [compareWith]="compareClinicians">
+            <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
+              <span>{{clinician.name}}</span>
+            </option>
+          </select>
+        </section>
+        <section *ngIf="showClinicianButtons" class="assign-buttons">
+            <button class="btn special-button" (click)="assignClinicianToEpisodeOfCare()">
+            Assign</button>
+            <button class="btn special-button" (click)="showClinicianButtons = !showClinicianButtons"
+            >Cancel</button>
+        </section>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="container">
-
-  <div class="row" *ngIf="clinicians.length>0">
-    <div class="assigned" style="float: right;">
-      <label>Clinian Assigned</label>
-      <select class="form-control" required (change)="showClinicianButtons=!showClinicianButtons" [(ngModel)]="selectedClinician" [compareWith]="compareClinicians">
-        <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
-          <span>{{clinician.name}}</span>
-        </option>
-      </select>
-      <section *ngIf="showClinicianButtons">
-          <button class="btn special-button" (click)="assignClinicianToEpisodeOfCare()">
-          Assign</button>
-          <button class="btn special-button" (click)="showClinicianButtons = !showClinicianButtons"
-          >Cancel</button>
-      </section>
-    </div>
-  </div>
 
   <div class="row">
     <h6 class="col-3">History</h6>
@@ -146,12 +154,45 @@
                 {{item.title}}
                 <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
               </div>
-              <p class="card-text">{{item.note}}</p>
-              <p class="card-text">{{item.date}}</p>
-              <p class="card-text" *ngIf="item.author">{{item.author}}</p>
+              <p class="card-text" *ngIf="item.note && item.type!=='task'">
+                {{item.note}}
+              </p>
+              <p class="card-text" *ngIf="item.author">
+                <strong>Author: </strong>{{item.author}}
+              </p>
+              <p class="card-text" *ngIf="item.assignee">
+                <strong>Assignee: </strong>{{item.assignee}}
+              </p>
+              <p class="card-text" *ngIf="item.assignor">
+                <strong>Assignor: </strong>{{item.assignor}}
+              </p>
+              <p class="card-text" *ngIf="item.dateCreated">
+                <strong>Date created: </strong>{{item.dateCreated}}
+              </p>
+              <p class="card-text" *ngIf="item.note && item.type==='task'">
+                <strong>Instructions: </strong>{{item.note}}
+              </p>
+              <p class="card-text" *ngIf="item.closingNotes">
+                  <strong>Closing Notes: </strong>{{item.closingNotes}}
+                </p>
               <div class="card-link">
                   <a *ngIf="item.type==='task' && item.status==='in-progress'"
                   (click)="completeTask(i)">Mark as done</a>
+
+                  <a *ngIf="item.type==='task' && item.status==='Assigned - Waiting' && !item.showActivity && !item.note"
+                  (click)="item.showActivity=true">Mark as done</a>
+                  <div *ngIf="item.showActivity">
+
+                    <label><strong>Closing notes: </strong></label> 
+                    <input type="text" [(ngModel)]="item.closingNotes" class="form-control activity"
+                    placeholder="Closing notes">
+                    <div class="activity-buttons">
+                      <a (click)="completeClinicalAssignment(item)">Save</a>
+                      <a *ngIf="item.type==='task' && item.status==='Assigned - Waiting' && item.showActivity"
+                      (click)="item.showActivity=false" class="cancel-activity">Cancel</a>  
+                    </div>
+
+                  </div>
               </div>
           </div>
       </div>
@@ -160,7 +201,8 @@
     <!-- 2. Care Plan section, shown only when needed -->
 
     <div class="col-5">
-      <div class="search-box">
+      <div #spacer></div>
+      <div class="search-box" stickyThing marginTop="30" [spacer]="spacer">
         <div *ngFor="let item of carePlanActivities; let i = index">
           <label>
             <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}" id="i">
@@ -175,21 +217,52 @@
 
     <div class="col-3">
       <!-- 3a. Status of Care Plan -->
-  
+      
       <!-- 3b. Summary: Client information -->
-      <div>
+      <div stickyThing marginTop="30" [spacer]="spacer">
 
-          <div class="card">
-              <div class="card-body">
-                <label class="card-title"><strong>Assigned Admin</strong></label>
-                <p>{{assignedAdmin}}</p>
-              </div>
-            </div>
-
-          <div *ngFor="let item of summary">
-              <label class="label-name"><strong>{{item.id | titlecase}}</strong></label>
-              <p>{{item.value | titlecase}}</p>
+        <div class="card">
+          <div class="card-body">
+            <label class="card-title"><strong>Assigned Admin</strong></label>
+            <p>{{assignedAdmin}}</p>
           </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <label class="card-title"><strong>Summary</strong></label>
+            <p class="card-text" *ngIf="summary.clientName">
+              <strong>Client Name: </strong> {{summary.clientName}}
+            </p>
+            <p class="card-text" *ngIf="summary.clientDOB">
+              <strong>Client Date of Birth: </strong> {{summary.clientDOB}}
+            </p>
+            <p class="card-text" *ngIf="summary.clientDepartment">
+              <strong>Client Department: </strong> {{summary.clientDepartment}}
+            </p>
+            <p class="card-text" *ngIf="summary.jobTitle">
+              <strong>Job Title: </strong> {{summary.jobTitle}}
+            </p>
+            <p class="card-text" *ngIf="summary.clientBranch">
+              <strong>Client Branch: </strong> {{summary.clientBranch}}
+            </p>
+            <p class="card-text" *ngIf="summary.psohpService">
+              <strong>PSOHP Service: </strong> {{summary.psohpService}}
+            </p>
+            <p class="card-text" *ngIf="summary.submittingDepartment">
+              <strong>Submitting Department: </strong> {{summary.submittingDepartment}}
+            </p>
+            <p class="card-text" *ngIf="summary.receivingDepartment">
+              <strong>Receiving Department: </strong> {{summary.receivingDepartment}}
+            </p>
+            <p class="card-text" *ngIf="summary.ohagOccupation">
+              <strong>OHAG Occupation: </strong> {{summary.ohagOccupation}}
+            </p>
+            <p class="card-text" *ngIf="summary.ohagEnvironmentalModifier">
+              <strong>OHAG Environmental Modifier: </strong> {{summary.ohagEnvironmentalModifier}}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   
