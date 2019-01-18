@@ -92,7 +92,7 @@ export class DashboardComponent implements OnInit {
   switchSortChoice = true;
   enableAll;
   cursorClassEnables;
-  showParams;
+  showParams = null;
   constructor(
     private oauthService: OAuthService,
     private userService: UserService,
@@ -310,7 +310,9 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/region-summary']);
   }
   employeeSearch() {
+    this.showParams = null;
     let searchParams = '';
+    console.log(this.arrOfVar);
     this.arrOfVar.forEach((element) => {
       if (element.data !== null) {
         if (searchParams.length === 0) {
@@ -320,28 +322,26 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
-    console.log(searchParams);
     // if (this.clientId.data) {
     //   searchParams = this.clientId.prefix + this.clientId.data + searchParams;
     // }
 
-    // this.arrOfVar.forEach((element, index) => {
-    //   if (element.data !== null) {
-    //     if (this.showParams.length === 0) {
-    //       this.showParams = element.data;
-    //     } else {
-    //       this.showParams += ', ' + element.data;
-    //     }
-    //   }
-    // });
+    this.arrOfVar.forEach((element, index) => {
+      if (element.data) {
+        if (!this.showParams) {
+          this.showParams = element.data;
+        } else {
+          this.showParams += ', ' + element.data;
+        }
+      }
+    });
 
     if (this.employeeType) {
       this.addParams (this.employeeType);
     }
-    if (this.departmentOfUser) {
-      this.addParams (this.departmentOfUser);
+    if (this.clientDepartment) {
+      this.addParams (this.clientDepartment);
     }
-    console.log(this.showParams);
 
     this.patientService
       .getPatientData(searchParams)
