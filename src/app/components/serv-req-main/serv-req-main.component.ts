@@ -415,14 +415,36 @@ export class ServReqMainComponent implements OnInit {
 
   }
   getCreatedBy(serviceRequestObj) {
+
     if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1') {
       return this.getLinkValueFromObject(serviceRequestObj, 'Created By', 1);
     }
     if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
-      return '-';
-      }
+      serviceRequestObj['item'].forEach(item => {
+        if (item['text'] === 'Name of the Requester') {
+          if (item['answer']) {
+            item['answer'].forEach(answer => {
+              if (answer) {
+                return answer['valueString'];
+              }
+            });
+          } else {
+            return '-';
+          }
+        }
+      });
+    }
 
   }
+
+  checkIfSubject(object: any) {
+    if (object['subject']) {
+      return object['subject']['display'];
+    } else {
+      return '-';
+    }
+  }
+
 
   getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
     let result = '-';
