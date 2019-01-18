@@ -21,29 +21,29 @@
   </div> -->
         <section class="form-section">
             <div class="row">
-                <div class="col-6">
+                <div class="col-6" *ngIf="newArr.ServiceRequestId">
                     <label class="label-name">Service Request Id</label>
                     <input disabled=true placeholder="{{ newArr.ServiceRequestId }}" class="form-control field-box-name">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.FirstName">
                     <label class="label-name">First Name</label>
                     <input disabled=true placeholder="{{ newArr.FirstName }}" class="form-control field-box-name">
                 </div>
-                <div class="col-6">
+                <div class="col-6" *ngIf="newArr.LastName">
                     <label class="label-name">Last Name</label>
                     <input disabled=true placeholder="{{ newArr.LastName }}" class="form-control field-box-name">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.DateofBirth">
                     <label class="label-name">Date of Birth</label>
                     <input disabled=true placeholder="{{ newArr.DateofBirth }}" class="form-control field-box-name">
                 </div>
-                <div class="col-6">
+                <div class="col-6" *ngIf="newArr.EmployeePRI">
                     <label class="label-name">Employee PRI</label>
                     <input disabled=true placeholder="{{ newArr.EmployeePRI }}" class="form-control field-box-name">
                 </div>
@@ -51,38 +51,38 @@
         </section>
         <section class="form-section">
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.PSOHPService">
                     <label class="label-name">PSOHP Service</label>
                     <input disabled=true placeholder="{{ newArr.PSOHPService }}" class="form-control field-box-name">
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.EmployingDepartmentBranch">
                     <label class="label-name">Employing Department Branch</label>
                     <input disabled=true placeholder="{{ newArr.EmployingDepartmentBranch }}" class="form-control field-box-name">
                 </div>
-                <div class="col-6">
+                <div class="col-6" *ngIf="newArr.EmployingDepartmentName">
                     <label class="label-name">Employing Department Name</label>
                     <input disabled=true placeholder="{{ newArr.EmployingDepartmentName }}" class="form-control field-box-name">
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.SubmittingDepartment">
                     <label class="label-name">Submitting Department</label>
                     <input disabled=true placeholder="{{ newArr.SubmittingDepartment }}" class="form-control field-box-name">
                 </div>
-                <div class="col-6">
+                <div class="col-6" *ngIf="newArr.ReceivingDepartment">
                     <label class="label-name">Receiving Department</label>
                     <input disabled=true placeholder="{{ newArr.ReceivingDepartment }}" class="form-control field-box-name">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.RegionalOfficeforProcessing">
                     <label class="label-name">Regional Office for Processing</label>
                     <input disabled=true placeholder="{{ newArr.RegionalOfficeforProcessing }}" class="form-control field-box-name">
                 </div>
-                <div class="col-6">
+                <div class="col-6" *ngIf="newArr.JobTitle">
                     <label class="label-name">Job Title</label>
                     <input disabled=true placeholder="{{ newArr.JobTitle }}" class="form-control field-box-name">
                 </div>
@@ -92,24 +92,24 @@
         <section class="form-section">
 
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.Instructionsregardingtherequest">
                     <label class="label-name">Instructions regarding the request</label>
                     <input disabled=true placeholder="{{ newArr.Instructionsregardingtherequest }}" class="form-control field-box-name">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.OHAGOccupation">
                     <label class="label-name">OHAG Occupation</label>
                     <input disabled=true placeholder="{{ newArr.OHAGOccupation }}" class="form-control field-box-name">
                 </div>
-                <div class="col-6">
+                <div class="col-6" *ngIf="newArr.OHAGEnvironmentalModifier">
                     <label class="label-name">OHAG Environment Modifier</label>
-                    <input disabled=true placeholder="{{ newArr.OHAGEnvironmentModifier }}" class="form-control field-box-name">
+                    <input disabled=true placeholder="{{ newArr.OHAGEnvironmentalModifier }}" class="form-control field-box-name">
                 </div>
             </div>
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.OHAGExposureModifier">
                     <label class="label-name">OHAG Exposure Modifier</label>
                     <input disabled=true placeholder="{{ newArr.OHAGExposureModifier }}" class="form-control field-box-name">
                 </div>
@@ -120,18 +120,18 @@
         <section class="form-section">
 
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.NoteforEmployeeavailabilityforappointment">
                     <label class="label-name">Note for Employee availability for appointment</label>
                     <input disabled=true placeholder="{{ newArr.NoteforEmployeeavailabilityforappointment }}" class="form-control field-box-name">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-6">
+                    <div class="col-6" *ngIf="newArr.Instructionsregardingtherequest">
                     <label class="label-name">Instructions regarding the request</label>
                     <input disabled=true placeholder="{{ newArr.Instructionsregardingtherequest }}" class="form-control field-box-name">
                 </div>
-                <div class="col-6">
+                <div class="col-6" *ngIf="newArr.status">
                     <label class="label-name">Status</label>
                     <input disabled=true placeholder="{{ newArr.status }}" class="form-control field-box-name">
                 </div>
