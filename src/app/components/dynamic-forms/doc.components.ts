@@ -46,7 +46,7 @@ import { QuestionnaireService } from '../../service/questionnaire.service';
                                 <td>{{doc['content'][0]['attachment']['contentType']}}</td>
                                 <td>{{doc['content'][0]['attachment']['size'] }}</td>
                               </tr>
-      
+
                                 </tbody>
 
                               </table>
@@ -128,9 +128,9 @@ export class DocComponent implements Field {
           that.createItemReferenceObject(data);
         }
       );
-      
+
       console.log (contentAttachment);
-      
+
       return reader.result;
     };
 
