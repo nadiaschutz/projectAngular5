@@ -71,10 +71,10 @@
       <div>
 
 
-        <div class="client-button-row">
+        <div class="client-button-row" [ngClass]="roleInSession">
           <div>
             <div class="col">
-              <button type="button" id="new-client-button" class="btn  float-right regular-dark-button " (click)="enableAllFunction()">Show All Record</button>
+              <button type="button" id="new-client-button" class="btn  float-right regular-dark-button "  (click)="enableAllFunction()">Show All Record</button>
 
             </div>
           </div>
