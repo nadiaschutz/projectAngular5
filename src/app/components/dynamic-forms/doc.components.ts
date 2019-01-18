@@ -14,7 +14,7 @@ import { QuestionnaireService } from '../../service/questionnaire.service';
 
 
 
-                  <div class="col-12-custom">
+                  <div class="col-12-custom" *ngIf="documents">
                       <h6>documents</h6>
                       <div class="button-section">
                           <span class="btn regular-button btn-file" (change)='addDocument($event)'>
@@ -38,13 +38,13 @@ import { QuestionnaireService } from '../../service/questionnaire.service';
                                 </thead>
                                 <tbody class="body-table">
 
-                                <tr *ngIf="documents">
-                                <td>{{documents['id']}}</td>
-                                <td >{{documents['content'][0]['attachment']['creation'] | date: 'dd/MM/yyyy'}}</td>
-                                <td class="cursor" (click)="downloadFile(documents)">{{documents['content'][0]['attachment']['title']}}</td>
+                                <tr *ngFor="let doc of documents">
+                                <td>{{doc['id']}}</td>
+                                <td >{{doc['content'][0]['attachment']['creation'] | date: 'dd/MM/yyyy'}}</td>
+                                <td class="cursor" (click)="downloadFile(doc)">{{doc['content'][0]['attachment']['title']}}</td>
                                 <td>Medical Note</td>
-                                <td>{{documents['content'][0]['attachment']['contentType']}}</td>
-                                <td>{{documents['content'][0]['attachment']['size'] }}</td>
+                                <td>{{doc['content'][0]['attachment']['contentType']}}</td>
+                                <td>{{doc['content'][0]['attachment']['size'] }}</td>
                               </tr>
       
                                 </tbody>
@@ -60,7 +60,7 @@ import { QuestionnaireService } from '../../service/questionnaire.service';
   `
 })
 export class DocComponent implements Field {
-  documents = null;
+  documents = [];
   itemReference;
 
   config: FieldConfig;
@@ -158,7 +158,7 @@ export class DocComponent implements Field {
   }
 
   retrieveDocuments(data) {
-    this.documents = data;
+    this.documents.push(data);
     console.log (this.documents);
   }
 
