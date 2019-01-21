@@ -187,7 +187,7 @@
     </section>
 
     <ng-template #employeeListSection>
-      <section class="form-section">
+      <section class="form-section" *ngIf="dependentArray.length > 0"> 
         <div class='header'>
           <h6>Related to</h6>
         </div>

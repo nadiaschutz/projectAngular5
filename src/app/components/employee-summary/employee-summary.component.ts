@@ -490,6 +490,7 @@ export class EmployeeSummaryComponent implements OnInit {
         }
       });
     }
+    console.log(this.dependentArray.length)
     // if (data.entry) {
     //   data.entry.forEach(element => {
     //     const individualEntry = element.resource;
@@ -671,9 +672,17 @@ export class EmployeeSummaryComponent implements OnInit {
       this.employeeFormGroup.controls['addressCountry'].patchValue(address.country);
     });
 
-    this.employeeFormGroup.controls['jobTitle'].patchValue(this.selected['jobtitle']['valueString']);
-    this.employeeFormGroup.controls['departmentName'].patchValue(this.selected['department']['valueString']);
-    this.employeeFormGroup.controls['departmentBranch'].patchValue(this.selected['branch']['valueString']);
+    if (this.selected['jobtitle']) {
+      this.employeeFormGroup.controls['jobTitle'].patchValue(this.selected['jobtitle']['valueString']);
+    }
+
+    if (this.selected['department']) {
+      this.employeeFormGroup.controls['departmentName'].patchValue(this.selected['department']['valueString']);
+    }
+
+    if (this.selected['branch']) {
+      this.employeeFormGroup.controls['departmentBranch'].patchValue(this.selected['branch']['valueString']);
+    }
 
     if (this.selected['crossref1']) {
       this.employeeFormGroup.controls['referenceOne'].patchValue(this.selected['crossref1']['valueString']);
