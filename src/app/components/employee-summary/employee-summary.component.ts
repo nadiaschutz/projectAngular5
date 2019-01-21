@@ -27,7 +27,6 @@ export interface LanguageType {
   templateUrl: './employee-summary.component.html',
   styleUrls: ['./employee-summary.component.scss']
 })
-
 export class EmployeeSummaryComponent implements OnInit {
   summaryId = '';
   // linkID = 'a44109ad-e58b-47cd-b348-7556e4d2c117';
@@ -150,14 +149,11 @@ export class EmployeeSummaryComponent implements OnInit {
   // tslint:disable-next-line:max-line-length
   // provinces =
 
-
   // list of countries
   countries = ['Canada'];
 
   minDate: Date;
   maxDate: Date;
-
-
 
   constructor(
     public translate: TranslateService,
@@ -168,7 +164,6 @@ export class EmployeeSummaryComponent implements OnInit {
     private router: Router,
     private qrequestService: QrequestService
   ) {
-
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
 
@@ -191,7 +186,10 @@ export class EmployeeSummaryComponent implements OnInit {
     { value: 'British Columbia', viewValue: 'British Columbia' },
     { value: 'Manitoba', viewValue: 'Manitoba' },
     { value: 'New Brunswick', viewValue: 'New Brunswick' },
-    { value: 'Newfoundland and Labrador', viewValue: 'Newfoundland and Labrador' },
+    {
+      value: 'Newfoundland and Labrador',
+      viewValue: 'Newfoundland and Labrador'
+    },
     { value: 'Northwest Territories', viewValue: 'Northwest Territories' },
     { value: 'Nova Scotia', viewValue: 'Nova Scotia' },
     { value: 'Nunavut', viewValue: 'Nunavut' },
@@ -199,15 +197,15 @@ export class EmployeeSummaryComponent implements OnInit {
     { value: 'Prince Edward Island', viewValue: 'Prince Edward Island' },
     { value: 'Quebec', viewValue: 'Quebec' },
     { value: 'Saskatchewan', viewValue: 'Saskatchewan' },
-    { value: 'Yukon', viewValue: 'Yukon' }];
-    dateinform;
-
+    { value: 'Yukon', viewValue: 'Yukon' }
+  ];
+  dateinform;
 
   ngOnInit() {
-
-    this.datePickerConfig = Object.assign({},
-      {containerClass: 'theme-dark-blue',
-      dateInputFormat: 'YYYY-MM-DD'});
+    this.datePickerConfig = Object.assign(
+      {},
+      { containerClass: 'theme-dark-blue', dateInputFormat: 'YYYY-MM-DD' }
+    );
 
     this.userService
       .getDepartmentList()
@@ -275,67 +273,46 @@ export class EmployeeSummaryComponent implements OnInit {
     }
 
     // if (this.selected) {
-      this.employeeFormGroup = this.fb.group({
-        // Employee type
-        // type: new FormControl(null, Validators.required),
+    this.employeeFormGroup = this.fb.group({
+      // Employee type
+      // type: new FormControl(null, Validators.required),
 
-        // Last Name
-        familyName: new FormControl('', [
-          Validators.required,
-          Validators.minLength(2)
-        ]),
+      // Last Name
+      familyName: new FormControl('', [
+        Validators.required,
+        Validators.minLength(2)
+      ]),
 
-        // First Name
-        givenName: new FormControl('', [
-          Validators.required,
-          Validators.minLength(2)
-        ]),
+      // First Name
+      givenName: new FormControl('', [
+        Validators.required,
+        Validators.minLength(2)
+      ]),
 
-        // Date of Birth
-        dob: new FormControl('', Validators.required),
+      // Date of Birth
+      dob: new FormControl('', Validators.required),
 
-        // Email
-        email: new FormControl('', [Validators.required, Validators.email]),
+      // Email
+      email: new FormControl('', [Validators.required, Validators.email]),
 
-        // Client's phone number (can be any number of their choosing)
-        phoneNumber: new FormControl('', [
-          Validators.required,
-          // Validators.pattern('/^[1-9]{1}[0-9]{9}$/')
-          Validators.minLength(10),
-          Validators.maxLength(10),
-        ]),
+      // Client's phone number (can be any number of their choosing)
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        // Validators.pattern('/^[1-9]{1}[0-9]{9}$/')
+        Validators.minLength(10),
+        Validators.maxLength(10)
+      ]),
 
-        // Address section
-        addressStreet: new FormControl('', Validators.required),
-        addressCity: new FormControl('', Validators.required),
-        addressProv: new FormControl('', Validators.required),
-        addressPcode: new FormControl('', [Validators.required]),
-        addressCountry: new FormControl('', Validators.required),
+      // Address section
+      addressStreet: new FormControl('', Validators.required),
+      addressCity: new FormControl('', Validators.required),
+      addressProv: new FormControl('', Validators.required),
+      addressPcode: new FormControl('', [Validators.required]),
+      addressCountry: new FormControl('', Validators.required),
 
-        // Clients preferred language
-        language: new FormControl('', Validators.required),
-
-        // PRI (handled in Patient with an extension)
-        id: new FormControl('', [
-          Validators.required,
-          Validators.minLength(9),
-          Validators.maxLength(9)
-        ]),
-
-        // Job title (handled in Patient with an extension)
-        jobTitle: new FormControl('', Validators.required),
-
-        // Department they work in (handled in Patient with an extension)
-        departmentName: new FormControl('', Validators.required),
-
-        // Branch they work in (handled in Patient with an extension)
-        departmentBranch: new FormControl('', Validators.required),
-
-        // References related to the employee (handled in Patient with an extension)
-        referenceOne: [''],
-        referenceTwo: ['']
-      });
-    // }
+      // Clients preferred language
+      language: new FormControl('', Validators.required)
+    });
 
   }
 
@@ -461,7 +438,6 @@ export class EmployeeSummaryComponent implements OnInit {
   populateDependentArray(data) {
     this.dependentArray = [];
     if (this.selected['employeeType']['valueString'] === 'Employee') {
-
       data.entry.forEach(element => {
         const individualEntry = element.resource;
         for (const extensions of individualEntry.extension) {
@@ -490,17 +466,7 @@ export class EmployeeSummaryComponent implements OnInit {
         }
       });
     }
-    console.log(this.dependentArray.length)
-    // if (data.entry) {
-    //   data.entry.forEach(element => {
-    //     const individualEntry = element.resource;
-    //     for (const extension of individualEntry.extension) {
-    //       if (extension.valueString === 'Dependent') {
-    //         this.dependentArray.push(individualEntry);
-    //       }
-    //     }
-    //   });
-    // }
+
   }
 
   routeToSummary(data) {
@@ -509,11 +475,11 @@ export class EmployeeSummaryComponent implements OnInit {
     this.summaryId = data;
     this.userService.getSelectedID(data);
     this.patientService
-        .getPatientDataByID(this.summaryId)
-        .subscribe(
-          dataNew => this.populatePatientArray(dataNew),
-          error => this.handleError(error)
-        );
+      .getPatientDataByID(this.summaryId)
+      .subscribe(
+        dataNew => this.populatePatientArray(dataNew),
+        error => this.handleError(error)
+      );
   }
   getServReqData(data) {
     console.log(data.entry);
@@ -604,7 +570,6 @@ export class EmployeeSummaryComponent implements OnInit {
     });
   }
 
-
   setBranchList(data) {
     this.branches = data.branchlist;
   }
@@ -643,64 +608,114 @@ export class EmployeeSummaryComponent implements OnInit {
   // }
 
   editEmployeeToggle() {
-
-    console.log(this.employeeFormGroup.controls['id'].value);
-
     this.editEmployee = !this.editEmployee;
-    this.employeeFormGroup.controls['familyName'].patchValue(this.selected['family']);
-    this.employeeFormGroup.controls['givenName'].patchValue(this.selected['given']);
+    this.employeeFormGroup.controls['familyName'].patchValue(
+      this.selected['family']
+    );
+    this.employeeFormGroup.controls['givenName'].patchValue(
+      this.selected['given']
+    );
     this.employeeFormGroup.controls['dob'].patchValue(this.selected['dob']);
-    this.employeeFormGroup.controls['id'].patchValue(this.selected['identifier']['value']);
     this.selected['telecom'].forEach(tele => {
       if (tele['system'] === 'email') {
         this.employeeFormGroup.controls['email'].patchValue(tele['value']);
       }
       if (tele['system'] === 'phone') {
-        this.employeeFormGroup.controls['phoneNumber'].patchValue(tele['value']);
+        this.employeeFormGroup.controls['phoneNumber'].patchValue(
+          tele['value']
+        );
       }
     });
     this.selected['communication'].forEach(language => {
       language['language']['coding'].forEach(usedLanguage => {
-        this.employeeFormGroup.controls['language'].patchValue(usedLanguage['display']);
+        this.employeeFormGroup.controls['language'].patchValue(
+          usedLanguage['display']
+        );
       });
     });
     this.selected['address'].forEach(address => {
-      this.employeeFormGroup.controls['addressStreet'].patchValue(address['line'][0]);
+      this.employeeFormGroup.controls['addressStreet'].patchValue(
+        address['line'][0]
+      );
       this.employeeFormGroup.controls['addressCity'].patchValue(address.city);
-      this.employeeFormGroup.controls['addressProv'].patchValue(this.titleCase.transform(address.state));
-      this.employeeFormGroup.controls['addressPcode'].patchValue(address.postalCode);
-      this.employeeFormGroup.controls['addressCountry'].patchValue(address.country);
+      this.employeeFormGroup.controls['addressProv'].patchValue(
+        this.titleCase.transform(address.state)
+      );
+      this.employeeFormGroup.controls['addressPcode'].patchValue(
+        address.postalCode
+      );
+      this.employeeFormGroup.controls['addressCountry'].patchValue(
+        address.country
+      );
     });
 
-    if (this.selected['jobtitle']) {
-      this.employeeFormGroup.controls['jobTitle'].patchValue(this.selected['jobtitle']['valueString']);
-    }
+    if (this.selected['employeeType']['valueString'] === 'Employee') {
+      this.employeeFormGroup.addControl(
+        'id',
+        new FormControl('', [
+          Validators.required,
+          Validators.minLength(9),
+          Validators.maxLength(9)
+        ])
+      );
 
-    if (this.selected['department']) {
-      this.employeeFormGroup.controls['departmentName'].patchValue(this.selected['department']['valueString']);
-    }
+      this.employeeFormGroup.addControl(
+        'jobTitle',
+        new FormControl('', Validators.required)
+      );
 
-    if (this.selected['branch']) {
-      this.employeeFormGroup.controls['departmentBranch'].patchValue(this.selected['branch']['valueString']);
-    }
+      this.employeeFormGroup.addControl(
+        'departmentName',
+        new FormControl('', Validators.required)
+      );
+      this.employeeFormGroup.addControl(
+        'departmentBranch',
+        new FormControl('', Validators.required)
+      );
+      this.employeeFormGroup.addControl('referenceOne', new FormControl(''));
+      this.employeeFormGroup.addControl('referenceTwo', new FormControl(''));
 
-    if (this.selected['crossref1']) {
-      this.employeeFormGroup.controls['referenceOne'].patchValue(this.selected['crossref1']['valueString']);
-    }
+      if (this.selected['identifier']) {
+        this.employeeFormGroup.controls['id'].patchValue(
+          this.selected['identifier']['value']
+        );
+      }
 
-    if (this.selected['crossref2']) {
-      this.employeeFormGroup.controls['referenceTwo'].patchValue(this.selected['crossref2']['valueString']);
+      if (this.selected['jobtitle']) {
+        this.employeeFormGroup.controls['jobTitle'].patchValue(
+          this.selected['jobtitle']['valueString']
+        );
+      }
+
+      if (this.selected['department']) {
+        this.employeeFormGroup.controls['departmentName'].patchValue(
+          this.selected['department']['valueString']
+        );
+      }
+
+      if (this.selected['branch']) {
+        this.employeeFormGroup.controls['departmentBranch'].patchValue(
+          this.selected['branch']['valueString']
+        );
+      }
+
+      if (this.selected['crossref1']) {
+        this.employeeFormGroup.controls['referenceOne'].patchValue(
+          this.selected['crossref1']['valueString']
+        );
+      }
+
+      if (this.selected['crossref2']) {
+        this.employeeFormGroup.controls['referenceTwo'].patchValue(
+          this.selected['crossref2']['valueString']
+        );
+      }
     }
 
     console.log(this.employeeFormGroup['value']);
   }
 
-  printID() {
-    console.log(this.selected['linkID']);
-  }
-
   updateEmployee() {
-
     // Generate unique ID to link new Dependents created
     // this.linkId = uuid();
 
@@ -723,78 +738,86 @@ export class EmployeeSummaryComponent implements OnInit {
     this.employee_telecom_email = new Employee.Telecom();
     this.employee_telecom_phone = new Employee.Telecom();
 
+    const extensionArray = [];
     // Employee identifer
 
-    this.employee_identifier.use = 'official';
-    this.employee_identifier.value = this.employeeFormGroup.get('id').value;
-    this.employee_identifier.system =
-      'https://bcip.smilecdr.com/fhir/employeeid';
+    if (this.selected['employeeType']['valueString'] === 'Employee') {
+      this.employee_identifier.use = 'official';
+      this.employee_identifier.value = this.employeeFormGroup.get('id').value;
+      this.employee_identifier.system =
+        'https://bcip.smilecdr.com/fhir/employeeid';
+      this.employee.identifier = [this.employee_identifier];
+    }
 
     // Employee Address
 
-    this.employee_address.city = this.employeeFormGroup
-      .get('addressCity')
-      .value;
+    this.employee_address.city = this.employeeFormGroup.get(
+      'addressCity'
+    ).value;
     this.employee_address.line = [
       this.employeeFormGroup.get('addressStreet').value.trim()
     ];
-    this.employee_address.postalCode = this.employeeFormGroup
-      .get('addressPcode')
-      .value;
-    this.employee_address.country = this.employeeFormGroup
-      .get('addressCountry')
-      .value;
-    this.employee_address.state = this.employeeFormGroup
-      .get('addressProv')
-      .value;
+    this.employee_address.postalCode = this.employeeFormGroup.get(
+      'addressPcode'
+    ).value;
+    this.employee_address.country = this.employeeFormGroup.get(
+      'addressCountry'
+    ).value;
+    this.employee_address.state = this.employeeFormGroup.get(
+      'addressProv'
+    ).value;
 
     // Extensions related to employment information
 
-    // Job title extension
+    if (this.selected['employeeType']['valueString'] === 'Employee') {
+      // Job title extension
 
-    this.employee_extension_jobtitle.url =
-      'https://bcip.smilecdr.com/fhir/jobtile';
-    this.employee_extension_jobtitle.valueString = this.employeeFormGroup.get(
-      'jobTitle'
-    ).value;
+      this.employee_extension_jobtitle.url =
+        'https://bcip.smilecdr.com/fhir/jobtile';
+      this.employee_extension_jobtitle.valueString = this.employeeFormGroup.get(
+        'jobTitle'
+      ).value;
 
-    // Workplace extension
+      // Workplace extension
 
-    this.employee_extension_workplace.url =
-      'https://bcip.smilecdr.com/fhir/workplace';
-    this.employee_extension_workplace.valueString = this.employeeFormGroup.get(
-      'departmentName'
-    ).value;
+      this.employee_extension_workplace.url =
+        'https://bcip.smilecdr.com/fhir/workplace';
+      this.employee_extension_workplace.valueString = this.employeeFormGroup.get(
+        'departmentName'
+      ).value;
 
-    // Branch extension
+      // Branch extension
 
-    this.employee_extension_branch.url =
-      'https://bcip.smilecdr.com/fhir/branch';
-    this.employee_extension_branch.valueString = this.employeeFormGroup.get(
-      'departmentBranch'
-    ).value;
+      this.employee_extension_branch.url =
+        'https://bcip.smilecdr.com/fhir/branch';
+      this.employee_extension_branch.valueString = this.employeeFormGroup.get(
+        'departmentBranch'
+      ).value;
 
-    // Cross Reference One extension
+      // Cross Reference One extension
 
-    this.employee_extension_crossreferenceone.url =
-      'https://bcip.smilecdr.com/fhir/crossreferenceone';
-    this.employee_extension_crossreferenceone.valueString = this.employeeFormGroup.get(
-      'referenceOne'
-    ).value;
+      this.employee_extension_crossreferenceone.url =
+        'https://bcip.smilecdr.com/fhir/crossreferenceone';
+      this.employee_extension_crossreferenceone.valueString = this.employeeFormGroup.get(
+        'referenceOne'
+      ).value;
 
-    // Cross Reference Two extension
+      // Cross Reference Two extension
 
-    this.employee_extension_crossreferencetwo.url =
-      'https://bcip.smilecdr.com/fhir/crossreferencetwo';
-    this.employee_extension_crossreferencetwo.valueString = this.employeeFormGroup.get(
-      'referenceTwo'
-    ).value;
+      this.employee_extension_crossreferencetwo.url =
+        'https://bcip.smilecdr.com/fhir/crossreferencetwo';
+      this.employee_extension_crossreferencetwo.valueString = this.employeeFormGroup.get(
+        'referenceTwo'
+      ).value;
+    }
 
-    // Cross Reference One extension
+    // Dependent link  extension
 
     this.employee_extension_dependentlink.url =
       'https://bcip.smilecdr.com/fhir/dependentlink';
-    this.employee_extension_dependentlink.valueString = this.selected['linkID']['valueString'];
+    this.employee_extension_dependentlink.valueString = this.selected['linkID'][
+      'valueString'
+    ];
 
     // Type extension
 
@@ -802,15 +825,23 @@ export class EmployeeSummaryComponent implements OnInit {
       'https://bcip.smilecdr.com/fhir/employeetype';
     this.employee_extension_type.valueString = 'Employee';
 
-    this.employee.extension = [
-      this.employee_extension_branch,
-      this.employee_extension_crossreferenceone,
-      this.employee_extension_dependentlink,
-      this.employee_extension_crossreferencetwo,
-      this.employee_extension_jobtitle,
-      this.employee_extension_workplace,
-      this.employee_extension_type
-    ];
+    if (this.selected['employeeType']['valueString'] === 'Employee') {
+      this.employee_extension_type.valueString = 'Employee';
+    } else {
+      this.employee_extension_type.valueString = 'Dependent';
+    }
+
+    if (this.selected['employeeType']['valueString'] === 'Employee') {
+      extensionArray.push(this.employee_extension_branch);
+      extensionArray.push(this.employee_extension_crossreferenceone);
+      extensionArray.push(this.employee_extension_workplace);
+      extensionArray.push(this.employee_extension_crossreferencetwo);
+      extensionArray.push(this.employee_extension_jobtitle);
+    }
+    extensionArray.push(this.employee_extension_type);
+    extensionArray.push(this.employee_extension_dependentlink);
+
+    this.employee.extension = extensionArray;
 
     // Employe Name
 
@@ -851,7 +882,6 @@ export class EmployeeSummaryComponent implements OnInit {
     ).value;
     this.employee_telecom_email.use = 'work';
 
-    this.employee.identifier = [this.employee_identifier];
     this.employee_language.coding = [this.employee_language_coding];
     this.employee_communication.language = this.employee_language;
     this.employee.telecom = [
@@ -873,12 +903,14 @@ export class EmployeeSummaryComponent implements OnInit {
     // console.log(this.employee)
     // console.log( JSON.stringify(this.employee))
 
-    this.patientService.updatePatient(this.selected['id'], finalJSON).subscribe(data => {
-      console.log('POST SUCCESSFUL!', data);
-      this.routeToSummary(this.selected['id']);
-      this.editEmployee = false;
-    },
-    error => this.handleError(error));
+    this.patientService.updatePatient(this.selected['id'], finalJSON).subscribe(
+      data => {
+        console.log('POST SUCCESSFUL!', data);
+        this.routeToSummary(this.selected['id']);
+        this.editEmployee = false;
+      },
+      error => this.handleError(error)
+    );
   }
 
   /**
@@ -888,14 +920,11 @@ export class EmployeeSummaryComponent implements OnInit {
    * to continue before posting the data to the server.
    */
   disableInputsBeforeSubmission() {
-
     if (this.validateForm()) {
       this.confirmSubmit = true;
       this.employeeFormGroup.disable();
       this.employeeFormGroup.updateValueAndValidity();
-
     }
-
   }
 
   /**
@@ -903,12 +932,10 @@ export class EmployeeSummaryComponent implements OnInit {
    * for disabling the textboxes during the confirmation screen
    */
   returnToEditInputs() {
-
     this.activateSubmitButton = false;
     this.confirmSubmit = false;
     this.employeeFormGroup.enable();
     this.employeeFormGroup.updateValueAndValidity();
-
   }
 
   /**
@@ -924,91 +951,4 @@ export class EmployeeSummaryComponent implements OnInit {
     }
     return this.activateSubmitButton;
   }
-
-  get resourceType() {
-    return this.employeeFormGroup.get('resourceType');
-  }
-
-  get type() {
-    return this.employeeFormGroup.get('type');
-  }
-
-  get dob() {
-    return this.employeeFormGroup.get('dob');
-  }
-
-  get phoneNumber() {
-    return this.employeeFormGroup.get('phoneNumber');
-  }
-
-  get password() {
-    return this.employeeFormGroup.get('password');
-  }
-
-  get email() {
-    return this.employeeFormGroup.get('email');
-  }
-
-  get givenName() {
-    return this.employeeFormGroup.get('givenName');
-  }
-
-  get familyName() {
-    return this.employeeFormGroup.get('familyName');
-  }
-
-  get addressCity() {
-    return this.employeeFormGroup.get('addressCity');
-  }
-
-  get addressStreet() {
-    return this.employeeFormGroup.get('addressStreet');
-  }
-  get addressProv() {
-    return this.employeeFormGroup.get('addressProv');
-  }
-  get addressPcode() {
-    return this.employeeFormGroup.get('addressPcode');
-  }
-  get addressCountry() {
-    return this.employeeFormGroup.get('addressCountry');
-  }
-  get language() {
-    return this.employeeFormGroup.get('language');
-  }
-
-  get userName() {
-    return this.employeeFormGroup.get('userName');
-  }
-
-  get agree() {
-    return this.employeeFormGroup.get('agree');
-  }
-
-  get id() {
-    return this.employeeFormGroup.get('id');
-  }
-
-  get jobTitle() {
-    return this.employeeFormGroup.get('jobTitle');
-  }
-
-  get departmentName() {
-    return this.employeeFormGroup.get('departmentName');
-  }
-
-  get departmentBranch() {
-    return this.employeeFormGroup.get('departmentBranch');
-  }
-
-  get referenceOne() {
-    return this.employeeFormGroup.get('referenceOne');
-  }
-
-  get referenceTwo() {
-    return this.employeeFormGroup.get('referenceTwo');
-  }
-
-
-
 }
