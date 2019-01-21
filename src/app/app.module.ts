@@ -39,7 +39,6 @@ import { TasklistComponent } from './components/tasklist/tasklist.component';
 import { DatePipe, TitleCasePipe } from '@angular/common';
 import { StaffService } from '../app/service/staff.service';
 import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
-import { EditEmployeeComponent } from './components/edit-employee/edit-employee.component';
 import { ListPageComponent } from './components/staff/list-page/list-page.component';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
@@ -113,7 +112,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     ListPageComponent,
     ClientOnsubmitSummaryComponent,
     TasklistComponent,
-    EditEmployeeComponent,
     EditNewServiceRequestComponent,
     WorkScreenComponent,
     CreateTaskComponent,
