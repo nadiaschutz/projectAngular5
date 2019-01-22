@@ -117,7 +117,7 @@ export class NewServiceRequestNoClientComponent
     private userService: UserService,
     private patientService: PatientService,
     private oauthService: OAuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.userName = this.oauthService.getIdentityClaims()['name'];
@@ -125,8 +125,11 @@ export class NewServiceRequestNoClientComponent
     console.log(this.userName);
 
     // smile user ID
+
     console.log(this.oauthService.getIdentityClaims()['sub']);
+    // fhir user id
     this.userService.subscribeUserFHIRID().subscribe(data => console.log(data));
+
 
     // getting formId to display form fields
     this.questionnaireService
