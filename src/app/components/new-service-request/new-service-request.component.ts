@@ -31,6 +31,7 @@ export class NewServiceRequestComponent implements OnInit {
   formId = 'TEST1';
   responseId = null;
   clientId = null;
+  smileUserId = null;
   clientGivenName = null;
   clientFamilyName = null;
   clientBoD = null;
@@ -84,10 +85,15 @@ export class NewServiceRequestComponent implements OnInit {
     private questionnaireService: QuestionnaireService,
     private router: Router,
     private userService: UserService,
-    private patientService: PatientService
-  ) {}
+    private patientService: PatientService,
+    private oauthService: OAuthService
+  ) { }
 
   ngOnInit() {
+
+
+
+
     this.createdsuccessfully = false;
     this.questionnaireService
       .getForm(this.formId)
@@ -95,6 +101,11 @@ export class NewServiceRequestComponent implements OnInit {
         data => this.processQuestionnaire(data),
         error => this.handleError(error)
       );
+
+
+    // smile user ID
+    this.smileUserId = this.oauthService.getIdentityClaims()['sub'];
+    console.log(this.smileUserId);
     this.clientId = this.userService.returnSelectedID();
     console.log(this.clientId);
 
@@ -144,7 +155,7 @@ export class NewServiceRequestComponent implements OnInit {
       reader.readAsDataURL(fileList[0]);
     }
     const self = this;
-    reader.onloadend = function() {
+    reader.onloadend = function () {
 
       file = reader.result;
       trimmedFile = file.split(',').pop();
@@ -167,14 +178,14 @@ export class NewServiceRequestComponent implements OnInit {
       documentReferenceCoding.system = 'http://loinc.org';
       documentReferenceCoding.display = 'Administrative note';
 
-      documentReferenceCodeableConcept.coding = [ documentReferenceCoding];
+      documentReferenceCodeableConcept.coding = [documentReferenceCoding];
       documentReferenceCodeableConcept.text = 'Administrative note';
 
       documentReference.instant = date;
       documentReference.type = documentReferenceCodeableConcept;
       documentReference.content = [content];
 
-  
+
       self.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
         data => self.documents = data,
         error => self.handleError(error)
@@ -509,7 +520,7 @@ export class NewServiceRequestComponent implements OnInit {
           answer: el.answer[0].valueReference.reference
         };
       }
-      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved' ) {
+      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved') {
         return {
           linkId: el.linkId,
           text: el.text,
