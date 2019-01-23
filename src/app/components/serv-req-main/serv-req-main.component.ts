@@ -8,6 +8,7 @@ import { PatientService } from 'src/app/service/patient.service';
 import { UtilService } from 'src/app/service/util.service';
 import { FormsModule } from '@angular/forms';
 import { link } from 'fs';
+import { UserService } from 'src/app/service/user.service';
 
 @Component({
   selector: 'app-serv-req-main',
@@ -51,78 +52,7 @@ export class ServReqMainComponent implements OnInit {
 
   statusArr = ['in-progress', 'Waiting', 'Action Required', 'Cancelled', 'Suspended', 'Closed'];
   regionArr = ['Atlantic', 'Quebec', 'NCR', 'Ontario', 'Prairies', 'Pacific'];
-  departmentArr = [
-    'Agriculture and Agri-Foods Canada (AAFC)',
-    'Canada Border Services Agency (CBSA)',
-    'Canadian Coast Guard (CCG)',
-    'Canadian Grain Commission (CGC)',
-    'Canadian Heritage (PCH)',
-    'Canadian Northern Economic Development Agency (CanNor)',
-    'Canadian Space Agency (CSA)',
-    'Communications Research Centre Canada (CRC)',
-    'Correctional Service Canada (CSC)',
-    'Defence Research and Development Canada (DRDC)',
-    'Department of Finance Canada (FIN)',
-    'Department of Justice Canada (JC)',
-    'Employment and Social Development Canada (ESDC)',
-    'Environment and Climate Change Canada (ECCC)',
-    'Fisheries and Oceans Canada (DFO)',
-    'Global Affairs Canada (GAC)',
-    'Health Canada (HC)',
-    'Immigration, Refugees and Citizenship Canada (IRCC)',
-    'Indigenous and Northern Affairs Canada (INAC)',
-    'Innovation, Science and Economic Development Canada (ISEDC)',
-    'National Defence (DND)',
-    'Natural Resources Canada (NRCan)',
-    'Privy Council Office (PCO)',
-    'Public Health Agency of Canada (PHAC)',
-    'Public Prosecution Service of Canada (PPSC)',
-    'Public Safety Canada (PSC)',
-    'Public Services and Procurement Canada (PSPC)',
-    'Royal Canadian Mounted Police (RCMP)',
-    'Service Canada (SC)(ServCan)',
-    'Shared Services Canada (SSC)',
-    'Statistics Canada (StatCan)',
-    'Transport Canada (TC)',
-    'Transportation Safety Board of Canada (TSB)',
-    'Treasurer Board of Canada Secretariat (TBS)',
-    'Veterans Affairs Canada (VAC)',
-    'Administrative Tribunals Support Service of Canada (ATSSC)',
-    'Atlantic Canada Opportunities Agency (ACOA)',
-    'Canada Economic Development for Quebec regions (CED)',
-    'Canada Industrial Relations Board (CIRB)',
-    'Canada School of Public Service (CSPS)',
-    'Canadian Dairy Commission (CDC)',
-    'Canadian Radio-television & Telecommunication Commission (CTRC)(CRTC)',
-    'Canadian Transportation Agency (CTA)',
-    'International Joint Commission (IJC)',
-    'Office of the Chief Electoral Officer of Canada (CEO)',
-    'Office of the Commissioner for Federal Judicial Affairs (FJA)',
-    'Office of the Privacy Commissioner of Canada (OPC)',
-    'Office of the Registrar of the Supreme Court of Canada (ORSCC)',
-    'Office of the Secretary to the Governor General (OSGG)',
-    'Public Service Commission of Canada (PSC)',
-    'Status of Woman Canada (SWC)',
-    'Canadian Environmental Assessment Agency (CEAA)',
-    'Canadian Human Rights Commission (CHRC)',
-    'Canadian Intellectual Property Office (CIPO)',
-    'Canadian International Trade Tribunal (CITT)',
-    'Courts Administration Service (CAS)',
-    'Farm Products Council of Canada (FPCC)',
-    'Federal Economic Development Agency for Southern Ontario (FedDev Ontario)',
-    'Immigration and Refugee Board of Canada (IRB)',
-    'Infrastructure Canada (INFC)',
-    'Library and Archive Canada (LAC)',
-    'Military Grievance External Review Committee (MGERC)',
-    'Office of the Commissioner of Official Languages (OCOL)',
-    'Office of the Information Commissioner of Canada (OIC)',
-    'Office of the Public Sector Integrity Commissioner (PSIC)',
-    'Parole Board of Canada (PBC)',
-    'Patented Medicine Prices Review Board (PMPRB)',
-    'Translation Bureau (SVC)',
-    'Western Economic Diversification Canada (WD)',
-    'Public Service Occupational Health Program (PSOHP)'
-  ];
+  departmentList = [];
 
 
   // comes from the responce object
@@ -141,6 +71,7 @@ export class ServReqMainComponent implements OnInit {
   constructor(
     private oauthService: OAuthService,
     private httpClient: HttpClient,
+    private userService: UserService,
     private qrequestService: QrequestService,
     private patientService: PatientService,
     private utilService: UtilService,
@@ -152,6 +83,20 @@ export class ServReqMainComponent implements OnInit {
       data => this.handleSuccessAll(data),
       error => this.handleErrorAll(error)
     );
+
+    /**
+     * Initializes the list of branches from our system
+     */
+    this.userService.fetchAllDepartmentNames().subscribe (
+      data => this.populateDeptNames(data),
+      error => this.handleError(error)
+    );
+  }
+
+  populateDeptNames(data: any) {
+    data.entry.forEach(element => {
+      this.departmentList.push(element['resource']['name']);
+    });
   }
 
   dataSearch() {
@@ -276,26 +221,26 @@ export class ServReqMainComponent implements OnInit {
     // let clientDepartmentMatches = false;
     let regionAndClientDepartmentMatches = true;
     data.entry.forEach(eachEntry => {
-      console.log(eachEntry);
-      eachEntry.resource.item.forEach(item => {
-        if (this.region && this.clientDepartment) {
-          console.log('fix me');
-        } else if (this.region && !this.clientDepartment) {
-          if (this.region && item.text === 'Regional Office for Processing') {
-            regionAndClientDepartmentMatches = this.checkStringMatches(item, this.region, regionAndClientDepartmentMatches);
-          } else {
-            return '-';
-          }
-        } else if (this.clientDepartment && !this.region) {
-          if (this.clientDepartment && item.text === 'Submitting Department') {
-            regionAndClientDepartmentMatches = this.checkStringMatches(item, this.clientDepartment, regionAndClientDepartmentMatches);
+      if (eachEntry['resource']['item']) {
+        eachEntry.resource.item.forEach(item => {
+          if (this.region && this.clientDepartment) {
+            console.log('fix me', this.clientDepartment);
+          } else if (this.region && !this.clientDepartment) {
+            if (this.region && item.text === 'Regional Office for Processing') {
+              regionAndClientDepartmentMatches = this.checkStringMatches(item, this.region, regionAndClientDepartmentMatches);
+            } else {
+              return '-';
+            }
+          } else if (this.clientDepartment && !this.region) {
+            if (this.clientDepartment && item.text === 'Submitting Department') {
+              regionAndClientDepartmentMatches = this.checkStringMatches(item, this.clientDepartment, regionAndClientDepartmentMatches);
 
-          } else {
-            return '-';
+            } else {
+              return '-';
+            }
           }
-        }
-
-      });
+        });
+      }
       if (regionAndClientDepartmentMatches) {
         console.log('checkign SR object', this.servRequests);
         console.log('5', regionAndClientDepartmentMatches);
