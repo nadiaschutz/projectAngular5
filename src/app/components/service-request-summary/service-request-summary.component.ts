@@ -59,7 +59,7 @@ export class ServiceRequestSummaryComponent implements OnInit {
 
   ngOnInit() {
     const selectedServiceRequestID = this.route.snapshot.paramMap.get('id');
-    console.log(selectedServiceRequestID);
+    console.log('id passed', selectedServiceRequestID);
     this.qrequestService
       .getAllQuestionnaireResponseData(selectedServiceRequestID)
       .subscribe(data => {

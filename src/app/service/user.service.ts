@@ -11,6 +11,7 @@ export class UserService {
   private newRoleSubject = new Rx.BehaviorSubject<string>(null);
   private newUserNameSubject = new Rx.BehaviorSubject<string>(null);
   private newUserFHIRIDSubject = new Rx.BehaviorSubject<string>(null);
+  private newUserDeptSubject = new Rx.BehaviorSubject<string>(null);
 
   selectedServiceRequestID;
   selectID = '';
@@ -88,7 +89,9 @@ export class UserService {
     this.oauthService
       .fetchTokenUsingPasswordFlowAndLoadUserProfile(user, pass, header)
       .then(() => {
-        this.newUserNameSubject.next(this.oauthService.getIdentityClaims()['name']);
+        this.newUserNameSubject.next(
+          this.oauthService.getIdentityClaims()['name']
+        );
         this.router.navigate(['/dashboard']);
       });
   }
@@ -102,7 +105,6 @@ export class UserService {
       { headers: header }
     );
   }
-
 
   fetchCurrentUserData(sub) {
     const header = this.getJsonAPIHeaders();
@@ -154,6 +156,49 @@ export class UserService {
     // this.getUserRoleInSession();
   }
 
+  fetchCurrentUserDept() {
+    this.fetchCurrentUserData(
+      this.oauthService.getIdentityClaims()['sub']
+    ).subscribe(user => {
+      user['users'].forEach(element => {
+        if (
+          element['familyName'] ===
+            this.oauthService.getIdentityClaims()['family_name'] &&
+          element['givenName'] ===
+            this.oauthService.getIdentityClaims()['given_name'] &&
+          element['username'] === this.oauthService.getIdentityClaims()['sub']
+        ) {
+          let pracID: any;
+
+          if (element['defaultLaunchContexts']) {
+            pracID = element['defaultLaunchContexts'][0]['resourceId'];
+            this.newUserFHIRIDSubject.next(pracID);
+
+            this.getPractitionerRoleByPractitionerID(pracID).subscribe(
+              deptData => {
+                if (deptData['total'] > 0) {
+                  deptData['entry'].forEach(deptElement => {
+                    const individualEntry = deptElement.resource;
+                    // console.log(individualEntry)
+                    this.getAnyFHIRObjectByReference(
+                        '/' + individualEntry['organization']['reference']
+                      )
+                      .subscribe(role => {
+                        if (!role['id'].includes('PSOHP')) {
+                          this.newUserDeptSubject.next(role['name']);
+                        }
+                      });
+
+                  });
+                }
+              }
+            );
+          }
+        }
+      });
+    });
+  }
+
   fetchUserName() {
     this.newUserNameSubject.next(this.oauthService.getIdentityClaims()['name']);
   }
@@ -166,11 +211,13 @@ export class UserService {
     return this.newUserFHIRIDSubject.asObservable();
   }
 
+  subscribeUserDept() {
+    return this.newUserDeptSubject.asObservable();
+  }
 
   unsubscribeUserNameData() {
     this.newUserNameSubject.unsubscribe();
   }
-
 
   subscribeRoleData() {
     return this.newRoleSubject.asObservable();
@@ -179,7 +226,6 @@ export class UserService {
   unsubscribeRoleData() {
     this.newRoleSubject.unsubscribe();
   }
-
 
   getDepartmentList() {
     return this.httpClient.get<JSON>('../../assets/departments.json');
@@ -361,5 +407,4 @@ export class UserService {
     });
     return headers;
   }
-
 }

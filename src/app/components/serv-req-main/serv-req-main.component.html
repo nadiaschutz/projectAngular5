@@ -79,7 +79,7 @@
                 (ngModelChange)="clientDepartment = $event"  
                 name = "department">
                 <option [ngValue]="null">Select Department</option>
-                <option *ngFor="let department of departmentList" 
+                <option *ngFor="let department of departmentArr" 
                 [value]="department"
                 >
                   {{department}}
@@ -142,7 +142,7 @@
               <tr>
                 <th scope="col" (click)="sorterFunction('id')">Service Request ID</th>
                 <th scope="col" (click)="sorterFunction('authored')">Date</th>
-                <th scope="col" (click)="sorterFunction('service')">PSOHP Service</th>
+                <th scope="col" (click)="sorterFunction('assessment')">PSOHP Service</th>
                 <th scope="col" (click)="sorterFunction('id')">Assesment Type</th>
                 <th scope="col" (click)="sorterFunction('id')">Region</th>
                 <th scope="col" (click)="sorterFunction('id')">Created By</th>
@@ -151,15 +151,15 @@
               </tr>
             </thead>
             <tbody *ngIf="str===null" class="body-table">
-              <tr *ngFor="let service of servRequests"  class="request-list">
-                <td routerLink="/service-request-summary/{{service['id']}}" class="cursor" skipLocationChange>{{service['id']}}</td>
-                <td>{{service['authored'] | date: 'dd/MM/yyyy'}}</td>
-                <td>{{getServiceType(service)}}</td>
-                <td>{{getAssessmentType(service)}}</td>
-                <td>{{getRegion(service)}}</td>
-                <td>{{getCreatedBy(service)}}</td>
-                <td>{{checkIfSubject(service)}}</td>
-                <td>{{service['status']}}</td>
+              <tr *ngFor="let q of servRequests"  class="request-list">
+                <td routerLink="/service-request-summary/{{q.id}}" class="cursor" skipLocationChange>{{q.id}}</td>
+                <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
+                <td>{{getServiceType(q)}}</td>
+                <td>{{getAssessmentType(q)}}</td>
+                <td>{{getRegion(q)}}</td>
+                <td>{{getCreatedBy(q)}}</td>
+                <td>{{checkIfSubject(q)}}</td>
+                <td>{{q.status}}</td>
               </tr>
             </tbody>
           </table>
