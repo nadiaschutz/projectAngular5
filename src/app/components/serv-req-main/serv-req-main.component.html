@@ -79,7 +79,7 @@
                 (ngModelChange)="clientDepartment = $event"  
                 name = "department">
                 <option [ngValue]="null">Select Department</option>
-                <option *ngFor="let department of departmentArr" 
+                <option *ngFor="let department of departmentList" 
                 [value]="department"
                 >
                   {{department}}
