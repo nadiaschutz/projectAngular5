@@ -50,11 +50,19 @@ export class ServReqMainComponent implements OnInit {
     data: null
   };
 
-  statusArr = ['in-progress', 'Waiting', 'Action Required', 'Cancelled', 'Suspended', 'Closed'];
+  statusArr = [
+    'in-progress',
+    'Waiting',
+    'Action Required',
+    'Cancelled',
+    'Suspended',
+    'Closed'
+  ];
   regionArr = ['Atlantic', 'Quebec', 'NCR', 'Ontario', 'Prairies', 'Pacific'];
   departmentList = [];
 
-
+  currentUserDepartment;
+  currentUserRole;
   // comes from the responce object
   region: string = null;
   regionString;
@@ -66,7 +74,14 @@ export class ServReqMainComponent implements OnInit {
 
   myString;
   str = null;
-  private arrOfVar = [this.givenName, this.familyName, this.serviceRequestId, this.dateOfBirth, this.status, this.date];
+  private arrOfVar = [
+    this.givenName,
+    this.familyName,
+    this.serviceRequestId,
+    this.dateOfBirth,
+    this.status,
+    this.date
+  ];
 
   constructor(
     private oauthService: OAuthService,
@@ -76,21 +91,43 @@ export class ServReqMainComponent implements OnInit {
     private patientService: PatientService,
     private utilService: UtilService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.qrequestService.getData('').subscribe(
-      data => this.handleSuccessAll(data),
-      error => this.handleErrorAll(error)
-    );
+    this.userService.fetchUserName();
+    this.userService.fetchCurrentRole();
+    this.userService.fetchCurrentUserDept();
 
     /**
      * Initializes the list of branches from our system
      */
-    this.userService.fetchAllDepartmentNames().subscribe (
-      data => this.populateDeptNames(data),
+    this.userService
+      .fetchAllDepartmentNames()
+      .subscribe(
+        data => this.populateDeptNames(data),
+        error => this.handleError(error)
+      );
+
+    this.userService.subscribeUserDept().subscribe(
+      data => {
+        this.currentUserDepartment = data;
+      },
       error => this.handleError(error)
     );
+
+    this.qrequestService
+    .getData('')
+    .subscribe(
+      qData => this.handleSuccessAll(qData),
+      error => this.handleErrorAll(error)
+    );
+
+    this.userService
+      .subscribeRoleData()
+      .subscribe(
+        data => (this.currentUserRole = data),
+        error => this.handleError(error)
+      );
   }
 
   populateDeptNames(data: any) {
@@ -117,15 +154,19 @@ export class ServReqMainComponent implements OnInit {
 
     // calling get request with updated string
     if (this.str) {
-      this.qrequestService.getData(this.str).subscribe(
-        data => this.handleSuccess(data),
-        error => this.handleError(error)
-      );
+      this.qrequestService
+        .getData(this.str)
+        .subscribe(
+          data => this.handleSuccess(data),
+          error => this.handleError(error)
+        );
     } else if (!this.str && (this.region || this.clientDepartment)) {
-      this.qrequestService.getData('').subscribe(
-        data => this.handleSuccessAll(data),
-        error => this.handleErrorAll(error)
-      );
+      this.qrequestService
+        .getData('')
+        .subscribe(
+          data => this.handleSuccessAll(data),
+          error => this.handleErrorAll(error)
+        );
     }
   }
 
@@ -171,8 +212,24 @@ export class ServReqMainComponent implements OnInit {
         this.filterRegionAndClientDepartment(data);
       } else {
         console.log('i am not sorting anything');
-        data.entry.forEach(element => {
-          this.servRequests.push(element.resource);
+        data['entry'].forEach(element => {
+          const individualEntry = element['resource'];
+
+          if (
+            individualEntry['item'] &&
+            this.currentUserRole === 'clientdept'
+          ) {
+            individualEntry['item'].forEach(department => {
+              if (
+                department['text'] === 'Submitting Department' &&
+                department['answer'][0] === this.currentUserDepartment
+              ) {
+                this.servRequests.push(individualEntry);
+              }
+            });
+          } else {
+            this.servRequests.push(individualEntry);
+          }
         });
         console.log(this.servRequests);
       }
@@ -212,7 +269,6 @@ export class ServReqMainComponent implements OnInit {
     this.clientDepartment = null;
   }
 
-
   filterRegionAndClientDepartment(data) {
     console.log('checkign SR object', this.servRequests);
     console.log(data);
@@ -227,14 +283,24 @@ export class ServReqMainComponent implements OnInit {
             console.log('fix me', this.clientDepartment);
           } else if (this.region && !this.clientDepartment) {
             if (this.region && item.text === 'Regional Office for Processing') {
-              regionAndClientDepartmentMatches = this.checkStringMatches(item, this.region, regionAndClientDepartmentMatches);
+              regionAndClientDepartmentMatches = this.checkStringMatches(
+                item,
+                this.region,
+                regionAndClientDepartmentMatches
+              );
             } else {
               return '-';
             }
           } else if (this.clientDepartment && !this.region) {
-            if (this.clientDepartment && item.text === 'Submitting Department') {
-              regionAndClientDepartmentMatches = this.checkStringMatches(item, this.clientDepartment, regionAndClientDepartmentMatches);
-
+            if (
+              this.clientDepartment &&
+              item.text === 'Submitting Department'
+            ) {
+              regionAndClientDepartmentMatches = this.checkStringMatches(
+                item,
+                this.clientDepartment,
+                regionAndClientDepartmentMatches
+              );
             } else {
               return '-';
             }
@@ -246,12 +312,10 @@ export class ServReqMainComponent implements OnInit {
         console.log('5', regionAndClientDepartmentMatches);
         this.servRequests.push(eachEntry.resource);
       }
-    }
-    );
+    });
   }
 
   checkStringMatches(item, matchingItem, matchesBoolean: boolean) {
-
     console.log('checkStringMatches', item);
     console.log('checkStringMatches', matchingItem);
     console.log('checkStringMatches', matchesBoolean);
@@ -274,7 +338,6 @@ export class ServReqMainComponent implements OnInit {
     }
   }
 
-
   handleError(error) {
     console.log(error);
   }
@@ -282,56 +345,81 @@ export class ServReqMainComponent implements OnInit {
     let result = '-';
     // console.log(serviceRequestObj.questionnaire.reference);
     if (serviceRequestObj.item) {
-      if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+      if (
+        serviceRequestObj.questionnaire &&
+        serviceRequestObj.questionnaire.reference === 'Questionnaire/1953'
+      ) {
         serviceRequestObj.item.forEach(item => {
           if (item.text === 'PSOHP Service') {
             if (item['answer']) {
-              result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('(') + 1, item.answer[0].valueString.length);
+              result = item.answer[0].valueString.substring(
+                item.answer[0].valueString.indexOf('(') + 1,
+                item.answer[0].valueString.length
+              );
               result = result.substring(0, result.length - 1);
             }
           }
-
         });
       } else {
         serviceRequestObj.item.forEach(item => {
           if (item.text === 'PSOHP Service') {
             if (item['answer']) {
-              result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('(') + 1, item.answer[0].valueString.length);
+              result = item.answer[0].valueString.substring(
+                item.answer[0].valueString.indexOf('(') + 1,
+                item.answer[0].valueString.length
+              );
               result = result.substring(0, result.length - 1);
             }
           }
-
         });
       }
     }
     return result;
   }
 
-
-
   getAssessmentType(serviceRequestObj): string {
-
-    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1') {
+    if (
+      serviceRequestObj.questionnaire &&
+      serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1'
+    ) {
       return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
     }
-    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+    if (
+      serviceRequestObj.questionnaire &&
+      serviceRequestObj.questionnaire.reference === 'Questionnaire/1953'
+    ) {
       return '-';
     }
   }
   getRegion(serviceRequestObj): string {
-    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1') {
-      return this.getLinkValueFromObject(serviceRequestObj, 'Regional Office for Processing', 1);
+    if (
+      serviceRequestObj.questionnaire &&
+      serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1'
+    ) {
+      return this.getLinkValueFromObject(
+        serviceRequestObj,
+        'Regional Office for Processing',
+        1
+      );
     }
-    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+    if (
+      serviceRequestObj.questionnaire &&
+      serviceRequestObj.questionnaire.reference === 'Questionnaire/1953'
+    ) {
       return '-';
     }
   }
   getCreatedBy(serviceRequestObj) {
-
-    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1') {
+    if (
+      serviceRequestObj.questionnaire &&
+      serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1'
+    ) {
       return this.getLinkValueFromObject(serviceRequestObj, 'Created By', 1);
     }
-    if (serviceRequestObj.questionnaire && serviceRequestObj.questionnaire.reference === 'Questionnaire/1953') {
+    if (
+      serviceRequestObj.questionnaire &&
+      serviceRequestObj.questionnaire.reference === 'Questionnaire/1953'
+    ) {
       serviceRequestObj['item'].forEach(item => {
         if (item['text'] === 'Name of the Requester') {
           if (item['answer']) {
@@ -346,7 +434,6 @@ export class ServReqMainComponent implements OnInit {
         }
       });
     }
-
   }
 
   checkIfSubject(object: any) {
@@ -357,7 +444,6 @@ export class ServReqMainComponent implements OnInit {
     }
   }
 
-
   getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
     let result = '-';
     if (serviceRequestObj.item) {
@@ -366,12 +452,16 @@ export class ServReqMainComponent implements OnInit {
         if (item.text === text) {
           if (item['answer']) {
             if (item.answer[0].valueString.indexOf('-') > 0) {
-
               if (dashNum === 1) {
-                result = item.answer[0].valueString.substring(0, item.answer[0].valueString.indexOf('-'));
+                result = item.answer[0].valueString.substring(
+                  0,
+                  item.answer[0].valueString.indexOf('-')
+                );
               }
               if (dashNum === 2) {
-                result = item.answer[0].valueString.substring(item.answer[0].valueString.indexOf('-') + 1);
+                result = item.answer[0].valueString.substring(
+                  item.answer[0].valueString.indexOf('-') + 1
+                );
                 result = result.substring(0, result.indexOf('-'));
               }
             } else {
@@ -393,12 +483,18 @@ export class ServReqMainComponent implements OnInit {
 
   getClientName(servReqobj) {
     let result = '-';
-    if (servReqobj.questionnaire && servReqobj.questionnaire.reference === 'Questionnaire/TEST1') {
+    if (
+      servReqobj.questionnaire &&
+      servReqobj.questionnaire.reference === 'Questionnaire/TEST1'
+    ) {
       if (servReqobj.subject && servReqobj.subject.display) {
         result = servReqobj.subject.display;
       }
     }
-    if (servReqobj.questionnaire && servReqobj.questionnaire.reference === 'Questionnaire/1953') {
+    if (
+      servReqobj.questionnaire &&
+      servReqobj.questionnaire.reference === 'Questionnaire/1953'
+    ) {
       // console.log(servReqobj.item);
       // servReqobj.item.forEach(element => {
       //   if (element.text === 'Name of the Requester') {
@@ -409,5 +505,4 @@ export class ServReqMainComponent implements OnInit {
     }
     return result;
   }
-
 }

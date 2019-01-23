@@ -87,7 +87,6 @@ export class DashboardComponent implements OnInit {
   patientList = [];
   order;
   departmentOfUser: string;
-  doneFlag;
   roleInSession = 'emptyClass';
   switchSortChoice = true;
   enableAll;
@@ -105,6 +104,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.userService.fetchUserName();
     this.userService.fetchCurrentRole();
+    this.userService.fetchCurrentUserDept();
 
     this.sortUsersObjects();
     this.userService.subscribeRoleData().subscribe(data => {

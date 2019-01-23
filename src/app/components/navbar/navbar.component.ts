@@ -17,10 +17,16 @@ export class NavbarComponent implements OnInit {
 
   userName;
   userRole;
+  userDept;
   hasLoggedIn ;
   ngOnInit() {
 
     this.hasLoggedIn = false;
+
+    // this.userService.subscribeUserDept().subscribe (
+    //   data => this.userDept = data,
+    //   error => console.log(error)
+    // );
 
     this.userService.subscribeRoleData().subscribe(
       data => {
