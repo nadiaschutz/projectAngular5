@@ -1,14 +1,34 @@
-#logo{
+#logo {
     height: 27px;
 }
-.dark-blue{
+
+.navbar-light {
+    background-color: white !important; 
+}
+
+.navbar-logo {
+    margin-bottom: 6px;
+}
+
+.dark-blue {
     height: 61px;
-    background-color: #334f75;
+    background-color: white;
 }
-.btn-link{
-    color: white;
+
+.btn-link {
+    color: #626262;
 }
+
+.avatar-circle {
+    margin-top: 6px;
+}
+
+.user-role-section {
+    font-size: 13px;
+}
+
 .navbar-brand {
-    color: white !important;
+    color: #334f75 !important;
     cursor: pointer;
+    font-weight: bold;
 }

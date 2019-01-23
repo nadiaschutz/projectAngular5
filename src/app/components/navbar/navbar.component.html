@@ -1,4 +1,4 @@
-<nav class="navbar navbar-light bg-light">
+<nav class="navbar navbar-light bg-light navbar-logo">
   <img src="../../../assets/healthcanada-logo.png" alt="" id="logo">
 </nav>
 <nav class="navbar navbar-dark dark-blue navbar-expand-lg">
@@ -12,13 +12,14 @@
     <div class="float-right">
 
       <div class="dropdown " *ngIf="hasLoggedIn">
-        <ngx-avatar class="float-left" name="{{userID}}" size="45"></ngx-avatar>
-        <button class="btn btn-link ml-auto dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+        <ngx-avatar class="float-left avatar-circle" name="{{userName}}" size="45"></ngx-avatar>
+        <button class="btn btn-link ml-auto dropdown-toggle" type="button" id="dropdownMenuButtonLogin" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
-          {{userID}}
+          {{userName}}<br/>
+          <span class="user-role-section">{{userRole | titlecase }} </span>
         </button>
-        <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-          <a class="dropdown-item" (click)="logout()" href="#">Log Out</a>
+        <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="dropdownMenuButtonLogin">
+          <a class="dropdown-item" (click)="logout()" >Log Out</a>
           <a class="dropdown-item" href="#">Preferences</a>
         </div>
       </div>
