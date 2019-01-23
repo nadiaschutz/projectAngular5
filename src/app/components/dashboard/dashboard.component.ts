@@ -118,6 +118,13 @@ export class DashboardComponent implements OnInit {
         // console.log(this.cursorClassEnables);
       }
     });
+
+    this.userService
+      .fetchAllDepartmentNames()
+      .subscribe(
+        data => this.populateDeptNames(data),
+        error => this.handleError(error)
+      );
   }
 
   enableAllFunction() {
@@ -131,7 +138,7 @@ export class DashboardComponent implements OnInit {
         data => this.handleSuccess(data),
         error => this.handleError(error)
       );
-    this.getDepartmentsList();
+    // this.getDepartmentsList();
   }
 
   sortUsersObjects() {
@@ -364,9 +371,20 @@ export class DashboardComponent implements OnInit {
     this.clientId.data = null;
     this.dateOfBirth.data = null;
   }
-  getDepartmentsList() {
-    this.httpClient.get('../../../assets/departments.json').subscribe(data => {
-      this.listOfDepartments = data['department'];
+  // getDepartmentsList() {
+  //   this.httpClient.get('../../../assets/departments.json').subscribe(data => {
+  //     this.listOfDepartments = data['department'];
+  //   });
+  // }
+
+    /**
+   * Used in conjunction with the user service. Gets all Department Names
+   * stored on the server to link to a Practitioner.
+   * @param data
+   */
+  populateDeptNames(data: any) {
+    data.entry.forEach(element => {
+      this.listOfDepartments.push(element['resource']['name']);
     });
   }
 }
