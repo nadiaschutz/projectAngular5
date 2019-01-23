@@ -111,7 +111,6 @@ export class ServReqMainComponent implements OnInit {
     this.userService.subscribeUserDept().subscribe(
       data => {
         this.currentUserDepartment = data;
-        
       },
       error => this.handleError(error)
     );

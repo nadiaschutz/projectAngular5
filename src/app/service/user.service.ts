@@ -188,7 +188,6 @@ export class UserService {
                           this.newUserDeptSubject.next(role['name']);
                         }
                       });
-
                   });
                 }
               }
