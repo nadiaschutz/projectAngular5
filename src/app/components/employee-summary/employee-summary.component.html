@@ -4,9 +4,13 @@
 
 
   <div class="edit-button-row">
-      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Edit Client Record</button>
+      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()" *ngIf="!editEmployee; else backButton">Edit Client Record</button>
+
+      <ng-template #backButton>
+        <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Cancel Edit</button>
+      </ng-template>
     </div>
-  
+   
   <div *ngIf="selected && !editEmployee">
 
     <div class="main-header">
