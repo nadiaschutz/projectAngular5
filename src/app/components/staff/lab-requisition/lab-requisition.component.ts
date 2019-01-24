@@ -31,9 +31,6 @@ export class LabRequisitionComponent implements OnInit {
   private utilService: UtilService, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    // For Lab test form, dropdown 1 to select Type of requisition
-    // Dropdown 2 to select Service Delivery
-    // Instructions
     this.staffService.getLabTestQuestionnaire().subscribe(data => {
       this.processQuestionnaire(data);
       this.fetchAllClinicians();
@@ -50,7 +47,6 @@ export class LabRequisitionComponent implements OnInit {
     episodeOfCareAndRelatedData.entry.forEach(element => {
       if (element.resource.resourceType === 'Patient') {
         this.patient = this.utilService.getPatientJsonObjectFromPatientFhirObject(element.resource);
-        console.log(this.patient);
       }
     });
   }
@@ -68,7 +64,6 @@ export class LabRequisitionComponent implements OnInit {
       }
       this.labTestArray.push(temp);
     });
-    console.log(this.labTestArray);
   }
 
   fetchAllClinicians() {
@@ -85,7 +80,6 @@ export class LabRequisitionComponent implements OnInit {
   }
 
   checkForChangeInRequisitionType() {
-    console.log(this.requisitionType);
     if (this.requisitionType === 'Medical Information' || 'Consultation') {
       this.consultationFormGroup = this.formBuilder.group({
         assignTo: new FormControl(''),
