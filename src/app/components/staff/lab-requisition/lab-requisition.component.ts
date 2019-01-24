@@ -24,7 +24,7 @@ export class LabRequisitionComponent implements OnInit {
   clinicians = [];
   selectedClinician = '';
   environment = environment;
-  patient = {};
+  patient = {} as any;
   consultationFormGroup: FormGroup;
 
   constructor(private staffService: StaffService, private userService: UserService,
