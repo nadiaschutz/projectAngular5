@@ -25,8 +25,20 @@ import { FieldConfig } from '../dynamic-forms/field-config.interface';
 import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
 import { CustomValidator } from '../dynamic-forms/custom-validator';
 import { FileDetector } from 'protractor';
+import { ValueAddress } from 'src/app/interface/organization';
 
 class TextInput {
+  static create(event: FieldConfig) {
+    return {
+      type: event.type,
+      label: event.label,
+      inputType: event.inputType,
+      name: event.name
+    };
+  }
+}
+
+class SelectField {
   static create(event: FieldConfig) {
     return {
       type: event.type,
@@ -43,11 +55,11 @@ class TextInput {
   styleUrls: ['./new-service-request-no-client.component.scss']
 })
 export class NewServiceRequestNoClientComponent
-  implements OnInit, AfterViewInit {
+  implements OnInit {
   // @ViewChild('serReqForm') form: NgForm;
 
   // var for styling each form field
-  style = 'col-5';
+  style = 'col-11';
   configuration;
   userName;
 
@@ -61,10 +73,13 @@ export class NewServiceRequestNoClientComponent
   clientGivenName = null;
   clientFamilyName = null;
   clientBoD = null;
+  currentUserDepartment;
+  currentUserRole;
 
   documents = null;
   fileLink = [];
   itemReference;
+  departmentList = [];
 
   today = new Date();
   myDay;
@@ -120,15 +135,48 @@ export class NewServiceRequestNoClientComponent
   ) { }
 
   ngOnInit() {
-    this.userName = this.oauthService.getIdentityClaims()['name'];
 
-    console.log(this.userName);
+    this.userService.fetchUserName();
+    this.userService.fetchCurrentRole();
+    this.userService.fetchCurrentUserDept();
+
+    /**
+     * Initializes the list of branches from our system
+     */
+    this.userService
+      .fetchAllDepartmentNames()
+      .subscribe(
+        data => this.populateDeptNames(data),
+        error => this.handleError(error)
+      );
+
+    this.userService.subscribeUserDept().subscribe(
+      data => {
+        this.currentUserDepartment = data;
+        this.settingFunction();
+        this.userName = this.oauthService.getIdentityClaims()['name'];
+
+        console.log(this.currentUserDepartment);
+      },
+      error => this.responseError(error)
+    );
+
+    this.userService
+      .subscribeRoleData()
+      .subscribe(
+        data => (this.currentUserRole = data),
+        error => this.handleError(error)
+      );
 
     // smile user ID
 
-    console.log(this.oauthService.getIdentityClaims()['sub']);
+    console.log(this.userName);
+
     // fhir user id
     this.userService.subscribeUserFHIRID().subscribe(data => console.log(data));
+
+
+
 
 
     // getting formId to display form fields
@@ -203,6 +251,16 @@ export class NewServiceRequestNoClientComponent
     this.itemReference = data;
   }
 
+
+  populateDeptNames(data: any) {
+    data.entry.forEach(element => {
+      if (element['resource']['name']) {
+        this.departmentList.push(element['resource']['name']);
+
+      }
+    });
+  }
+
   /***************** savingData() *****************/
 
   savingData() {
@@ -248,6 +306,7 @@ export class NewServiceRequestNoClientComponent
       // text
       if (el.type === 'text') {
         if (el.text === 'Contact Phone No') {
+
           const formField = this.textInput(el);
           formField['placeholder'] = 'type your phone';
           formField['validation'] = [
@@ -257,12 +316,16 @@ export class NewServiceRequestNoClientComponent
             )
           ];
           return formField;
+
         } else if (el.text === 'Contact Email') {
+
           const formField = this.textInput(el);
           formField['placeholder'] = 'type your email';
           formField['validation'] = [Validators.required, Validators.email];
           return formField;
+
         } else if (el.text === 'Name of the Requester') {
+
           const formField = this.textInput(el);
           formField['placeholder'] = 'type your text';
           formField['value'] = this.userName;
@@ -271,6 +334,7 @@ export class NewServiceRequestNoClientComponent
             Validators.minLength(4)
           ];
           return formField;
+
         } else {
           return {
             type: 'input',
@@ -287,14 +351,24 @@ export class NewServiceRequestNoClientComponent
         el.option.forEach(el1 => {
           options.push(el1.valueCoding.code);
         });
-        return {
-          type: 'select',
-          label: el.text,
-          name: el.text,
-          options: options,
-          placeholder: 'Select an option',
-          validation: [Validators.required]
-        };
+        if (el.text === 'Department Name') {
+          const formField = this.selectField(el);
+          formField['value'] = this.userName;
+          formField['options'] = this.departmentList;
+          return formField;
+
+        } else {
+          return {
+            type: 'select',
+            label: el.text,
+            name: el.text,
+            options: options,
+            placeholder: 'Select an option',
+            validation: [Validators.required],
+            value: options[0]
+          };
+        }
+
       }
     });
     this.configuration.push(
@@ -350,8 +424,25 @@ export class NewServiceRequestNoClientComponent
       name: data.text
     });
   }
+
+
+
+  // options: options,
+  // validation: [Validators.required]
+
+  selectField(data) {
+    return SelectField.create({
+      type: 'select',
+      label: data.text,
+      inputType: 'text',
+      placeholder: 'Select an option',
+      name: data.text,
+      validation: [Validators.required]
+    });
+  }
   /************************************************/
-  ngAfterViewInit() {
+  settingFunction() {
+    // ngAfterViewInit() {
     setTimeout(() => {
       let previousValid = this.form.valid;
       this.form.changes.subscribe(() => {
@@ -362,12 +453,16 @@ export class NewServiceRequestNoClientComponent
       });
 
       this.form.setDisabled('submit', true);
-      console.log(this.userName);
+      // console.log('checking at this spot:', this.currentUserDepartment);
+      // console.log(this.form);
+
+      this.form.setValue('Department Name', this.currentUserDepartment);
+      this.form.setValue('Name of the Requester', this.userName);
     });
 
     // if you want to style 2 form fields per a row do these :
-    this.wrap();
-    this.addDiv();
+    // this.wrap();
+    // this.addDiv();
   }
 
   /************************************************/
@@ -511,6 +606,11 @@ export class NewServiceRequestNoClientComponent
       }
     });
     console.log(this.itemToSend);
+  }
+
+
+  handleError(error) {
+    console.log(error);
   }
 
   downloadFile(name) {
