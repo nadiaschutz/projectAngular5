@@ -6,9 +6,16 @@ import { Router } from '@angular/router';
 import { multicast } from 'rxjs/operators';
 import { PatientService } from 'src/app/service/patient.service';
 import { UtilService } from 'src/app/service/util.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder } from '@angular/forms';
 import { link } from 'fs';
 import { UserService } from 'src/app/service/user.service';
+import { formatDate } from '@angular/common';
+
+// import { Pipe, PipeTransform, Inject, LOCALE_ID } from '@angular/core';
+// import { DatePipe } from '@angular/common';
+
+
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-serv-req-main',
@@ -17,6 +24,7 @@ import { UserService } from 'src/app/service/user.service';
 })
 export class ServReqMainComponent implements OnInit {
   // QuestionnaireResponse?subject:Patient.name=Pughna&subject:Patient.given=Lasrt
+  datePickerConfig: Partial<BsDatepickerConfig>;
 
   params = [];
 
@@ -61,6 +69,10 @@ export class ServReqMainComponent implements OnInit {
   regionArr = ['Atlantic', 'Quebec', 'NCR', 'Ontario', 'Prairies', 'Pacific'];
   departmentList = [];
 
+
+  minDate: Date;
+  maxDate: Date;
+
   currentUserDepartment;
   currentUserRole;
   // comes from the responce object
@@ -83,6 +95,8 @@ export class ServReqMainComponent implements OnInit {
     this.date
   ];
 
+  public dpConfig: Partial<BsDatepickerConfig> = new BsDatepickerConfig();
+
   constructor(
     private oauthService: OAuthService,
     private httpClient: HttpClient,
@@ -90,10 +104,24 @@ export class ServReqMainComponent implements OnInit {
     private qrequestService: QrequestService,
     private patientService: PatientService,
     private utilService: UtilService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private fb: FormBuilder,
+    private bsDatepickerConfig: BsDatepickerConfig,
+    
+    
+  ) {
+    this.minDate = new Date();
+    this.maxDate = new Date();
+    this.minDate.setDate(this.minDate.getDate() - 43800);
+    this.maxDate.setDate(this.maxDate.getDate());
+  }
 
   ngOnInit() {
+    this.datePickerConfig = Object.assign({},
+      {
+        containerClass: 'theme-dark-blue',
+        dateInputFormat: 'YYYY-MM-DD'
+      });
     this.userService.fetchUserName();
     this.userService.fetchCurrentRole();
     this.userService.fetchCurrentUserDept();
@@ -116,11 +144,11 @@ export class ServReqMainComponent implements OnInit {
     );
 
     this.qrequestService
-    .getData('')
-    .subscribe(
-      qData => this.handleSuccessAll(qData),
-      error => this.handleErrorAll(error)
-    );
+      .getData('')
+      .subscribe(
+        qData => this.handleSuccessAll(qData),
+        error => this.handleErrorAll(error)
+      );
 
     this.userService
       .subscribeRoleData()
@@ -139,6 +167,12 @@ export class ServReqMainComponent implements OnInit {
   dataSearch() {
     console.log('region', this.region);
     console.log('department', this.clientDepartment);
+    console.log(this.arrOfVar);
+    this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
+    this.date.data = formatDate(this.date.data, 'yyyy-MM-dd', 'en');
+    console.log(this.dateOfBirth.data);
+    console.log(this.date.data);
+
 
     this.arrOfVar.forEach((element, index) => {
       if (element.data !== null) {
