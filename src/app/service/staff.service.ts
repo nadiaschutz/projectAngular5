@@ -98,6 +98,12 @@ export class StaffService {
     });
   }
 
+  getIncludedItemsForEpisodeOfCare(episodeOfCareId) {
+    return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_id=' + episodeOfCareId, {
+      headers: this.getHeaders()
+    });
+  }
+
   getAnyFHIRObjectByReference(query: string) {
     return this.http.get(environment.queryURI + query, {
       headers: this.getHeaders()
@@ -181,6 +187,14 @@ export class StaffService {
       'Cache-Control': 'no-cache'
     });
     return headers;
+  }
+
+  getLabTestQuestionnaire() {
+    return this.http.get(environment.queryURI + '/Questionnaire/3476', {headers: this.getHeaders()});
+  }
+
+  saveProcedureRequest(procedureRequestData) {
+    return this.http.post(environment.queryURI + '/ProcedureRequest', procedureRequestData, {headers: this.getPostHeaders()});
   }
 
 }

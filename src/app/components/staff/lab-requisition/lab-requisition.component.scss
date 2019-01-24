@@ -1,0 +1,58 @@
+.form-control {
+    width: 200px;
+    margin-left: 15px;
+}
+
+ul{
+    -webkit-columns: 3;
+    -moz-columns: 3;
+    columns: 3;
+    // border: 1px solid #ccc;
+    list-style-type: none;
+    margin-top: 20px;
+    padding: 15px;
+}
+
+.item {
+    margin-top: 15px;
+}
+
+.item-header {
+    margin-top: 15px;
+}
+
+label {
+    font-size: 13px;
+}
+
+.checklist-item {
+    margin-left: 10px
+}
+
+.field {
+    margin-top: 15px;
+}
+.search-box {
+    margin-top: 15px;
+}
+
+.instructions {
+    height: 80px;
+    width: 200px;
+}
+.page {
+    background-color: #f3f3f3;
+}
+
+.checkbox {
+    position: absolute;
+    // top: 0;
+    // left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+}
+.special-button {
+    background-color: #398ef2;
+    color: white;
+}

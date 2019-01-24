@@ -253,6 +253,7 @@ export class WorkScreenComponent implements OnInit {
         this.summary['ohagEnvironmentalModifier'] = item['answer'][0]['valueString'];
       }
     });
+    console.log(this.summary);
   }
 
   processTaskForHistory(task) {

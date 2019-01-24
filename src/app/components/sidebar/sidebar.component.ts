@@ -55,4 +55,8 @@ export class SidebarComponent implements OnInit {
   acccountCreation() {
     this.router.navigateByUrl('/newaccount');
   }
+
+  labRequisition() {
+    this.router.navigateByUrl('/staff/lab-requisition');
+  }
 }
