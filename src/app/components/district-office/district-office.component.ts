@@ -90,6 +90,7 @@ export class DistrictOfficeComponent implements OnInit {
   }
 
   getRegion(organization: string) {
+    console.log(organization);
     if (this.regionalOfficesWithId !== {}) {
       const organizationReference = organization['reference'];
       const organizationId = organizationReference.substring(

@@ -28,6 +28,7 @@ $red: #CC3D4F;
 
 html,
 body {
+    background-color:#f3f3f3;
     box-sizing: border-box;
     height: 100%;
     margin: 0;
@@ -46,7 +47,11 @@ h2 {
 }
 
 h4,
-h5,
+h5 {
+    text-transform: capitalize;
+}
+
+
 h6 {
     text-transform: uppercase;
 }
@@ -119,6 +124,26 @@ row:after,
     color: white;
 }
 
+.view-button {
+    // @include buttons-global;
+    // width: 100px;
+    width: 41%;
+    margin: 30px 0 0 -119px;
+    border-radius: 2px;
+    background-color: $white;
+    font-size: 13px;
+    border: 1px solid $grey;
+    // padding: 5px;
+    // margin: 5px;
+    // padding-left: 30px;
+    // padding-right: 30px;
+    // background-color: #334f75;
+}
+
+.view-summary-name-box {
+    // width: auto;
+    width: 80%;
+}
 
 
 .move-dwn {
@@ -258,15 +283,35 @@ select:-webkit-autofill:focus {
     padding-bottom: 70px;
 }
 
+.client-heading-row {
+    margin-bottom: 39px;
+}
+
+.edit-button-row {
+    padding: 0 0 0 0;
+}
+
+.client-button-row {
+    margin: 0 0 -35px 0;
+}
+
+#new-client-button {
+    margin: 0px 0 20px 170px;
+}
+
+.show-all-records-button {
+    margin-right: -15%;
+}
+
 .table {
     thead {
-        background-color: $light-grey;
+        background-color: #f8f8f8;
         border: 1px solid $grey;
-
+        color: #6F6F6F;
         th {
             font-size: 11px;
             font-weight: normal;
-            text-transform: uppercase;
+            text-transform: capitalize;
         }
     }
 
@@ -304,6 +349,11 @@ select:-webkit-autofill:focus {
     color: #dc3545;
 }
 
+
+.telecom-title {
+    text-transform: capitalize;
+}
+
 .button-row {
     padding: 20px;
 }
@@ -313,7 +363,7 @@ select:-webkit-autofill:focus {
 }
 
 .manager {
-    display: none;
+    // display: none;
 }
 
 .superuser {
@@ -420,6 +470,7 @@ select:-webkit-autofill:focus {
         opacity: 0;
     }
 }
+
 
 /* responsive styling for medium devices */
 // @media screen and (max-width: 992px) {

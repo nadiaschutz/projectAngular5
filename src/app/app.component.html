@@ -1,6 +1,6 @@
 <app-navbar *ngIf="showNavBars"></app-navbar>
 <div *ngIf="!showNavBars">
-        <nav class="navbar navbar-light bg-light">
+        <nav class="navbar navbar-light navbar-logo bg-light">
             <img src="../assets/healthcanada-logo.png" alt="" id="logo">
         </nav>
         <nav class="navbar navbar-expand-md navbar-dark dark-blue">    
@@ -13,6 +13,6 @@
             <app-sidebar style="min-height:100vh;"> </app-sidebar>
         </div>
         <div [ngClass]="showNavBars? 'col-11 col-lg-10 col-md-9' : 'col-12'">
-            <router-outlet style="min-height:100vh;"></router-outlet>
+            <router-outlet (activate)="onActivate($event)" style="min-height:100vh;"></router-outlet>
         </div> 
     </div>

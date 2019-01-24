@@ -14,7 +14,7 @@ import { QuestionnaireService } from '../../service/questionnaire.service';
 
 
 
-                  <div class="col-12-custom">
+                  <div class="col-12-custom" *ngIf="documents">
                       <h6>documents</h6>
                       <div class="button-section">
                           <span class="btn regular-button btn-file" (change)='addDocument($event)'>
@@ -38,14 +38,15 @@ import { QuestionnaireService } from '../../service/questionnaire.service';
                                 </thead>
                                 <tbody class="body-table">
 
-                                  <tr *ngIf="documents">
-                                    <td>{{documents.id}}</td>
-                                    <td>{{documents.content[0].attachment.creation | date: 'dd/MM/yyyy'}}</td>
-                                    <td>{{documents.content[0].attachment.title }}</td>
-                                    <td>Medical Note</td>
-                                    <td>{{documents.content[0].attachment.contentType }}</td>
-                                    <td>{{documents.content[0].attachment.size }}</td>
-                                  </tr>
+                                <tr *ngFor="let doc of documents">
+                                <td>{{doc['id']}}</td>
+                                <td >{{doc['content'][0]['attachment']['creation'] | date: 'dd/MM/yyyy'}}</td>
+                                <td class="cursor" (click)="downloadFile(doc)">{{doc['content'][0]['attachment']['title']}}</td>
+                                <td>Medical Note</td>
+                                <td>{{doc['content'][0]['attachment']['contentType']}}</td>
+                                <td>{{doc['content'][0]['attachment']['size'] }}</td>
+                              </tr>
+
                                 </tbody>
 
                               </table>
@@ -59,7 +60,7 @@ import { QuestionnaireService } from '../../service/questionnaire.service';
   `
 })
 export class DocComponent implements Field {
-  documents = null;
+  documents = [];
   itemReference;
 
   config: FieldConfig;
@@ -127,9 +128,9 @@ export class DocComponent implements Field {
           that.createItemReferenceObject(data);
         }
       );
-      
+
       console.log (contentAttachment);
-      
+
       return reader.result;
     };
 
@@ -157,7 +158,20 @@ export class DocComponent implements Field {
   }
 
   retrieveDocuments(data) {
-    this.documents = data;
+    this.documents.push(data);
     console.log (this.documents);
+  }
+
+  downloadFile(name) {
+    const sourceData =
+      'data:' + name['content'][0]['attachment']['contentType'] +
+      ';base64,' + name['content'][0]['attachment']['data'];
+    console.log(sourceData);
+    const downloadElement = document.createElement('a');
+    const fileName = name['content'][0]['attachment']['title'] ;
+
+    downloadElement.href = sourceData;
+    downloadElement.download = fileName;
+    downloadElement.click();
   }
 }

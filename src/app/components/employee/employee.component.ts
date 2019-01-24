@@ -8,7 +8,6 @@ import {
   NgControlStatusGroup
 } from '@angular/forms';
 
-import { HttpClient } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
 
 import { UserService } from '../../service/user.service';
@@ -146,7 +145,6 @@ export class EmployeeComponent implements OnInit {
   i;
   constructor(
     private fb: FormBuilder,
-    private httpClient: HttpClient,
     public translate: TranslateService,
     private oauthService: OAuthService,
     private userService: UserService,
@@ -179,7 +177,8 @@ export class EmployeeComponent implements OnInit {
   ngOnInit() {
 
     this.datePickerConfig = Object.assign({},
-      {containerClass: 'theme-dark-blue'});
+      {containerClass: 'theme-dark-blue',
+      dateInputFormat: 'YYYY-MM-DD'});
 
     this.dependentsArray = new Array();
     this.i = 0;
@@ -228,9 +227,10 @@ export class EmployeeComponent implements OnInit {
       // Client's phone number (can be any number of their choosing)
       phoneNumber: new FormControl('', [
         Validators.required,
-        Validators.pattern('^[+]?(?:[0-9]{2})?[0-9]{10}$')
+        // Validators.pattern('/^[1-9]{1}[0-9]{9}$/')
+        Validators.minLength(10),
+        Validators.maxLength(10),
       ]),
-
       // Address section
       addressStreet: new FormControl('', Validators.required),
       addressCity: new FormControl('', Validators.required),
@@ -239,7 +239,7 @@ export class EmployeeComponent implements OnInit {
       addressCountry: new FormControl('', Validators.required),
 
       // Clients preferred language
-      language: new FormControl(null, Validators.required),
+      language: new FormControl('', Validators.required),
 
       // PRI (handled in Patient with an extension)
       id: new FormControl('', [
@@ -252,10 +252,10 @@ export class EmployeeComponent implements OnInit {
       jobTitle: new FormControl('', Validators.required),
 
       // Department they work in (handled in Patient with an extension)
-      departmentName: new FormControl(null, Validators.required),
+      departmentName: new FormControl('', Validators.required),
 
       // Branch they work in (handled in Patient with an extension)
-      departmentBranch: new FormControl(null, Validators.required),
+      departmentBranch: new FormControl('', Validators.required),
 
       // References related to the employee (handled in Patient with an extension)
       referenceOne: [''],

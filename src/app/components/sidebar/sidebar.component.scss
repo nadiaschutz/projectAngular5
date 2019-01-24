@@ -1,7 +1,8 @@
 .menu {
-    background-color: #e0e0e0;
+    background-color: #334f75;
     height: 150%;
     padding: 0;
+    width: 180px;
 }
 
 .menu-item {
@@ -10,18 +11,19 @@
     display: block;
     text-align: left;
     cursor: pointer;
+    
 }
 
 .menu-item a {
     padding-left: 16px;
-    color: #000000;
+    color: white;
     text-decoration: none;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-size: 11px;
 }
 
 .menu-item:hover>a, .menu-item:active>a,.menu-item:hover, .menu-item:active {
-    background-color: #ffffff;
+    background-color: #5d7190;
 }
 
 

@@ -66,21 +66,33 @@
     <!-- List of Clients  -->
 
     <div *ngIf="patientList.length > 0">
-      <h6>Clients</h6>
+      <h5>Clients</h5>
 
-      <div class="button-section" [ngClass]="roleInSession">
-        <button type="button" class="btn special-button" (click)="newEmployeeButton()">New Client Record</button>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" [(ngModel)]="enableAll" type="checkbox" id="enableBox">
-        <label class="form-check-label" for="enableBox">Enable All</label>
+      <div>
+
+
+        <div class="client-button-row" [ngClass]="roleInSession">
+          <div>
+            <div class="col">
+              <button type="button" id="new-client-button" class="btn  float-right regular-dark-button "  (click)="enableAllFunction()">Show All Record</button>
+
+            </div>
+          </div>
+          <div class="col">
+            <div class="button-section" [ngClass]="roleInSession">
+              <button type="button" class="btn  float-right regular-dark-button show-all-records-button " (click)="newEmployeeButton()">New Client Record</button>
+            </div>
+          </div>
+        </div>
+
+
       </div>
       <div class="table-container">
-        <table class="tablesaw tablesaw-stack table table-hover table-custom" data-tablesaw-mode="stack">
-        <!-- <table class="table table-hover"> -->
+        <table class="table table-hover table-custom">
+          <!-- <table class="table table-hover"> -->
           <thead class="header-table ">
             <tr>
-              <th scope="col" (click)="sorterFunction('id')">Employee PRI</th>
+              <th scope="col" (click)="sorterFunction('id')">Employee ID</th>
               <th scope="col" (click)="sorterFunction('given')">First Name</th>
               <th scope="col" (click)="sorterFunction('family')">Last Name</th>
               <th scope="col" (click)="sorterFunction('dob')">Date of Birth</th>
@@ -96,10 +108,8 @@
                 <tr *ngIf="patient.department === departmentOfUser && !enableAll">
                   <td>{{patient.id}}</td>
                   <ng-container *ngIf="roleInSession !== 'businessuser'; else plainFirstName">
-                    <td (click)="routeToSummary(patient)" 
-                    
-                  [ngClass]="{cursor: showCursor(patient)}">
-                    
+                    <td (click)="routeToSummary(patient)" [ngClass]="{cursor: showCursor(patient)}">
+
                       {{patient.given}}</td>
                   </ng-container>
 
@@ -108,11 +118,9 @@
                   </ng-template>
 
                   <ng-container *ngIf="roleInSession !== 'businessuser'; else plainLastName">
-                    <td (click)="routeToSummary(patient)" 
-                    
-                  [ngClass]="{cursor: showCursor(patient)}">
-                    
-                    {{patient.family}}</td>
+                    <td (click)="routeToSummary(patient)" [ngClass]="{cursor: showCursor(patient)}">
+
+                      {{patient.family}}</td>
                   </ng-container>
 
                   <ng-template #plainLastName>
@@ -133,16 +141,16 @@
                 <tr>
                   <td>{{patient.id}}</td>
                   <td *ngIf="roleInSession !== 'businessuser' ; else plainFirstName" (click)="routeToSummary(patient)"
-                  [ngClass]="{cursor: showCursor(patient)}">
-                  
+                    [ngClass]="{cursor: showCursor(patient)}">
+
                     {{patient.given}}</td>
                   <ng-template #plainFirstName>
                     <td>{{patient.given}}</td>
                   </ng-template>
 
                   <td *ngIf="roleInSession !== 'businessuser'; else plainLastName" (click)="routeToSummary(patient)"
-                     [ngClass]="{cursor: showCursor(patient)}">
-                      {{patient.family}}</td>
+                    [ngClass]="{cursor: showCursor(patient)}">
+                    {{patient.family}}</td>
                   <ng-template #plainLastName>
                     <td>{{patient.family}}</td>
                   </ng-template>
@@ -165,6 +173,6 @@
     <div *ngIf="patientList.length === 0">
       <h6>0 Results Found for "{{showParams}}"</h6>
     </div>
-   
+
   </div>
 </div>

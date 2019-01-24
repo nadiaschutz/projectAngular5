@@ -44,199 +44,204 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
 
 
-      // var for styling each form field
-      style = 'col-5';
+  // var for styling each form field
+  style = 'col-5';
 
 
-      clientDepartmentFormGroup: FormGroup;
-      // departments = [];
-      regionalOffices = [];
-      regionalOfficesWithId = {};
-      clientDepartments = [];
-      addClientDepartment = false;
-      clientDepartmentName = '';
-      clientDepartmentCreationSuccess = false;
+  clientDepartmentFormGroup: FormGroup;
+  // departments = [];
+  regionalOffices = [];
+  regionalOfficesWithId = {};
+  clientDepartments = [];
+  addClientDepartment = false;
+  clientDepartmentName = '';
+  clientDepartmentCreationSuccess = false;
 
-      constructor(
-        private userService: UserService,
-        private formBuilder: FormBuilder,
-        private router: Router
-      ) {}
+  constructor(
+    private userService: UserService,
+    private formBuilder: FormBuilder,
+    private router: Router
+  ) { }
 
 
-      @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
-      config: FieldConfig[] = [
-        {
-          type: 'select',
-          label: 'Department Branch',
-          options: this.deptBranch,
-          placeholder: 'Enter Department Branch',
-          name: 'branch',
-          validation: [Validators.required]
-        },
-        {
-          type: 'select',
-          label: 'PSOHP Region',
-          name: 'region',
-          options: this.regionalOffices,
-          placeholder: 'Select Region',
-          validation: [Validators.required]
-        },
-        {
-          type: 'select',
-          label: 'Department Name',
-          name: 'department',
-          options: this.deptName,
-          placeholder: 'Select Department Name',
-          validation: [Validators.required]
-        },
-        {
-          type: 'header',
-          label: 'Don\'t see a Client Department in this list? to add one'
-        },
-        {
-          type: 'input',
-          label: 'Phone Number',
-          inputType: 'text',
-          placeholder: '000-000-0000',
-          name: 'phone',
-          validation: [
-            Validators.required,
-            // CustomValidator.numberValidator,
-            Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
-          ]
-        },
-        {
-          type: 'input',
-          label: 'Fax Number',
-          inputType: 'text',
-          placeholder: '000-000-0000',
-          name: 'fax',
-          validation: [
-            Validators.required,
-            // CustomValidator.numberValidator,
-            Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
-          ]
-        },
-        {
-          type: 'input',
-          label: 'Email Address',
-          inputType: 'email',
-          placeholder: 'Enter Email',
-          name: 'email',
-          validation: [Validators.required, Validators.email]
-        },
-        {
-          type: 'input',
-          label: 'Address',
-          inputType: 'text',
-          placeholder: 'Enter Address',
-          name: 'address',
-          validation: [Validators.required]
-        },
-        {
-          type: 'input',
-          label: 'City',
-          inputType: 'text',
-          placeholder: 'Enter City',
-          name: 'city',
-          validation: [Validators.required]
-        },
-        {
-          type: 'select',
-          label: 'Province',
-          options: this.regionalOffices,
-          placeholder: 'Enter Province',
-          name: 'province',
-          validation: [Validators.required]
-        },
-        {
-          type: 'input',
-          label: 'Postal Code',
-          inputType: 'text',
-          placeholder: 'Enter Postal Code',
-          name: 'postalCode',
-          validation: [Validators.required]
-        },
-        {
-          type: 'checkbox',
-          label: 'Chargeback Client',
-          name: 'chargebackClient',
-          validation: [Validators.required]
-        },
-        {
-          type: 'line'
-        },
-        {
-          type: 'button',
-          name: 'submit',
-          label: 'Save'
+  @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
+  config: FieldConfig[] = [
+    {
+      type: 'select',
+      label: 'Department Branch',
+      options: this.deptBranch,
+      placeholder: 'Enter Department Branch',
+      name: 'branch',
+      validation: [Validators.required],
+      value: this.deptBranch[0]
+    },
+    {
+      type: 'select',
+      label: 'PSOHP Region',
+      name: 'region',
+      options: this.regionalOffices,
+      value: 'Prairies',
+      placeholder: 'Select Region',
+      validation: [Validators.required]
+    },
+    {
+      type: 'select',
+      label: 'Department Name',
+      name: 'department',
+      options: this.deptName,
+      placeholder: 'Select Department Name',
+      validation: [Validators.required]
+    },
+    // {
+    //   type: 'header',
+    //   label: 'Don\'t see a Client Department in this list? to add one'
+    // },
+    {
+      type: 'input',
+      label: 'Phone Number',
+      inputType: 'text',
+      placeholder: '000-000-0000',
+      name: 'phone',
+      value: 'kolobok',
+      validation: [
+        Validators.required,
+        // CustomValidator.numberValidator,
+        Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
+      ]
+    },
+    {
+      type: 'input',
+      label: 'Fax Number',
+      inputType: 'text',
+      placeholder: '000-000-0000',
+      name: 'fax',
+      validation: [
+        Validators.required,
+        // CustomValidator.numberValidator,
+        Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
+      ]
+    },
+    {
+      type: 'input',
+      label: 'Email Address',
+      inputType: 'email',
+      placeholder: 'Enter Email',
+      name: 'email',
+      validation: [Validators.required, Validators.email]
+    },
+    {
+      type: 'input',
+      label: 'Address',
+      inputType: 'text',
+      placeholder: 'Enter Address',
+      name: 'address',
+      validation: [Validators.required]
+    },
+    {
+      type: 'input',
+      label: 'City',
+      inputType: 'text',
+      placeholder: 'Enter City',
+      name: 'city',
+      validation: [Validators.required]
+    },
+    {
+      type: 'select',
+      label: 'Province',
+      options: this.regionalOffices,
+      placeholder: 'Enter Province',
+      name: 'province',
+      validation: [Validators.required]
+    },
+    {
+      type: 'input',
+      label: 'Postal Code',
+      inputType: 'text',
+      placeholder: 'Enter Postal Code',
+      name: 'postalCode',
+      validation: [Validators.required]
+    },
+    {
+      type: 'checkbox',
+      label: 'Chargeback Client',
+      name: 'chargebackClient',
+      validation: [Validators.required]
+    },
+    {
+      type: 'line'
+    },
+    {
+      type: 'button',
+      name: 'submit',
+      label: 'Save'
+    }
+  ];
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      let previousValid = this.form.valid;
+      this.form.changes.subscribe(() => {
+        if (this.form.valid !== previousValid) {
+          previousValid = this.form.valid;
+          this.form.setDisabled('submit', !previousValid);
         }
-      ];
-
-      ngAfterViewInit() {
-        setTimeout(() => {
-        let previousValid = this.form.valid;
-        this.form.changes.subscribe(() => {
-          if (this.form.valid !== previousValid) {
-            previousValid = this.form.valid;
-            this.form.setDisabled('submit', !previousValid);
-          }
-
-        });
-
-        this.form.setDisabled('submit', true);
 
       });
 
-      // if you want to style 2 form fields per a row do these :
-      this.wrap();
-      this.addDiv();
-      // the end
+      this.form.setDisabled('submit', true);
 
-      }
+    });
 
-      // submit(value: {[name: string]: any}) {
-      //   console.log(value);
-      // }
+    // if you want to style 2 form fields per a row do these :
+    this.wrap();
+    this.addDiv();
+    // the end
 
-    wrap() {
-      const x = $('.field-holder-2 form-input');
-      for (let i = 0; i < x.length; i ++) {
-        // console.log(x[i]);
-        $(x[i]).wrap("<div class='" + this.style +"'></div>");
-      }
+  }
+
+  // submit(value: {[name: string]: any}) {
+  //   console.log(value);
+  // }
+
+  wrap() {
+    const x = $('.field-holder-2 form-input');
+    for (let i = 0; i < x.length; i++) {
+      // console.log(x[i]);
+      $(x[i]).wrap("<div class='" + this.style + "'></div>");
     }
+    console.log('i just wrapped div');
+  }
 
-      addDiv() {
-        const sections = $('.dynamic-form .' + this.style);
-        for (let i = 0; i < sections.length; i += 2) {
-        sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
-      }
+  addDiv() {
+    const sections = $('.dynamic-form .' + this.style);
+    for (let i = 0; i < sections.length; i += 2) {
+      sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
     }
+    console.log('i just added div');
+  }
 
 
   ngOnInit() {
     /**
      * Initializes the list of branches from our system
      */
-    this.userService.fetchAllDepartmentBranches().subscribe (
+    this.userService.fetchAllDepartmentBranches().subscribe(
       data => this.populateDeptBranches(data),
       error => this.handleError(error)
     );
 
 
-        /**
-     * Initializes the names of all departments on our system
-     */
-    this.userService.fetchAllDepartmentNames().subscribe (
+    /**
+ * Initializes the names of all departments on our system
+ */
+    this.userService.fetchAllDepartmentNames().subscribe(
       data => this.populateDeptNames(data),
       error => this.handleError(error)
     );
 
-      /**
-     * Initializes list for regional offices on our system
-     */
+    /**
+   * Initializes list for regional offices on our system
+   */
     this.userService
       .fetchAllRegionalOffices()
       .subscribe(
@@ -250,7 +255,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
   }
 
   // setClientDepartment() {
-    submit(value) {
+  submit(value) {
     const branchLocation = new FHIR.Location();
     branchLocation.resourceType = 'Location';
     branchLocation.name = value.branch;
@@ -310,7 +315,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
     const managingOrganization = new FHIR.Reference();
 
     const a: number = this.deptName.indexOf(value.department);
-    
+
     this.managingOrg = this.deptId[a];
     managingOrganization.reference = 'Organization/' + this.managingOrg;
     branchLocation.managingOrganization = managingOrganization;
@@ -332,15 +337,15 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
   fetchAllRegionalOffices() {
     this.userService.fetchAllRegionalOffices().subscribe(data => {
       // data['entry'].forEach(element => {
-        // const individualEntry = element.resource;
-        // this.regionalOffices.push(individualEntry);
+      // const individualEntry = element.resource;
+      // this.regionalOffices.push(individualEntry);
 
-        // this.regionalOffices = individualEntry.map(el => (
-        //   console.log(el)
-        // ));
+      // this.regionalOffices = individualEntry.map(el => (
+      //   console.log(el)
+      // ));
 
 
-        // console.log(this.regionalOffices);
+      // console.log(this.regionalOffices);
       // });
 
       // console.log(data);
@@ -386,6 +391,10 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
   backToCreateBranch() {
     this.addClientDepartment = false;
+    // if you want to style 2 form fields per a row do these :
+    this.wrap();
+    this.addDiv();
+    // the end
   }
 
   fetchAllClientDepartments() {
@@ -397,17 +406,17 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
     });
   }
 
-   populateRegionalOffices(data: any) {
+  populateRegionalOffices(data: any) {
     data.entry.forEach(element => {
       this.regionalOffices.push(element.resource.name);
     });
   }
 
-    /**
-   * Used in conjunction with the user service. Gets all Department Branches
-   * stored on the server to link to a Practitioner.
-   * @param data
-   */
+  /**
+ * Used in conjunction with the user service. Gets all Department Branches
+ * stored on the server to link to a Practitioner.
+ * @param data
+ */
   populateDeptBranches(data: any) {
     // console.log(data.entry);
     data.entry.forEach(element => {
@@ -441,10 +450,10 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
   }
 
 
-    /**
-   * Displays the error message from the server in the case a subscription fails.
-   * @param error
-   */
+  /**
+ * Displays the error message from the server in the case a subscription fails.
+ * @param error
+ */
   handleError(error: any) {
     console.log(error);
   }

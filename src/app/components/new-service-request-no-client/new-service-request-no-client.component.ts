@@ -17,8 +17,6 @@ import { analyzeAndValidateNgModules } from '@angular/compiler';
 import * as FHIR from '../../interface/FHIR';
 import { PatientService } from 'src/app/service/patient.service';
 
-
-
 // for custom form components to work
 import { AfterViewInit } from '@angular/core';
 import { Validators } from '@angular/forms';
@@ -27,37 +25,45 @@ import { FieldConfig } from '../dynamic-forms/field-config.interface';
 import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
 import { CustomValidator } from '../dynamic-forms/custom-validator';
 import { FileDetector } from 'protractor';
-
+import { ValueAddress } from 'src/app/interface/organization';
 
 class TextInput {
-    static create(event: FieldConfig) {
-        return {
-                    type: event.type,
-                    label: event.label,
-                    inputType: event.inputType,
-                    name: event.name
-        };
-    }
+  static create(event: FieldConfig) {
+    return {
+      type: event.type,
+      label: event.label,
+      inputType: event.inputType,
+      name: event.name
+    };
+  }
 }
 
-
+class SelectField {
+  static create(event: FieldConfig) {
+    return {
+      type: event.type,
+      label: event.label,
+      inputType: event.inputType,
+      name: event.name
+    };
+  }
+}
 
 @Component({
   selector: 'app-new-service-request-no-client',
   templateUrl: './new-service-request-no-client.component.html',
   styleUrls: ['./new-service-request-no-client.component.scss']
 })
-export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit  {
+export class NewServiceRequestNoClientComponent
+  implements OnInit {
   // @ViewChild('serReqForm') form: NgForm;
 
-// var for styling each form field
-style = 'col-5';
-configuration;
-userName;
+  // var for styling each form field
+  style = 'col-11';
+  configuration;
+  userName;
 
-
-
-@ViewChild(DynamicFormComponent) form: DynamicFormComponent;
+  @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   config: FieldConfig[] = [];
 
   formId = '1953';
@@ -67,10 +73,13 @@ userName;
   clientGivenName = null;
   clientFamilyName = null;
   clientBoD = null;
+  currentUserDepartment;
+  currentUserRole;
 
   documents = null;
   fileLink = [];
   itemReference;
+  departmentList = [];
 
   today = new Date();
   myDay;
@@ -82,6 +91,8 @@ userName;
   min: any;
   sec: any;
   msec: any;
+
+  fileString;
 
   dependents = false;
   dependentBoolean = false;
@@ -110,7 +121,6 @@ userName;
     answer: null
   };
 
-
   trackByEl(index: number, el: any): string {
     return el.linkId;
   }
@@ -121,93 +131,109 @@ userName;
     private router: Router,
     private userService: UserService,
     private patientService: PatientService,
-    private oauthService: OAuthService,
-
-  ) {}
+    private oauthService: OAuthService
+  ) { }
 
   ngOnInit() {
-    this.userName = this.oauthService.getIdentityClaims()['name'];
 
-  console.log(this.userName);
+    this.userService.fetchUserName();
+    this.userService.fetchCurrentRole();
+    this.userService.fetchCurrentUserDept();
 
-  // smile user ID
-  console.log(this.oauthService.getIdentityClaims()['sub']);
-  this.userService.subscribeUserFHIRID().subscribe(data =>
-      console.log(data)
+    /**
+     * Initializes the list of branches from our system
+     */
+    this.userService
+      .fetchAllDepartmentNames()
+      .subscribe(
+        data => this.populateDeptNames(data),
+        error => this.handleError(error)
+      );
+
+    this.userService.subscribeUserDept().subscribe(
+      data => {
+        this.currentUserDepartment = data;
+        this.settingFunction();
+        this.userName = this.oauthService.getIdentityClaims()['name'];
+
+        console.log(this.currentUserDepartment);
+      },
+      error => this.responseError(error)
     );
 
-  // getting formId to display form fields
-  this.questionnaireService
-    .getForm(this.formId)
-    .subscribe(
-      data => this.getFormData(data),
-      error => this.getFormDataError(error)
-    );
+    this.userService
+      .subscribeRoleData()
+      .subscribe(
+        data => (this.currentUserRole = data),
+        error => this.handleError(error)
+      );
 
-}
+    // smile user ID
+
+    console.log(this.userName);
+
+    // fhir user id
+    this.userService.subscribeUserFHIRID().subscribe(data => console.log(data));
 
 
 
-wrap() {
-  const x = $('.field-holder-2 form-input');
-  for (let i = 0; i < x.length; i ++) {
-    console.log(x[i]);
-    $(x[i]).wrap("<div class='" + this.style +"'></div>");
+
+
+    // getting formId to display form fields
+    this.questionnaireService
+      .getForm(this.formId)
+      .subscribe(
+        data => this.getFormData(data),
+        error => this.getFormDataError(error)
+      );
   }
-}
 
-
+  wrap() {
+    const x = $('.field-holder-2 form-input');
+    for (let i = 0; i < x.length; i++) {
+      console.log(x[i]);
+      $(x[i]).wrap('<div class=\'' + this.style + '\'></div>');
+    }
+  }
 
   addDiv() {
     const sections = $('.dynamic-form .' + this.style);
     for (let i = 0; i < sections.length; i += 2) {
-    sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
+      sections.slice(i, i + 2).wrapAll('<div class=\'row\'></div>');
+    }
   }
-}
 
-
-
-
-
-
-
-/******************* onCancel() *****************/
-
+  /******************* onCancel() *****************/
 
   // TO_DO: do post request to delete in-progress service requests
   onCancel() {
-      this.router.navigate(['/servreqmain']);
+    this.router.navigate(['/servreqmain']);
   }
 
+  /******************* onNext() *******************/
 
+  submit(value: { [name: string]: any }) {
+    console.log(value);
+    console.log(this.items);
+    // this.items = value.map(el => console.log(el));
 
+    // });
 
-/******************* onNext() *******************/
+    this.items.forEach(element => {
+      console.log(element.text);
 
-submit(value: {[name: string]: any}) {
-  console.log(value);
-  console.log(this.items);
-  // this.items = value.map(el => console.log(el));
-    
-  // });
-
-  this.items.forEach(element => {
-    console.log(element.text);
-
-     for (const key in value) {
-      if (value.hasOwnProperty(key)) {
-        if (key === element.text) {
-          element.answer = value[key];
+      for (const key in value) {
+        if (value.hasOwnProperty(key)) {
+          if (key === element.text) {
+            element.answer = value[key];
+          }
         }
       }
-    }
+    });
 
-  });
-
-  
     this.savingData();
 
-   //  sending itemToSend to server
+    //  sending itemToSend to server
     this.questionnaireService
       .saveRequest(this.itemToSend)
       .subscribe(
@@ -218,11 +244,7 @@ submit(value: {[name: string]: any}) {
     console.log(this.items);
 
     console.log(this.itemToSend);
-
-
   }
-
-
 
   getDocument(data) {
     console.log(data);
@@ -230,8 +252,16 @@ submit(value: {[name: string]: any}) {
   }
 
 
-/***************** savingData() *****************/
+  populateDeptNames(data: any) {
+    data.entry.forEach(element => {
+      if (element['resource']['name']) {
+        this.departmentList.push(element['resource']['name']);
 
+      }
+    });
+  }
+
+  /***************** savingData() *****************/
 
   savingData() {
     this.getDate();
@@ -253,13 +283,7 @@ submit(value: {[name: string]: any}) {
     this.mapItemToItems();
   }
 
-
-
-
-
-
-/************** getClientData(data) *************/
-
+  /************** getClientData(data) *************/
 
   getClientData(data) {
     console.log(data);
@@ -272,84 +296,99 @@ submit(value: {[name: string]: any}) {
     console.log(error);
   }
 
-
-
-
-
-
-/****************** getFormData() ***************/
+  /****************** getFormData() ***************/
 
   getFormData(data) {
     this.qrequest = data.item;
     console.log(data);
 
     this.configuration = this.qrequest.map(el => {
-        // text
-        if (el.type === 'text') {
-            if (el.text === 'Contact Phone No') {
-                const formField = this.textInput(el);
-                formField ['placeholder'] = 'type your phone';
-                formField ['validation'] = [Validators.required,
-                    Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')];
-                return formField;
+      // text
+      if (el.type === 'text') {
+        if (el.text === 'Contact Phone No') {
 
-            } else if (el.text === 'Contact Email') {
-                const formField = this.textInput(el);
-                formField ['placeholder'] = 'type your email';
-                formField ['validation'] = [Validators.required, Validators.email];
-                return formField;
+          const formField = this.textInput(el);
+          formField['placeholder'] = 'type your phone';
+          formField['validation'] = [
+            Validators.required,
+            Validators.pattern(
+              '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
+            )
+          ];
+          return formField;
 
-            } else if (el.text === 'Name of the Requester') {
-                const formField = this.textInput(el);
-                formField ['placeholder'] = 'type your text';
-                formField ['value'] = this.userName;
-                formField ['validation'] = [Validators.required , Validators.minLength(4)];
-                return formField;
+        } else if (el.text === 'Contact Email') {
 
-              } else {
-                return {
-                    type: 'input',
-                    label: el.text,
-                    inputType: 'text',
-                    placeholder: 'type your text',
-                    name: el.text,
-                    validation: [Validators.required, Validators.minLength(4)]
-                };
-              }
+          const formField = this.textInput(el);
+          formField['placeholder'] = 'type your email';
+          formField['validation'] = [Validators.required, Validators.email];
+          return formField;
+
+        } else if (el.text === 'Name of the Requester') {
+
+          const formField = this.textInput(el);
+          formField['placeholder'] = 'type your text';
+          formField['value'] = this.userName;
+          formField['validation'] = [
+            Validators.required,
+            Validators.minLength(4)
+          ];
+          return formField;
+
+        } else {
+          return {
+            type: 'input',
+            label: el.text,
+            inputType: 'text',
+            placeholder: 'type your text',
+            name: el.text,
+            validation: [Validators.required, Validators.minLength(4)]
+          };
         }
-        if (el.type === 'choice') {
-            const options = [];
-            el.option.forEach(el1 => {
-                options.push(el1.valueCoding.code);
-            });
-            return {
-                type: 'select',
-                label: el.text,
-                name: el.text,
-                options: options,
-                placeholder: 'Select an option',
-                validation: [Validators.required]
-              };
+      }
+      if (el.type === 'choice') {
+        const options = [];
+        el.option.forEach(el1 => {
+          options.push(el1.valueCoding.code);
+        });
+        if (el.text === 'Department Name') {
+          const formField = this.selectField(el);
+          formField['value'] = this.userName;
+          formField['options'] = this.departmentList;
+          return formField;
+
+        } else {
+          return {
+            type: 'select',
+            label: el.text,
+            name: el.text,
+            options: options,
+            placeholder: 'Select an option',
+            validation: [Validators.required],
+            value: options[0]
+          };
         }
+
+      }
     });
     this.configuration.push(
-        {
-            type: 'doc',
-            class: 'documents'
-           },
-        {
-         type: 'line'
-        },
-        {
-            type: 'button',
-            name: 'submit',
-            label: 'Next'
-        }
-        );
-        console.log(this.configuration);
-        this.config = this.configuration;
-        console.log(this.config);
-        console.log(this.form);
+      {
+        type: 'doc',
+        class: 'documents'
+      },
+      {
+        type: 'line'
+      },
+      {
+        type: 'button',
+        name: 'submit',
+        label: 'Next'
+      }
+    );
+    console.log(this.configuration);
+    this.config = this.configuration;
+    console.log(this.config);
+    console.log(this.form);
 
     // maping part of the data from the server to item
     this.items = this.qrequest.map(el => ({
@@ -358,7 +397,6 @@ submit(value: {[name: string]: any}) {
       text: el.text
     }));
     console.log(this.items);
-
 
     // console.log(this.responseId);
     // if (this.responseId === null) {
@@ -370,52 +408,66 @@ submit(value: {[name: string]: any}) {
     console.log(error);
   }
 
-
-//   const formField = this.textInput(el);
-//                 console.log(formField);
-                // formField ['placeholder'] = 'type your phone';
-                // formField ['validation'] = [
-                //     Validators.required , Validators.minLength(4)
-                //   ];
-                // return formField;
-
+  //   const formField = this.textInput(el);
+  //                 console.log(formField);
+  // formField ['placeholder'] = 'type your phone';
+  // formField ['validation'] = [
+  //     Validators.required , Validators.minLength(4)
+  //   ];
+  // return formField;
 
   textInput(data) {
     return TextInput.create({
-    type: 'input',
-    label: data.text,
-    inputType: 'text',
-    name: data.text
-});
-}
-/************************************************/
-ngAfterViewInit() {
-    setTimeout(() => {
-    let previousValid = this.form.valid;
-    this.form.changes.subscribe(() => {
-      if (this.form.valid !== previousValid) {
-        previousValid = this.form.valid;
-        this.form.setDisabled('submit', !previousValid);
-      }
+      type: 'input',
+      label: data.text,
+      inputType: 'text',
+      name: data.text
     });
-
-    this.form.setDisabled('submit', true);
-    console.log(this.userName);
-  });
-
-
-  // if you want to style 2 form fields per a row do these :
-  this.wrap();
-  this.addDiv();
-
   }
 
 
 
+  // options: options,
+  // validation: [Validators.required]
 
-/************************************************/
-/*************** onSaveSuccess ******************/
-/************************************************/
+  selectField(data) {
+    return SelectField.create({
+      type: 'select',
+      label: data.text,
+      inputType: 'text',
+      placeholder: 'Select an option',
+      name: data.text,
+      validation: [Validators.required]
+    });
+  }
+  /************************************************/
+  settingFunction() {
+    // ngAfterViewInit() {
+    setTimeout(() => {
+      let previousValid = this.form.valid;
+      this.form.changes.subscribe(() => {
+        if (this.form.valid !== previousValid) {
+          previousValid = this.form.valid;
+          this.form.setDisabled('submit', !previousValid);
+        }
+      });
+
+      this.form.setDisabled('submit', true);
+      // console.log('checking at this spot:', this.currentUserDepartment);
+      // console.log(this.form);
+
+      this.form.setValue('Department Name', this.currentUserDepartment);
+      this.form.setValue('Name of the Requester', this.userName);
+    });
+
+    // if you want to style 2 form fields per a row do these :
+    // this.wrap();
+    // this.addDiv();
+  }
+
+  /************************************************/
+  /*************** onSaveSuccess ******************/
+  /************************************************/
 
   // getting response from thr server on "next"
   onSaveSuccess(data) {
@@ -433,15 +485,11 @@ ngAfterViewInit() {
   onSaveError(error) {
     console.log(error);
   }
-/************************************************/
+  /************************************************/
 
-
-
-
-
-/************************************************/
-/*************** getResponseId ******************/
-/************************************************/
+  /************************************************/
+  /*************** getResponseId ******************/
+  /************************************************/
 
   getResponseId() {
     this.questionnaireService.newResponseIdSubject.subscribe(
@@ -462,13 +510,9 @@ ngAfterViewInit() {
     console.log(error);
   }
 
-
-
-
-
-/************************************************/
-/*************** getResponse() ******************/
-/************************************************/
+  /************************************************/
+  /*************** getResponse() ******************/
+  /************************************************/
   getResponse() {
     this.questionnaireService
       .getResponse(this.responseId)
@@ -486,13 +530,10 @@ ngAfterViewInit() {
     console.log(error);
   }
 
-
-
-/************************************************/
-/************* createItemToSend() ***************/
-/************************************************/
+  /************************************************/
+  /************* createItemToSend() ***************/
+  /************************************************/
   createItemToSend() {
-
     if (this.formId === '1953') {
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
@@ -517,109 +558,117 @@ ngAfterViewInit() {
         },
         item: []
       };
-
     }
   }
 
+  /************************************************/
+  /************* mapItemToItems() *****************/
+  /************************************************/
 
-/************************************************/
-/************* mapItemToItems() *****************/
-/************************************************/
-
-
-mapItemToItems() {
-  this.itemToSend.item = this.items.map(el => {
-
-    if (el.text === 'Document') {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: [
-          {
-            valueReference: {
-              reference: el.answer
+  mapItemToItems() {
+    this.itemToSend.item = this.items.map(el => {
+      if (el.text === 'Document') {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueReference: {
+                reference: el.answer
+              }
             }
-          }
-        ]
-      };
-    }
-    if (
-      el.text === 'Dependent Involved' ||
-      el.text === 'Health Exam Done Externally'
-    ) {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: [
-          {
-            valueBoolean: el.answer
-          }
-        ]
-      };
-    } else {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: [
-          {
-            valueString: el.answer
-          }
-        ]
-      };
-    }
-  });
-  console.log(this.itemToSend);
-}
-
-
-
-
-
-
-/************************************************/
-/***************** getDate() ********************/
-/************************************************/
-
-// get date for authored: '2018-11-08T15:41:00.581+00:00'
-
-getDate() {
-  this.dd = this.addZero(this.today.getDate());
-  this.mm = this.addZero(this.today.getMonth() + 1);
-  this.yyyy = this.today.getFullYear();
-  this.time = this.today.getTime();
-  this.hr = this.addZero(this.today.getHours());
-  this.min = this.addZero(this.today.getMinutes());
-  this.sec = this.addZero(this.today.getSeconds());
-  this.msec = this.today.getMilliseconds();
-
-  this.myDate();
-
-  // to-do: fix mlseconds and timeZone
-
-  // console.log(msec);
-}
-myDate() {
-  return (this.myDay =
-    this.yyyy +
-    '-' +
-    this.mm +
-    '-' +
-    this.dd +
-    'T' +
-    this.hr +
-    ':' +
-    this.min +
-    ':' +
-    this.sec +
-    '.581+00:00');
-}
-
-addZero(i) {
-  if (i < 10) {
-    i = '0' + i;
+          ]
+        };
+      }
+      if (
+        el.text === 'Dependent Involved' ||
+        el.text === 'Health Exam Done Externally'
+      ) {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueBoolean: el.answer
+            }
+          ]
+        };
+      } else {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueString: el.answer
+            }
+          ]
+        };
+      }
+    });
+    console.log(this.itemToSend);
   }
-  return i;
-}
 
 
+  handleError(error) {
+    console.log(error);
+  }
+
+  downloadFile(name) {
+    const linkSource =
+      'data:' +
+      name['content'][0]['attachment']['contentType'] +
+      ';base64,' +
+      name['content'][0]['attachment']['data'];
+    console.log(linkSource);
+    const downloadLink = document.createElement('a');
+    const fileName = name['content'][0]['attachment']['title'];
+
+    downloadLink.href = linkSource;
+    downloadLink.download = fileName;
+  }
+
+  /************************************************/
+  /***************** getDate() ********************/
+  /************************************************/
+
+  // get date for authored: '2018-11-08T15:41:00.581+00:00'
+
+  getDate() {
+    this.dd = this.addZero(this.today.getDate());
+    this.mm = this.addZero(this.today.getMonth() + 1);
+    this.yyyy = this.today.getFullYear();
+    this.time = this.today.getTime();
+    this.hr = this.addZero(this.today.getHours());
+    this.min = this.addZero(this.today.getMinutes());
+    this.sec = this.addZero(this.today.getSeconds());
+    this.msec = this.today.getMilliseconds();
+
+    this.myDate();
+
+    // to-do: fix mlseconds and timeZone
+
+    // console.log(msec);
+  }
+  myDate() {
+    return (this.myDay =
+      this.yyyy +
+      '-' +
+      this.mm +
+      '-' +
+      this.dd +
+      'T' +
+      this.hr +
+      ':' +
+      this.min +
+      ':' +
+      this.sec +
+      '.581+00:00');
+  }
+
+  addZero(i) {
+    if (i < 10) {
+      i = '0' + i;
+    }
+    return i;
+  }
 }

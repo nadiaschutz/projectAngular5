@@ -1,49 +1,58 @@
-
 <div class='container'>
+  <!-- <input class="form-check-input" (change)="editEmployeeToggle()" type="checkbox" id="enableBox"> -->
 
 
-<div *ngIf="selected">
 
-  <div *ngFor="let name of selected.name">
+  <div class="edit-button-row">
+      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()" *ngIf="!editEmployee; else backButton">Edit Client Record</button>
 
+      <ng-template #backButton>
+        <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Cancel Edit</button>
+      </ng-template>
+    </div>
+   
+  <div *ngIf="selected && !editEmployee">
 
     <div class="main-header">
       <h5>Client Summary</h5>
-      <h6>CLIENT DEPARTMENT > {{name.given}} {{name.family}}</h6>
+      <h6>CLIENT DEPARTMENT > {{selected['given']}} {{selected['family']}}</h6>
     </div>
 
     <!-- general info -->
     <section class="form-section">
 
 
-      <div class="row">
-        <div class="col-6">
-          <label>First Name</label>
-          <textarea type="text" class="form-control" rows="1" disabled placeholder="{{name.given}}"></textarea>
-        </div>
+      <div *ngIf="selected">
+        <div class="row">
+          <div class="col-6">
+            <label>First Name</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['given']}}</textarea>
+          </div>
 
 
-        <div class="col-6">
-          <label>Last Name</label>
-          <textarea type="text" class="form-control" rows="1" disabled>{{name.family}}</textarea>
+          <div class="col-6">
+            <label>Last Name</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['family']}}</textarea>
+          </div>
         </div>
       </div>
 
 
+      <div *ngIf="selected">
+        <div class="row">
 
-      <div class="row">
-
-        <div class="col-6">
-          <label>Date of Birth</label>
-          <textarea type="text" class="form-control"  rows="1" disabled>{{selected.birthDate}}</textarea>
-        </div>
+          <div class="col-6">
+            <label>Date of Birth</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['dob']}}</textarea>
+          </div>
 
 
-        <div class="col-6">
-          <label>Language</label>
-          <div *ngFor="let language of selected?.communication">
-            <div *ngFor="let usedLanguage of language.language.coding">
-              <textarea type="text" class="form-control" rows="1" disabled>{{usedLanguage.display}}</textarea>
+          <div class="col-6">
+            <label>Language</label>
+            <div *ngFor="let language of selected['communication']">
+              <div *ngFor="let usedLanguage of language['language']['coding']">
+                <textarea type="text" class="form-control" rows="1" disabled>{{usedLanguage['display']}}</textarea>
+              </div>
             </div>
           </div>
         </div>
@@ -57,50 +66,50 @@
       </div>
 
 
-      <div *ngIf="selected?.telecom">
+      <div *ngIf="selected">
         <div class="row">
-          <div class="col-6" *ngFor="let telecom of selected.telecom">
+          <div class="col-6" *ngFor="let telecom of selected['telecom']">
 
-            <label>{{telecom.system}}</label>
-            <textarea type="text" class="form-control"  rows="1" disabled>{{telecom.value}}</textarea>
+            <label class="telecom-title ">{{telecom.system}}</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{telecom.value}}</textarea>
           </div>
         </div>
-      </div>
 
-      <div *ngFor="let address of selected?.address">
-        <div class="row">
-          <div class="col-6">
+        <div *ngFor="let address of selected['address']">
+          <div class="row">
+            <div class="col-6">
 
-            <label>Street Address</label>
-            <textarea type="text" class="form-control"  rows="1" disabled *ngFor="let line of address.line">{{line}}</textarea>
+              <label>Street Address</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address['line'][0]}}</textarea>
 
+            </div>
+            <div class="col-6">
+
+              <label>City</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address.city}}</textarea>
+            </div>
           </div>
-          <div class="col-6">
+          <div class="row">
+            <div class="col-6">
 
-            <label>City</label>
-            <textarea type="text" class="form-control"  rows="1" disabled>{{address.city}}</textarea>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-6">
+              <label>Province</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address.state}}</textarea>
 
-            <label>Province</label>
-            <textarea type="text" class="form-control" rows="1" disabled>{{address.state}}</textarea>
+            </div>
+            <div class="col-6">
 
-          </div>
-          <div class="col-6">
-
-            <label>Postal Code</label>
-            <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
+              <label>Postal Code</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
 
 
-          </div>
-          <div class="col-6">
+            </div>
+            <div class="col-6">
 
-            <label>Country</label>
-            <textarea type="text" class="form-control"  rows="1" disabled>{{address.country}}</textarea>
+              <label>Country</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{address.country}}</textarea>
 
 
+            </div>
           </div>
         </div>
       </div>
@@ -108,182 +117,405 @@
 
 
     <!-- employment info -->
-    <section class="form-section">
+    <section class="form-section" *ngIf="selected['employeeType']['valueString'] === 'Employee'">
 
 
-      <div *ngFor="let extension of selected?.extension">
-        <div *ngIf="extension.valueString=='Employee'">
-          <div class='header'>
-            <h6>Employment Information</h6>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="row">
-        <div class="col-6">
-
-          
+      <div *ngIf="selected">
+        <div class="row">
+          <div class="col-6">
             <div>
-              
               <label>Job Title</label>
-              <textarea type="text" class="form-control" rows="1" disabled>{{jobTitle}}</textarea>
+              <textarea type="text" class="form-control" rows="1" disabled>{{selected['jobtitle']['valueString']}}</textarea>
             </div>
           </div>
-
-          
-<!-- 
-              <label>Postal Code</label>
-              <textarea type="text" class="form-control" rows="1" disabled>{{address.postalCode}}</textarea>
-   -->
-  
-            
-
-
-        <div class="col-6">
-          <div *ngFor="let identifier of selected?.identifier">
-              <label>Employee PRI</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{identifier?.value}}</textarea>
+          <div class="col-6">
+            <label>Employee PRI</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['identifier']['value']}}</textarea>
           </div>
         </div>
-
-      </div>
-      <div class="row">
-        <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/workplace'">
+        <div class="row">
+          <div class="col-6">
+            <div>
               <label>Employing Department Name</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
+              <textarea type="text" class="form-control" rows="1" disabled>{{selected['department']['valueString']}}</textarea>
             </div>
           </div>
-
-
-        </div>
-        <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/branch'">
-              <label>Employing Department Branch</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
-            </div>
+          <div class="col-6">
+            <label>Employing Department Branch</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['branch']['valueString']}}</textarea>
           </div>
         </div>
 
+        <div class="row">
+          <div class="col-6" *ngIf="selected['crossref1']">
+            <div>
+              <label>Cross Reference</label>
+              <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref1']['valueString']}}</textarea>
+            </div>
+          </div>
+          <div class="col-6" *ngIf="selected['crossref2']">
+            <label>Cross Reference</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref2']['valueString']}}</textarea>
+          </div>
+        </div>
       </div>
-      <div class="row">
-        <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferenceone'">
-              <label>Cross Reference</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
+
+    </section>
+
+    <section class="form-section">
+      <div *ngIf="selected['employeeType']['valueString'] === 'Employee'; else employeeListSection">
+        <div *ngIf="dependentArray.length > 0">
+          <div class='header'>
+            <h6>Related to</h6>
+          </div>
+
+          <!-- <div class="row"> -->
+          <div *ngFor="let dependent of dependentArray">
+            <div class="row">
+              <div class="col-sm-5">
+                <label>Dependent</label>
+                <textarea type="text" class="form-control view-summary-name-box" rows="1" disabled>{{dependent['given']}} {{dependent['family']}}</textarea>
+              </div>
+              <div class="col-sm-5">
+                <button (click)="routeToSummary(dependent['id'])" class="btn view-button">View</button>
+              </div>
             </div>
+
           </div>
 
 
         </div>
-        <div class="col-6">
-          <div *ngFor="let extension of selected?.extension">
-            <div *ngIf="extension.url=='https://bcip.smilecdr.com/fhir/crossreferencetwo'">
-              <label>Cross Reference</label>
-              <textarea type="text" class="form-control"  rows="1" disabled>{{extension.valueString}}</textarea>
-            </div>
-          </div>
-        </div>
+
 
       </div>
     </section>
 
-
-
-    <section class="form-section">
-    <div *ngFor="let item of selected?.extension">
-      <!-- dependents -->
-      <!-- Display this list of related clients if the selected client in the summary is an Employee -->
-      <div *ngIf="item.valueString == 'Employee'; else dependentRelatedList">
-        <div *ngIf="dependentArray.length > 0">
-          <div class='header'>
-            <h6>Dependents</h6>
-          </div>
+    <ng-template #employeeListSection>
+      <section class="form-section" *ngIf="dependentArray.length > 0"> 
+        <div class='header'>
+          <h6>Related to</h6>
+        </div>
+        <div *ngFor="let dependent of dependentArray">
           <div class="row">
-          <div class="col-6">
-          <div *ngFor="let dependent of dependentArray">
-            <div *ngFor="let name of dependent?.name">
-              
-                <label>Dependent</label>
-                <textarea type="text" class="form-control"  rows="1" disabled>{{name.given}} {{name.family}}</textarea>
+            <div class="col-sm-5">
+              <label>Employee</label>
+              <textarea type="text" class="form-control view-summary-name-box" rows="1" disabled>{{dependent['given']}} {{dependent['family']}}</textarea>
+            </div>
+            <div class="col-sm-5">
+              <button (click)="routeToSummary(dependent['id'])" class="btn view-button">View</button>
+            </div>
+          </div>
+
+          <!-- <div class="col-sm-6">
+                 
+                </div> -->
+        </div>
+      </section>
+    </ng-template>
+
+
+    <section class="form-section" *ngIf="servceRequestDatas.length > 0">
+      <div class='header'>
+        <h6>Service Requests</h6>
+      </div>
+      <div>
+        <table class="table  table-hover">
+          <thead class="header-table">
+            <tr>
+              <th scope="col">Service Request ID</th>
+              <th scope="col">Date</th>
+              <th scope="col">PSOHP Service</th>
+              <th scope="col">Assesment Type</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody class="body-table">
+            <tr *ngFor="let q of servceRequestDatas" class="request-list">
+              <td routerLink="/service-request-summary/{{q.resource.id}}" class="cursor">{{q.resource.id}}</td>
+              <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
+              <td>{{getServiceType(q)}}</td>
+              <td>{{getAssessmentType(q)}}</td>
+              <td>{{q.resource.status}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- buttons -->
+    <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-button" (click)="addDependent()">
+      Add a Dependent</button>
+    <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
+      class="btn regular-button" (click)="newServiceRequest()">Create a Service Request</button>
+    <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
+      class="btn regular-button float-right" (click)="backToDashboard()">Back to Dashboard</button>
+  </div>
+
+  <div *ngIf="selected && editEmployee">
+    <div class="main-header">
+      <h5>Client Summary</h5>
+      <h6>CLIENT DEPARTMENT > {{selected['given']}} {{selected['family']}}</h6>
+    </div>
+    <form [formGroup]="employeeFormGroup" novalidate>
+      <section class="form-section">
+        <div class='header'>
+          <h6>
+            Client Information
+          </h6>
+
+        </div>
+        <div class="row">
+          <div class="col">
+
+
+            <label for="givenName">First Name</label>
+            <input type="text" class="form-control" formControlName="givenName" id="givenName" name="givenName"
+              placeholder="selected['given']">
+
+            <div *ngIf="employeeFormGroup.controls['givenName'].invalid
+                && (employeeFormGroup.controls['givenName'].touched || employeeFormGroup.controls['givenName'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
               </div>
             </div>
           </div>
+          <div class="col">
+            <label for="familyName">Last Name</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
+              required>
+
+            <div *ngIf="employeeFormGroup.controls['familyName'].invalid
+                && (employeeFormGroup.controls['familyName'].touched || employeeFormGroup.controls['familyName'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
+            </div>
+
+          </div>
         </div>
 
-          
-        </div>
-      
-      <!-- Only show this section if the selected client is a Dependent -->
-      <ng-template #dependentRelatedList>
-        <div *ngIf="item.valueString == 'Dependent'">
-          <div *ngIf="dependentArray.length > 0">
-            <div class='header'>
-              <h6>Related to</h6>
-            </div>
-            <div *ngFor="let dependent of dependentArray">
-              <div *ngFor="let extension of dependent.extension">
-                <div *ngIf="extension.valueString =='Employee'">
-                  <div *ngFor="let name of dependent?.name">
-                    <div class="col-6">
-                      <label>Employee</label>
-                      <textarea type="text" class="form-control"  rows="1" disabled>{{name.given}} {{name.family}}</textarea>
-                    </div>
-                  </div>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+
+              <label for="dob">Date of Birth</label>
+              <input class="form-control" type="text" placeholder="Datepicker" formControlName="dob" id="dob"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red>
+
+              <div *ngIf="employeeFormGroup.controls['dob'].invalid
+                    && (employeeFormGroup.controls['dob'].touched || employeeFormGroup.controls['dob'].dirty)">
+                <div class="error-message">
+                  Must enter a valid date
                 </div>
               </div>
             </div>
-
           </div>
-
+          <div class="col">
+            <label for="type">Preferred Language</label>
+            <select class="form-control" formControlName="language" id="language" placeholder="Select a language"
+              required>
+              <option *ngFor="let lang of languageList" [value]="lang.value">
+                {{lang.viewValue}}
+              </option>
+              <div *ngIf="employeeFormGroup.controls['language'].invalid
+                    && (employeeFormGroup.controls['language'].touched || employeeFormGroup.controls['language'].dirty)">
+                <div class="error-message">
+                  Must enter a valid date
+                </div>
+              </div>
+            </select>
+          </div>
         </div>
-      </ng-template>
-    </div>
-  </div>
-    </section>
 
-    <section class="form-section">
-          <div class='header'>
-            <h6>Service Requests</h6>
+
+      </section>
+
+      <section class="form-section">
+        <div class='header'>
+          <h6>
+            Contact & Address Information
+          </h6>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email"
+              required>
+            <div *ngIf="employeeFormGroup.controls['email'].invalid
+              && (employeeFormGroup.controls['email'].touched || employeeFormGroup.controls['email'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
+            </div>
           </div>
-          <div>
-              <table class="table  table-hover">
-                  <thead class="header-table">
-                    <tr>
-                      <th scope="col">Service Request ID</th>
-                      <th scope="col">Date</th>
-                      <th scope="col">PSOHP Service</th>
-                      <th scope="col">Assesment Type</th>
-                      <th scope="col">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody class="body-table">
-                    <tr *ngFor="let q of servceRequestDatas"  class="request-list">
-                      <td routerLink="/service-request-summary/{{q.resource.id}}" class="cursor">{{q.resource.id}}</td>
-                      <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
-                      <td>{{getServiceType(q)}}</td>
-                      <td>{{getAssessmentType(q)}}</td>
-                      <td>{{q.resource.status}}</td>
-                    </tr>
-                  </tbody>
-                </table>
+          <div class="col">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber"
+              required>
+            <div *ngIf="employeeFormGroup.controls['phoneNumber'].invalid
+              && (employeeFormGroup.controls['phoneNumber'].touched || employeeFormGroup.controls['phoneNumber'].dirty)">
+              <div class="error-message">
+                Must be ten digits, no spaces or dashes
+              </div>
+            </div>
           </div>
-    </section>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="addressStreet">Street Address</label>
+            <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet" id="addressStreet"
+              required>
+            <div *ngIf="employeeFormGroup.controls['addressStreet'].invalid
+              && (employeeFormGroup.controls['addressStreet'].touched || employeeFormGroup.controls['addressStreet'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <label for="addressCity">City</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="addressCity" id="addressCity"
+              required>
+            <div *ngIf="employeeFormGroup.controls['addressCity'].invalid
+              && (employeeFormGroup.controls['addressCity'].touched || employeeFormGroup.controls['addressCity'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-3">
+            <label for="addressProv">Province</label>
+            <select class="form-control" formControlName="addressProv" id="addressProv" required>
+              <option *ngFor="let province of provinces" [value]="province.value">
+                {{province.viewValue}}
+              </option>
+              <div *ngIf="employeeFormGroup.controls['addressProv'].invalid
+                  && (employeeFormGroup.controls['addressProv'].touched || employeeFormGroup.controls['addressProv'].dirty)">
+                <div class="error-message">
+                  Cannot be blank
+                </div>
+              </div>
+            </select>
+          </div>
+          <div class="col-3">
+            <label for="addressPcode">Postal Code</label>
+            <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode" id="addressPcode"
+              required>
+            <div *ngIf="employeeFormGroup.controls['addressPcode'].invalid
+              && (employeeFormGroup.controls['addressPcode'].touched || employeeFormGroup.controls['addressPcode'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <label for="addressCountry">Country</label>
+            <input type="text" class="form-control" formControlName="addressCountry" id="addressCountry" required>
+            <div *ngIf="employeeFormGroup.controls['addressCountry'].invalid
+              && (employeeFormGroup.controls['addressCountry'].touched || employeeFormGroup.controls['addressCountry'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section" *ngIf="selected['employeeType']['valueString'] === 'Employee'">
+
+        <div class='header'>
+          <h6>
+            Employment Information
+          </h6>
+        </div>
+
+
+        <div class="row">
+          <div class="col">
+            <label for="jobTitle">Job Title</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle"
+              required>
+              <div *ngIf="employeeFormGroup.controls['jobTitle'].invalid
+              && (employeeFormGroup.controls['jobTitle'].touched || employeeFormGroup.controls['jobTitle'].dirty)">
+              <div class="error-message">
+                Must be two or more characters long
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <label for="id">Associated Employee PRI</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id" required>
+            <div *ngIf="employeeFormGroup.controls['id'].invalid
+              && (employeeFormGroup.controls['id'].touched || employeeFormGroup.controls['id'].dirty)">
+              <div class="error-message">
+                Must be nine digits long
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="departmentName">Derpartment Name</label>
+            <select class="form-control" formControlName="departmentName" id="departmentName" required>
+              <option *ngFor="let dept of department" [value]="dept">
+                {{dept}}
+              </option>
+            </select>
+            <div *ngIf="employeeFormGroup.controls['departmentName'].invalid
+              && (employeeFormGroup.controls['departmentName'].touched || employeeFormGroup.controls['departmentName'].dirty)">
+              <div class="error-message">
+                  Cannot be blank
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <label for="departmentBranch">Department Branch</label>
+            <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
+              <option *ngFor="let branch of branches" [value]="branch">
+                {{branch}}
+              </option>
+            </select>
+            <div *ngIf="employeeFormGroup.controls['departmentBranch'].invalid
+              && (employeeFormGroup.controls['departmentBranch'].touched || employeeFormGroup.controls['departmentBranch'].dirty)">
+              <div class="error-message">
+                Cannot be blank
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="referenceOne">Cross-reference No. 1</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne">
+          </div>
+          <div class="col">
+            <label for="referenceTwo">Cross-reference No. 2</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
+          </div>
+        </div>
+
+      </section>
+    </form>
+
+    <div class="row button-row">
+      <!-- <div class="col">
+        <button class="btn regular-button" (click)="returnToEditInputs()">Back</button>
+        <button class="btn regular-button" (click)="disableInputsBeforeSubmission()">Next</button>
+      </div> -->
+      <div class="col">
+        <button class="btn regular-button  float-right" (click)="updateEmployee()" >Update
+          Client Info</button>
+      </div>
+
+
+    </div>
 
   </div>
-
-    <!-- buttons -->
-    <div  *ngFor="let item of selected?.extension">
-      <button *ngIf="item.valueString == 'Employee'" class="btn regular-button" (click)="addDependent()">Add a
-        Dependent</button>
-      <button *ngIf="item.valueString == 'Employee' || item.valueString == 'Dependent'" class="btn regular-button"
-        (click)="newServiceRequest()">Create a Service Request</button>
-      <button *ngIf="item.valueString == 'Employee' || item.valueString == 'Dependent'" class="btn regular-button float-right"
-        (click)="backToDashboard()">Back to Dashboard</button>
-    </div>
-</div>
 </div>

@@ -107,6 +107,9 @@ import { CustomValidator } from '../dynamic-forms/custom-validator';
   {
     type: 'line'
   },
+  {
+    type: 'doc'
+  },
     {
       type: 'button',
       name: 'submit',

@@ -87,12 +87,11 @@ export class DashboardComponent implements OnInit {
   patientList = [];
   order;
   departmentOfUser: string;
-  doneFlag;
   roleInSession = 'emptyClass';
   switchSortChoice = true;
   enableAll;
   cursorClassEnables;
-  showParams;
+  showParams = null;
   constructor(
     private oauthService: OAuthService,
     private userService: UserService,
@@ -105,6 +104,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.userService.fetchUserName();
     this.userService.fetchCurrentRole();
+    this.userService.fetchCurrentUserDept();
 
     this.sortUsersObjects();
     this.userService.subscribeRoleData().subscribe(data => {
@@ -118,6 +118,17 @@ export class DashboardComponent implements OnInit {
         // console.log(this.cursorClassEnables);
       }
     });
+
+    this.userService
+      .fetchAllDepartmentNames()
+      .subscribe(
+        data => this.populateDeptNames(data),
+        error => this.handleError(error)
+      );
+  }
+
+  enableAllFunction() {
+    this.enableAll = !this.enableAll;
   }
 
   getAllPatients() {
@@ -127,7 +138,7 @@ export class DashboardComponent implements OnInit {
         data => this.handleSuccess(data),
         error => this.handleError(error)
       );
-    this.getDepartmentsList();
+    // this.getDepartmentsList();
   }
 
   sortUsersObjects() {
@@ -306,8 +317,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/region-summary']);
   }
   employeeSearch() {
+    this.showParams = null;
     let searchParams = '';
-    this.arrOfVar.forEach((element, index) => {
+    console.log(this.arrOfVar);
+    this.arrOfVar.forEach((element) => {
       if (element.data !== null) {
         if (searchParams.length === 0) {
           searchParams = '?' + element.prefix + element.data;
@@ -316,14 +329,13 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
-    console.log(searchParams);
     // if (this.clientId.data) {
     //   searchParams = this.clientId.prefix + this.clientId.data + searchParams;
     // }
 
     this.arrOfVar.forEach((element, index) => {
-      if (element.data !== null) {
-        if (this.showParams.length === 0) {
+      if (element.data) {
+        if (!this.showParams) {
           this.showParams = element.data;
         } else {
           this.showParams += ', ' + element.data;
@@ -334,10 +346,9 @@ export class DashboardComponent implements OnInit {
     if (this.employeeType) {
       this.addParams (this.employeeType);
     }
-    if (this.departmentOfUser) {
-      this.addParams (this.departmentOfUser);
+    if (this.clientDepartment) {
+      this.addParams (this.clientDepartment);
     }
-    console.log(this.showParams);
 
     this.patientService
       .getPatientData(searchParams)
@@ -360,9 +371,20 @@ export class DashboardComponent implements OnInit {
     this.clientId.data = null;
     this.dateOfBirth.data = null;
   }
-  getDepartmentsList() {
-    this.httpClient.get('../../../assets/departments.json').subscribe(data => {
-      this.listOfDepartments = data['department'];
+  // getDepartmentsList() {
+  //   this.httpClient.get('../../../assets/departments.json').subscribe(data => {
+  //     this.listOfDepartments = data['department'];
+  //   });
+  // }
+
+    /**
+   * Used in conjunction with the user service. Gets all Department Names
+   * stored on the server to link to a Practitioner.
+   * @param data
+   */
+  populateDeptNames(data: any) {
+    data.entry.forEach(element => {
+      this.listOfDepartments.push(element['resource']['name']);
     });
   }
 }
