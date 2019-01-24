@@ -25,7 +25,6 @@ export class LabRequisitionComponent implements OnInit {
   selectedClinician = '';
   environment = environment;
   patient = {};
-
   consultationFormGroup: FormGroup;
 
   constructor(private staffService: StaffService, private userService: UserService,
@@ -85,12 +84,15 @@ export class LabRequisitionComponent implements OnInit {
     });
   }
 
-  openConsultationForm() {
-    this.consultationFormGroup = this.formBuilder.group({
-      assignedTo: new FormControl(''),
-      speciality: new FormControl(''),
-      instructions: new FormControl('')
-    });
+  checkForChangeInRequisitionType() {
+    console.log(this.requisitionType);
+    if (this.requisitionType === 'Medical Information' || 'Consultation') {
+      this.consultationFormGroup = this.formBuilder.group({
+        assignTo: new FormControl(''),
+        speciality: new FormControl(''),
+        instructions: new FormControl('')
+      });
+    }
   }
 
   saveConsultation() {
@@ -109,6 +111,9 @@ export class LabRequisitionComponent implements OnInit {
     const episodeOfCareReference = new FHIR.Reference;
     episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     procedureRequest.context = episodeOfCareReference;
+    this.staffService.saveProcedureRequest(JSON.stringify(procedureRequest)).subscribe(data => {
+      console.log(data);
+    });
   }
 
   saveProcedureRequest() {

@@ -3,82 +3,84 @@
 </div>
 <div class="container">
 
-  <div class="row">
-
-    <div class="col">
-      <label>Name </label>
-      <span>{{patient.name}}</span>
-    </div>
-    <div class="col">
-      <label>Date of Birth </label>
-      <span>{{patient.dob}}</span>
-    </div>
-    <div class="col">
-      <label>Employee Id </label>
-      <span>{{patient.employeeId}}</span>
-    </div>
-
+  <div class="row patient-table">
+    <table>
+      <thead class="patient-table-header">
+        <th class="patient-table-data-cells">Name</th>
+        <th class="patient-table-data-cells">Date of Birth</th>
+        <th class="patient-table-data-cells">Employee ID</th>
+        <th class="patient-table-data-cells">Department</th>
+        <th class="patient-table-data-cells">Branch</th>
+      </thead>
+      <tbody class="patient-table-body">
+        <td class="patient-table-data-cells">{{patient.name}}</td>
+        <td class="patient-table-data-cells">{{patient.dob}}</td>
+        <td class="patient-table-data-cells">{{patient.employeeId}}</td>
+        <td class="patient-table-data-cells">{{patient.workplace}}</td>
+        <td class="patient-table-data-cells">{{patient.branch}}</td>
+      </tbody>
+    </table>
   </div>
 
-  <div>
-    <label class="col-3">Type of Requisition</label>
-    <select [(ngModel)]="requisitionType" class="form-control col-3">
+  <div class="form-inline">
+    <label class="title">Type of Requisition</label>
+    <select [(ngModel)]="requisitionType" class="form-control value" (change)="checkForChangeInRequisitionType()">
       <option>Diagnostics Test</option>
       <option>Consultation</option>
       <option>Medical Information</option>
     </select>
   </div>
 
-  <div *ngIf="requisitionType=='Consultation'" class="search-box">
-    <h6>Consultation</h6>
+    <!-- Consultation & Medical Information -->
+
+  <div *ngIf="requisitionType==='Consultation' || requisitionType==='Medical Information'" class="search-box">
+    <h6 class="consultation-header">{{requisitionType}}</h6>
 
     <form [formGroup]="consultationFormGroup">
-      <div class="field">
-        <label class="col-3" for="assignTo"><strong>Assign Clinician: </strong></label>
-        <select class="form-control col-3" required [(ngModel)]="selectedClinician" name="assignTo" formControlName="assignTo">
+      <div class="field form-inline">
+        <label for="assignTo" class="title">Assign Clinician: </label>
+        <select class="form-control value" required name="assignTo" formControlName="assignTo">
           <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
             <span>{{clinician.name}}</span>
           </option>
         </select>
       </div>
-      <div class="field">
-        <label class="col-3" for="speciality">Speciality: </label>
-        <input type="text" class="form-control col-3" name="speciality" formControlName="speciality">
+      <div class="field form-inline">
+        <label for="speciality" class="title">Speciality: </label>
+        <input type="text" class="form-control value" name="speciality" formControlName="speciality">
       </div>
-      <div class="field">
-        <label class="col-3" for="instructions">Instructions: </label>
-        <input type="text" class="form-control col-3" name="instructions" formControlName="instructions">
+      <div class="field form-inline">
+        <label for="instructions" class="title">Instructions: </label>
+        <textarea class="form-control instructions"></textarea>
       </div>
     </form>
+
+    <div class="consultation-buttons">
+      <button class="btn special-button" (click)="saveConsultation()">Submit</button>
+      <button class="btn special-button" (click)="requisitionType=''">Cancel</button>
+    </div>
+
+
   </div>
 
   <!-- Lab Test -->
 
   <div *ngIf="requisitionType=='Diagnostics Test'">
 
-    <div class="field">
-      <label class="col-3">Service Delivery: </label>
-      <select [(ngModel)]="serviceDeliveryType" class="form-control col-3">
+    <div class="field form-inline">
+      <label class="title">Service Delivery: </label>
+      <select [(ngModel)]="serviceDeliveryType" class="form-control value">
         <option>Point of Care</option>
         <option>Referral</option>
       </select>
     </div>
 
-    <div class="field">
-      <label class="col-3">Instructions: </label>
-      <input type="text" [(ngModel)]="instructions" class="form-control col-3 instructions">
+    <div class="field form-inline">
+      <label class="title">Instructions: </label>
+      <textarea [(ngModel)]="instructions" class="form-control instructions"></textarea>
     </div>
   
     <!-- Items -->
-    <div *ngIf="serviceDeliveryType.length>0">
-      <div class="row">
-        <div *ngFor="let item of labTestArray">
-          
-          <div class="col"></div>
-          
-        </div>
-      </div>
-    </div>
     <div *ngIf="serviceDeliveryType.length>0">
       <div id="print">
         <ul>
