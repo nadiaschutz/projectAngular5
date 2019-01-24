@@ -160,49 +160,64 @@
     
 
     <button class="btn special-button"  [disabled]="!clientDepartmentFormGroup.valid" (click)="setClientDepartment()">Add</button>
-  </form>
+  </form>-->
 
-  <div>
-    <div *ngIf="addClientDepartment">
-      <div class="row">
-        <div class="col-md-8">
-          <input type="text" name="clientDepartmentName" id="clientDepartmentName" class="form-control " placeholder="Enter Client Department Name"
-          [(ngModel)]="clientDepartmentName"/>
-        </div>
+
+
+
+<!-- (click)="addNewClientDepartment() -->
+
+
+
+
+
+<div class="container">
+  <div class="main-header">
+    <h5>Client Department</h5>
+    <h6>Create Client department</h6>
+  </div>
+
+  <div *ngIf="!addClientDepartment">
+
+    <div class="button-section">
+      <button (click)="addNewClientDepartment()" class="btn special-button">
+        Add new Client Department</button>
+    </div>
+
+    <div>
+      <dynamic-form [config]="config" #form="dynamicForm" (submit)="submit($event)">
+      </dynamic-form>
+      <!-- {{ form.valid }}
+        {{ form.value | json }} -->
+    </div>
+
+  </div>
+
+  <div *ngIf="addClientDepartment">
+    <div class="row">
+      <div class="col-md-8">
+        <input type="text" name="clientDepartmentName" id="clientDepartmentName" class="form-control " placeholder="Enter Client Department Name"
+          [(ngModel)]="clientDepartmentName" />
       </div>
-      <div class="row">
+    </div>
+    <div class="row">
+      <div class="col-md-8">
         <div class="alert alert-success" *ngIf="clientDepartmentCreationSuccess">
-          <strong>Client Department: {{clientDepartmentName}} added successfully</strong> 
+          <strong>Client Department: {{clientDepartmentName}} added successfully</strong>
         </div>
       </div>
-      <div class="row">
+    </div>
+    <div class="row">
+      <div class="col-md-8">
         <div class="button-section">
           <button (click)="createClientDepartment()" class="btn special-button" *ngIf="!clientDepartmentCreationSuccess">
             Add new Client Department</button>
           <button (click)="backToCreateBranch()" class="btn special-button">
-              Back</button>
+            Back</button>
         </div>
       </div>
     </div>
   </div>
-</div> -->
 
 
-<div class="container">
-    <div class="main-header">
-      <h5>Client Department</h5>
-      <h6>Create Client department</h6>
-    </div>
-
-    <div >
-        <dynamic-form
-          [config]="config"
-          #form="dynamicForm"
-          (submit)="submit($event)">
-        </dynamic-form>
-        <!-- {{ form.valid }}
-        {{ form.value | json }} -->
-      </div>
-
-
-  </div>   
+</div>
