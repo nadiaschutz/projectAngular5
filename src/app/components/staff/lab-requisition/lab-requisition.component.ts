@@ -108,16 +108,29 @@ export class LabRequisitionComponent implements OnInit {
       requester.agent = requesterReference;
       procedureRequest.requester = requester;
     });
+
     const episodeOfCareReference = new FHIR.Reference;
     episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     procedureRequest.context = episodeOfCareReference;
+
+    const performerReference = new FHIR.Reference();
+    performerReference.reference = 'Practitioner/' + this.consultationFormGroup.get('assignTo').value.id;
+    procedureRequest.performer = performerReference;
+
+    const annotation = new FHIR.Annotation;
+    annotation.text = this.consultationFormGroup.get('instructions').value;
+    procedureRequest.note = [annotation];
+
+    const performerType = new FHIR.CodeableConcept;
+    performerType.text = this.consultationFormGroup.get('speciality').value;
+    procedureRequest.performerType = performerType;
+
     this.staffService.saveProcedureRequest(JSON.stringify(procedureRequest)).subscribe(data => {
-      console.log(data);
+      this.requisitionType = '';
     });
   }
 
   saveProcedureRequest() {
-    console.log(this.labTestArray);
     const procedureRequest = new FHIR.ProcedureRequest;
     procedureRequest.resourceType = 'ProcedureRequest';
     procedureRequest.status = 'active';
@@ -130,6 +143,7 @@ export class LabRequisitionComponent implements OnInit {
       requester.agent = requesterReference;
       procedureRequest.requester = requester;
     });
+
     const episodeOfCareReference = new FHIR.Reference;
     episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     procedureRequest.context = episodeOfCareReference;
@@ -143,12 +157,17 @@ export class LabRequisitionComponent implements OnInit {
         }
       });
     });
+
     const category = new FHIR.CodeableConcept;
     category.coding = categoryCodingArray;
     procedureRequest.category = [category];
-    console.log(procedureRequest);
+
+    const annotation = new FHIR.Annotation;
+    annotation.text = this.instructions;
+    procedureRequest.note = [annotation];
+
     this.staffService.saveProcedureRequest(JSON.stringify(procedureRequest)).subscribe(data => {
-      console.log(data);
+      this.requisitionType = '';
     });
   }
 

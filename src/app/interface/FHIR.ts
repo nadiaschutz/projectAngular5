@@ -853,9 +853,11 @@ export class ProcedureRequest extends Resource implements Serializable<Procedure
     orderDetail: CodeableConcept[];
     subject: Reference;
     requester: Requester;
-    performer: Reference[];
+    performer: Reference;
     authoredOn: string;
     context: Reference;
+    performerType: CodeableConcept;
+    note: Annotation[];
 
     deserialize(jsonObject: any): ProcedureRequest {
         const that = this;
