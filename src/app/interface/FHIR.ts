@@ -845,6 +845,33 @@ export class Task extends Resource implements Serializable<Task> {
     }
 }
 
+export class ProcedureRequest extends Resource implements Serializable<ProcedureRequest> {
+    identifier: Identifier[];
+    status: string;
+    intent: string;
+    category: CodeableConcept[];
+    orderDetail: CodeableConcept[];
+    subject: Reference;
+    requester: Requester;
+    performer: Reference;
+    authoredOn: string;
+    context: Reference;
+    performerType: CodeableConcept;
+    note: Annotation[];
+
+    deserialize(jsonObject: any): ProcedureRequest {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
 
 export class PractitionerRole extends Resource implements Serializable<PractitionerRole> {
 

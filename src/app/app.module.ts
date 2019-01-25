@@ -60,6 +60,7 @@ import { DistrictOfficeAddComponent } from './components/district-office-add/dis
 // import { DynamicFormModule } from './components/dynamic-forms/dynamic-form.module';
 
 import { AvatarModule } from 'ngx-avatar';
+import { LabRequisitionComponent } from './components/staff/lab-requisition/lab-requisition.component';
 
 
 const routes: Routes = [
@@ -82,6 +83,7 @@ const routes: Routes = [
   { path: 'service-request-summary/:id', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'staff/work-screen/:id', component: WorkScreenComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
@@ -129,7 +131,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     DynamicFieldDirective,
     DynamicFormComponent,
     DemoComponent,
-    DistrictOfficeAddComponent
+    DistrictOfficeAddComponent,
+    LabRequisitionComponent
 
   ],
   imports: [

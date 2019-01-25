@@ -1,0 +1,101 @@
+
+ul{
+    -webkit-columns: 3;
+    -moz-columns: 3;
+    columns: 3;
+    // border: 1px solid #ccc;
+    list-style-type: none;
+    margin-top: 20px;
+    padding: 15px;
+}
+
+.item {
+    margin-top: 15px;
+}
+
+.item-header {
+    margin-top: 15px;
+}
+
+label {
+    font-size: 13px;
+}
+
+.checklist-item {
+    margin-left: 10px
+}
+
+.field {
+    margin-top: 15px;
+}
+.search-box {
+    margin-top: 15px;
+}
+
+.form-control.instructions {
+    height: 80px;
+    width: 200px;
+    white-space: normal;
+}
+.page {
+    background-color: #f3f3f3;
+}
+
+.checkbox {
+    position: absolute;
+    // top: 0;
+    // left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+}
+.special-button {
+    background-color: #398ef2;
+    color: white;
+}
+.patient-table {
+    margin-bottom: 50px;
+}
+.patient-table-header {
+    white-space: nowrap;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: left;
+    border: none;
+}
+.patient-table-body {
+    white-space: nowrap;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: left;
+}
+.patient-table-data-cells {
+    padding: 10px;
+}
+.label {
+    margin-top: 5px;
+}
+
+.form-control {
+    width: 150px;
+    margin-left: 15px;
+}
+
+.title {
+    width: 10%;
+}
+
+.value {
+    width: 20%;
+}
+.consultation-header {
+    margin-bottom: 30px;
+}
+.consultation-buttons {
+    margin-top: 25px;
+}

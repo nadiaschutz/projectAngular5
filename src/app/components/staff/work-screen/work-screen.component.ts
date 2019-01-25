@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { log } from 'util';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -44,7 +45,9 @@ export class WorkScreenComponent implements OnInit {
   clinicalAssignmentTask = {};
 
   constructor(private staffService: StaffService, private utilService: UtilService,
-  private route: ActivatedRoute, private formBuilder: FormBuilder, private oAuthService: OAuthService, private userService: UserService) { }
+  private route: ActivatedRoute, private formBuilder: FormBuilder,
+  private oAuthService: OAuthService, private userService: UserService,
+  private router: Router) { }
 
   ngOnInit() {
     console.log(this.route.snapshot.paramMap.get('id'));
@@ -253,6 +256,7 @@ export class WorkScreenComponent implements OnInit {
         this.summary['ohagEnvironmentalModifier'] = item['answer'][0]['valueString'];
       }
     });
+    console.log(this.summary);
   }
 
   processTaskForHistory(task) {
@@ -605,6 +609,11 @@ export class WorkScreenComponent implements OnInit {
         }
       });
     });
+  }
+
+  redirectToLabRequisition() {
+    this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
+    this.router.navigateByUrl('/staff/lab-requisition');
   }
 
 }

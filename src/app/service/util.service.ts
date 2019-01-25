@@ -45,6 +45,46 @@ export class UtilService {
     return formatDate(new Date(dateTime), 'dd-MM-yyyy, HH:mm:ss', 'en');
   }
 
+  getPatientJsonObjectFromPatientFhirObject(patientFHIR) {
+    const patientJSON = {};
+    patientJSON['name'] = this.getNameFromResource(patientFHIR);
+    patientJSON['dob'] = patientFHIR['birthDate'];
+    patientJSON['id'] = patientFHIR['id'];
+    patientFHIR.telecom.forEach(eachTelecomItem => {
+      patientJSON[eachTelecomItem.system] = eachTelecomItem.value;
+    });
+    patientFHIR.extension.forEach(eachExtension => {
+      if (eachExtension.url === 'https://bcip.smilecdr.com/fhir/branch') {
+        patientJSON['branch'] = eachExtension.valueString;
+      } else if (eachExtension.url === 'https://bcip.smilecdr.com/fhir/crossreferenceone') {
+        patientJSON['crossreferenceone'] = eachExtension.valueString;
+      } else if (eachExtension.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+        patientJSON['dependentlink'] = eachExtension.valueString;
+      } else if (eachExtension.url === 'https://bcip.smilecdr.com/fhir/crossreferencetwo') {
+        patientJSON['crossreferencetwo'] = eachExtension.valueString;
+      } else if (eachExtension.url === 'https://bcip.smilecdr.com/fhir/jobtile') {
+        patientJSON['jobtile'] = eachExtension.valueString;
+      } else if (eachExtension.url === 'https://bcip.smilecdr.com/fhir/workplace') {
+        patientJSON['workplace'] = eachExtension.valueString;
+      } else if (eachExtension.url === 'https://bcip.smilecdr.com/fhir/employeetype') {
+        patientJSON['employeetype'] = eachExtension.valueString;
+      }
+    });
+    patientFHIR.identifier.forEach(eachIdentifier => {
+      if (eachIdentifier.system === 'https://bcip.smilecdr.com/fhir/employeeid') {
+        patientJSON['employeeId'] = eachIdentifier.value;
+      }
+    });
+    patientJSON['preferredLanguage'] = patientFHIR.communication[0].language.coding[0].display;
+    patientJSON['address'] = {};
+    patientJSON['address']['line'] = patientFHIR['address'][0]['line'][0];
+    patientJSON['address']['city'] = patientFHIR['address'][0]['city'];
+    patientJSON['address']['country'] = patientFHIR['address'][0]['country'];
+    patientJSON['address']['postalCode'] = patientFHIR['address'][0]['postalCode'];
+    patientJSON['address']['state'] = patientFHIR['address'][0]['state'];
+    return patientJSON;
+  }
+
   /**
    * Takes in an array and sorts the values given. Calls the natural compare function
    * to handle the comparison between elements of an array
