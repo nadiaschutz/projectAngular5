@@ -12,6 +12,9 @@ import * as Dependent from '../../interface/patient';
 import * as datepicker from 'js-datepicker';
 import * as uuid from 'uuid';
 
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { formatDate } from '@angular/common';
+
 
 export interface AccountType {
   value: string;
@@ -29,6 +32,7 @@ export interface LanguageType {
   styleUrls: ['./dependent.component.scss']
 })
 export class DependentComponent implements OnInit {
+  datePickerConfig: Partial<BsDatepickerConfig>;
 
   // Declaration for Dependent form group object
 
@@ -105,9 +109,15 @@ export class DependentComponent implements OnInit {
     private oauthService: OAuthService,
     private userService: UserService,
     private patientService: PatientService,
-    private router: Router
+    private router: Router,
+    private bsDatepickerConfig: BsDatepickerConfig
 
-  ) { }
+  ) {
+    this.minDate = new Date();
+    this.maxDate = new Date();
+    this.minDate.setDate(this.minDate.getDate() - 43800);
+    this.maxDate.setDate(this.maxDate.getDate());
+   }
 
   accountTypes: AccountType[] = [
     { value: 'Employee', viewValue: 'Employee' },
@@ -259,6 +269,7 @@ export class DependentComponent implements OnInit {
     this.dependent.telecom = [dependent_telecom_phone, dependent_telecom_email];
     this.dependent.communication = [dependent_communication];
     this.dependent.birthDate = this.dependentFormGroup.get('dob').value;
+    this.dependent.birthDate = formatDate(this.dependent.birthDate, 'yyyy-MM-dd', 'en');
     this.dependent.resourceType = 'Patient';
     this.dependent.name = dependent_name;
     this.dependent.address = [dependent_address];

@@ -13,12 +13,11 @@
           <h6>
             Client Information
           </h6>
-
         </div>
+
+
         <div class="row">
-          <div class="col">
-
-
+            <div class="col">
             <label for="givenName">First Name</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName" name="givenName">
 
@@ -61,8 +60,11 @@
               id="dob"
               required> -->
 
-              <input class="form-control" type="text" placeholder="Datepicker" formControlName="dob" id="dob"
-                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red>
+              <input  class="form-control"  type="text" placeholder="Datepicker" formControlName="dob" id="dob"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red (change)="onChange($event)" required>
+
+                <!-- <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="dob" id="dob" bsDatepicker
+                [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red> -->
 
               <div class="invalid-feedback">
                 Cannot be blank

@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as Employee from '../../interface/patient';
 import * as uuid from 'uuid';
+import { formatDate } from '@angular/common';
 
 export interface AccountType {
   value: string;
@@ -149,7 +150,8 @@ export class EmployeeComponent implements OnInit {
     private oauthService: OAuthService,
     private userService: UserService,
     private patientService: PatientService,
-    private router: Router
+    private router: Router,
+    private bsDatepickerConfig: BsDatepickerConfig
   ) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
@@ -175,10 +177,13 @@ export class EmployeeComponent implements OnInit {
   ];
 
   ngOnInit() {
+    this.bsDatepickerConfig.dateInputFormat = 'DD MMM YYYY';
 
     this.datePickerConfig = Object.assign({},
-      {containerClass: 'theme-dark-blue',
-      dateInputFormat: 'YYYY-MM-DD'});
+      {
+        containerClass: 'theme-dark-blue',
+        dateInputFormat: 'YYYY-MM-DD'
+      });
 
     this.dependentsArray = new Array();
     this.i = 0;
@@ -264,6 +269,10 @@ export class EmployeeComponent implements OnInit {
 
     // tslint:disable-next-line:max-line-length
     // Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
+  }
+
+  onChange(e) {
+    console.log(e);
   }
 
   // callback function to set the branch list dropdown from the JSON included
@@ -445,7 +454,10 @@ export class EmployeeComponent implements OnInit {
       this.employee_telecom_email
     ];
     this.employee.communication = [this.employee_communication];
+
+
     this.employee.birthDate = this.employeeFormGroup.get('dob').value;
+    this.employee.birthDate = formatDate(this.employee.birthDate, 'yyyy-MM-dd', 'en');
     this.employee.resourceType = 'Patient';
     this.employee.name = this.employee_name;
     this.employee.address = [this.employee_address];

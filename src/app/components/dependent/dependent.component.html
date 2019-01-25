@@ -36,7 +36,10 @@
         <div class="row">
           <div class="col">
             <label for="dob">Date of Birth</label>
-            <input type="date" class="form-control" placeholder="Enter" formControlName="dob" id="dob" required>
+            <!-- <input type="date" class="form-control" placeholder="Enter" formControlName="dob" id="dob" required> -->
+
+            <input  class="form-control"  type="text" placeholder="Datepicker" formControlName="dob" id="dob"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red required>
             <div class="invalid-feedback">
               Cannot be blank
             </div>

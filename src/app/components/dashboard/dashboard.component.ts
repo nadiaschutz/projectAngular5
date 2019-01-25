@@ -6,6 +6,8 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UtilService } from '../../service/util.service';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { formatDate } from '@angular/common';
 
 export interface AccountElement {
   type: string;
@@ -33,6 +35,8 @@ export interface EmployeeElement {
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+  datePickerConfig: Partial<BsDatepickerConfig>;
+
   givenName = {
     prefix: 'given=',
     data: null
@@ -52,6 +56,10 @@ export class DashboardComponent implements OnInit {
     prefix: 'birthdate=',
     data: null
   };
+
+
+  minDate: Date;
+  maxDate: Date;
 
   private arrOfVar = [
     this.givenName,
@@ -92,14 +100,23 @@ export class DashboardComponent implements OnInit {
   enableAll;
   cursorClassEnables;
   showParams = null;
+
+  public dpConfig: Partial<BsDatepickerConfig> = new BsDatepickerConfig();
+
   constructor(
     private oauthService: OAuthService,
     private userService: UserService,
     private httpClient: HttpClient,
     private patientService: PatientService,
     private router: Router,
-    private utilService: UtilService
-  ) {}
+    private utilService: UtilService,
+    private bsDatepickerConfig: BsDatepickerConfig,
+  ) {
+    this.minDate = new Date();
+    this.maxDate = new Date();
+    this.minDate.setDate(this.minDate.getDate() - 43800);
+    this.maxDate.setDate(this.maxDate.getDate());
+  }
 
   ngOnInit() {
     this.userService.fetchUserName();
@@ -319,6 +336,7 @@ export class DashboardComponent implements OnInit {
   employeeSearch() {
     this.showParams = null;
     let searchParams = '';
+    this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
     console.log(this.arrOfVar);
     this.arrOfVar.forEach((element) => {
       if (element.data !== null) {
