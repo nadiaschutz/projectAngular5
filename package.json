@@ -40,6 +40,7 @@
     "jspdf": "^1.5.3",
     "ng-bootstrap-form-validation": "^3.0.3",
     "ng-fhir": "^2.3.0",
+    "ng2-pdf-viewer": "^5.2.3",
     "ngx-avatar": "^3.2.0",
     "ngx-bootstrap": "^3.1.2",
     "npm": "^6.4.1",

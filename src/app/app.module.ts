@@ -63,6 +63,9 @@ import { AvatarModule } from 'ngx-avatar';
 import { LabRequisitionComponent } from './components/staff/lab-requisition/lab-requisition.component';
 
 
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+
+
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService]  },
   { path: 'dependentform', component: DependentComponent, canActivate: [AuthGuardService]  },
@@ -154,7 +157,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgBootstrapFormValidationModule.forRoot(),
     BsDatepickerModule.forRoot(),
     AvatarModule,
-    AngularStickyThingsModule
+    AngularStickyThingsModule,
+    PdfViewerModule
   ],
   providers: [
     AuthGuardService,
