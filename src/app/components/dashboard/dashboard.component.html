@@ -31,8 +31,11 @@
               </div>
               <div class="col">
                 <label for="dob" class="label-name">Date of Birth</label>
-                <input class="form-control" [ngModel]="dateOfBirth.data | date:'yyyy-MM-dd'" (ngModelChange)="dateOfBirth.data = $event"
-                  type="date" name="dob" />
+                <!-- <input class="form-control" [ngModel]="dateOfBirth.data | date:'yyyy-MM-dd'" (ngModelChange)="dateOfBirth.data = $event"
+                  type="date" name="dob" /> -->
+
+                  <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="dateOfBirth.data" id="dob" bsDatepicker
+                [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red>
               </div>
             </div>
             <div class="row">
