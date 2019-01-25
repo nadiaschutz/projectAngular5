@@ -32,6 +32,10 @@ export interface LanguageType {
   styleUrls: ['./dependent.component.scss']
 })
 export class DependentComponent implements OnInit {
+
+  minDate;
+maxDate;
+
   datePickerConfig: Partial<BsDatepickerConfig>;
 
   // Declaration for Dependent form group object
