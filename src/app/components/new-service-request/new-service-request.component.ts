@@ -196,7 +196,54 @@ export class NewServiceRequestComponent implements OnInit {
     reader.onerror = function (error) {
       console.log('Error: ', error);
     };
+    
 
+  }
+
+  retrieveDocuments(data) {
+    this.documents.push(data);
+    console.log (this.documents);
+  }
+
+  downloadFile(incomingFile) {
+
+    const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
+
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let index = 0; index < byteCharacters.length; index++) {
+        byteNumbers[index] = byteCharacters.charCodeAt(index);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+
+    const blob = new Blob([byteArray], {'type': incomingFile['content'][0]['attachment']['contentType']});
+
+    if (navigator.msSaveBlob) {
+      const filename = incomingFile['content'][0]['attachment']['title'];
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      const fileLink = document.createElement('a');
+      fileLink.href = URL.createObjectURL(blob);
+      fileLink.setAttribute('visibility', 'hidden');
+      fileLink.download = incomingFile['content'][0]['attachment']['title'];
+      document.body.appendChild(fileLink);
+      fileLink.click();
+      document.body.removeChild(fileLink);
+  }
+
+
+    // const linkSource =
+    //   'data:' +
+    //   name['content'][0]['attachment']['contentType'] +
+    //   ';base64,' +
+    //   name['content'][0]['attachment']['data'];
+    // console.log(linkSource);
+    // const downloadLink = document.createElement('a');
+    // const fileName = name['content'][0]['attachment']['title'];
+
+    // downloadLink.href = linkSource;
+    // downloadLink.download = fileName;
+    // downloadLink.click();
   }
 
   // convertBase64ToFile (data) {
