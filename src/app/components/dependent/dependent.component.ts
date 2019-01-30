@@ -34,7 +34,7 @@ export interface LanguageType {
 export class DependentComponent implements OnInit {
 
   minDate;
-maxDate;
+  maxDate;
 
   datePickerConfig: Partial<BsDatepickerConfig>;
 
@@ -45,6 +45,7 @@ maxDate;
   // Dependent base object
 
   dependent;
+
 
   // Dependent Extension object (Dependent Link)
 
@@ -121,7 +122,7 @@ maxDate;
     this.maxDate = new Date();
     this.minDate.setDate(this.minDate.getDate() - 43800);
     this.maxDate.setDate(this.maxDate.getDate());
-   }
+  }
 
   accountTypes: AccountType[] = [
     { value: 'Employee', viewValue: 'Employee' },

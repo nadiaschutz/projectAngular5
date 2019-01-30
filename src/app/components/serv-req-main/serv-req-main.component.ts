@@ -10,12 +10,14 @@ import { FormsModule, FormBuilder } from '@angular/forms';
 import { link } from 'fs';
 import { UserService } from 'src/app/service/user.service';
 import { formatDate } from '@angular/common';
+import { ServRequest } from '../models/item.model';
 
 // import { Pipe, PipeTransform, Inject, LOCALE_ID } from '@angular/core';
 // import { DatePipe } from '@angular/common';
 
 
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { NullTemplateVisitor } from '@angular/compiler';
 
 @Component({
   selector: 'app-serv-req-main',
@@ -81,8 +83,23 @@ export class ServReqMainComponent implements OnInit {
   departmentString;
   clientDepartment: string = null;
 
-  servRequests = [];
+  servRequest: ServRequest = {
+    id: null,
+    date: null,
+    PSOHP_service: null,
+    assessmentType: null,
+    department: null,
+    region: null,
+    createdBy: null,
+    clientName: null,
+    status: null
+  };
+
+  servRequests: ServRequest[];
   servceRequestDatas = [];
+
+
+
 
   myString;
   str = null;
@@ -107,8 +124,6 @@ export class ServReqMainComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private bsDatepickerConfig: BsDatepickerConfig,
-    
-    
   ) {
     this.minDate = new Date();
     this.maxDate = new Date();
@@ -225,7 +240,7 @@ export class ServReqMainComponent implements OnInit {
   }
 
   handleSuccessAll(data) {
-    console.log(data);
+    console.log(data.entry);
     if (data.entry) {
       // for (const individualRecord of data.entry) {
       //   if (individualRecord.resource.item) {
@@ -248,30 +263,54 @@ export class ServReqMainComponent implements OnInit {
         console.log('i am not sorting anything');
         data['entry'].forEach(element => {
           const individualEntry = element['resource'];
+          // this.servRequests.push(individualEntry);
 
-          if (
-            individualEntry['item'] &&
-            this.currentUserRole === 'clientdept'
-          ) {
-            individualEntry['item'].forEach(department => {
-              if (
-                department['text'] === 'Submitting Department' &&
-                department['answer'][0] === this.currentUserDepartment
-              ) {
-                this.servRequests.push(individualEntry);
-              }
-            });
-          } else {
-            this.servRequests.push(individualEntry);
+          this.servRequests = data.entry.map(el => ({
+            ...this.servRequest,
+            id: el.resource.id,
+            date: el.resource.authored,
+            PSOHP_service: this.getServiceType(el.resource),
+            assessmentType: this.getAssessmentType(el.resource),
+            department: this.getDepartment(el.resource),
+            region: this.getRegion(el.resource),
+            createdBy: this.getCreatedBy(el.resource),
+            clientName: this.checkIfSubject(el.resource),
+            status: el.resource.status
           }
+          ));
+
+          // this.servRequests = data.entry.map(el => (console.log(el)));
+
+          // if (
+          //   individualEntry['item'] &&
+          //   this.currentUserRole === 'clientdept'
+          // ) {
+          //   individualEntry['item'].forEach(department => {
+          //     if (
+          //       department['text'] === 'Submitting Department' &&
+          //       department['answer'][0] === this.currentUserDepartment
+          //     ) {
+          //       this.servRequests.push(individualEntry);
+          //     }
+          //   });
+          // } else {
+          //   this.servRequests.push(individualEntry);
+          // }
         });
         console.log(this.servRequests);
       }
     }
   }
 
+
+
   handleErrorAll(error) {
     console.log(error);
+  }
+
+  showDataOnTable(data) {
+    console.log(data);
+
   }
 
   // try first to assign all the data to same onject and show without if....othervise =>
@@ -411,20 +450,53 @@ export class ServReqMainComponent implements OnInit {
     return result;
   }
 
-  getAssessmentType(serviceRequestObj): string {
+  getDepartment(serviceRequestObj) {
+    let result = '-';
+    if (serviceRequestObj.item) {
+      // console.log(serviceRequestObj.item);
+      serviceRequestObj.item.forEach(element => {
+
+        if (element.text === 'Submitting Department') {
+          // console.log(element.answer[0].valueString);
+          result = element.answer[0].valueString;
+        } else {
+          return '-';
+        }
+      });
+
+    }
+
+    return result;
+  }
+
+
+  getAssessmentType(serviceRequestObj) {
+    // getAssessmentType(serviceRequestObj): string {
+    // console.log(serviceRequestObj.resource);
     if (
       serviceRequestObj.questionnaire &&
       serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1'
     ) {
-      return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
-    }
-    if (
+      // console.log(serviceRequestObj.resource.item);
+      if (serviceRequestObj.item) {
+        // console.log(serviceRequestObj.resource.item[0].answer[0].valueString);
+        // return serviceRequestObj.resource.item[0].answer[0].valueString;
+        return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
+      } else {
+        return '-';
+      }
+
+    } else if (
       serviceRequestObj.questionnaire &&
       serviceRequestObj.questionnaire.reference === 'Questionnaire/1953'
     ) {
       return '-';
+    } else {
+      return '-';
     }
   }
+
+
   getRegion(serviceRequestObj): string {
     if (
       serviceRequestObj.questionnaire &&
@@ -444,11 +516,12 @@ export class ServReqMainComponent implements OnInit {
     }
   }
   getCreatedBy(serviceRequestObj) {
+    let result = '-';
     if (
       serviceRequestObj.questionnaire &&
       serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1'
     ) {
-      return this.getLinkValueFromObject(serviceRequestObj, 'Created By', 1);
+      result = this.getLinkValueFromObject(serviceRequestObj, 'Created By', 1);
     }
     if (
       serviceRequestObj.questionnaire &&
@@ -459,7 +532,7 @@ export class ServReqMainComponent implements OnInit {
           if (item['answer']) {
             item['answer'].forEach(answer => {
               if (answer) {
-                return answer['valueString'];
+                result = answer['valueString'];
               }
             });
           } else {
@@ -468,6 +541,7 @@ export class ServReqMainComponent implements OnInit {
         }
       });
     }
+    return result;
   }
 
   checkIfSubject(object: any) {
@@ -480,6 +554,7 @@ export class ServReqMainComponent implements OnInit {
 
   getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
     let result = '-';
+    // console.log(serviceRequestObj.item);
     if (serviceRequestObj.item) {
       serviceRequestObj.item.forEach(item => {
         // console.log(item);
