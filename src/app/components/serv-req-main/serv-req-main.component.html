@@ -115,27 +115,27 @@
       <thead class="header-table">
         <tr>
           <th scope="col" (click)="sorterFunction('id')">Service Request ID</th>
-          <th scope="col" (click)="sorterFunction('authored')">Date</th>
-          <th scope="col" (click)="sorterFunction('assessment')">PSOHP Service</th>
-          <th scope="col" (click)="sorterFunction('id')">Assesment Type</th>
-          <th scope="col" (click)="sorterFunction('id')">Department</th>
-          <th scope="col" (click)="sorterFunction('id')">Region</th>
-          <th scope="col" (click)="sorterFunction('id')">Created By</th>
-          <th scope="col" (click)="sorterFunction('display')">Client's Name</th>
-          <th scope="col" (click)="sorterFunction('id')">Status</th>
+          <th scope="col" (click)="sorterFunction('date')">Date</th>
+          <th scope="col" (click)="sorterFunction('PSOHP_service')">PSOHP Service</th>
+          <th scope="col" (click)="sorterFunction('assessmentType')">Assesment Type</th>
+          <th scope="col" (click)="sorterFunction('idepartment')">Department</th>
+          <th scope="col" (click)="sorterFunction('region')">Region</th>
+          <th scope="col" (click)="sorterFunction('createdBy')">Created By</th>
+          <th scope="col" (click)="sorterFunction('clientName')">Client's Name</th>
+          <th scope="col" (click)="sorterFunction('status')">Status</th>
         </tr>
       </thead>
       <tbody *ngIf="str===null" class="body-table">
-        <tr *ngFor="let q of servRequests" class="request-list">
-          <td routerLink="/service-request-summary/{{q.id}}" class="cursor" skipLocationChange>{{q.id}}</td>
-          <td>{{q.date | date: 'dd/MM/yyyy'}}</td>
-          <td>{{q.PSOHP_service}}</td>
-          <td>{{q.assessmentType}}</td>
-          <td>{{q.department}}</td>
-          <td>{{q.region}}</td>
-          <td>{{q.createdBy}}</td>
-          <td>{{q.clientName}}</td>
-          <td>{{q.status}}</td>
+        <tr *ngFor="let  servRequest of servRequests" class="request-list">
+          <td routerLink="/service-request-summary/{{servRequest.id}}" class="cursor" skipLocationChange>{{servRequest.id}}</td>
+          <td>{{servRequest.date | date: 'dd/MM/yyyy'}}</td>
+          <td>{{servRequest.PSOHP_service}}</td>
+          <td>{{servRequest.assessmentType}}</td>
+          <td>{{servRequest.department}}</td>
+          <td>{{servRequest.region}}</td>
+          <td>{{servRequest.createdBy}}</td>
+          <td>{{servRequest.clientName}}</td>
+          <td>{{servRequest.status}}</td>
         </tr>
       </tbody>
     </table>
