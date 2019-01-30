@@ -131,7 +131,7 @@ export class DashboardComponent implements OnInit {
       }
 
       if (this.roleInSession === 'businessuser' || 'clientdept') {
-          this.cursorClassEnables = false;
+        this.cursorClassEnables = false;
         // console.log(this.cursorClassEnables);
       }
     });
@@ -165,9 +165,9 @@ export class DashboardComponent implements OnInit {
         user['users'].forEach(element => {
           if (
             element['familyName'] ===
-              this.oauthService.getIdentityClaims()['family_name'] &&
+            this.oauthService.getIdentityClaims()['family_name'] &&
             element['givenName'] ===
-              this.oauthService.getIdentityClaims()['given_name'] &&
+            this.oauthService.getIdentityClaims()['given_name'] &&
             element['username'] === this.oauthService.getIdentityClaims()['sub']
           ) {
             this.setViewForPractitionerRole(element);
@@ -223,15 +223,15 @@ export class DashboardComponent implements OnInit {
             this.checkForEmployeeTypeAndClientDepartment(individualEntry);
           } else {
             const temp = {};
-            temp ['id'] =  individualEntry['id'];
-            temp ['given'] = individualEntry['name'][0]['given'][0];
-            temp ['family'] = individualEntry['name'][0]['family'];
-            temp ['dob'] = individualEntry['birthDate'];
+            temp['id'] = individualEntry['id'];
+            temp['given'] = individualEntry['name'][0]['given'][0];
+            temp['family'] = individualEntry['name'][0]['family'];
+            temp['dob'] = individualEntry['birthDate'];
             individualEntry['extension'].forEach(extension => {
               if (extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
                 temp['department'] = extension.valueString;
               }
-            }) ;
+            });
             individualEntry['extension'].forEach(extension => {
               if (extension['url'] === 'https://bcip.smilecdr.com/fhir/employeetype') {
                 temp['employeeType'] = extension.valueString;
@@ -243,7 +243,7 @@ export class DashboardComponent implements OnInit {
               }
             });
             // if (this.department === temp['department']) {
-              this.patientList.push(temp);
+            this.patientList.push(temp);
             // }
 
           }
@@ -268,7 +268,7 @@ export class DashboardComponent implements OnInit {
       if (
         this.employeeType &&
         individualExtension.url ===
-          'https://bcip.smilecdr.com/fhir/employeetype'
+        'https://bcip.smilecdr.com/fhir/employeetype'
       ) {
         if (individualExtension.valueString === this.employeeType) {
           this.patientList.push(individualEntry);
@@ -347,11 +347,13 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
+    // console.log(this.arrOfVar);
     // if (this.clientId.data) {
     //   searchParams = this.clientId.prefix + this.clientId.data + searchParams;
     // }
 
     this.arrOfVar.forEach((element, index) => {
+      console.log(this.showParams);
       if (element.data) {
         if (!this.showParams) {
           this.showParams = element.data;
@@ -362,10 +364,10 @@ export class DashboardComponent implements OnInit {
     });
 
     if (this.employeeType) {
-      this.addParams (this.employeeType);
+      this.addParams(this.employeeType);
     }
     if (this.clientDepartment) {
-      this.addParams (this.clientDepartment);
+      this.addParams(this.clientDepartment);
     }
 
     this.patientService
@@ -378,7 +380,8 @@ export class DashboardComponent implements OnInit {
   }
 
   addParams(params) {
-    this.showParams = this.showParams + ', ' +  params;
+    console.log(this.showParams);
+    this.showParams = this.showParams + ', ' + params;
   }
 
   resetSearchParams() {
@@ -395,11 +398,11 @@ export class DashboardComponent implements OnInit {
   //   });
   // }
 
-    /**
-   * Used in conjunction with the user service. Gets all Department Names
-   * stored on the server to link to a Practitioner.
-   * @param data
-   */
+  /**
+ * Used in conjunction with the user service. Gets all Department Names
+ * stored on the server to link to a Practitioner.
+ * @param data
+ */
   populateDeptNames(data: any) {
     data.entry.forEach(element => {
       this.listOfDepartments.push(element['resource']['name']);

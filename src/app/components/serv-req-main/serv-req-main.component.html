@@ -37,8 +37,8 @@
               (ngModelChange)="dateOfBirth.data = $event" 
               type="date" 
               name="dob"/> -->
-              <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="dateOfBirth.data" id="dob" bsDatepicker
-                [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red>
+              <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="dateOfBirth.data" id="dob"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red>
             </div>
 
           </div>
@@ -86,8 +86,8 @@
               <!-- <input class="form-control" [ngModel]="date.data | date:'yyyy-MM-dd'" (ngModelChange)="date.data = $event"
                 type="date" name="date" /> -->
 
-                <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="date.data" id="date" bsDatepicker
-                [bsConfig]='datePickerConfig' red>
+              <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="date.data" id="date"
+                bsDatepicker [bsConfig]='datePickerConfig' red>
             </div>
 
           </div>
@@ -118,6 +118,7 @@
           <th scope="col" (click)="sorterFunction('authored')">Date</th>
           <th scope="col" (click)="sorterFunction('assessment')">PSOHP Service</th>
           <th scope="col" (click)="sorterFunction('id')">Assesment Type</th>
+          <th scope="col" (click)="sorterFunction('id')">Department</th>
           <th scope="col" (click)="sorterFunction('id')">Region</th>
           <th scope="col" (click)="sorterFunction('id')">Created By</th>
           <th scope="col" (click)="sorterFunction('display')">Client's Name</th>
@@ -127,12 +128,13 @@
       <tbody *ngIf="str===null" class="body-table">
         <tr *ngFor="let q of servRequests" class="request-list">
           <td routerLink="/service-request-summary/{{q.id}}" class="cursor" skipLocationChange>{{q.id}}</td>
-          <td>{{q.authored | date: 'dd/MM/yyyy'}}</td>
-          <td>{{getServiceType(q)}}</td>
-          <td>{{getAssessmentType(q)}}</td>
-          <td>{{getRegion(q)}}</td>
-          <td>{{getCreatedBy(q)}}</td>
-          <td>{{checkIfSubject(q)}}</td>
+          <td>{{q.date | date: 'dd/MM/yyyy'}}</td>
+          <td>{{q.PSOHP_service}}</td>
+          <td>{{q.assessmentType}}</td>
+          <td>{{q.department}}</td>
+          <td>{{q.region}}</td>
+          <td>{{q.createdBy}}</td>
+          <td>{{q.clientName}}</td>
           <td>{{q.status}}</td>
         </tr>
       </tbody>
