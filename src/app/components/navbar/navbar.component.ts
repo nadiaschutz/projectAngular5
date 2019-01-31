@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { UserService } from '../../service/user.service';
 import { Router } from '@angular/router';
@@ -8,51 +8,101 @@ import { Router } from '@angular/router';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, AfterViewInit {
   constructor(
     private oauthService: OAuthService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+
   ) {}
 
   userName;
   userRole;
   userDept;
-  hasLoggedIn ;
+  hasLoggedIn;
+  testName;
   ngOnInit() {
-
-    this.hasLoggedIn = false;
-
     // this.userService.subscribeUserDept().subscribe (
     //   data => this.userDept = data,
     //   error => console.log(error)
     // );
 
+    // if (sessionStorage.getItem('userRole') === null) {
+    //   this.userService.subscribeRoleData().subscribe(
+    //     data => {
+    //       this.userRole = data;
+    //   this.hasLoggedIn = true;
+
+    //     },
+    //     error => console.log(error)
+    //   );
+    // } else {
+    //   this.userRole = sessionStorage.getItem('userRole');
+    // }
+
+
+
+    // this.userRole = sessionStorage.getItem('userRole');
+
+
+
+
+
+
+
+
+    // this.userName = sessionStorage.getItem('userName');
+
+    // this.userRole = sessionStorage.getItem('userName'));
+    // sessionStorage.setItem('myname', 'bob');
+    // this.userRole = sessionStorage.getItem('myname'));
+
+    // this.sessionStorage.observe('userRole').subscribe(value => {
+    //   this.userRole = value;
+    //   this.hasLoggedIn = true;
+    // });
+
+    // this.userRole = sessionStorage.getItem('userRole')
+    // this.sessionStorage.observe('userName').subscribe(value => {
+    //   this.userName = value;
+    //   console.log(this.userName);
+    //   this.hasLoggedIn = true;
+
+    // });
+    // if (sessionStorage.getItem('userName') !== null) {
+    // }
+
+
+
+    // if (sessionStorage.getItem('userName') === null) {
+    //   this.userName = this.oauthService.getIdentityClaims()['sub'];
+    // } else {
+    //   this.userName = sessionStorage.getItem('userName');
+    // }
+
+
+  }
+
+  ngAfterViewInit() {
+
+    this.userRole = sessionStorage.getItem('userRole');
+    this.userName = sessionStorage.getItem('userName');
+
     this.userService.subscribeRoleData().subscribe(
       data => {
-        this.userRole = data;
-      },
-      error => console.log (error)
-    );
-
-    if (this.userRole) {
-      this.userName = this.userName + '\n' + this.userRole;
-    }
-
-    this.userService.subscribeUserNameData().subscribe (
-      data => {
         if (data) {
-          this.userName = data;
-          if (this.oauthService.hasValidAccessToken()) {
-            this.hasLoggedIn = true;
-          } else {
-            this.hasLoggedIn = false;
-          }
+          this.userRole = sessionStorage.getItem('userRole');
         }
       }
     );
-  }
+    if (sessionStorage.getItem('userName') || sessionStorage.getItem('userRole')
+    ) {
+      this.hasLoggedIn = true;
+    }
 
+
+
+  }
 
   logout() {
     this.userService.logout();
@@ -60,6 +110,4 @@ export class NavbarComponent implements OnInit {
   redirectToDashboard() {
     this.router.navigateByUrl('/dashboard');
   }
-
-
 }

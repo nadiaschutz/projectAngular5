@@ -108,7 +108,7 @@
           <tbody class="body-table">
             <ng-container *ngFor="let patient of patientList">
               <ng-container *ngIf="!enableAll; else showAll">
-                <tr *ngIf="patient.department === departmentOfUser && !enableAll">
+                <tr *ngIf="patient['department'] === departmentOfUser && !enableAll">
                   <td>{{patient.id}}</td>
                   <ng-container *ngIf="roleInSession !== 'businessuser'; else plainFirstName">
                     <td (click)="routeToSummary(patient)" [ngClass]="{cursor: showCursor(patient)}">

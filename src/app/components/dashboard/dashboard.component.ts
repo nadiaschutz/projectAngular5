@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 import { environment } from '../../../environments/environment';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { OAuthService, LoginOptions } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { UtilService } from '../../service/util.service';
@@ -57,7 +57,6 @@ export class DashboardComponent implements OnInit {
     data: null
   };
 
-
   minDate: Date;
   maxDate: Date;
 
@@ -91,7 +90,6 @@ export class DashboardComponent implements OnInit {
     'dateModified'
   ];
 
-
   patientList = [];
   order;
   departmentOfUser: string;
@@ -110,7 +108,7 @@ export class DashboardComponent implements OnInit {
     private patientService: PatientService,
     private router: Router,
     private utilService: UtilService,
-    private bsDatepickerConfig: BsDatepickerConfig,
+    private bsDatepickerConfig: BsDatepickerConfig
   ) {
     this.minDate = new Date();
     this.maxDate = new Date();
@@ -119,21 +117,19 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.fetchUserName();
-    this.userService.fetchCurrentRole();
-    this.userService.fetchCurrentUserDept();
+    this.sortUsersObjects();
+
+    this.roleInSession = sessionStorage.getItem('userRole');
+    console.log(sessionStorage.getItem('userRole'));
 
     this.sortUsersObjects();
-    this.userService.subscribeRoleData().subscribe(data => {
-      this.roleInSession = data;
-      if (this.roleInSession === 'superuser') {
-        this.enableAll = true;
-      }
 
-      if (this.roleInSession === 'businessuser' || 'clientdept') {
-        this.cursorClassEnables = false;
-        // console.log(this.cursorClassEnables);
-      }
+    if (sessionStorage.getItem('userRole')) {
+      this.checkIfEnableCursor();
+    }
+    this.userService.subscribeRoleData().subscribe(() => {
+      this.roleInSession = sessionStorage.getItem('userRole');
+      this.checkIfEnableCursor();
     });
 
     this.userService
@@ -155,7 +151,15 @@ export class DashboardComponent implements OnInit {
         data => this.handleSuccess(data),
         error => this.handleError(error)
       );
-    // this.getDepartmentsList();
+  }
+
+  checkIfEnableCursor() {
+    if (this.roleInSession === 'superuser') {
+      this.enableAll = true;
+    }
+    if (this.roleInSession === 'businessuser' || 'clientdept') {
+      this.cursorClassEnables = false;
+    }
   }
 
   sortUsersObjects() {
@@ -197,12 +201,6 @@ export class DashboardComponent implements OnInit {
                     this.getAllPatients();
                   }
                 });
-
-              // individualEntry['location'].forEach(location => {
-              // this.userService.getAnyFHIRObjectByReference('/' + location['reference']).subscribe(
-              //   loc => console.log('Departments associated with this account: ', loc['name'])
-              // )
-              // });
             });
           }
         });
@@ -228,24 +226,30 @@ export class DashboardComponent implements OnInit {
             temp['family'] = individualEntry['name'][0]['family'];
             temp['dob'] = individualEntry['birthDate'];
             individualEntry['extension'].forEach(extension => {
-              if (extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
+              if (
+                extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace'
+              ) {
                 temp['department'] = extension.valueString;
               }
             });
             individualEntry['extension'].forEach(extension => {
-              if (extension['url'] === 'https://bcip.smilecdr.com/fhir/employeetype') {
+              if (
+                extension['url'] ===
+                'https://bcip.smilecdr.com/fhir/employeetype'
+              ) {
                 temp['employeeType'] = extension.valueString;
               }
             });
             individualEntry['extension'].forEach(extension => {
-              if (extension['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
+              if (
+                extension['url'] === 'https://bcip.smilecdr.com/fhir/branch'
+              ) {
                 temp['branch'] = extension.valueString;
               }
             });
             // if (this.department === temp['department']) {
             this.patientList.push(temp);
             // }
-
           }
         });
       } else {
@@ -291,18 +295,17 @@ export class DashboardComponent implements OnInit {
   routeToSummary(data) {
     if (this.roleInSession === 'clientdept') {
       if (this.departmentOfUser === data['department']) {
-        this.userService.getSelectedID(data.id);
+        sessionStorage.setItem('patientSummaryId', data.id);
         this.router.navigateByUrl('/employeesummary');
       }
     } else {
       if (this.roleInSession !== 'businessuser') {
         if (this.roleInSession !== 'clientdept') {
-          this.userService.getSelectedID(data.id);
+          sessionStorage.setItem('patientSummaryId', data.id);
           this.router.navigateByUrl('/employeesummary');
         }
       }
     }
-
   }
 
   showCursor(data) {
@@ -336,9 +339,13 @@ export class DashboardComponent implements OnInit {
   employeeSearch() {
     this.showParams = null;
     let searchParams = '';
-    this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
+    this.dateOfBirth.data = formatDate(
+      this.dateOfBirth.data,
+      'yyyy-MM-dd',
+      'en'
+    );
     console.log(this.arrOfVar);
-    this.arrOfVar.forEach((element) => {
+    this.arrOfVar.forEach(element => {
       if (element.data !== null) {
         if (searchParams.length === 0) {
           searchParams = '?' + element.prefix + element.data;
@@ -392,11 +399,6 @@ export class DashboardComponent implements OnInit {
     this.clientId.data = null;
     this.dateOfBirth.data = null;
   }
-  // getDepartmentsList() {
-  //   this.httpClient.get('../../../assets/departments.json').subscribe(data => {
-  //     this.listOfDepartments = data['department'];
-  //   });
-  // }
 
   /**
  * Used in conjunction with the user service. Gets all Department Names

@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    
   }
 
   onActivate(event) {
