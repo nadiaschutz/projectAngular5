@@ -259,7 +259,7 @@ export class EmployeeSummaryComponent implements OnInit {
     //   error => this.handleError(error)
     // );
 
-    this.summaryId = this.userService.returnSelectedID();
+    this.summaryId = sessionStorage.getItem('patientSummaryId');
     this.userService.getEmployeeSummaryID(this.summaryId);
     if (this.summaryId) {
       this.patientService
@@ -432,6 +432,7 @@ export class EmployeeSummaryComponent implements OnInit {
   }
 
   backToDashboard() {
+    sessionStorage.removeItem('patientSummaryId');
     this.router.navigateByUrl('/dashboard');
   }
 

@@ -58,8 +58,9 @@ export class UserService {
       );
     // TODO - remove this after designing cleaner solution
     this.newRoleSubject.next('emptyClass');
-    this.newUserNameSubject.next('');
-    this.newUserFHIRIDSubject.next('');
+    // this.newUserNameSubject.next('');
+    // this.newUserFHIRIDSubject.next('');
+    sessionStorage.clear();
     this.oauthService.logOut();
     this.router.navigate(['']);
   }
@@ -89,12 +90,17 @@ export class UserService {
     this.oauthService
       .fetchTokenUsingPasswordFlowAndLoadUserProfile(user, pass, header)
       .then(() => {
-        this.newUserNameSubject.next(
-          this.oauthService.getIdentityClaims()['name']
-        );
+        console.log(2);
+        sessionStorage.setItem('userName', this.oauthService.getIdentityClaims()['name']);
+        // this.setCurrentUserName(this.oauthService.getIdentityClaims()['name']);
+        this.fetchCurrentRole();
+        this.fetchUserFHIRID();
+        this.fetchCurrentUserDept();
         this.router.navigate(['/dashboard']);
+
       });
   }
+
 
   createAccount(data) {
     const header = this.getJsonAPIHeaders();
@@ -133,7 +139,6 @@ export class UserService {
 
           if (element['defaultLaunchContexts']) {
             pracID = element['defaultLaunchContexts'][0]['resourceId'];
-            this.newUserFHIRIDSubject.next(pracID);
 
             this.getPractitionerRoleByPractitionerID(pracID).subscribe(
               roledata => {
@@ -142,7 +147,11 @@ export class UserService {
                     const individualEntry = roleElement.resource;
                     individualEntry['code'].forEach(role => {
                       role['coding'].forEach(rolecode => {
-                        this.newRoleSubject.next(rolecode['code']);
+                        if (rolecode['code']) {
+                          this.newRoleSubject.next(rolecode['code']);
+                          sessionStorage.setItem('userRole', rolecode['code']);
+                          this.setCurrentUserRole(rolecode['code']);
+                        }
                       });
                     });
                   });
@@ -153,7 +162,35 @@ export class UserService {
         }
       });
     });
+
     // this.getUserRoleInSession();
+  }
+
+
+
+  fetchUserFHIRID () {
+    this.fetchCurrentUserData(
+      this.oauthService.getIdentityClaims()['sub']
+    ).subscribe(user => {
+      user['users'].forEach(element => {
+        if (
+          element['familyName'] ===
+            this.oauthService.getIdentityClaims()['family_name'] &&
+          element['givenName'] ===
+            this.oauthService.getIdentityClaims()['given_name'] &&
+          element['username'] === this.oauthService.getIdentityClaims()['sub']
+        ) {
+          let pracID: any;
+
+          if (element['defaultLaunchContexts']) {
+            pracID = element['defaultLaunchContexts'][0]['resourceId'];
+            this.newUserFHIRIDSubject.next(pracID);
+            // this.setcur  pracID);
+            this.setCurrentUserFHIRID(pracID);
+          }
+        }
+      });
+    });
   }
 
   fetchCurrentUserDept() {
@@ -172,8 +209,6 @@ export class UserService {
 
           if (element['defaultLaunchContexts']) {
             pracID = element['defaultLaunchContexts'][0]['resourceId'];
-            this.newUserFHIRIDSubject.next(pracID);
-
             this.getPractitionerRoleByPractitionerID(pracID).subscribe(
               deptData => {
                 if (deptData['total'] > 0) {
@@ -186,6 +221,7 @@ export class UserService {
                       .subscribe(role => {
                         if (!role['id'].includes('PSOHP')) {
                           this.newUserDeptSubject.next(role['name']);
+                          this.setCurrentUserDept(role['name']);
                         }
                       });
                   });
@@ -200,6 +236,24 @@ export class UserService {
 
   fetchUserName() {
     this.newUserNameSubject.next(this.oauthService.getIdentityClaims()['name']);
+  }
+
+  setCurrentUserRole(data: string) {
+    sessionStorage.setItem('userRole', data);
+    // this.sessionStorage.store('userRole', data);
+    // console.log(data);
+  }
+
+  setCurrentUserFHIRID(data: string) {
+    sessionStorage.setItem('userFHIRID', data);
+  }
+
+  setCurrentUserName(data: string) {
+    sessionStorage.setItem('userName', data);
+  }
+
+  setCurrentUserDept(data: string) {
+    sessionStorage.setItem('userDept', data);
   }
 
   subscribeUserNameData() {

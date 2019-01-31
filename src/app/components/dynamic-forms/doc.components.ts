@@ -5,6 +5,9 @@ import { FieldConfig } from './field-config.interface';
 import * as FHIR from '../../interface/FHIR';
 import { QuestionnaireService } from '../../service/questionnaire.service';
 
+interface HTMLAnchorElement {
+  download: string;
+}
 @Component({
   selector: 'form-documents',
   template: `
@@ -210,11 +213,17 @@ export class DocComponent implements Field {
     if (navigator.msSaveBlob) {
       navigator.msSaveBlob(blob, filename);
     } else {
+      console.log(filename);
+      
       const fileLink = document.createElement('a');
-      const theThing = URL.createObjectURL(blob);
+      // const theThing = URL.createObjectURL(blob);
       fileLink.href = URL.createObjectURL(blob);
-      fileLink.download = filename;
-      window.open(fileLink.href, filename);
+      // fileLink.download = filename;
+      fileLink.name = filename;
+      fileLink.target = '_blank';
+      // fileLink.setAttribute('href', URL.createObjectURL(blob));
+      fileLink.setAttribute('download', filename);
+      window.open(fileLink.href);
     }
 
   }
