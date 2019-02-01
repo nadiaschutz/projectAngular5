@@ -106,7 +106,7 @@ export class NewServiceRequestComponent implements OnInit {
     // smile user ID
     this.smileUserId = this.oauthService.getIdentityClaims()['sub'];
     console.log(this.smileUserId);
-    this.clientId = this.userService.returnSelectedID();
+    this.clientId = sessionStorage.getItem('patientSummaryId');
     console.log(this.clientId);
 
     if (this.clientId) {
@@ -269,6 +269,7 @@ export class NewServiceRequestComponent implements OnInit {
 
 
   onCancel() {
+    sessionStorage.removeItem('patientSummaryId');
     this.router.navigate(['/servreqmain']);
   }
 
