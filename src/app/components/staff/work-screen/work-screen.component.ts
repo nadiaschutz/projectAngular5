@@ -36,6 +36,8 @@ export class WorkScreenComponent implements OnInit {
   showOnlyTasks = false;
   showOnlyNotes = false;
 
+  currentPractitionerFHIRIDInSession;
+
   assignedAdmin = '';
   assignedClinician = {};
   selectedClinician = {};
@@ -50,6 +52,9 @@ export class WorkScreenComponent implements OnInit {
   private router: Router) { }
 
   ngOnInit() {
+
+    this.currentPractitionerFHIRIDInSession = sessionStorage.getItem('userFHIRID');
+
     console.log(this.route.snapshot.paramMap.get('id'));
     this.episodeOfCareId = this.route.snapshot.paramMap.get('id');
     this.userService.fetchCurrentRole();
@@ -132,13 +137,11 @@ export class WorkScreenComponent implements OnInit {
     episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     task.context = episodeOfCareReference;
 
-    this.userService.subscribeUserFHIRID().subscribe(authorId => {
-      const requester = new FHIR.Requester;
-      const requesterReference = new FHIR.Reference();
-      requesterReference.reference = 'Practitioner/' + authorId;
-      requester.agent = requesterReference;
-      task.requester = requester;
-    });
+    const requester = new FHIR.Requester;
+    const requesterReference = new FHIR.Reference();
+    requesterReference.reference = 'Practitioner/' + this.currentPractitionerFHIRIDInSession;
+    requester.agent = requesterReference;
+    task.requester = requester;
     task.authoredOn = this.utilService.getCurrentDate();
 
     const ownerReference = new FHIR.Reference;
@@ -449,10 +452,8 @@ export class WorkScreenComponent implements OnInit {
   saveNotes() {
     const annotation = new FHIR.Annotation;
     const authorReference = new FHIR.Reference;
-    this.userService.subscribeUserFHIRID().subscribe(practitionerId => {
-      console.log(practitionerId);
-      authorReference.reference = 'Practitioner/' + practitionerId;
-    });
+    authorReference.reference = 'Practitioner/' + sessionStorage;
+
     annotation.authorReference = authorReference;
     annotation.id = this.noteFormGroup.get('title').value;
     annotation.time = new Date();
@@ -504,13 +505,12 @@ export class WorkScreenComponent implements OnInit {
     const context = new FHIR.Reference();
     const taskOwner = new FHIR.Reference();
     const taskAnnotation = new FHIR.Annotation();
-    this.userService.subscribeUserFHIRID().subscribe(authorId => {
-      const requester = new FHIR.Requester;
-      const requesterReference = new FHIR.Reference();
-      requesterReference.reference = 'Practitioner/' + authorId;
-      requester.agent = requesterReference;
-      task.requester = requester;
-    });
+
+    const requester = new FHIR.Requester;
+    const requesterReference = new FHIR.Reference();
+    requesterReference.reference = 'Practitioner/' + sessionStorage.getItem('userFHIRID');
+    requester.agent = requesterReference;
+    task.requester = requester;
     task.authoredOn = this.utilService.getCurrentDate();
     taskAnnotation.text = this.taskFormGroup.get('instruction').value;
     taskOwner.reference =

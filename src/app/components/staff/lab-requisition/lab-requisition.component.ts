@@ -26,11 +26,15 @@ export class LabRequisitionComponent implements OnInit {
   environment = environment;
   patient = {} as any;
   consultationFormGroup: FormGroup;
+  currentPractitionerFHIRIDInSession;
 
   constructor(private staffService: StaffService, private userService: UserService,
   private utilService: UtilService, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
+
+    this.currentPractitionerFHIRIDInSession = sessionStorage.getItem('userFHIRID');
+
     this.staffService.getLabTestQuestionnaire().subscribe(data => {
       this.processQuestionnaire(data);
       this.fetchAllClinicians();
@@ -95,13 +99,11 @@ export class LabRequisitionComponent implements OnInit {
     procedureRequest.status = 'active';
     procedureRequest.intent = 'plan';
     procedureRequest.authoredOn = this.utilService.getCurrentDate();
-    this.userService.subscribeUserFHIRID().subscribe(authorId => {
-      const requester = new FHIR.Requester;
-      const requesterReference = new FHIR.Reference();
-      requesterReference.reference = 'Practitioner/' + authorId;
-      requester.agent = requesterReference;
-      procedureRequest.requester = requester;
-    });
+    const requester = new FHIR.Requester;
+    const requesterReference = new FHIR.Reference();
+    requesterReference.reference = 'Practitioner/' + this.currentPractitionerFHIRIDInSession;
+    requester.agent = requesterReference;
+    procedureRequest.requester = requester;
 
     const episodeOfCareReference = new FHIR.Reference;
     episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
@@ -130,13 +132,11 @@ export class LabRequisitionComponent implements OnInit {
     procedureRequest.status = 'active';
     procedureRequest.intent = 'plan';
     procedureRequest.authoredOn = this.utilService.getCurrentDate();
-    this.userService.subscribeUserFHIRID().subscribe(authorId => {
-      const requester = new FHIR.Requester;
-      const requesterReference = new FHIR.Reference();
-      requesterReference.reference = 'Practitioner/' + authorId;
-      requester.agent = requesterReference;
-      procedureRequest.requester = requester;
-    });
+    const requester = new FHIR.Requester;
+    const requesterReference = new FHIR.Reference();
+    requesterReference.reference = 'Practitioner/' + this.currentPractitionerFHIRIDInSession;
+    requester.agent = requesterReference;
+    procedureRequest.requester = requester;
 
     const episodeOfCareReference = new FHIR.Reference;
     episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;

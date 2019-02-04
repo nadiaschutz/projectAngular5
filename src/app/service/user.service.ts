@@ -287,8 +287,6 @@ export class UserService {
 
   setCurrentUserRole(data: string) {
     sessionStorage.setItem('userRole', data);
-    // this.sessionStorage.store('userRole', data);
-    // console.log(data);
   }
 
   setCurrentUserFHIRID(data: string) {
@@ -301,30 +299,6 @@ export class UserService {
 
   setCurrentUserDept(data: string) {
     sessionStorage.setItem('userDept', data);
-  }
-
-  subscribeUserNameData() {
-    return this.newUserNameSubject.asObservable();
-  }
-
-  subscribeUserFHIRID() {
-    return this.newUserFHIRIDSubject.asObservable();
-  }
-
-  subscribeUserDept() {
-    return this.newUserDeptSubject.asObservable();
-  }
-
-  unsubscribeUserNameData() {
-    this.newUserNameSubject.unsubscribe();
-  }
-
-  subscribeRoleData() {
-    return this.newRoleSubject.asObservable();
-  }
-
-  unsubscribeRoleData() {
-    this.newRoleSubject.unsubscribe();
   }
 
   getDepartmentList() {

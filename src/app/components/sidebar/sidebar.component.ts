@@ -1,4 +1,4 @@
-import { Component, OnInit,  OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../service/user.service';
 import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -9,26 +9,17 @@ import { OAuthService } from 'angular-oauth2-oidc';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-  constructor (
+  constructor(
     private userService: UserService,
     private oauthService: OAuthService,
     private router: Router
   ) {}
 
-
   roleInSession = 'emptyClass';
   ngOnInit() {
-
-    this.userService.subscribeRoleData().subscribe(data => {
-      this.roleInSession = data;
-    });
-      // this.userService.fetchCurrentRole();
-
+    this.roleInSession = sessionStorage.getItem('userRole');
   }
 
-  // ngOnDestroy() {
-  //   this.userService.unsubscribeRoleData();
-  // }
 
   clientPage() {
     this.router.navigate(['/dashboard']);
