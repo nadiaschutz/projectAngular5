@@ -35,7 +35,7 @@ export class DistrictOfficeComponent implements OnInit {
     private httpClient: HttpClient,
     private userService: UserService,
     private router: Router,
-  ) {}
+  ) { }
 
 
 
@@ -70,9 +70,10 @@ export class DistrictOfficeComponent implements OnInit {
     this.userService.fetchAllRegionalOffices().subscribe(data => {
       data['entry'].forEach(element => {
         // const id = element.resource.id;
+        console.log(element);
         const name = element.resource.name;
         this.regionalOfficesWithId[name] = element.resource.id;
-        // console.log(this.regionalOfficesWithId);
+        console.log(this.regionalOfficesWithId);
         this.regionalOffices.push(name);
       });
     });
@@ -81,6 +82,7 @@ export class DistrictOfficeComponent implements OnInit {
   fetchAllDistrictOffices() {
     this.districtOffices = [];
     this.userService.fetchAllDistrictOffices().subscribe(data => {
+      console.log(data);
       if (data['entry']) {
         data['entry'].forEach(element => {
           this.districtOffices.push(element.resource);
@@ -90,15 +92,15 @@ export class DistrictOfficeComponent implements OnInit {
   }
 
   getRegion(organization: string) {
-    console.log(organization);
+    // console.log(organization);
     if (this.regionalOfficesWithId !== {}) {
       const organizationReference = organization['reference'];
       const organizationId = organizationReference.substring(
         organizationReference.indexOf('/') + 1,
         organizationReference.length
-        );
+      );
 
-        for (const regionName of Object.keys(this.regionalOfficesWithId)) {
+      for (const regionName of Object.keys(this.regionalOfficesWithId)) {
         if (this.regionalOfficesWithId[regionName] === organizationId) {
           return regionName;
         }
