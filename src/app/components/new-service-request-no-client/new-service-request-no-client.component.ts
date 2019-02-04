@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { UserService } from '../../service/user.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -19,6 +18,7 @@ import * as FHIR from '../../interface/FHIR';
 import { PatientService } from 'src/app/service/patient.service';
 
 // for custom form components to work
+import { AfterViewInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { Field } from '../dynamic-forms/field.interface';
 import { FieldConfig } from '../dynamic-forms/field-config.interface';
@@ -26,10 +26,6 @@ import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
 import { CustomValidator } from '../dynamic-forms/custom-validator';
 import { FileDetector } from 'protractor';
 import { ValueAddress } from 'src/app/interface/organization';
-
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
 
 class TextInput {
   static create(event: FieldConfig) {
@@ -58,16 +54,14 @@ class SelectField {
   templateUrl: './new-service-request-no-client.component.html',
   styleUrls: ['./new-service-request-no-client.component.scss']
 })
-// export class NewServiceRequestNoClientComponent
-//   implements OnInit, NgAft {
-export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit {
+export class NewServiceRequestNoClientComponent
+  implements OnInit {
   // @ViewChild('serReqForm') form: NgForm;
 
   // var for styling each form field
   style = 'col-11';
   configuration;
   userName;
-  loaded = false;
 
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   config: FieldConfig[] = [];
@@ -80,30 +74,12 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
   clientFamilyName = null;
   clientBoD = null;
   currentUserDepartment;
-  currentUserDepartmentTEST = 'test';
   currentUserRole;
 
   documents = null;
   fileLink = [];
   itemReference;
   departmentList = [];
-  departmentListTEST = [
-    'test Department Nadia',
-    'Global Affairs Canada (GAC)',
-    'test',
-    'Defence Research and Development Canada (DRDC)',
-    'Canadian Northern Economic Development Agency (CanNor)',
-    'Correctional Service Canada (CSC)',
-    'Communications Research Centre Canada (CRC)',
-    'Canadian Space Agency (CSA)',
-    'Canadian Northern Economic Development Agency (CanNor)',
-    'Canadian Heritage (PCH)',
-    'Canadian Grain Commission (CGC)',
-    'Canadian Coast Guard (CCG)',
-    'Canada Border Services Agency (CBSA)',
-    'Agriculture and Agri-Foods Canada (AAFC)'];
-
-
 
   today = new Date();
   myDay;
@@ -122,472 +98,6 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
   dependentBoolean = false;
   dependentNumber = 0;
   qrequest: any;
-  qrequestTEST = [
-    {
-      "linkId": "1",
-      "text": "Name of the Requester",
-      "type": "text",
-      "required": true
-    },
-    {
-      "linkId": "2",
-      "text": "Department Name",
-      "type": "choice",
-      "required": true,
-      "option": [
-        {
-          "valueCoding": {
-            "code": "Agriculture and Agri-Foods Canada (AAFC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canada Border Services Agency (CBSA)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Coast Guard (CCG)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Grain Commission (CGC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Heritage (PCH)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Northern Economic Development Agency (CanNor)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Space Agency (CSA)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Communications Research Centre Canada (CRC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Correctional Service Canada (CSC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Defence Research and Development Canada (DRDC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Department of Finance Canada (FIN)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Department of Justice Canada (JC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Employment and Social Development Canada (ESDC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Environment and Climate Change Canada (ECCC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Fisheries and Oceans Canada (DFO)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Global Affairs Canada (GAC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Health Canada (HC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Immigration, Refugees and Citizenship Canada (IRCC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Indigenous and Northern Affairs Canada (INAC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Innovation, Science and Economic Development Canada (ISEDC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "National Defence (DND)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Natural Resources Canada (NRCan)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Privy Council Office (PCO)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Public Health Agency of Canada (PHAC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Public Prosecution Service of Canada (PPSC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Public Safety Canada (PSC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Public Services and Procurement Canada (PSPC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Royal Canadian Mounted Police (RCMP)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Service Canada (SC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Shared Services Canada (SSC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Statistics Canada (StatCan)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Transport Canada (TC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Transportation Safety Board of Canada (TSB)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Treasurer Board of Canada Secretariat (TBS)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": " Veterans Affairs Canada (VAC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Administrative Tribunals Support Service of Canada (ATSSC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Atlantic Canada Opportunities Agency (ACOA)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canada Economic Development for Quebec regions (CED)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canada Industrial Relations Board (CIRB)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canada School of Public Service (CSPS)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Dairy Commission (CDC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Radio-television & Telecommunication Commission (CTRC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Transportation Agency (CTA)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "International Joint Commission (IJC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Office of the Chief Electoral Officer of Canada (CEO)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Office of the Commissioner for Federal Judicial Affairs (FJA)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Office of the Privacy Commissioner of Canada (OPC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Office of the Registrar of the Supreme Court of Canada (ORSCC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Office of the Secretary to the Governor General (OSGG)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Public Service Commission of Canada (PSC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Status of Woman Canada (SWC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Environmental Assessment Agency (CEAA)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Human Rights Commission (CHRC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian Intellectual Property Office (CIPO)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Canadian International Trade Tribunal (CITT)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Courts Administration Service (CAS)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Farm Products Council of Canada (FPCC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Federal Economic Development Agency for Southern Ontario (FedDev Ontario)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Immigration and Refugee Board of Canada (IRB)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Infrastructure Canada (INFC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Library and Archive Canada (LAC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Military Grievance External Review Committee (MGERC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Office of the Commissioner of Official Languages (OCOL)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Office of the Information Commissioner of Canada (OIC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Office of the Public Sector Integrity Commissioner (PSIC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Parole Board of Canada (PBC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Patented Medicine Prices Review Board (PMPRB)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Translation Bureau (SVC)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Western Economic Diversification Canada (WD)"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Public Service Occupational Health Program (PSOHP)"
-          }
-        }
-      ]
-    },
-    {
-      "linkId": "3",
-      "text": "Contact Email",
-      "type": "text"
-    },
-    {
-      "linkId": "4",
-      "text": "Contact Phone No",
-      "type": "text"
-    },
-    {
-      "linkId": "5",
-      "text": "Select Request Type",
-      "type": "choice",
-      "required": true,
-      "option": [
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-PSOHP Program in general"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-Occupational Health Assessment"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-FTWE"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-Superannuation"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-Travel Health"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-Immunization"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-OHAG"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-Workplace environment"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-Postings"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Advice or Consultation-Overseas"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Incident Management-Client incidents or Employee incidents"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Incident Management-Privacy Breach or Security Breach"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Incident Management-Complaint"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Incident Management-Medical/Clinical Incident"
-          }
-        },
-        {
-          "valueCoding": {
-            "code": "Incident Management-Aggressive/violent Behaviour"
-          }
-        }
-      ]
-    },
-    {
-      "linkId": "6",
-      "text": "Detail of Request",
-      "type": "text"
-    }
-  ];
-
-
 
   submitingFormData: {
     formId: any;
@@ -621,88 +131,14 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
     private router: Router,
     private userService: UserService,
     private patientService: PatientService,
-    private oauthService: OAuthService,
-    private http: HttpClient
-  ) {
-
-    // // getting formId to display form fields
-    // this.questionnaireService
-    //   .getForm(this.formId)
-    //   .subscribe(
-    //     data => this.getFormData(data),
-    //     error => this.getFormDataError(error)
-    //   );
-
-    // //     this.person = this.http.get("https://jsonplaceholder.typicode.com/posts/1")
-    // //  .map(res => res.json()).toPromise();
-    // // this.http.get(environment.queryURI + '/Questionnaire/' + query, { headers: this.getHeaders() });
-
-    // this.userService.fetchUserName();
-    // this.userService.fetchCurrentRole();
-    // this.userService.fetchCurrentUserDept();
-    // this.userName = sessionStorage.getItem['userName'];
-
-    // /**
-    //  * Initializes the list of branches from our system
-    //  */
-    // this.userService
-    //   .fetchAllDepartmentNames()
-    //   .subscribe(
-    //     data => this.populateDeptNames(data),
-    //     error => this.handleError(error)
-    //   );
-
-    // this.userService.subscribeUserDept().subscribe(
-    //   data => {
-    //     if (data) {
-    //       this.currentUserDepartment = data;
-    //       // this.settingFunction();
-    //       this.userName = this.oauthService.getIdentityClaims()['name'];
-    //       console.log(this.currentUserDepartment);
-    //     }
-
-    //   },
-    //   error => this.responseError(error)
-    // );
-
-    // this.userService
-    //   .subscribeRoleData()
-    //   .subscribe(
-    //     data => (this.currentUserRole = data),
-    //     error => this.handleError(error)
-    //   );
-
-    // // smile user ID
-
-    // console.log(this.userName);
-
-    // // fhir user id
-    // this.userService.subscribeUserFHIRID().subscribe(data => console.log(data));
-
-  }
+    private oauthService: OAuthService
+  ) { }
 
   ngOnInit() {
 
-
-    this.userService.subscribeRoleData().subscribe(() => {
-      this.userName = sessionStorage.getItem('userName');
-    });
-    this.userName = sessionStorage.getItem('userName');
-
-    this.userService.subscribeUserDept().subscribe(() => {
-      this.currentUserDepartment = sessionStorage.getItem('userDept');
-    });
-    this.currentUserDepartment = sessionStorage.getItem('userDept');
-
-    // getting formId to display form fields
-    this.questionnaireService
-      .getForm(this.formId)
-      .subscribe(
-        data => this.getFormData(data),
-        error => this.getFormDataError(error)
-      );
-    // this.getFormData();
-
+    this.userService.fetchUserName();
+    this.userService.fetchCurrentRole();
+    this.userService.fetchCurrentUserDept();
 
     /**
      * Initializes the list of branches from our system
@@ -714,31 +150,42 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
         error => this.handleError(error)
       );
 
+    this.userService.subscribeUserDept().subscribe(
+      data => {
+        this.currentUserDepartment = data;
+        this.settingFunction();
+        this.userName = this.oauthService.getIdentityClaims()['name'];
 
-    // this.userService.subscribeUserDept().subscribe(
-    //   data => {
-    //     if (data) {
-    //       this.currentUserDepartment = data;
-    //       // this.settingFunction();
-    //       this.userName = this.oauthService.getIdentityClaims()['name'];
-    //       console.log('onInit1', this.currentUserDepartment);
-    //     }
-    //   },
-    //   error => this.responseError(error)
-    // );
+        console.log(this.currentUserDepartment);
+      },
+      error => this.responseError(error)
+    );
 
+    this.userService
+      .subscribeRoleData()
+      .subscribe(
+        data => (this.currentUserRole = data),
+        error => this.handleError(error)
+      );
 
     // smile user ID
 
-    console.log('onInit2', this.userName, this.currentUserDepartment);
-    console.log('onInit3', this.form);
+    console.log(this.userName);
 
     // fhir user id
-    // this.userService.subscribeUserFHIRID().subscribe(data => console.log('onInit3', data));
-    this.loaded = true;
-    // this.settingFunction();
+    this.userService.subscribeUserFHIRID().subscribe(data => console.log(data));
 
 
+
+
+
+    // getting formId to display form fields
+    this.questionnaireService
+      .getForm(this.formId)
+      .subscribe(
+        data => this.getFormData(data),
+        error => this.getFormDataError(error)
+      );
   }
 
   wrap() {
@@ -809,9 +256,9 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
     data.entry.forEach(element => {
       if (element['resource']['name']) {
         this.departmentList.push(element['resource']['name']);
+
       }
     });
-    console.log(this.departmentList);
   }
 
   /***************** savingData() *****************/
@@ -852,35 +299,23 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
   /****************** getFormData() ***************/
 
   getFormData(data) {
-    // getFormData() {
     this.qrequest = data.item;
-    console.log('getFormData1', data);
+    console.log(data);
 
     this.configuration = this.qrequest.map(el => {
       // text
       if (el.type === 'text') {
         if (el.text === 'Contact Phone No') {
 
-          // const formField = this.textInput(el);
-          // formField['placeholder'] = 'type your phone';
-          // formField['validation'] = [
-          //   Validators.required,
-          //   Validators.pattern(
-          //     '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-          //   )
-          // ];
-          // return formField;
-          return {
-            type: 'input',
-            label: el.text,
-            inputType: 'text',
-            placeholder: 'type your phone',
-            name: el.linkId,
-            value: '',
-            validation: [Validators.required, Validators.pattern(
+          const formField = this.textInput(el);
+          formField['placeholder'] = 'type your phone';
+          formField['validation'] = [
+            Validators.required,
+            Validators.pattern(
               '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-            )]
-          };
+            )
+          ];
+          return formField;
 
         } else if (el.text === 'Contact Email') {
 
@@ -892,23 +327,13 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
         } else if (el.text === 'Name of the Requester') {
 
           const formField = this.textInput(el);
-          formField['value'] = 'null';
           formField['placeholder'] = 'type your text';
+          formField['value'] = this.userName;
           formField['validation'] = [
             Validators.required,
             Validators.minLength(4)
           ];
           return formField;
-
-          // return {
-          //   type: 'input',
-          //   label: el.text,
-          //   inputType: 'text',
-          //   placeholder: 'type your text',
-          //   name: el.linkId,
-          //   value: '',
-          //   validation: [Validators.required, Validators.minLength(4)]
-          // };
 
         } else {
           return {
@@ -916,8 +341,7 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
             label: el.text,
             inputType: 'text',
             placeholder: 'type your text',
-            name: el.linkId,
-            value: '',
+            name: el.text,
             validation: [Validators.required, Validators.minLength(4)]
           };
         }
@@ -929,7 +353,7 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
         });
         if (el.text === 'Department Name') {
           const formField = this.selectField(el);
-          formField['value'] = this.currentUserDepartment;
+          formField['value'] = this.userName;
           formField['options'] = this.departmentList;
           return formField;
 
@@ -937,26 +361,23 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
           return {
             type: 'select',
             label: el.text,
-            name: el.linkId,
+            name: el.text,
             options: options,
             placeholder: 'Select an option',
             validation: [Validators.required],
-            value: ''
+            value: options[0]
           };
         }
 
       }
     });
-    console.log('configuration', this.configuration);
     this.configuration.push(
       {
         type: 'doc',
-        class: 'documents',
-        name: 'doc'
+        class: 'documents'
       },
       {
-        type: 'line',
-        name: 'line'
+        type: 'line'
       },
       {
         type: 'button',
@@ -964,10 +385,10 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
         label: 'Next'
       }
     );
-    // console.log('getFormData2', this.configuration);
+    console.log(this.configuration);
     this.config = this.configuration;
-    console.log('getFormData3', this.config);
-    console.log('getFormData4', this.form);
+    console.log(this.config);
+    console.log(this.form);
 
     // maping part of the data from the server to item
     this.items = this.qrequest.map(el => ({
@@ -975,16 +396,12 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
       linkId: el.linkId,
       text: el.text
     }));
-    console.log('getFormData5', this.items);
+    console.log(this.items);
 
     // console.log(this.responseId);
     // if (this.responseId === null) {
     //   this.getResponseId();
     // }
-
-    // TEST
-    // this.settingFunction();
-    console.log('getFormData6', this.form);
   }
 
   getFormDataError(error) {
@@ -1004,7 +421,7 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
       type: 'input',
       label: data.text,
       inputType: 'text',
-      name: data.linkId,
+      name: data.text
     });
   }
 
@@ -1019,41 +436,29 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
       label: data.text,
       inputType: 'text',
       placeholder: 'Select an option',
-      name: data.linkId,
+      name: data.text,
       validation: [Validators.required]
     });
   }
   /************************************************/
-  // settingFunction() {
-  ngAfterViewInit() {
+  settingFunction() {
+    // ngAfterViewInit() {
+    setTimeout(() => {
+      let previousValid = this.form.valid;
+      this.form.changes.subscribe(() => {
+        if (this.form.valid !== previousValid) {
+          previousValid = this.form.valid;
+          this.form.setDisabled('submit', !previousValid);
+        }
+      });
 
+      this.form.setDisabled('submit', true);
+      // console.log('checking at this spot:', this.currentUserDepartment);
+      // console.log(this.form);
 
-
-    console.log('ngAfterViewInit1', this.currentUserDepartment, this.userName);
-    // setTimeout(() => {
-    console.log('ngAfterViewInit2', this.currentUserDepartment, this.userName);
-    console.log('ngAfterViewInit2.1', this.configuration);
-    console.log('ngAfterViewInit3', this.form);
-    let previousValid = this.form.valid;
-    this.form.changes.subscribe(() => {
-      if (this.form.valid !== previousValid) {
-        previousValid = this.form.valid;
-        this.form.setDisabled('submit', !previousValid);
-      }
+      this.form.setValue('Department Name', this.currentUserDepartment);
+      this.form.setValue('Name of the Requester', this.userName);
     });
-
-    this.form.setDisabled('submit', true);
-    console.log('ngAfterViewInit4', this.form, this.config);
-
-    // if (this.form) {
-    //   console.log('ngAfterViewInit5', this.currentUserDepartment);
-    this.form.setValue('1', 'masha');
-    this.form.setValue('2', this.currentUserDepartment);
-
-    // }
-    console.log('ngAfterViewInit6', this.form.value);
-
-    // });
 
     // if you want to style 2 form fields per a row do these :
     // this.wrap();

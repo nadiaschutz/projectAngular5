@@ -24,9 +24,7 @@ import { FieldConfig } from './field-config.interface';
             
   `
 })
-export class SelectComponent implements OnInit {
+export class SelectComponent implements Field {
   config: FieldConfig;
   group: FormGroup;
-  constructor() { }
-  ngOnInit() { }
 }
