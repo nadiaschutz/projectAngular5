@@ -90,17 +90,24 @@ export class UserService {
     this.oauthService
       .fetchTokenUsingPasswordFlowAndLoadUserProfile(user, pass, header)
       .then(() => {
-        console.log(2);
-        sessionStorage.setItem('userName', this.oauthService.getIdentityClaims()['name']);
-        // this.setCurrentUserName(this.oauthService.getIdentityClaims()['name']);
-        this.fetchCurrentRole();
-        this.fetchUserFHIRID();
-        this.fetchCurrentUserDept();
-        this.router.navigate(['/dashboard']);
 
+        Promise.all([
+          sessionStorage.setItem(
+            'userName',
+            this.oauthService.getIdentityClaims()['name']
+          ),
+          this.fetchCurrentRole(),
+          this.fetchUserFHIRID(),
+          this.fetchCurrentUserDept()
+        ]).then(() => {
+          if (sessionStorage.getItem('userRole') === 'superuser') {
+            this.router.navigate(['/staff/list-page']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        });
       });
   }
-
 
   createAccount(data) {
     const header = this.getJsonAPIHeaders();
@@ -111,7 +118,10 @@ export class UserService {
       { headers: header }
     );
   }
-
+  /**
+   *  Fetches a user in SmileCDR based on the parameter passed
+   * @param sub
+   */
   fetchCurrentUserData(sub) {
     const header = this.getJsonAPIHeaders();
 
@@ -123,113 +133,150 @@ export class UserService {
     );
   }
 
+  /**
+   * Queries the server, and finds a Practitioner object
+   * related to the Smile user, based on the default launch context associated
+   * with the user. The default launch context contains their FHIR resource ID.
+   */
   fetchCurrentRole() {
-    this.fetchCurrentUserData(
-      this.oauthService.getIdentityClaims()['sub']
-    ).subscribe(user => {
-      user['users'].forEach(element => {
-        if (
-          element['familyName'] ===
-            this.oauthService.getIdentityClaims()['family_name'] &&
-          element['givenName'] ===
-            this.oauthService.getIdentityClaims()['given_name'] &&
-          element['username'] === this.oauthService.getIdentityClaims()['sub']
-        ) {
-          let pracID: any;
+    return new Promise((res, rej) => {
+      this.fetchCurrentUserData(
+        this.oauthService.getIdentityClaims()['sub']
+      ).subscribe(user => {
+        user['users'].forEach(element => {
+          if (
+            element['familyName'] ===
+              this.oauthService.getIdentityClaims()['family_name'] &&
+            element['givenName'] ===
+              this.oauthService.getIdentityClaims()['given_name'] &&
+            element['username'] === this.oauthService.getIdentityClaims()['sub']
+          ) {
+            let pracID: any;
 
-          if (element['defaultLaunchContexts']) {
-            pracID = element['defaultLaunchContexts'][0]['resourceId'];
+            if (element['defaultLaunchContexts']) {
+              pracID = element['defaultLaunchContexts'][0]['resourceId'];
 
-            this.getPractitionerRoleByPractitionerID(pracID).subscribe(
-              roledata => {
-                if (roledata['total'] > 0) {
-                  roledata['entry'].forEach(roleElement => {
-                    const individualEntry = roleElement.resource;
-                    individualEntry['code'].forEach(role => {
-                      role['coding'].forEach(rolecode => {
-                        if (rolecode['code']) {
-                          this.newRoleSubject.next(rolecode['code']);
-                          sessionStorage.setItem('userRole', rolecode['code']);
-                          this.setCurrentUserRole(rolecode['code']);
-                        }
+              this.getPractitionerRoleByPractitionerID(pracID).subscribe(
+                roledata => {
+                  if (roledata['total'] > 0) {
+                    roledata['entry'].forEach(roleElement => {
+                      const individualEntry = roleElement.resource;
+                      individualEntry['code'].forEach(role => {
+                        role['coding'].forEach(rolecode => {
+                          if (rolecode['code']) {
+                            // this.newRoleSubject.next(rolecode['code']);
+                            // sessionStorage.setItem('userRole', rolecode['code']);
+                            this.setCurrentUserRole(rolecode['code']);
+                          }
+                        });
                       });
                     });
-                  });
+                  }
                 }
-              }
-            );
+              );
+            }
           }
-        }
+        });
+      },
+      error => {
+        console.log(error);
+        rej();
+      },
+      () => {
+        res();
       });
     });
-
     // this.getUserRoleInSession();
   }
 
-
-
-  fetchUserFHIRID () {
-    this.fetchCurrentUserData(
-      this.oauthService.getIdentityClaims()['sub']
-    ).subscribe(user => {
-      user['users'].forEach(element => {
-        if (
-          element['familyName'] ===
-            this.oauthService.getIdentityClaims()['family_name'] &&
-          element['givenName'] ===
-            this.oauthService.getIdentityClaims()['given_name'] &&
-          element['username'] === this.oauthService.getIdentityClaims()['sub']
-        ) {
-          let pracID: any;
-
-          if (element['defaultLaunchContexts']) {
-            pracID = element['defaultLaunchContexts'][0]['resourceId'];
-            this.newUserFHIRIDSubject.next(pracID);
-            // this.setcur  pracID);
-            this.setCurrentUserFHIRID(pracID);
-          }
-        }
-      });
+  /**
+   * Queries the server, and finds a Practitioner object
+   * related to the Smile user, based on the default launch context associated
+   * with the user. The default launch context contains their FHIR resource ID.
+   * Used to get the specific FHIR ID that we can pass as a reference in different
+   * FHIR objects.
+   */
+  fetchUserFHIRID() {
+    return new Promise((res, rej) => {
+      this.fetchCurrentUserData(
+        this.oauthService.getIdentityClaims()['sub']
+      ).subscribe(
+        user => {
+          user['users'].forEach(element => {
+            if (
+              element['familyName'] ===
+                this.oauthService.getIdentityClaims()['family_name'] &&
+              element['givenName'] ===
+                this.oauthService.getIdentityClaims()['given_name'] &&
+              element['username'] ===
+                this.oauthService.getIdentityClaims()['sub']
+            ) {
+              let pracID: any;
+              if (element['defaultLaunchContexts']) {
+                pracID = element['defaultLaunchContexts'][0]['resourceId'];
+                this.setCurrentUserFHIRID(pracID);
+              }
+            }
+          });
+        },
+        error => {
+          console.log(error);
+          rej();
+        },
+        () => {
+          res();
+        });
     });
   }
 
+  /**
+   * Queries the server, and finds a PractitionerRole object
+   * related to the Smile user, based on the default launch context associated
+   * with the user. The default launch context contains their FHIR resource ID.
+   * The PractitionerRole objects define what branch & location the User works under.
+   */
   fetchCurrentUserDept() {
-    this.fetchCurrentUserData(
-      this.oauthService.getIdentityClaims()['sub']
-    ).subscribe(user => {
-      user['users'].forEach(element => {
-        if (
-          element['familyName'] ===
-            this.oauthService.getIdentityClaims()['family_name'] &&
-          element['givenName'] ===
-            this.oauthService.getIdentityClaims()['given_name'] &&
-          element['username'] === this.oauthService.getIdentityClaims()['sub']
-        ) {
-          let pracID: any;
-
-          if (element['defaultLaunchContexts']) {
-            pracID = element['defaultLaunchContexts'][0]['resourceId'];
-            this.getPractitionerRoleByPractitionerID(pracID).subscribe(
-              deptData => {
-                if (deptData['total'] > 0) {
-                  deptData['entry'].forEach(deptElement => {
-                    const individualEntry = deptElement.resource;
-                    // console.log(individualEntry)
-                    this.getAnyFHIRObjectByReference(
+    return new Promise((res, rej) => {
+      this.fetchCurrentUserData(
+        this.oauthService.getIdentityClaims()['sub']
+      ).subscribe(user => {
+        user['users'].forEach(element => {
+          if (
+            element['familyName'] ===
+              this.oauthService.getIdentityClaims()['family_name'] &&
+            element['givenName'] ===
+              this.oauthService.getIdentityClaims()['given_name'] &&
+            element['username'] === this.oauthService.getIdentityClaims()['sub']
+          ) {
+            let pracID: any;
+            if (element['defaultLaunchContexts']) {
+              pracID = element['defaultLaunchContexts'][0]['resourceId'];
+              this.getPractitionerRoleByPractitionerID(pracID).subscribe(
+                deptData => {
+                  if (deptData['total'] > 0) {
+                    deptData['entry'].forEach(deptElement => {
+                      const individualEntry = deptElement.resource;
+                      this.getAnyFHIRObjectByReference(
                         '/' + individualEntry['organization']['reference']
-                      )
-                      .subscribe(role => {
+                      ).subscribe(role => {
                         if (!role['id'].includes('PSOHP')) {
-                          this.newUserDeptSubject.next(role['name']);
                           this.setCurrentUserDept(role['name']);
                         }
                       });
-                  });
+                    });
+                  }
                 }
-              }
-            );
+              );
+            }
           }
-        }
+        },
+        error => {
+          console.log(error);
+          rej();
+        },
+        () => {
+          res();
+        });
       });
     });
   }
