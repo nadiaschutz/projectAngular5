@@ -64,32 +64,45 @@ import { LabRequisitionComponent } from './components/staff/lab-requisition/lab-
 
 
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { ContactUsFormResolverService } from './service/contact-us-form-resolver.service';
+import { DepartmentListResolverService } from './service/department-list-resolver.service';
 
 
 const routes: Routes = [
-  { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService]  },
-  { path: 'dependentform', component: DependentComponent, canActivate: [AuthGuardService]  },
+  { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
+  { path: 'dependentform', component: DependentComponent, canActivate: [AuthGuardService] },
   { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService] },
   { path: 'servreqmain', component: ServReqMainComponent, canActivate: [AuthGuardService] },
-  { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
+  {
+    path: 'newservicerequest',
+    component: NewServiceRequestComponent,
+    canActivate: [AuthGuardService]
+  },
   { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
-  { path: 'newadvicerequest', component: NewServiceRequestNoClientComponent, canActivate: [AuthGuardService] },
-  { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService]},
-  { path: 'district-office-add', component: DistrictOfficeAddComponent, canActivate: [AuthGuardService]},
+  {
+    path: 'newadvicerequest',
+    component: NewServiceRequestNoClientComponent,
+    resolve: {
+      fields: ContactUsFormResolverService,
+      departments: DepartmentListResolverService
+    },
+    canActivate: [AuthGuardService]
+  },
+  { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService] },
+  { path: 'district-office-add', component: DistrictOfficeAddComponent, canActivate: [AuthGuardService] },
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
   { path: 'employeesummary', component: EmployeeSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'newaccount', component: NewAccountComponent, canActivate: [AuthGuardService]},
-  { path: 'newservicerequest', component: NewServiceRequestComponent, canActivate: [AuthGuardService] },
+  { path: 'newaccount', component: NewAccountComponent, canActivate: [AuthGuardService] },
   { path: 'clientdepartment', component: ClientDepartmentComponent, canActivate: [AuthGuardService] },
   { path: 'assigntasks', component: TasklistComponent, canActivate: [AuthGuardService] },
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary/:id', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/work-screen/:id', component: WorkScreenComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
-  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
-  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
+  { path: 'service-request-summary/:id', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/work-screen/:id', component: WorkScreenComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
+  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
   { path: '', component: AuthComponent }
 ];
 
