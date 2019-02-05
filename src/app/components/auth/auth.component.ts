@@ -44,7 +44,6 @@ export class AuthComponent implements OnInit {
 
   login() {
     this.userService.login(this.logInForm.get('username').value.toString(), this.logInForm.get('password').value.toString());
-    
     this.router.navigate(['/dashboard']);
   }
 

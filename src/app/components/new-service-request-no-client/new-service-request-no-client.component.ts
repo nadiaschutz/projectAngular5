@@ -150,34 +150,12 @@ export class NewServiceRequestNoClientComponent
         error => this.handleError(error)
       );
 
-    this.userService.subscribeUserDept().subscribe(
-      data => {
-        this.currentUserDepartment = data;
-        this.settingFunction();
-        this.userName = this.oauthService.getIdentityClaims()['name'];
-
-        console.log(this.currentUserDepartment);
-      },
-      error => this.responseError(error)
-    );
-
-    this.userService
-      .subscribeRoleData()
-      .subscribe(
-        data => (this.currentUserRole = data),
-        error => this.handleError(error)
-      );
+    this.currentUserDepartment = sessionStorage.getItem('userDept');
+    this.settingFunction();
+    this.userName = this.oauthService.getIdentityClaims()['name'];
 
     // smile user ID
-
-    console.log(this.userName);
-
-    // fhir user id
-    this.userService.subscribeUserFHIRID().subscribe(data => console.log(data));
-
-
-
-
+    this.currentUserRole = sessionStorage.getItem('userRole');
 
     // getting formId to display form fields
     this.questionnaireService

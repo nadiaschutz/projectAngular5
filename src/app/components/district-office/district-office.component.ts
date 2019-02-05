@@ -16,11 +16,6 @@ import { FieldConfig } from '../dynamic-forms/field-config.interface';
   styleUrls: ['./district-office.component.scss']
 })
 export class DistrictOfficeComponent implements OnInit {
-
-
-
-
-
   regionalOffices = [];
   regionalOfficesWithId = {};
 
@@ -34,21 +29,15 @@ export class DistrictOfficeComponent implements OnInit {
     private formBuilder: FormBuilder,
     private httpClient: HttpClient,
     private userService: UserService,
-    private router: Router,
+    private router: Router
   ) {}
 
-
-
   ngOnInit() {
-
-    this.userService.subscribeRoleData().subscribe(data => {
-      this.roleInSession = data;
-    });
+    this.roleInSession = sessionStorage.getItem('userRole');
     this.showFormElement = false;
     this.fetchAllDistrictOffices();
     this.fetchAllRegionalOffices();
   }
-
 
   showAddDisctrictOfficeForm() {
     this.router.navigate(['/district-office-add']);
@@ -61,10 +50,6 @@ export class DistrictOfficeComponent implements OnInit {
     this.locationFormGroup.value.addressCity = districtOffice.address.city;
     this.locationFormGroup.value.addressProvince = districtOffice.address.state;
   }
-
-
-
-
 
   fetchAllRegionalOffices() {
     this.userService.fetchAllRegionalOffices().subscribe(data => {
@@ -96,9 +81,9 @@ export class DistrictOfficeComponent implements OnInit {
       const organizationId = organizationReference.substring(
         organizationReference.indexOf('/') + 1,
         organizationReference.length
-        );
+      );
 
-        for (const regionName of Object.keys(this.regionalOfficesWithId)) {
+      for (const regionName of Object.keys(this.regionalOfficesWithId)) {
         if (this.regionalOfficesWithId[regionName] === organizationId) {
           return regionName;
         }

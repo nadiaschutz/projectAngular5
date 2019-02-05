@@ -91,10 +91,8 @@ export class DashboardComponent implements OnInit {
   ];
 
   patientList = [];
-  order;
   departmentOfUser: string;
   roleInSession = 'emptyClass';
-  switchSortChoice = true;
   enableAll;
   cursorClassEnables;
   showParams = null;
@@ -117,20 +115,11 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.sortUsersObjects();
 
     this.roleInSession = sessionStorage.getItem('userRole');
-    console.log(sessionStorage.getItem('userRole'));
-
-    this.sortUsersObjects();
-
-    if (sessionStorage.getItem('userRole')) {
-      this.checkIfEnableCursor();
-    }
-    this.userService.subscribeRoleData().subscribe(() => {
-      this.roleInSession = sessionStorage.getItem('userRole');
-      this.checkIfEnableCursor();
-    });
+    this.departmentOfUser = sessionStorage.getItem('userDept');
+    // this.sortUsersObjects();
+    this.checkIfEnableCursor();
 
     this.userService
       .fetchAllDepartmentNames()
@@ -138,6 +127,8 @@ export class DashboardComponent implements OnInit {
         data => this.populateDeptNames(data),
         error => this.handleError(error)
       );
+
+    this.getAllPatients();
   }
 
   enableAllFunction() {
@@ -162,52 +153,6 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  sortUsersObjects() {
-    this.userService
-      .fetchCurrentUserData(this.oauthService.getIdentityClaims()['sub'])
-      .subscribe(user => {
-        user['users'].forEach(element => {
-          if (
-            element['familyName'] ===
-            this.oauthService.getIdentityClaims()['family_name'] &&
-            element['givenName'] ===
-            this.oauthService.getIdentityClaims()['given_name'] &&
-            element['username'] === this.oauthService.getIdentityClaims()['sub']
-          ) {
-            this.setViewForPractitionerRole(element);
-          }
-        });
-      });
-  }
-
-  setViewForPractitionerRole(userId: any) {
-    let pracID: any;
-    if (userId['defaultLaunchContexts']) {
-      pracID = userId['defaultLaunchContexts'][0]['resourceId'];
-      this.userService
-        .getPractitionerRoleByPractitionerID(pracID)
-        .subscribe(data => {
-          if (data['total'] > 0) {
-            data['entry'].forEach(element => {
-              const individualEntry = element.resource;
-              // console.log(individualEntry)
-              this.userService
-                .getAnyFHIRObjectByReference(
-                  '/' + individualEntry['organization']['reference']
-                )
-                .subscribe(role => {
-                  if (!role['id'].includes('PSOHP')) {
-                    this.departmentOfUser = role['name'];
-                    this.getAllPatients();
-                  }
-                });
-            });
-          }
-        });
-    } else {
-      this.getAllPatients();
-    }
-  }
 
   handleSuccess(data) {
     // console.log(data);

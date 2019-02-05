@@ -151,12 +151,7 @@ export class ServReqMainComponent implements OnInit {
         error => this.handleError(error)
       );
 
-    this.userService.subscribeUserDept().subscribe(
-      data => {
-        this.currentUserDepartment = data;
-      },
-      error => this.handleError(error)
-    );
+      this.currentUserDepartment = sessionStorage.getItem('userDept');
 
     this.qrequestService
       .getData('')
@@ -165,12 +160,8 @@ export class ServReqMainComponent implements OnInit {
         error => this.handleErrorAll(error)
       );
 
-    this.userService
-      .subscribeRoleData()
-      .subscribe(
-        data => (this.currentUserRole = data),
-        error => this.handleError(error)
-      );
+      this.currentUserRole = sessionStorage.getItem('userRole');
+
   }
 
   populateDeptNames(data: any) {
