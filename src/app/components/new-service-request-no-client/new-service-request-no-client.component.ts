@@ -1,11 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { UserService } from '../../service/user.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { QuestionnaireService } from '../../service/questionnaire.service';
 import { Item } from '../models/item.model';
@@ -18,7 +20,6 @@ import * as FHIR from '../../interface/FHIR';
 import { PatientService } from 'src/app/service/patient.service';
 
 // for custom form components to work
-import { AfterViewInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { Field } from '../dynamic-forms/field.interface';
 import { FieldConfig } from '../dynamic-forms/field-config.interface';
@@ -26,6 +27,10 @@ import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
 import { CustomValidator } from '../dynamic-forms/custom-validator';
 import { FileDetector } from 'protractor';
 import { ValueAddress } from 'src/app/interface/organization';
+
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 class TextInput {
   static create(event: FieldConfig) {
@@ -54,14 +59,16 @@ class SelectField {
   templateUrl: './new-service-request-no-client.component.html',
   styleUrls: ['./new-service-request-no-client.component.scss']
 })
-export class NewServiceRequestNoClientComponent
-  implements OnInit {
+// export class NewServiceRequestNoClientComponent
+//   implements OnInit, NgAft {
+export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit {
   // @ViewChild('serReqForm') form: NgForm;
 
   // var for styling each form field
   style = 'col-11';
   configuration;
   userName;
+  loaded = false;
 
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   config: FieldConfig[] = [];
@@ -74,6 +81,7 @@ export class NewServiceRequestNoClientComponent
   clientFamilyName = null;
   clientBoD = null;
   currentUserDepartment;
+  currentUserDepartmentTEST = 'test';
   currentUserRole;
 
   documents = null;
@@ -98,6 +106,8 @@ export class NewServiceRequestNoClientComponent
   dependentBoolean = false;
   dependentNumber = 0;
   qrequest: any;
+
+
 
   submitingFormData: {
     formId: any;
@@ -129,47 +139,39 @@ export class NewServiceRequestNoClientComponent
     public translate: TranslateService,
     private questionnaireService: QuestionnaireService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private userService: UserService,
     private patientService: PatientService,
-    private oauthService: OAuthService
+    private oauthService: OAuthService,
+    private http: HttpClient
   ) { }
 
   ngOnInit() {
+    this.activatedRoute.data.subscribe(data =>
+      this.getFormData(data.fields));
+    // console.log(data.fields));
+    this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
 
-    this.userService.fetchUserName();
-    this.userService.fetchCurrentRole();
-    this.userService.fetchCurrentUserDept();
 
-    /**
-     * Initializes the list of branches from our system
-     */
-    this.userService
-      .fetchAllDepartmentNames()
-      .subscribe(
-        data => this.populateDeptNames(data),
-        error => this.handleError(error)
-      );
+    // this.userService.subscribeRoleData().subscribe(() => {
+    //   this.userName = sessionStorage.getItem('userName');
+    // });
+    this.userName = sessionStorage.getItem('userName');
 
+    // this.userService.subscribeUserDept().subscribe(() => {
+    //   this.currentUserDepartment = sessionStorage.getItem('userDept');
+    // });
     this.currentUserDepartment = sessionStorage.getItem('userDept');
-    this.settingFunction();
-    this.userName = this.oauthService.getIdentityClaims()['name'];
 
-    // smile user ID
-    this.currentUserRole = sessionStorage.getItem('userRole');
+    this.loaded = true;
 
-    // getting formId to display form fields
-    this.questionnaireService
-      .getForm(this.formId)
-      .subscribe(
-        data => this.getFormData(data),
-        error => this.getFormDataError(error)
-      );
+
+
   }
 
   wrap() {
     const x = $('.field-holder-2 form-input');
     for (let i = 0; i < x.length; i++) {
-      console.log(x[i]);
       $(x[i]).wrap('<div class=\'' + this.style + '\'></div>');
     }
   }
@@ -191,15 +193,7 @@ export class NewServiceRequestNoClientComponent
   /******************* onNext() *******************/
 
   submit(value: { [name: string]: any }) {
-    console.log(value);
-    console.log(this.items);
-    // this.items = value.map(el => console.log(el));
-
-    // });
-
     this.items.forEach(element => {
-      console.log(element.text);
-
       for (const key in value) {
         if (value.hasOwnProperty(key)) {
           if (key === element.text) {
@@ -216,16 +210,11 @@ export class NewServiceRequestNoClientComponent
       .saveRequest(this.itemToSend)
       .subscribe(
         data => this.onSaveSuccess(data),
-        error => this.onSaveError(error)
+        error => this.handleError(error)
       );
-
-    console.log(this.items);
-
-    console.log(this.itemToSend);
   }
 
   getDocument(data) {
-    console.log(data);
     this.itemReference = data;
   }
 
@@ -234,7 +223,6 @@ export class NewServiceRequestNoClientComponent
     data.entry.forEach(element => {
       if (element['resource']['name']) {
         this.departmentList.push(element['resource']['name']);
-
       }
     });
   }
@@ -247,7 +235,7 @@ export class NewServiceRequestNoClientComponent
     // getting itemReference
     this.questionnaireService.newDocumentSubject.subscribe(
       data => this.getDocument(data),
-      error => this.responseIdError(error)
+      error => this.handleError(error)
     );
     // pushing document into items arr
     if (this.itemReference) {
@@ -264,36 +252,42 @@ export class NewServiceRequestNoClientComponent
   /************** getClientData(data) *************/
 
   getClientData(data) {
-    console.log(data);
     this.clientBoD = data.birthDate;
     this.clientGivenName = data.name[0].given[0];
     this.clientFamilyName = data.name[0].family;
   }
 
-  getClientError(error) {
-    console.log(error);
-  }
 
   /****************** getFormData() ***************/
 
   getFormData(data) {
     this.qrequest = data.item;
-    console.log(data);
 
     this.configuration = this.qrequest.map(el => {
       // text
       if (el.type === 'text') {
         if (el.text === 'Contact Phone No') {
 
-          const formField = this.textInput(el);
-          formField['placeholder'] = 'type your phone';
-          formField['validation'] = [
-            Validators.required,
-            Validators.pattern(
+          // const formField = this.textInput(el);
+          // formField['placeholder'] = 'type your phone';
+          // formField['validation'] = [
+          //   Validators.required,
+          //   Validators.pattern(
+          //     '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
+          //   )
+          // ];
+          // return formField;
+          return {
+            type: 'input',
+            label: el.text,
+            inputType: 'text',
+            placeholder: 'type your phone',
+            name: el.linkId,
+            value: '',
+            validation: [Validators.required, Validators.pattern(
               '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-            )
-          ];
-          return formField;
+            )]
+          };
 
         } else if (el.text === 'Contact Email') {
 
@@ -305,21 +299,21 @@ export class NewServiceRequestNoClientComponent
         } else if (el.text === 'Name of the Requester') {
 
           const formField = this.textInput(el);
+          formField['value'] = 'null';
           formField['placeholder'] = 'type your text';
-          formField['value'] = this.userName;
           formField['validation'] = [
             Validators.required,
             Validators.minLength(4)
           ];
           return formField;
-
         } else {
           return {
             type: 'input',
             label: el.text,
             inputType: 'text',
             placeholder: 'type your text',
-            name: el.text,
+            name: el.linkId,
+            value: '',
             validation: [Validators.required, Validators.minLength(4)]
           };
         }
@@ -331,7 +325,7 @@ export class NewServiceRequestNoClientComponent
         });
         if (el.text === 'Department Name') {
           const formField = this.selectField(el);
-          formField['value'] = this.userName;
+          formField['value'] = '';
           formField['options'] = this.departmentList;
           return formField;
 
@@ -339,23 +333,26 @@ export class NewServiceRequestNoClientComponent
           return {
             type: 'select',
             label: el.text,
-            name: el.text,
+            name: el.linkId,
             options: options,
             placeholder: 'Select an option',
             validation: [Validators.required],
-            value: options[0]
+            value: ''
           };
         }
 
       }
     });
+
     this.configuration.push(
       {
         type: 'doc',
-        class: 'documents'
+        class: 'documents',
+        name: 'doc'
       },
       {
-        type: 'line'
+        type: 'line',
+        name: 'line'
       },
       {
         type: 'button',
@@ -363,10 +360,9 @@ export class NewServiceRequestNoClientComponent
         label: 'Next'
       }
     );
-    console.log(this.configuration);
+
     this.config = this.configuration;
-    console.log(this.config);
-    console.log(this.form);
+
 
     // maping part of the data from the server to item
     this.items = this.qrequest.map(el => ({
@@ -374,32 +370,18 @@ export class NewServiceRequestNoClientComponent
       linkId: el.linkId,
       text: el.text
     }));
-    console.log(this.items);
 
-    // console.log(this.responseId);
-    // if (this.responseId === null) {
-    //   this.getResponseId();
-    // }
+
   }
 
-  getFormDataError(error) {
-    console.log(error);
-  }
 
-  //   const formField = this.textInput(el);
-  //                 console.log(formField);
-  // formField ['placeholder'] = 'type your phone';
-  // formField ['validation'] = [
-  //     Validators.required , Validators.minLength(4)
-  //   ];
-  // return formField;
 
   textInput(data) {
     return TextInput.create({
       type: 'input',
       label: data.text,
       inputType: 'text',
-      name: data.text
+      name: data.linkId,
     });
   }
 
@@ -414,13 +396,13 @@ export class NewServiceRequestNoClientComponent
       label: data.text,
       inputType: 'text',
       placeholder: 'Select an option',
-      name: data.text,
+      name: data.linkId,
       validation: [Validators.required]
     });
   }
   /************************************************/
-  settingFunction() {
-    // ngAfterViewInit() {
+  // settingFunction() {
+  ngAfterViewInit() {
     setTimeout(() => {
       let previousValid = this.form.valid;
       this.form.changes.subscribe(() => {
@@ -431,11 +413,9 @@ export class NewServiceRequestNoClientComponent
       });
 
       this.form.setDisabled('submit', true);
-      // console.log('checking at this spot:', this.currentUserDepartment);
-      // console.log(this.form);
+      this.form.setValue('1', this.userName);
+      this.form.setValue('2', this.currentUserDepartment);
 
-      this.form.setValue('Department Name', this.currentUserDepartment);
-      this.form.setValue('Name of the Requester', this.userName);
     });
 
     // if you want to style 2 form fields per a row do these :
@@ -450,19 +430,12 @@ export class NewServiceRequestNoClientComponent
   // getting response from thr server on "next"
   onSaveSuccess(data) {
     if (data.item) {
-      console.log(data);
       this.responseId = data.id;
-      console.log(this.responseId);
-
       this.questionnaireService.shareResponseId(this.responseId);
-      // this.questionnaireService.shareServiceFormId(this.formId);
       this.router.navigate(['/summary']);
     }
   }
 
-  onSaveError(error) {
-    console.log(error);
-  }
   /************************************************/
 
   /************************************************/
@@ -472,7 +445,7 @@ export class NewServiceRequestNoClientComponent
   getResponseId() {
     this.questionnaireService.newResponseIdSubject.subscribe(
       data => this.responseIdSuccess(data),
-      error => this.responseIdError(error)
+      error => this.handleError(error)
     );
   }
   responseIdSuccess(data) {
@@ -484,9 +457,7 @@ export class NewServiceRequestNoClientComponent
     }
   }
 
-  responseIdError(error) {
-    console.log(error);
-  }
+
 
   /************************************************/
   /*************** getResponse() ******************/
@@ -496,7 +467,7 @@ export class NewServiceRequestNoClientComponent
       .getResponse(this.responseId)
       .subscribe(
         data => this.ResponseSuccess(data),
-        error => this.responseError(error)
+        error => this.handleError(error)
       );
   }
 
@@ -504,9 +475,6 @@ export class NewServiceRequestNoClientComponent
     console.log(data);
   }
 
-  responseError(error) {
-    console.log(error);
-  }
 
   /************************************************/
   /************* createItemToSend() ***************/
@@ -583,7 +551,6 @@ export class NewServiceRequestNoClientComponent
         };
       }
     });
-    console.log(this.itemToSend);
   }
 
 
@@ -597,7 +564,6 @@ export class NewServiceRequestNoClientComponent
       name['content'][0]['attachment']['contentType'] +
       ';base64,' +
       name['content'][0]['attachment']['data'];
-    console.log(linkSource);
     const downloadLink = document.createElement('a');
     const fileName = name['content'][0]['attachment']['title'];
 
@@ -625,7 +591,6 @@ export class NewServiceRequestNoClientComponent
 
     // to-do: fix mlseconds and timeZone
 
-    // console.log(msec);
   }
   myDate() {
     return (this.myDay =
