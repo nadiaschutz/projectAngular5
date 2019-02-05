@@ -84,9 +84,13 @@ export class NavbarComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-
     this.userRole = sessionStorage.getItem('userRole');
     this.userName = sessionStorage.getItem('userName');
+    if (sessionStorage.getItem('userName') || sessionStorage.getItem('userRole')
+    ) {
+      this.hasLoggedIn = true;
+    }
+
   }
 
   logout() {
