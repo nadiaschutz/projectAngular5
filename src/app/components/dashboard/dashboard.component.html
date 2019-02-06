@@ -34,34 +34,38 @@
                 <!-- <input class="form-control" [ngModel]="dateOfBirth.data | date:'yyyy-MM-dd'" (ngModelChange)="dateOfBirth.data = $event"
                   type="date" name="dob" /> -->
 
-                  <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="dateOfBirth.data" id="dob" bsDatepicker
-                [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red>
+                <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="dateOfBirth.data" id="dob"
+                  bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red>
               </div>
             </div>
             <div class="row">
-              <div class="col">
-                <label for="region" class="label-name">Employee Type</label>
-                <select class="form-control" [(ngModel)]="employeeType" (ngModelChange)="employeeType = $event" name="employeeType">
-                  <option [ngValue]="null">Select Type</option>
-                  <option *ngFor="let employeeType of employeeTypeArray" [value]="employeeType">
-                    {{employeeType}}
-                  </option>
-                </select>
-              </div>
+
               <div class="col">
                 <label for="department" class="label-name">Client Department</label>
                 <select class="form-control" [(ngModel)]="clientDepartment" (ngModelChange)="clientDepartment = $event"
                   name="department">
-                  <option [ngValue]="null">Select Department</option>
+                  <option [ngValue]="null">Select</option>
                   <option *ngFor="let department of listOfDepartments" [value]="department">
                     {{department}}
                   </option>
                 </select>
               </div>
+
+              <div class="col">
+                <label for="branch" class="label-name">Branch</label>
+                <select class="form-control" [(ngModel)]="branch" (ngModelChange)="branch = $event" name="branch">
+
+                  <option [ngValue]="null">Select</option>
+                  <option *ngFor="let branch of branches" [value]="branch">
+                    {{branch}}
+                  </option>
+                </select>
+              </div>
+
             </div>
           </div>
           <button type="submit" class="btn regular-dark-button" (click)="employeeSearch()">Search</button>
-          <!-- <button type="button" class="btn regular-button" (click)="refreshSearch()">Refresh Search</button> -->
+          <button type="button" class="btn regular-button" (click)="refreshSearch()">Refresh Search</button>
 
         </div>
       </form>
@@ -77,13 +81,15 @@
         <div class="client-button-row" [ngClass]="roleInSession">
           <div>
             <div class="col">
-              <button type="button" id="new-client-button" class="btn  float-right regular-dark-button "  (click)="enableAllFunction()">Show All Record</button>
+              <button type="button" id="new-client-button" class="btn  float-right regular-dark-button " (click)="enableAllFunction()">Show
+                All Record</button>
 
             </div>
           </div>
           <div class="col">
             <div class="button-section" [ngClass]="roleInSession">
-              <button type="button" class="btn  float-right regular-dark-button show-all-records-button " (click)="newEmployeeButton()">New Client Record</button>
+              <button type="button" class="btn  float-right regular-dark-button show-all-records-button " (click)="newEmployeeButton()">New
+                Client Record</button>
             </div>
           </div>
         </div>
@@ -109,10 +115,22 @@
             <ng-container *ngFor="let patient of patientList">
               <ng-container *ngIf="!enableAll; else showAll">
                 <tr *ngIf="patient['department'] === departmentOfUser && !enableAll">
-                  <td>{{patient.id}}</td>
-                  <ng-container *ngIf="roleInSession !== 'businessuser'; else plainFirstName">
-                    <td (click)="routeToSummary(patient)" [ngClass]="{cursor: showCursor(patient)}">
 
+                  <ng-container *ngIf="roleInSession !== 'businessuser'; else plainId">
+                    <td (click)="routeToSummary(patient)" [ngClass]="{cursor: showCursor(patient)}">
+                      {{patient.id}}</td>
+                  </ng-container>
+
+                  <ng-template #plainId>
+                    <td>{{patient.id}}</td>
+                  </ng-template>
+
+
+
+
+                  <ng-container *ngIf="roleInSession !== 'businessuser'; else plainFirstName">
+                    <!-- <td (click)="routeToSummary(patient)" [ngClass]="{cursor: showCursor(patient)}"> -->
+                    <td>
                       {{patient.given}}</td>
                   </ng-container>
 
@@ -120,15 +138,20 @@
                     <td>{{patient.given}}</td>
                   </ng-template>
 
+
+
+
                   <ng-container *ngIf="roleInSession !== 'businessuser'; else plainLastName">
                     <td (click)="routeToSummary(patient)" [ngClass]="{cursor: showCursor(patient)}">
-
                       {{patient.family}}</td>
                   </ng-container>
 
                   <ng-template #plainLastName>
                     <td>{{patient.family}}</td>
                   </ng-template>
+
+
+
 
                   <td>{{patient.dob | date: 'dd/MM/yyyy'}}</td>
                   <td>{{patient.employeeType}}</td>
@@ -142,7 +165,18 @@
               <ng-template #showAll>
                 <!-- <ng-container  *ngFor="let patient of patientList"> -->
                 <tr>
-                  <td>{{patient.id}}</td>
+
+
+                  <td *ngIf="roleInSession !== 'businessuser' ; else plainId" (click)="routeToSummary(patient)"
+                    [ngClass]="{cursor: showCursor(patient)}">
+                    {{patient.id}}</td>
+
+
+                  <ng-template #plainId>
+                    <td>{{patient.id}}</td>
+                  </ng-template>
+
+
                   <td *ngIf="roleInSession !== 'businessuser' ; else plainFirstName" (click)="routeToSummary(patient)"
                     [ngClass]="{cursor: showCursor(patient)}">
 

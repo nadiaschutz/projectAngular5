@@ -185,7 +185,6 @@ export class ServReqMainComponent implements OnInit {
     console.log(this.arrOfVar);
     if (this.dateOfBirth.data) {
       this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
-
     }
     console.log(this.dateOfBirth.data);
 

@@ -117,7 +117,7 @@ export class EmployeeComponent implements OnInit {
 
   // Store list of Departments
 
-  department: any;
+  department: any = [];
 
   // Store list of Branches
 
@@ -140,6 +140,7 @@ export class EmployeeComponent implements OnInit {
 
   minDate: Date;
   maxDate: Date;
+
 
 
 
@@ -190,8 +191,7 @@ export class EmployeeComponent implements OnInit {
     // Set Department List
 
     this.userService
-      .getDepartmentList()
-      .subscribe(
+      .fetchAllDepartmentNames().subscribe(
         data => this.setDepartments(data),
         error => this.handleError(error)
       );
@@ -284,8 +284,19 @@ export class EmployeeComponent implements OnInit {
   // callback function to set the department list dropdown from the JSON included
   // TODO: change implementation to load from list of organizations
   setDepartments(data) {
-    this.department = data.department;
+    console.log(data.entry, this.department);
+
+    data.entry.forEach(element => {
+      this.department.push(element['resource']['name']);
+    });
+    // this.department = data.department;
   }
+
+  // populateDeptNames(data: any) {
+  //   data.entry.forEach(element => {
+  //     this.departmentList.push(element['resource']['name']);
+  //   });
+  // }
 
   // callback function to handle errors
   handleError(error) {
