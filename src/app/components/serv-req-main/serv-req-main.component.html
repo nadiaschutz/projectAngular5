@@ -48,7 +48,7 @@
             <div class="col">
               <label for="region" class="label-name">Region</label>
               <select class="form-control" [(ngModel)]="region" (ngModelChange)="region = $event" name="region">
-                <option [ngValue]="null">Select Region</option>
+                <option [ngValue]="null">Select</option>
                 <option *ngFor="let region of regionArr" [value]="region">
                   {{region}}
                 </option>
@@ -59,7 +59,7 @@
               <label for="department" class="label-name">Client Department</label>
               <select class="form-control" [(ngModel)]="clientDepartment" (ngModelChange)="clientDepartment = $event"
                 name="department">
-                <option [ngValue]="null">Select Department</option>
+                <option [ngValue]="null">Select</option>
                 <option *ngFor="let department of departmentList" [value]="department">
                   {{department}}
                 </option>
@@ -74,7 +74,7 @@
             <div class="col">
               <label for="stat" class="label-name">Status</label>
               <select class="form-control" [(ngModel)]="status.data" (ngModelChange)="status.data = $event" name="stat">
-                <option [ngValue]="null">Select Status</option>
+                <option [ngValue]="null">Select</option>
                 <option *ngFor="let stat of statusArr" [value]="stat">
                   {{stat}}
                 </option>
@@ -82,12 +82,9 @@
             </div>
 
             <div class="col">
-              <label for="date" class="label-name">Date</label>
-              <!-- <input class="form-control" [ngModel]="date.data | date:'yyyy-MM-dd'" (ngModelChange)="date.data = $event"
-                type="date" name="date" /> -->
-
+              <!-- <label for="date" class="label-name">Date</label>
               <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="date.data" id="date"
-                bsDatepicker [bsConfig]='datePickerConfig' red>
+                bsDatepicker [bsConfig]='datePickerConfig' red> -->
             </div>
 
           </div>
@@ -95,7 +92,8 @@
 
 
 
-        <button type="submit" class="btn regular-button" (click)="dataSearch()">Search</button>
+        <button type="submit" class="btn regular-dark-button" (click)="dataSearch()">Search</button>
+        <button type="button" class="btn regular-button" (click)="refreshSearch()">Refresh</button>
 
       </div>
     </form>

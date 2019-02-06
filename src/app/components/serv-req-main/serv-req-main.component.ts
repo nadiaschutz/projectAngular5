@@ -55,13 +55,13 @@ export class ServReqMainComponent implements OnInit {
     data: null
   };
 
-  date = {
-    prefix: 'authored=',
-    data: null
-  };
+  // date = {
+  //   prefix: 'authored=',
+  //   data: null
+  // };
 
   statusArr = [
-    'in-progress',
+    'In-Progress',
     'Waiting',
     'Action Required',
     'Cancelled',
@@ -108,8 +108,7 @@ export class ServReqMainComponent implements OnInit {
     this.familyName,
     this.serviceRequestId,
     this.dateOfBirth,
-    this.status,
-    this.date
+    this.status
   ];
 
   public dpConfig: Partial<BsDatepickerConfig> = new BsDatepickerConfig();
@@ -125,13 +124,17 @@ export class ServReqMainComponent implements OnInit {
     private fb: FormBuilder,
     private bsDatepickerConfig: BsDatepickerConfig,
   ) {
+    console.log(this.dateOfBirth.data);
     this.minDate = new Date();
     this.maxDate = new Date();
     this.minDate.setDate(this.minDate.getDate() - 43800);
     this.maxDate.setDate(this.maxDate.getDate());
+
+    console.log(this.dateOfBirth.data);
   }
 
   ngOnInit() {
+    console.log(this.dateOfBirth.data);
     this.datePickerConfig = Object.assign({},
       {
         containerClass: 'theme-dark-blue',
@@ -151,7 +154,7 @@ export class ServReqMainComponent implements OnInit {
         error => this.handleError(error)
       );
 
-      this.currentUserDepartment = sessionStorage.getItem('userDept');
+    this.currentUserDepartment = sessionStorage.getItem('userDept');
 
     this.qrequestService
       .getData('')
@@ -160,7 +163,8 @@ export class ServReqMainComponent implements OnInit {
         error => this.handleErrorAll(error)
       );
 
-      this.currentUserRole = sessionStorage.getItem('userRole');
+    this.currentUserRole = sessionStorage.getItem('userRole');
+    console.log(this.dateOfBirth.data);
 
   }
 
@@ -170,22 +174,29 @@ export class ServReqMainComponent implements OnInit {
     });
   }
 
+  refreshSearch() {
+    location.reload();
+  }
+
   dataSearch() {
+    console.log(this.dateOfBirth.data);
     console.log('region', this.region);
     console.log('department', this.clientDepartment);
     console.log(this.arrOfVar);
-    this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
-    this.date.data = formatDate(this.date.data, 'yyyy-MM-dd', 'en');
+    if (this.dateOfBirth.data) {
+      this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
+
+    }
     console.log(this.dateOfBirth.data);
-    console.log(this.date.data);
+
 
 
     this.arrOfVar.forEach((element, index) => {
       if (element.data !== null) {
         if (this.str === null) {
-          this.str = '?' + element.prefix + element.data;
+          this.str = '?' + element.prefix + element.data.toLowerCase();
         } else {
-          this.str += '&' + element.prefix + element.data;
+          this.str += '&' + element.prefix + element.data.toLowerCase();
         }
       }
     });
@@ -325,9 +336,9 @@ export class ServReqMainComponent implements OnInit {
     this.givenName.data = null;
     this.familyName.data = null;
     this.serviceRequestId.data = null;
+    console.log(this.dateOfBirth.data);
     this.dateOfBirth.data = null;
     this.status.data = null;
-    this.date.data = null;
     this.region = null;
     this.regionString = null;
     this.clientDepartment = null;
