@@ -131,6 +131,10 @@ export class DashboardComponent implements OnInit {
     this.getAllPatients();
   }
 
+  refreshSearch() {
+    location.reload();
+  }
+
   enableAllFunction() {
     this.enableAll = !this.enableAll;
   }
@@ -284,11 +288,14 @@ export class DashboardComponent implements OnInit {
   employeeSearch() {
     this.showParams = null;
     let searchParams = '';
-    this.dateOfBirth.data = formatDate(
-      this.dateOfBirth.data,
-      'yyyy-MM-dd',
-      'en'
-    );
+    if (this.dateOfBirth.data) {
+      this.dateOfBirth.data = formatDate(
+        this.dateOfBirth.data,
+        'yyyy-MM-dd',
+        'en'
+      );
+
+    }
     console.log(this.arrOfVar);
     this.arrOfVar.forEach(element => {
       if (element.data !== null) {

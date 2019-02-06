@@ -16,6 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { TitleCasePipe } from '@angular/common';
 
 import * as Employee from '../../interface/patient';
+import { formatDate } from '@angular/common';
 // import { Language } from 'src/app/interface/employee';
 export interface LanguageType {
   value: string;
@@ -891,6 +892,15 @@ export class EmployeeSummaryComponent implements OnInit {
     ];
     this.employee.communication = [this.employee_communication];
     this.employee.birthDate = this.employeeFormGroup.get('dob').value;
+    if (this.employee.birthDate) {
+      this.employee.birthDate = formatDate(
+        this.employee.birthDate,
+        'yyyy-MM-dd',
+        'en'
+      );
+
+    }
+    console.log(this.employeeFormGroup.get('dob').value);
     this.employee.resourceType = 'Patient';
     this.employee.name = this.employee_name;
     this.employee.address = [this.employee_address];
