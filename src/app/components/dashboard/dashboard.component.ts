@@ -70,7 +70,8 @@ export class DashboardComponent implements OnInit {
   clientDepartment = null;
   employeeTypeArray = ['Employee', 'Dependent'];
   employeeType = null;
-
+  branch;
+  branches;
   // patientSubscription: subscription;
   displayedColumns: string[] = [
     'type',

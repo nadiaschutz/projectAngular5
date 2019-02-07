@@ -1,4 +1,3 @@
-
 <div class="container" style="height: 86vh;">
     <div class="row align-items-center h-100">
         <div class="col-6 mx-auto">
@@ -9,21 +8,39 @@
 
                 <form #form="ngForm" novalidate [formGroup]="logInForm">
                     <div class="login-row">
-                      <div id="login-box">
-                          <div class="form-group">
-                            
-              
-                            <input type="text" class="form-control form-field"  placeholder="Username" formControlName="username">
-              
-                              <input type="password" class="form-control form-field" placeholder="Password" formControlName="password">
-                            <button class="btn" id="logbtn" (click)="login()">
-                              Log in
-                            </button>
-                          </div>
-              
-                      </div>
+                        <div id="login-box">
+                            <div class="form-group">
+
+
+                                <input type="text" class="form-control form-field" placeholder="Username"
+                                    formControlName="username">
+
+                                <input type="password" class="form-control form-field" placeholder="Password"
+                                    formControlName="password">
+                                <button *ngIf="!spinnerStatus()" class="btn" id="logbtn" (click)="login()">
+                                    Log in
+                                </button>
+                            </div>
+
+                        </div>
                     </div>
-                  </form>
+                </form>
+                <div *ngIf="spinnerStatus()">
+                    <div class="lds-spinner">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
