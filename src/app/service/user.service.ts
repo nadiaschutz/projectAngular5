@@ -92,7 +92,7 @@ export class UserService {
             this.oauthService.getIdentityClaims()['name']
           );
           setTimeout(() => {
-            if (sessionStorage.getItem('userRole') === 'superuser') {
+            if (sessionStorage.getItem('userRole') === 'admin') {
               this.router.navigate(['/staff/list-page']);
             } else {
               this.router.navigate(['/dashboard']);
