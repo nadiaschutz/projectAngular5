@@ -18,11 +18,11 @@ export class AuthComponent implements OnInit {
     private oauthService: OAuthService,
     private router: Router,
     private userService: UserService,
-    private route: ActivatedRoute,
-    private patient: PatientService) { }
+  ) { }
   logInForm: FormGroup;
 
   ngOnInit() {
+
 
     if (this.oauthService.getAccessToken()) {
       this.router.navigateByUrl('/dashboard');
@@ -34,7 +34,6 @@ export class AuthComponent implements OnInit {
         '',
         [
           Validators.required,
-          // Validators.pattern('^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$'),
           Validators.minLength(6)
         ]
       ]
@@ -44,31 +43,7 @@ export class AuthComponent implements OnInit {
 
   login() {
     this.userService.login(this.logInForm.get('username').value.toString(), this.logInForm.get('password').value.toString());
-    this.router.navigate(['/dashboard']);
   }
-
-
-
-  // get givenName() {
-  //   const claims = this.oauthService.getIdentityClaims();
-  //   if (!claims) {
-  //     return null;
-  //   }
-  //   return claims['name'];
-  // }
-
-  // getQueryVariable(query, variable) {
-  //   const vars = query.split('&');
-
-  //   for (let i = 0; i < vars.length; i++) {
-  //     const pair = vars[i].split('=');
-  //     if (decodeURIComponent(pair[0]) === variable) {
-  //       return decodeURIComponent(pair[1]);
-  //     }
-  //   }
-  //   return null;
-  // }
-
 
   get username() {
     return this.logInForm.get('username');
@@ -79,5 +54,8 @@ export class AuthComponent implements OnInit {
     return this.logInForm.get('password');
   }
 
+  spinnerStatus() {
+    return this.userService.returnSpinner();
+  }
 
 }

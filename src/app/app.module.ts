@@ -57,6 +57,10 @@ import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.
 import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
 import { DemoComponent } from './components/demo/demo.component';
 
+import { ContactUsFormResolverService } from './service/contact-us-form-resolver.service';
+
+import { DepartmentListResolverService } from './service/department-list-resolver.service'
+
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
   { path: 'dependentform', component: DependentComponent, canActivate: [AuthGuardService] },
