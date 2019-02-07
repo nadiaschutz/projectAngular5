@@ -6,6 +6,8 @@ import { formatDate } from '@angular/common';
 import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { routerNgProbeToken } from '@angular/router/src/router_module';
 
 @Component({
   selector: 'app-list-page',
@@ -31,7 +33,8 @@ export class ListPageComponent implements OnInit {
   selectAllTasksCheck = false;
 
   constructor(private questionnaireService: QuestionnaireService,
-  private staffService: StaffService, private utilService: UtilService, private router: Router) { }
+  private staffService: StaffService, private utilService: UtilService,
+  private router: Router) { }
 
   ngOnInit() {
     this.getAllAdmins();
@@ -145,6 +148,11 @@ export class ListPageComponent implements OnInit {
       this.episodeResultList.push(temp);
     });
     this.selectedEpisodes = new Array(this.episodeResultList.length);
+  }
+
+  setEOCID(data) {
+    sessionStorage.setItem('selectedEpisodeId', data);
+    this.router.navigateByUrl('/staff/work-screen');
   }
 
   getClientName(patientReference: string) {

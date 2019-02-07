@@ -4,9 +4,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { AngularStickyThingsModule } from '@w11k/angular-sticky-things';
+import { AvatarModule } from 'ngx-avatar';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+
+import { AuthGuardService } from '../app/service/auth-guard.service';
+import { QuestionnaireService } from './service/questionnaire.service';
+import { PatientService } from './service/patient.service';
+import { UserService } from './service/user.service';
+import { StaffService } from '../app/service/staff.service';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -19,13 +28,7 @@ import { NewServiceRequestNoClientComponent } from './components/new-service-req
 import { DependentComponent } from './components/dependent/dependent.component';
 import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
 import { ClientDepartmentComponent } from './components/client-department/client-department.component';
-// import {fhir} from './interface/employee.d';
-
-import { FHIRService } from './service/fhir.service';
-import { AuthGuardService } from '../app/service/auth-guard.service';
-import { QuestionnaireService } from './service/questionnaire.service';
-import { PatientService } from './service/patient.service';
-import { UserService } from './service/user.service';
+import { LabRequisitionComponent } from './components/staff/lab-requisition/lab-requisition.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ServReqMainComponent } from './components/serv-req-main/serv-req-main.component';
@@ -36,13 +39,11 @@ import { DistrictOfficeComponent } from './components/district-office/district-o
 import { ServiceRequestSummaryComponent } from './components/service-request-summary/service-request-summary.component';
 import { ClientOnsubmitSummaryComponent } from './components/client-onsubmit-summary/client-onsubmit-summary.component';
 import { TasklistComponent } from './components/tasklist/tasklist.component';
-import { DatePipe, TitleCasePipe } from '@angular/common';
-import { StaffService } from '../app/service/staff.service';
 import { EditNewServiceRequestComponent } from './components/edit-new-service-request/edit-new-service-request.component';
 import { ListPageComponent } from './components/staff/list-page/list-page.component';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
 import { CreateTaskComponent } from './components/staff/create-task/create-task.component';
+import { DistrictOfficeAddComponent } from './components/district-office-add/district-office-add.component';
 
 import { InputComponent } from './components/dynamic-forms/input.component';
 import { ButtonComponent } from './components/dynamic-forms/button.component';
@@ -51,22 +52,10 @@ import { LineComponent } from './components/dynamic-forms/line.component';
 import { HeaderComponent } from './components/dynamic-forms/header.component';
 import { DateComponent } from './components/dynamic-forms/date.component';
 import { DocComponent } from './components/dynamic-forms/doc.components';
-// import { RadiobuttonComponent } from './components/dynamic-forms/radiobutton.component';
 import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
 import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
 import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
 import { DemoComponent } from './components/demo/demo.component';
-import { DistrictOfficeAddComponent } from './components/district-office-add/district-office-add.component';
-// import { DynamicFormModule } from './components/dynamic-forms/dynamic-form.module';
-
-import { AvatarModule } from 'ngx-avatar';
-import { LabRequisitionComponent } from './components/staff/lab-requisition/lab-requisition.component';
-
-
-import { PdfViewerModule } from 'ng2-pdf-viewer';
-import { ContactUsFormResolverService } from './service/contact-us-form-resolver.service';
-import { DepartmentListResolverService } from './service/department-list-resolver.service';
-
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -96,13 +85,13 @@ const routes: Routes = [
   { path: 'clientdepartment', component: ClientDepartmentComponent, canActivate: [AuthGuardService] },
   { path: 'assigntasks', component: TasklistComponent, canActivate: [AuthGuardService] },
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary/:id', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/work-screen/:id', component: WorkScreenComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
-  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
+  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
+  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
 ];
 
@@ -170,8 +159,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgBootstrapFormValidationModule.forRoot(),
     BsDatepickerModule.forRoot(),
     AvatarModule,
-    AngularStickyThingsModule,
-    PdfViewerModule
+    AngularStickyThingsModule
   ],
   providers: [
     AuthGuardService,

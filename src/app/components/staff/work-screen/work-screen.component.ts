@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
 import { UserService } from '../../../service/user.service';
@@ -8,6 +8,7 @@ import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { log } from 'util';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 
 @Component({
@@ -15,7 +16,7 @@ import { Router } from '@angular/router';
   templateUrl: './work-screen.component.html',
   styleUrls: ['./work-screen.component.scss']
 })
-export class WorkScreenComponent implements OnInit {
+export class WorkScreenComponent implements OnInit, OnDestroy {
 
   carePlanActivities = [];
   summary = {} as any;
@@ -23,8 +24,10 @@ export class WorkScreenComponent implements OnInit {
   carePlan = {};
   showTaskForm = false;
   showNoteForm = false;
+  showDocForm = false;
   taskFormGroup: FormGroup;
   noteFormGroup: FormGroup;
+  docFormGroup: FormGroup;
   episodeOfCareId = '';
   practitioners = [];
   practitionersWithId = [];
@@ -35,8 +38,13 @@ export class WorkScreenComponent implements OnInit {
   activeTab = 'all';
   showOnlyTasks = false;
   showOnlyNotes = false;
-
+  showOnlyDocs = false;
+  encounterCreated;
   currentPractitionerFHIRIDInSession;
+
+  documentsList = [];
+  uploadedDocument;
+  serviceRequestInfoObject;
 
   assignedAdmin = '';
   assignedClinician = {};
@@ -45,6 +53,13 @@ export class WorkScreenComponent implements OnInit {
   cliniciansWithId = [];
   showClinicianButtons = false;
   clinicalAssignmentTask = {};
+  fileTypeList = [
+    { value: 'ADMINISTRATIVE', viewValue: 'ADMINISTRATIVE'},
+    { value: 'CLINICAL', viewValue: 'CLINICAL'},
+    { value: 'INVOICE', viewValue: 'INVOICE'},
+    { value: 'PSOHP-FORM', viewValue: 'PSOHP-FORM'},
+    { value: 'OTHER', viewValue: 'OTHER'}
+  ];
 
   constructor(private staffService: StaffService, private utilService: UtilService,
   private route: ActivatedRoute, private formBuilder: FormBuilder,
@@ -53,18 +68,26 @@ export class WorkScreenComponent implements OnInit {
 
   ngOnInit() {
 
-    this.currentPractitionerFHIRIDInSession = sessionStorage.getItem('userFHIRID');
 
-    console.log(this.route.snapshot.paramMap.get('id'));
-    this.episodeOfCareId = this.route.snapshot.paramMap.get('id');
+    this.currentPractitionerFHIRIDInSession = sessionStorage.getItem('userFHIRID');
+    this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
     this.userService.fetchCurrentRole();
     this.staffService.getAllPractitioners().subscribe(data => {
         this.subscribePractitioners(data);
         this.fetchAllClinicians();
         this.fetchAllData();
+        this.loadFilesRelatedToWorkOrder();
       },
       error => console.error(error)
     );
+
+    // this.loadFilesRelatedToWorkOrder();
+    // this.loadFilesRelatedToWorkOrder();
+
+  }
+
+  ngOnDestroy() {
+    sessionStorage.removeItem('selectedEpisodeId');
   }
 
   fetchAllData() {
@@ -187,6 +210,7 @@ export class WorkScreenComponent implements OnInit {
         } else if (element.resource.resourceType === 'Patient') {
           this.processPatientForSummary(element.resource);
         } else if (element.resource.resourceType === 'QuestionnaireResponse') {
+          this.serviceRequestInfoObject = element['resource'];
           this.processQuestionnaireResponseForSummary(element.resource);
         } else if (element.resource.resourceType === 'EpisodeOfCare') {
           this.episodeOfCare = element.resource;
@@ -232,6 +256,7 @@ export class WorkScreenComponent implements OnInit {
   }
 
   processPatientForSummary(patient) {
+    this.summary['patientFHIRID'] = patient['id'];
     this.summary['clientName'] = this.utilService.getNameFromResource(patient);
     this.summary['clientDOB'] = patient['birthDate'];
     patient.extension.forEach(extension => {
@@ -243,6 +268,7 @@ export class WorkScreenComponent implements OnInit {
         this.summary['clientBranch'] = extension.valueString;
       }
     });
+    // this.createEncounterObject();
   }
 
   processQuestionnaireResponseForSummary(questionnaireResponse) {
@@ -424,6 +450,7 @@ export class WorkScreenComponent implements OnInit {
     this.showTaskForm = true;
     this.showNoteForm = false;
     this.showNewTool = false;
+    this.showDocForm = false;
     this.taskFormGroup = this.formBuilder.group({
       description: new FormControl(''),
       assignTo: new FormControl(''),
@@ -431,8 +458,21 @@ export class WorkScreenComponent implements OnInit {
     });
   }
 
+  openDocForm() {
+    this.showDocForm = true;
+    this.showTaskForm = false;
+    this.showNoteForm = false;
+    this.showNewTool = false;
+    this.docFormGroup = this.formBuilder.group({
+      filename: new FormControl(''),
+      filetype: new FormControl(''),
+      // instruction: new FormControl('')
+    });
+  }
+
   openNoteForm() {
     this.showNoteForm = true;
+    this.showDocForm = false;
     this.showTaskForm = false;
     this.showNewTool = false;
     this.noteFormGroup = this.formBuilder.group({
@@ -500,6 +540,10 @@ export class WorkScreenComponent implements OnInit {
     });
   }
 
+  saveDoc($event) {
+    this.addDocument($event);
+  }
+
   saveTask() {
     const task = new FHIR.Task();
     const context = new FHIR.Reference();
@@ -551,6 +595,7 @@ export class WorkScreenComponent implements OnInit {
   displayOnlyTasks() {
     this.showOnlyNotes = false;
     this.showOnlyTasks = true;
+    this.showOnlyDocs = false;
     this.historyToDisplay = [];
     this.history.forEach(item => {
       if (item['type'] === 'task') {
@@ -560,8 +605,21 @@ export class WorkScreenComponent implements OnInit {
     this.sortHistory();
   }
 
+  displayOnlyDocs() {
+    this.showOnlyNotes = false;
+    this.showOnlyDocs = true;
+    this.showOnlyTasks = false;
+    this.historyToDisplay = [];
+    this.history.forEach(item => {
+      if (item['type'] === 'doc') {
+        this.historyToDisplay.push(item);
+      }
+    });
+    this.sortHistory();
+  }
   displayOnlyNotes() {
     this.showOnlyNotes = true;
+    this.showOnlyDocs = false;
     this.showOnlyTasks = false;
     this.historyToDisplay = [];
     this.history.forEach(item => {
@@ -609,6 +667,227 @@ export class WorkScreenComponent implements OnInit {
         }
       });
     });
+  }
+
+  createEncounterObject() {
+    const encounter = new FHIR.Encounter;
+    const episodeOfCareReference = new FHIR.Reference;
+    const patientInEpisodeOfCare = new FHIR.Reference;
+
+    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    patientInEpisodeOfCare.reference = 'Patient/' + this.summary['patientFHIRID'];
+
+    encounter.subject = patientInEpisodeOfCare;
+    encounter.episodeOfCare = [episodeOfCareReference];
+    encounter.resourceType = 'Encounter';
+
+    const encounterStringified = JSON.stringify(encounter);
+
+    if (patientInEpisodeOfCare.reference !== null) {
+      this.staffService.createEncounter(encounterStringified).subscribe(
+        data => {
+          this.postDocumentObject(data['id']);
+        },
+        error => console.log(error)
+      );
+    }
+  }
+
+  // Documents Features
+
+  /**
+   * This functiom takes in a file, grabs various details relating to the file, and converts it
+   * into a DocumentReference FHIR object
+   * @param $event File event from browser
+   */
+  addDocument($event) {
+    const documentReference = new FHIR.DocumentReference;
+    const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
+    const content = new FHIR.Content;
+    const contentAttachment = new FHIR.Attachment;
+    let file;
+    let trimmedFile = '';
+    let size: number;
+    let type;
+    const date = new Date().toJSON();
+    console.log(date);
+    const fileList = $event.target.files;
+    const reader = new FileReader();
+    if (fileList[0]) {
+      size = fileList[0].size;
+      type = fileList[0].type;
+      reader.readAsDataURL(fileList[0]);
+    }
+    const that = this;
+    reader.onloadend = function() {
+
+      file = reader.result;
+      trimmedFile = file.split(',').pop();
+      documentReference.resourceType = 'DocumentReference';
+      contentAttachment.size = size;
+      contentAttachment.contentType = type;
+      contentAttachment.data = trimmedFile;
+      contentAttachment.creation = date;
+
+      content.attachment = contentAttachment;
+
+
+      documentReference.instant = date;
+      documentReference.type = documentReferenceCodeableConcept;
+      documentReference.content = [content];
+
+      that.uploadedDocument = documentReference;
+
+      return reader.result;
+    };
+
+    reader.onerror = function (error) {
+      console.log('ERROR: ', error);
+    };
+  }
+
+  postDocumentObject(encounterID) {
+    const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
+    documentReferenceCodeableConcept.text = this.docFormGroup.get('filetype').value;
+
+    this.uploadedDocument.type = documentReferenceCodeableConcept;
+    this.uploadedDocument.content[0].attachment['title'] = this.docFormGroup.get('filename').value;
+
+    const encounterLinkingObject = new FHIR.Reference;
+    const encounterContext = new FHIR.Context;
+    encounterLinkingObject.reference = 'Encounter/' + encounterID;
+
+    encounterContext.encounter = encounterLinkingObject;
+    this.uploadedDocument.context = encounterContext;
+    this.staffService.postDataFile(this.uploadedDocument).subscribe(
+      data => {
+        this.createDocumentItemForServiceRequest(data);
+      }
+    );
+  }
+
+  createDocumentItemForServiceRequest(document) {
+
+    const linkID = this.serviceRequestInfoObject['item'].length;
+
+    const newDocumentItemObject = new FHIR.Item;
+    const newDocumentObjectReference = new FHIR.Reference;
+    const newDocumentItemObjectAnswer = new FHIR.Answer;
+
+    newDocumentObjectReference.reference = 'DocumentReference/' + document['id'];
+
+    newDocumentItemObjectAnswer.valueReference = newDocumentObjectReference;
+    // newDocumentObjectReference.reference = ;
+    newDocumentItemObject.answer = [newDocumentItemObjectAnswer];
+    newDocumentItemObject.linkId = linkID.toString();
+    newDocumentItemObject.text = 'Document';
+
+    this.addItemToServiceRequest(newDocumentItemObject);
+  }
+
+  addItemToServiceRequest(item) {
+    this.serviceRequestInfoObject['item'].forEach(itemFound => {
+      if (itemFound['text'].toLowerCase() === 'document') {
+       console.log(itemFound);
+      }
+    });
+    this.serviceRequestInfoObject['item'].push(item);
+    this.staffService.updateServiceRequest(this.serviceRequestInfoObject['id'], this.serviceRequestInfoObject).subscribe(
+      data => {
+        this.showDocForm = false;
+        console.log(data);
+      },
+      error => console.log(error)
+    );
+  }
+
+  loadFilesRelatedToWorkOrder() {
+    console.log('finding files');
+    this.staffService.getAllEncountersReferencedByAnEpisodeOfCare(this.episodeOfCareId).subscribe(
+      encounters => {
+        if (encounters) {
+          encounters['entry'].forEach(encounter => {
+            const tempEncounterId = encounter['resource']['id'];
+            this.staffService.getAllDocumentReferencesByAnEncounter(tempEncounterId).subscribe(
+              docs => {
+                if (docs['entry']) {
+                  docs['entry'].forEach(docFound => {
+                    const temp = {};
+                    temp['type'] = 'doc';
+                    temp['docID'] = docFound['resource']['id'];
+                    temp['fileFullName'] =
+                      docFound['resource']['content'][0]['attachment']['title'] + '.' +
+                      docFound['resource']['content'][0]['attachment']['contentType'].split('/').pop();
+                    temp['filetype'] = docFound['resource']['content'][0]['attachment']['contentType'].split('/').pop();
+                    temp['title'] = docFound['resource']['content'][0]['attachment']['title'];
+                    temp['content'] = docFound['resource']['content'][0];
+                    temp['context'] = docFound['resource']['context'];
+                    temp['lastUpdated'] = docFound['resource']['meta']['lastUpdated'];
+                    this.history.push(temp);
+                    console.log(temp);
+                  });
+                }
+              }
+            );
+          });
+        }
+      }
+    );
+  }
+
+
+  downloadFile(incomingFile) {
+
+    const byteCharacters = atob(incomingFile['content']['attachment']['data']);
+
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let index = 0; index < byteCharacters.length; index++) {
+        byteNumbers[index] = byteCharacters.charCodeAt(index);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+
+    const blob = new Blob([byteArray], {'type': incomingFile['content']['attachment']['contentType']});
+
+    if (navigator.msSaveBlob) {
+      const filename = incomingFile['fileFullName'];
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      const fileLink = document.createElement('a');
+      fileLink.href = URL.createObjectURL(blob);
+      fileLink.setAttribute('visibility', 'hidden');
+      fileLink.download = incomingFile['fileFullName'];
+      document.body.appendChild(fileLink);
+      fileLink.click();
+      document.body.removeChild(fileLink);
+    }
+
+  }
+
+  previewFile(incomingFile) {
+
+    const byteCharacters = atob(incomingFile['content']['attachment']['data']);
+
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let index = 0; index < byteCharacters.length; index++) {
+        byteNumbers[index] = byteCharacters.charCodeAt(index);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], {'type': incomingFile['content']['attachment']['contentType']});
+    const filename = incomingFile['fileFullName'];
+
+    if (navigator.msSaveBlob) {
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      console.log(filename);
+      const fileLink = document.createElement('a');
+      fileLink.href = URL.createObjectURL(blob);
+      fileLink.name = filename;
+      fileLink.target = '_blank';
+      fileLink.setAttribute('download', filename);
+      window.open(fileLink.href);
+    }
   }
 
   redirectToLabRequisition() {

@@ -1,15 +1,21 @@
 import { Injectable } from '@angular/core';
 import { formatDate } from '@angular/common';
+import * as FHIR from '../interface/FHIR';
+import { QuestionnaireService } from '../service/questionnaire.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UtilService {
 
-  constructor() { }
+  constructor(
+    private questionnaireService: QuestionnaireService,
+  ) { }
 
   switchSortChoice;
   order;
+  itemReference;
+  documents = [];
 
   getNameFromResource(resource: string) {
     let lastName = '';
@@ -143,4 +149,5 @@ export class UtilService {
     }
 
   }
+
 }

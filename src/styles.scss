@@ -198,6 +198,10 @@ row:after,
     cursor: pointer;
 }
 
+.cursor:hover {
+    color: $dark-blue;
+}
+
 
 
 textarea {

@@ -63,7 +63,7 @@
           <td>{{result.status}}</td>
           <td>{{result.daysInQueue}}</td>
           <td>
-            <button class="btn special-button" routerLink="/staff/work-screen/{{result.episodeOfCareId}}" skipLocationChange>Work Screen</button>
+            <button class="btn special-button" (click)="setEOCID(result.episodeOfCareId)">Work Screen</button>
           </td>
           <!-- <td>
             <button (click)="release(result.episodeOfCareId)" class="special-button">Release</button>

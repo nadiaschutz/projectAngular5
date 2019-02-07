@@ -45,7 +45,7 @@ interface HTMLAnchorElement {
                                 <td>{{doc['id']}}</td>
                                 <td >{{doc['content'][0]['attachment']['creation'] | date: 'dd/MM/yyyy'}}</td>
                                 <td class="cursor" (click)="downloadFile(doc)">{{doc['content'][0]['attachment']['title']}}</td>
-                                <td>Medical Note</td>
+                                <td>{{doc['type']['text']}}</td>
                                 <td>{{doc['content'][0]['attachment']['contentType']}}</td>
                                 <td>{{doc['content'][0]['attachment']['size'] }}</td>
                                 <td class="cursor" (click)="previewFile(doc)"> Preview this doc </td>
@@ -136,19 +136,13 @@ export class DocComponent implements Field {
       );
 
       console.log (contentAttachment);
-
       return reader.result;
     };
 
     reader.onerror = function (error) {
-      console.log('Error: ', error);
+      console.log('ERROR: ', error);
     };
-
-
   }
-
-
-
 
   createItemReferenceObject(data) {
     const obj: string = data.id;
@@ -206,7 +200,6 @@ export class DocComponent implements Field {
     }
 
     const byteArray = new Uint8Array(byteNumbers);
-
     const blob = new Blob([byteArray], {'type': incomingFile['content'][0]['attachment']['contentType']});
     const filename = incomingFile['content'][0]['attachment']['title'];
 
@@ -214,17 +207,12 @@ export class DocComponent implements Field {
       navigator.msSaveBlob(blob, filename);
     } else {
       console.log(filename);
-      
       const fileLink = document.createElement('a');
-      // const theThing = URL.createObjectURL(blob);
       fileLink.href = URL.createObjectURL(blob);
-      // fileLink.download = filename;
       fileLink.name = filename;
       fileLink.target = '_blank';
-      // fileLink.setAttribute('href', URL.createObjectURL(blob));
       fileLink.setAttribute('download', filename);
       window.open(fileLink.href);
     }
-
   }
 }
