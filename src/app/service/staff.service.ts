@@ -15,11 +15,11 @@ export class StaffService {
   constructor(private http: HttpClient, private oauthService: OAuthService) { }
 
   setSelectedEpisodeId(data) {
-    this.selectedEpisodeId = data;
+    sessionStorage.setItem('selectedEpisodeId', data);
   }
 
   getSelectedEpisodeId() {
-    return this.selectedEpisodeId;
+    return sessionStorage.getItem('selectedEpisodeId');
   }
 
   getEpisodeOfCareFromId(episodeOfCareId) {
@@ -104,6 +104,18 @@ export class StaffService {
     });
   }
 
+  getAllEncountersReferencedByAnEpisodeOfCare(query: any) {
+    return this.http.get(environment.queryURI + '/Encounter?episodeofcare=' + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getAllDocumentReferencesByAnEncounter(query: any) {
+    return this.http.get(environment.queryURI + '/DocumentReference?encounter=' + query, {
+      headers: this.getHeaders()
+    });
+  }
+
   getAnyFHIRObjectByReference(query: string) {
     return this.http.get(environment.queryURI + query, {
       headers: this.getHeaders()
@@ -112,6 +124,12 @@ export class StaffService {
 
   updateTask(id, data) {
     return this.http.put(environment.queryURI + '/Task/' + id, data, {
+      headers: this.getPostHeaders()
+    });
+  }
+
+  updateServiceRequest(id, data) {
+    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, data, {
       headers: this.getPostHeaders()
     });
   }
@@ -128,6 +146,20 @@ export class StaffService {
 
   getAllTasks() {
     return this.http.get(environment.queryURI + '/Task', {headers: this.getHeaders()});
+  }
+
+  getDocumentsBasedOnEncounter() {
+    return this.http.get(environment.queryURI + '/Encounter', {headers: this.getHeaders()});
+  }
+
+  createEncounter(encounter: any) {
+    return this.http.post(environment.queryURI + '/Encounter', encounter,  {headers: this.getPostHeaders()});
+  }
+
+  postDataFile(data: string) {
+    return this.http.post(environment.queryURI + '/DocumentReference/', data, {
+      headers: this.getHeaders()
+    });
   }
 
   getHeaders(): HttpHeaders {

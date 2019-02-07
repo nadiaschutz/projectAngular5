@@ -362,7 +362,8 @@ export class Annotation extends FHIRElement {
 
 export class Context extends BackboneElement {
     encounter: Reference;
-
+    event: CodeableConcept[];
+    sourcePatientInfo: Reference;
 }
 
 export class Activity extends BackboneElement {
@@ -465,7 +466,7 @@ export class Item extends BackboneElement {
     option: FHIROption[];
     item: Item[];
     initial: any;
-    answer: Answer;
+    answer: Answer[];
 }
 
 /* This is the base FHIR Resource from which others are derived */
@@ -581,6 +582,7 @@ export class DocumentReference extends Resource implements Serializable<Document
     author: Reference[];
     content: Content[];
     instant: string;
+    context: Context;
     // TODO - add rest of the fields from the spec
     deserialize(jsonObject: any): DocumentReference {
         const that = this;
@@ -710,6 +712,27 @@ export class ProcessRequest extends Resource implements Serializable<ProcessRequ
     }
 
 }
+
+export class Encounter extends Resource implements Serializable<Encounter> {
+
+    identifier: Identifier[];
+    status: string;
+    episodeOfCare: Reference[];
+    subject: Reference;
+
+    deserialize(jsonObject: any): Encounter {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
 
 export class EpisodeOfCare extends Resource implements Serializable<EpisodeOfCare> {
 

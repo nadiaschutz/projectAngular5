@@ -174,6 +174,11 @@ export class ServReqMainComponent implements OnInit {
     });
   }
 
+  setSelectedServiceRequestID(id) {
+    sessionStorage.setItem('selectedServiceRequestID', id);
+    this.router.navigateByUrl('/service-request-summary');
+  }
+
   refreshSearch() {
     location.reload();
   }

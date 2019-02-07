@@ -161,12 +161,12 @@
 
                             <tr *ngFor="let doc of documentForServiceRequest" >
                                 <td>{{doc['id']}}</td>
-                                <td>{{doc['content'][0]['attachment']['creation'] | date:
-                                    'dd/MM/yyyy'}}</td>
+                                <td >{{doc['content'][0]['attachment']['creation'] | date: 'dd/MM/yyyy'}}</td>
                                 <td class="cursor" (click)="downloadFile(doc)">{{doc['content'][0]['attachment']['title']}}</td>
-                                <td>Medical Note</td>
+                                <td>{{doc['type']['text']}}</td>
                                 <td>{{doc['content'][0]['attachment']['contentType']}}</td>
                                 <td>{{doc['content'][0]['attachment']['size'] }}</td>
+                                <td *ngIf="doc['content'][0]['attachment']['contentType'] === 'application/pdf'" class="cursor" (click)="previewFile(doc)"> Preview this doc </td>
                             </tr>
 
                         </tbody>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { QrequestService } from '../../service/qrequest.service';
 import { QuestionnaireService } from '../../service/questionnaire.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -10,7 +10,7 @@ import { UserService } from 'src/app/service/user.service';
   templateUrl: './service-request-summary.component.html',
   styleUrls: ['./service-request-summary.component.scss']
 })
-export class ServiceRequestSummaryComponent implements OnInit {
+export class ServiceRequestSummaryComponent implements OnInit, OnDestroy {
   questId = null;
   newArr = [];
 
@@ -58,7 +58,7 @@ export class ServiceRequestSummaryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const selectedServiceRequestID = this.route.snapshot.paramMap.get('id');
+    const selectedServiceRequestID = sessionStorage.getItem('selectedServiceRequestID');
     console.log('id passed', selectedServiceRequestID);
     this.qrequestService
       .getAllQuestionnaireResponseData(selectedServiceRequestID)
@@ -95,6 +95,10 @@ export class ServiceRequestSummaryComponent implements OnInit {
         //   this.useListOrder(this.serviceRequestObject, this.listOrderTest1);
         // }
       });
+  }
+
+  ngOnDestroy() {
+    sessionStorage.removeItem('selectedServiceRequestID');
   }
 
   //  useListOrder(data, list) {
@@ -153,17 +157,58 @@ export class ServiceRequestSummaryComponent implements OnInit {
     this.documentForServiceRequest.push(data);
   }
 
-  downloadFile(file) {
-    const sourceData =
-      'data:' + file['content'][0]['attachment']['contentType'] +
-      ';base64,' + file['content'][0]['attachment']['data'];
-    console.log(sourceData);
-    const downloadElement = document.createElement('a');
-    const fileName = file['content'][0]['attachment']['title'] ;
+  downloadFile(incomingFile) {
 
-    downloadElement.href = sourceData;
-    downloadElement.download = fileName;
-    downloadElement.click();
+    const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
+
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let index = 0; index < byteCharacters.length; index++) {
+        byteNumbers[index] = byteCharacters.charCodeAt(index);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+
+    const blob = new Blob([byteArray], {'type': incomingFile['content'][0]['attachment']['contentType']});
+
+    if (navigator.msSaveBlob) {
+      const filename = incomingFile['content'][0]['attachment']['title'];
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      const fileLink = document.createElement('a');
+      fileLink.href = URL.createObjectURL(blob);
+      fileLink.setAttribute('visibility', 'hidden');
+      fileLink.download = incomingFile['content'][0]['attachment']['title'];
+      document.body.appendChild(fileLink);
+      fileLink.click();
+      document.body.removeChild(fileLink);
+    }
+
+  }
+
+  previewFile(incomingFile) {
+
+    const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
+
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let index = 0; index < byteCharacters.length; index++) {
+        byteNumbers[index] = byteCharacters.charCodeAt(index);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], {'type': incomingFile['content'][0]['attachment']['contentType']});
+    const filename = incomingFile['content'][0]['attachment']['title'];
+
+    if (navigator.msSaveBlob) {
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      console.log(filename);
+      const fileLink = document.createElement('a');
+      fileLink.href = URL.createObjectURL(blob);
+      fileLink.name = filename;
+      fileLink.target = '_blank';
+      fileLink.setAttribute('download', filename);
+      window.open(fileLink.href);
+    }
   }
 
   processPatientDetails(data) {
@@ -220,6 +265,9 @@ export class ServiceRequestSummaryComponent implements OnInit {
         }
       );
   }
+
+
+
 
   redirectToServiceRequestMainPage() {
     this.router.navigateByUrl('/servreqmain');
