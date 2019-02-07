@@ -26,7 +26,6 @@ export class AppComponent {
   ) {
 
     this.configureWithNewConfigApi();
-    this.oauthService.loadDiscoveryDocument();
     this.router.events.subscribe(() => {
       if (this.oauthService.hasValidAccessToken()) {
         this.showNavBars = true;
@@ -49,5 +48,6 @@ export class AppComponent {
     this.oauthService.scope = environment.scope;
     this.oauthService.oidc = false;
     this.oauthService.issuer = environment.issuer;
+    this.oauthService.loadDiscoveryDocument();
   }
 }

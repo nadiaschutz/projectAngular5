@@ -19,6 +19,7 @@ export class AuthComponent implements OnInit {
     private router: Router,
     private userService: UserService,
   ) { }
+
   logInForm: FormGroup;
 
   ngOnInit() {
@@ -30,28 +31,13 @@ export class AuthComponent implements OnInit {
 
     this.logInForm = this.fb.group({
       username: ['', [Validators.required]],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(6)
-        ]
-      ]
+      password: ['', [ Validators.required, Validators.minLength(6)]]
     });
 
   }
 
   login() {
     this.userService.login(this.logInForm.get('username').value.toString(), this.logInForm.get('password').value.toString());
-  }
-
-  get username() {
-    return this.logInForm.get('username');
-  }
-
-
-  get password() {
-    return this.logInForm.get('password');
   }
 
   spinnerStatus() {
