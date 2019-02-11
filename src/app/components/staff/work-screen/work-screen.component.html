@@ -161,14 +161,14 @@
 
           <section class="form-section">
 
-              <div class="row">
-                  <div class="col">
-                    <span class="btn regular-button btn-file" (change)='saveDoc($event)'>
-                      Add a Document <input type="file">
-                    </span>
-    
-                  </div>
-                </div>
+            <div class="row">
+              <div class="col">
+                <span class="btn regular-button btn-file" (change)='saveDoc($event)'>
+                  Add a Document <input type="file">
+                </span>
+
+              </div>
+            </div>
 
             <div class="row">
               <div class="col">
@@ -201,7 +201,7 @@
               </div>
             </div>
 
-            
+
           </section>
 
           <section class="form-buttons">
@@ -212,6 +212,80 @@
 
         </form>
         <hr>
+      </div>
+
+
+      <div class="card search-box" *ngIf="showOnlyDocs">
+        <div class="card-body">
+          <div class="card-title">
+            Required Documents Checklist
+          </div>
+          <div class="card-text">
+            <div *ngIf="!showChecklistForm && checkListDocObject['item'].length === 0">
+              Add a required document to this checklist
+            </div>
+            <div *ngIf="!showChecklistForm">
+              <div *ngFor="let item of checkListDocObject['item']">
+                <div>
+                  <input class="form-check-input" (change)="docChecklistItemStateChange(item)" type="checkbox" value="item['answer'][0]['valueBoolean']"
+                    id="doclabel{{item['linkId']}}" [(ngModel)]="item['answer'][0]['valueBoolean']" checked="{{item['answer'][0]['valueBoolean']}}">
+                  <label class="form-check-label checklist-label " for="doclabel{{item['linkId']}}">
+                    {{item['text']}}
+                  </label>
+                  <div *ngIf="item['answer'][0]['valueBoolean']">
+                    <div *ngFor="let display of documentsList">
+                      <div *ngIf="item['answer'][1]">
+                        <div *ngIf="item['answer'][1]['valueReference']['reference'] === display['docReference']">
+                          <label for="">Document Associated: <strong>{{display['fileFullName']}}</strong></label>
+                          <label for=""></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label for="docSelected{{item['linkId']}}">Select a document</label>
+                      <select class="form-control" id="docSelected{{item['linkId']}}" (change)="updateDocumentsCheckedOff(item, $event.target.value)">
+                        <option value="null">Select a doc</option>
+                        <option *ngFor="let doc of documentsList" [value]="doc['docReference']">
+                          {{doc['fileFullName']}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <div *ngIf="showChecklistForm">
+              <form [formGroup]="checkListItemGroup" novalidate>
+
+                <section class="form-section">
+
+                  <div class="row">
+                    <div class="col">
+                      <input type="text" name="document" id="document" formControlName="document" class="form-control"
+                        required placeholder="Enter">
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col">
+                      <button class="btn regular-button btn-file" [disabled]='!checkListItemGroup.valid' (click)='saveItemToQResponse()'>
+                        Add checklist item
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              </form>
+            </div>
+
+          </div>
+        </div>
+        <div class="card-footer bg-transparent text-center checklist-footer">
+          <small *ngIf="!showChecklistForm" (click)="newDocChecklistItem()" class="checklist-footer-text">Add checklist
+            item</small>
+          <small *ngIf="showChecklistForm" (click)="newDocChecklistItem()" class="checklist-footer-text">Return to list</small>
+        </div>
       </div>
 
       <!-- Showing History -->
@@ -240,17 +314,17 @@
             <strong>Instructions: </strong>{{item.note}}
           </p>
           <p class="card-text" *ngIf="item.type==='doc'">
-              <strong>Filename: </strong>{{item['fileFullName']}}
+            <strong>Filename: </strong>{{item['fileFullName']}}
           </p>
           <p class="card-text" *ngIf="item.type==='doc'">
-              <span class="cursor">
-                  <strong (click)="downloadFile(item)">Download {{item['fileFullName']}} </strong>
-              </span>
+            <span class="cursor">
+              <strong (click)="downloadFile(item)">Download {{item['fileFullName']}} </strong>
+            </span>
           </p>
           <p class="card-text" *ngIf="item.type==='doc' && item['filetype'] === 'pdf'">
-              <span class="cursor">
-                  <strong (click)="previewFile(item)">Preview {{item['fileFullName']}}</strong>
-              </span>
+            <span class="cursor">
+              <strong (click)="previewFile(item)">Preview {{item['fileFullName']}}</strong>
+            </span>
           </p>
           <p class="card-text" *ngIf="item.closingNotes">
             <strong>Closing Notes: </strong>{{item.closingNotes}}
