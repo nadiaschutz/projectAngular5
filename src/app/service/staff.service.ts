@@ -162,19 +162,21 @@ export class StaffService {
     });
   }
 
-  getHeaders(): HttpHeaders {
-    const headers = new HttpHeaders({
-      Authorization: 'Bearer ' + this.oauthService.getAccessToken()
+  getDocumentsChecklist(context) {
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse?context=' + context + '&identifier=RDCL', {
+      headers: this.getHeaders()
     });
-    return headers;
   }
 
-  getPostHeaders(): HttpHeaders {
-    const headers = new HttpHeaders({
-      'Content-Type' : 'application/json',
-      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
+  createDocumentsChecklist(checklist) {
+    return this.http.post(environment.queryURI + '/QuestionnaireResponse/', checklist, {
+      headers: this.getPostHeaders()});
+  }
+
+  updateDocumentsChecklist(id, questionnaire) {
+    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, questionnaire, {
+      headers: this.getPostHeaders()
     });
-    return headers;
   }
 
   getCommunicationRelatedToEpisodeOfCare(episodeOfCareId) {
@@ -200,16 +202,21 @@ export class StaffService {
   }
 
   getClinicianById(id: string) {
-    return this.http.get(environment.queryURI +
-      '/Practitioner/' +  id, {
-      headers: this.getHeaders()
-    });
+    return this.http.get(environment.queryURI + '/Practitioner/' +  id, { headers: this.getHeaders() });
   }
 
   getClinicianAssignedToEpisode(episodeOfCareId) {
     return this.http.get(environment.queryURI + '/Task?code=clinician&status=ready&context=' + episodeOfCareId, {
       headers: this.getNoCacheHeaders()
     });
+  }
+
+  getLabTestQuestionnaire() {
+    return this.http.get(environment.queryURI + '/Questionnaire/3476', {headers: this.getHeaders()});
+  }
+
+  saveProcedureRequest(procedureRequestData) {
+    return this.http.post(environment.queryURI + '/ProcedureRequest', procedureRequestData, {headers: this.getPostHeaders()});
   }
 
   getNoCacheHeaders() {
@@ -221,12 +228,18 @@ export class StaffService {
     return headers;
   }
 
-  getLabTestQuestionnaire() {
-    return this.http.get(environment.queryURI + '/Questionnaire/3476', {headers: this.getHeaders()});
+  getHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      Authorization: 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
   }
 
-  saveProcedureRequest(procedureRequestData) {
-    return this.http.post(environment.queryURI + '/ProcedureRequest', procedureRequestData, {headers: this.getPostHeaders()});
+  getPostHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Content-Type' : 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
   }
-
 }

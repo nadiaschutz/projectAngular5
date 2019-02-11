@@ -140,9 +140,6 @@ export class ServReqMainComponent implements OnInit {
         containerClass: 'theme-dark-blue',
         dateInputFormat: 'YYYY-MM-DD'
       });
-    this.userService.fetchUserName();
-    this.userService.fetchCurrentRole();
-    this.userService.fetchCurrentUserDept();
 
     /**
      * Initializes the list of branches from our system

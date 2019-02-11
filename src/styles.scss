@@ -480,6 +480,20 @@ select:-webkit-autofill:focus {
 }
 
 
+.checklist-footer-text {
+    font-size: 14px;
+    color: #0F73E6;
+    cursor: pointer;
+}
+
+.checklist-footer {
+
+}
+
+.checklist-footer:hover {
+    color: #f8f8f8;
+}
+
 /* responsive styling for medium devices */
 // @media screen and (max-width: 992px) {
 //     .show-medium {

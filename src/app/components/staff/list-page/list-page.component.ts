@@ -105,6 +105,7 @@ export class ListPageComponent implements OnInit {
     });
   }
 
+
   resetData() {
     this.episodesOfCareList = [];
     this.patientList = [];

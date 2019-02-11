@@ -8,10 +8,6 @@ import * as Rx from 'rxjs';
 
 @Injectable()
 export class UserService {
-  private newRoleSubject = new Rx.BehaviorSubject<string>(null);
-  private newUserNameSubject = new Rx.BehaviorSubject<string>(null);
-  private newUserFHIRIDSubject = new Rx.BehaviorSubject<string>(null);
-  private newUserDeptSubject = new Rx.BehaviorSubject<string>(null);
 
   selectedServiceRequestID;
   selectID = '';
@@ -58,9 +54,6 @@ export class UserService {
         }
       );
     // TODO - remove this after designing cleaner solution
-    this.newRoleSubject.next('emptyClass');
-    // this.newUserNameSubject.next('');
-    // this.newUserFHIRIDSubject.next('');
     sessionStorage.clear();
     this.oauthService.logOut();
     this.router.navigate(['']);
@@ -284,10 +277,6 @@ export class UserService {
         }
       );
     });
-  }
-
-  fetchUserName() {
-    this.newUserNameSubject.next(this.oauthService.getIdentityClaims()['name']);
   }
 
   setCurrentUserRole(data: string) {
