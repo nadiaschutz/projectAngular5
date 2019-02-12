@@ -9,18 +9,21 @@ import { environment } from '../../environments/environment';
 export class QrequestService {
 
   // private API_URL = 'https://thx.smilecdr.com:8000/';
- private API_URL = 'https://bcip.smilecdr.com/fhir-request/QuestionnaireResponse';
+  private API_URL = 'https://bcip.smilecdr.com/fhir-request/QuestionnaireResponse';
 
   constructor(private http: HttpClient, private oauthService: OAuthService) { }
 
   getData(query: string) {
     const header = this.getHeaders();
-    return this.http.get(environment.queryURI + '/QuestionnaireResponse' + query, { headers: header });
+    // return this.http.get(environment.queryURI + '/QuestionnaireResponse' + query, { headers: header });
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse?' + query + '&identifier=SERVREQ', { headers: header });
   }
 
   getServReqForClient(query: string) {
     const header = this.getHeaders();
     return this.http.get(environment.queryURI + '/QuestionnaireResponse?subject=Patient/' + query, { headers: header });
+    // tslint:disable-next-line:max-line-length
+    // return this.http.get(environment.queryURI + '/QuestionnaireResponse?subject=Patient/' + query + '&identifier=SERVREQ', { headers: header });
   }
 
   getHeaders(): HttpHeaders {
