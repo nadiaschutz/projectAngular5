@@ -37,7 +37,7 @@ export interface EmployeeElement {
 })
 export class DashboardComponent implements OnInit {
   datePickerConfig: Partial<BsDatepickerConfig>;
-  private arrOfVar = {
+  arrOfVar = {
     givenName: {
       prefix: 'given=',
       data: null
