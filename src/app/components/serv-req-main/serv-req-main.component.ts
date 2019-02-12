@@ -17,7 +17,10 @@ import { ServRequest } from '../models/item.model';
 
 
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { defineLocale } from 'ngx-bootstrap/chronos';
+import { deLocale } from 'ngx-bootstrap/locale';
 import { NullTemplateVisitor } from '@angular/compiler';
+import { e } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-serv-req-main',
@@ -96,6 +99,7 @@ export class ServReqMainComponent implements OnInit {
   };
 
   servRequests: ServRequest[];
+  servRequestsArray = [];
   servceRequestDatas = [];
 
 
@@ -124,26 +128,23 @@ export class ServReqMainComponent implements OnInit {
     private fb: FormBuilder,
     private bsDatepickerConfig: BsDatepickerConfig,
   ) {
-    console.log(this.dateOfBirth.data);
     this.minDate = new Date();
     this.maxDate = new Date();
     this.minDate.setDate(this.minDate.getDate() - 43800);
     this.maxDate.setDate(this.maxDate.getDate());
 
-    console.log(this.dateOfBirth.data);
   }
 
   ngOnInit() {
-    console.log(this.dateOfBirth.data);
+    // customizng datePicker
     this.datePickerConfig = Object.assign({},
       {
         containerClass: 'theme-dark-blue',
-        dateInputFormat: 'YYYY-MM-DD'
+        dateInputFormat: 'YYYY-MM-DD',
+        showWeekNumbers: false
       });
 
-    /**
-     * Initializes the list of branches from our system
-     */
+    // Initializes the list of branches from our system
     this.userService
       .fetchAllDepartmentNames()
       .subscribe(
@@ -152,6 +153,7 @@ export class ServReqMainComponent implements OnInit {
       );
 
     this.currentUserDepartment = sessionStorage.getItem('userDept');
+    this.currentUserRole = sessionStorage.getItem('userRole');
 
     this.qrequestService
       .getData('')
@@ -159,10 +161,6 @@ export class ServReqMainComponent implements OnInit {
         qData => this.handleSuccessAll(qData),
         error => this.handleErrorAll(error)
       );
-
-    this.currentUserRole = sessionStorage.getItem('userRole');
-    console.log(this.dateOfBirth.data);
-
   }
 
   populateDeptNames(data: any) {
@@ -181,15 +179,9 @@ export class ServReqMainComponent implements OnInit {
   }
 
   dataSearch() {
-    console.log(this.dateOfBirth.data);
-    console.log('region', this.region);
-    console.log('department', this.clientDepartment);
-    console.log(this.arrOfVar);
     if (this.dateOfBirth.data) {
       this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
     }
-    console.log(this.dateOfBirth.data);
-
 
 
     this.arrOfVar.forEach((element, index) => {
@@ -201,8 +193,6 @@ export class ServReqMainComponent implements OnInit {
         }
       }
     });
-
-    console.log(this.str);
 
     // calling get request with updated string
     if (this.str) {
@@ -222,87 +212,66 @@ export class ServReqMainComponent implements OnInit {
     }
   }
 
-  // searchExtraData(searchData) {
-  //   // this.servRequests = [];
-  //   if (searchData && !this.str) {
-  //     console.log('hi without this.str data' + searchData);
-  //     // this.qrequestService.getData('').subscribe(
-  //     //   data => this.handleSuccessAll(data),
-  //     //   error => this.handleErrorAll(error)
-  //     // );
-  //     this.servRequests = [];
-  //     this.qrequestService.getData('').subscribe(
-  //       data => this.handleSuccessAll(data),
-  //       error => this.handleErrorAll(error)
-  //     );
-  //   }
-  // }
 
   sorterFunction(colName) {
     this.servRequests = this.utilService.sortArray(colName, this.servRequests);
   }
 
   handleSuccessAll(data) {
-    console.log(data.entry);
-    if (data.entry) {
-      // for (const individualRecord of data.entry) {
-      //   if (individualRecord.resource.item) {
-      //     if (this.region || this.clientDepartment) {
-      //       this.sortRegionAndClientDepartment(data);
-      //     } else {
-      //       this.servRequests.push(individualRecord.resource);
-      //     }
-      //   }
-      // }
 
-      if (this.region || this.clientDepartment) {
-        console.log(this.region, this.clientDepartment);
+    if (data.entry) {
+      console.log(data.entry);
+
+      if ((this.region || this.clientDepartment) || (this.region && this.clientDepartment)) {
+
         this.servceRequestDatas = null;
         this.regionString = null;
         this.servceRequestDatas = data.entry;
-        console.log(this.servceRequestDatas);
         this.filterRegionAndClientDepartment(data);
+
       } else {
-        console.log('i am not sorting anything');
-        data['entry'].forEach(element => {
-          const individualEntry = element['resource'];
-          // this.servRequests.push(individualEntry);
 
-          this.servRequests = data.entry.map(el => ({
-            ...this.servRequest,
-            id: el.resource.id,
-            date: el.resource.authored,
-            PSOHP_service: this.getServiceType(el.resource),
-            assessmentType: this.getAssessmentType(el.resource),
-            department: this.getDepartment(el.resource),
-            region: this.getRegion(el.resource),
-            createdBy: this.getCreatedBy(el.resource),
-            clientName: this.checkIfSubject(el.resource),
-            status: el.resource.status
-          }
-          ));
-
-          // this.servRequests = data.entry.map(el => (console.log(el)));
-
-          // if (
-          //   individualEntry['item'] &&
-          //   this.currentUserRole === 'clientdept'
-          // ) {
-          //   individualEntry['item'].forEach(department => {
-          //     if (
-          //       department['text'] === 'Submitting Department' &&
-          //       department['answer'][0] === this.currentUserDepartment
-          //     ) {
-          //       this.servRequests.push(individualEntry);
-          //     }
-          //   });
-          // } else {
-          //   this.servRequests.push(individualEntry);
-          // }
+        // I WAS CHECKED
+        data.entry.forEach(element => {
+          this.servRequestsArray.push(element.resource);
         });
-        console.log(this.servRequests);
+        this.createServRequestsObject(this.servRequestsArray);
       }
     }
+
+    this.resetSearchParams();
+  }
+
+
+  createServRequestsObject(data) {
+    this.servRequests = data.map(el => ({
+      ...this.servRequest,
+      id: el.id,
+      date: el.authored,
+      PSOHP_service: this.getServiceType(el),
+      assessmentType: this.getAssessmentType(el),
+      department: this.getDepartment(el),
+      region: this.getRegion(el),
+      createdBy: this.getCreatedBy(el),
+      clientName: this.checkIfSubject(el),
+      status: el.status
+    }
+    ));
+  }
+
+  resetSearchParams() {
+    this.region = null;
+    this.clientDepartment = null;
+    this.servRequestsArray = [];
+    this.givenName.data = null;
+    this.familyName.data = null;
+    this.serviceRequestId.data = null;
+    this.dateOfBirth.data = null;
+    this.status.data = null;
+
+
+    this.str = null;
+    this.regionString = null;
   }
 
 
@@ -316,14 +285,10 @@ export class ServReqMainComponent implements OnInit {
 
   }
 
-  // try first to assign all the data to same onject and show without if....othervise =>
-  // if the string is ==='' => show servceRequestDatas.date and etc
-  // if the string is !=='' => show the data called from search server
 
   handleSuccess(data) {
     this.regionString = null;
     this.servRequests = [];
-    console.log(data);
     // assign data.Regional Office for Processing to var regionData
     if (data.total > 0) {
       if (data.entry) {
@@ -333,22 +298,14 @@ export class ServReqMainComponent implements OnInit {
         this.filterRegionAndClientDepartment(data);
       }
     }
-    this.str = null;
-    this.givenName.data = null;
-    this.familyName.data = null;
-    this.serviceRequestId.data = null;
-    console.log(this.dateOfBirth.data);
-    this.dateOfBirth.data = null;
-    this.status.data = null;
-    this.region = null;
-    this.regionString = null;
-    this.clientDepartment = null;
+    this.resetSearchParams();
+
   }
 
   filterRegionAndClientDepartment(data) {
-    console.log('checkign SR object', this.servRequests);
-    console.log(data);
+
     this.servRequests = [];
+    const servRequestsArray = [];
     // let regionMatches = false;
     // let clientDepartmentMatches = false;
     let regionAndClientDepartmentMatches = true;
@@ -356,60 +313,70 @@ export class ServReqMainComponent implements OnInit {
       if (eachEntry['resource']['item']) {
         eachEntry.resource.item.forEach(item => {
           if (this.region && this.clientDepartment) {
-            console.log('fix me', this.clientDepartment);
+            if (item.text) {
+              let flag = true;
+
+              if (item.text === 'Regional Office for Processing') {
+                flag = this.checkStringMatches(
+                  item,
+                  this.region,
+                  flag
+                );
+              }
+              if (flag) {
+
+                eachEntry.resource.item.forEach(element => {
+                  if (element.text === 'Submitting Department') {
+                    regionAndClientDepartmentMatches = this.checkStringMatches(
+                      element,
+                      this.clientDepartment,
+                      regionAndClientDepartmentMatches
+                    );
+                  }
+                });
+              }
+            }
+
+
           } else if (this.region && !this.clientDepartment) {
-            if (this.region && item.text === 'Regional Office for Processing') {
+            if (item.text === 'Regional Office for Processing') {
               regionAndClientDepartmentMatches = this.checkStringMatches(
                 item,
                 this.region,
                 regionAndClientDepartmentMatches
               );
-            } else {
-              return '-';
             }
           } else if (this.clientDepartment && !this.region) {
-            if (
-              this.clientDepartment &&
-              item.text === 'Submitting Department'
-            ) {
+            if (item.text === 'Submitting Department') {
               regionAndClientDepartmentMatches = this.checkStringMatches(
                 item,
                 this.clientDepartment,
                 regionAndClientDepartmentMatches
               );
-            } else {
-              return '-';
             }
           }
         });
       }
       if (regionAndClientDepartmentMatches) {
-        console.log('checkign SR object', this.servRequests);
-        console.log('5', regionAndClientDepartmentMatches);
-        this.servRequests.push(eachEntry.resource);
+        this.servRequestsArray.push(eachEntry.resource);
       }
+      this.createServRequestsObject(this.servRequestsArray);
     });
+    this.servRequestsArray = [];
   }
 
   checkStringMatches(item, matchingItem, matchesBoolean: boolean) {
-    console.log('checkStringMatches', item);
-    console.log('checkStringMatches', matchingItem);
-    console.log('checkStringMatches', matchesBoolean);
     // remove anything after 1st dash
     let matchingString = item.answer[0].valueString.toLowerCase();
     if (matchingString.indexOf('-') !== -1) {
       matchingString = matchingString.substring(0, matchingString.indexOf('-'));
     }
     if (matchingString !== matchingItem.toLocaleLowerCase()) {
-      console.log('1', matchesBoolean);
       matchesBoolean = false;
-      console.log('2', matchesBoolean);
       return matchesBoolean;
       // }
     } else if (matchingString === matchingItem.toLocaleLowerCase()) {
-      console.log('3', matchesBoolean);
       matchesBoolean = true;
-      console.log('4', matchesBoolean);
       return matchesBoolean;
     }
   }
@@ -419,7 +386,6 @@ export class ServReqMainComponent implements OnInit {
   }
   getServiceType(serviceRequestObj): string {
     let result = '-';
-    // console.log(serviceRequestObj.questionnaire.reference);
     if (serviceRequestObj.item) {
       if (
         serviceRequestObj.questionnaire &&
@@ -456,11 +422,9 @@ export class ServReqMainComponent implements OnInit {
   getDepartment(serviceRequestObj) {
     let result = '-';
     if (serviceRequestObj.item) {
-      // console.log(serviceRequestObj.item);
       serviceRequestObj.item.forEach(element => {
 
         if (element.text === 'Submitting Department') {
-          // console.log(element.answer[0].valueString);
           result = element.answer[0].valueString;
         } else {
           return '-';
@@ -474,16 +438,11 @@ export class ServReqMainComponent implements OnInit {
 
 
   getAssessmentType(serviceRequestObj) {
-    // getAssessmentType(serviceRequestObj): string {
-    // console.log(serviceRequestObj.resource);
     if (
       serviceRequestObj.questionnaire &&
       serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST1'
     ) {
-      // console.log(serviceRequestObj.resource.item);
       if (serviceRequestObj.item) {
-        // console.log(serviceRequestObj.resource.item[0].answer[0].valueString);
-        // return serviceRequestObj.resource.item[0].answer[0].valueString;
         return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
       } else {
         return '-';
@@ -557,10 +516,8 @@ export class ServReqMainComponent implements OnInit {
 
   getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
     let result = '-';
-    // console.log(serviceRequestObj.item);
     if (serviceRequestObj.item) {
       serviceRequestObj.item.forEach(item => {
-        // console.log(item);
         if (item.text === text) {
           if (item['answer']) {
             if (item.answer[0].valueString.indexOf('-') > 0) {
@@ -607,12 +564,6 @@ export class ServReqMainComponent implements OnInit {
       servReqobj.questionnaire &&
       servReqobj.questionnaire.reference === 'Questionnaire/1953'
     ) {
-      // console.log(servReqobj.item);
-      // servReqobj.item.forEach(element => {
-      //   if (element.text === 'Name of the Requester') {
-      //     result = (element.answer[0].valueString);
-      //   }
-      // });
       result = '-';
     }
     return result;

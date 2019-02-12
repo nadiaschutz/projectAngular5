@@ -178,12 +178,11 @@ export class EmployeeComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.bsDatepickerConfig.dateInputFormat = 'DD MMM YYYY';
-
     this.datePickerConfig = Object.assign({},
       {
         containerClass: 'theme-dark-blue',
-        dateInputFormat: 'YYYY-MM-DD'
+        dateInputFormat: 'YYYY-MM-DD',
+        showWeekNumbers: false
       });
 
     this.dependentsArray = new Array();

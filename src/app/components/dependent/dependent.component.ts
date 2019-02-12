@@ -136,6 +136,12 @@ export class DependentComponent implements OnInit {
   ];
 
   ngOnInit() {
+    this.datePickerConfig = Object.assign({},
+      {
+        containerClass: 'theme-dark-blue',
+        dateInputFormat: 'YYYY-MM-DD',
+        showWeekNumbers: false
+      });
 
     const id = this.userService.returnEmployeeSummaryID();
 

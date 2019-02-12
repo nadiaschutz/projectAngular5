@@ -8,6 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { UtilService } from '../../service/util.service';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { formatDate } from '@angular/common';
+import { e } from '@angular/core/src/render3';
 
 export interface AccountElement {
   type: string;
@@ -36,36 +37,31 @@ export interface EmployeeElement {
 })
 export class DashboardComponent implements OnInit {
   datePickerConfig: Partial<BsDatepickerConfig>;
-
-  givenName = {
-    prefix: 'given=',
-    data: null
-  };
-
-  familyName = {
-    prefix: 'family=',
-    data: null
-  };
-
-  clientId = {
-    prefix: '_id=',
-    data: null
-  };
-
-  dateOfBirth = {
-    prefix: 'birthdate=',
-    data: null
+  private arrOfVar = {
+    givenName: {
+      prefix: 'given=',
+      data: null
+    },
+    familyName: {
+      prefix: 'family=',
+      data: null
+    },
+    clientId: {
+      prefix: '_id=',
+      data: null
+    },
+    dateOfBirth: {
+      prefix: 'birthdate=',
+      data: null
+    }
+    // this.givenName,
+    // this.familyName,
+    // this.dateOfBirth,
+    // this.clientId
   };
 
   minDate: Date;
   maxDate: Date;
-
-  private arrOfVar = [
-    this.givenName,
-    this.familyName,
-    this.dateOfBirth,
-    this.clientId
-  ];
   listOfDepartments = [];
   clientDepartment = null;
   employeeTypeArray = ['Employee', 'Dependent'];
@@ -116,6 +112,12 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.datePickerConfig = Object.assign({},
+      {
+        containerClass: 'theme-dark-blue',
+        dateInputFormat: 'YYYY-MM-DD',
+        showWeekNumbers: false
+      });
 
     this.roleInSession = sessionStorage.getItem('userRole');
     this.departmentOfUser = sessionStorage.getItem('userDept');
@@ -168,7 +170,7 @@ export class DashboardComponent implements OnInit {
         data.entry.forEach(item => {
           const individualEntry = item.resource;
           if (this.employeeType || this.clientDepartment) {
-            this.checkForEmployeeTypeAndClientDepartment(individualEntry);
+            // this.checkForEmployeeTypeAndClientDepartment(individualEntry);
           } else {
             const temp = {};
             temp['id'] = individualEntry['id'];
@@ -286,46 +288,68 @@ export class DashboardComponent implements OnInit {
   checkRegionalOfficeButtion() {
     this.router.navigate(['/region-summary']);
   }
+
+
+
+
   employeeSearch() {
     this.showParams = null;
     let searchParams = '';
-    if (this.dateOfBirth.data) {
-      this.dateOfBirth.data = formatDate(
-        this.dateOfBirth.data,
+    if (this.arrOfVar.dateOfBirth.data) {
+      this.arrOfVar.dateOfBirth.data = formatDate(
+        this.arrOfVar.dateOfBirth.data,
         'yyyy-MM-dd',
         'en'
       );
 
     }
     console.log(this.arrOfVar);
-    this.arrOfVar.forEach(element => {
-      if (element.data !== null) {
+    // this.arrOfVar.forEach(element => {
+    //   console.log(element);
+    //   if (element.data !== null) {
+    //     if (searchParams.length === 0) {
+    //       searchParams = '?' + element.prefix + element.data;
+    //     } else {
+    //       searchParams += '&' + element.prefix + element.data;
+    //     }
+    //   }
+    // });
+
+    // tslint:disable-next-line:forin
+    for (const key in this.arrOfVar) {
+      console.log(key);
+      console.log(this.arrOfVar[key].data);
+
+      if (this.arrOfVar[key].data !== null) {
         if (searchParams.length === 0) {
-          searchParams = '?' + element.prefix + element.data;
+          searchParams = '?' + this.arrOfVar[key].prefix + this.arrOfVar[key].data;
         } else {
-          searchParams += '&' + element.prefix + element.data;
+          searchParams += '&' + this.arrOfVar[key].prefix + this.arrOfVar[key].data;
         }
+
       }
-    });
-    // console.log(this.arrOfVar);
-    // if (this.clientId.data) {
-    //   searchParams = this.clientId.prefix + this.clientId.data + searchParams;
+    }
+    console.log(this.arrOfVar);
+    console.log(searchParams);
+
+    // if (this.arrOfVar.clientId.data) {
+    //   searchParams = this.arrOfVar.clientId.prefix + this.arrOfVar.clientId.data + searchParams;
     // }
 
-    this.arrOfVar.forEach((element, index) => {
-      console.log(this.showParams);
-      if (element.data) {
-        if (!this.showParams) {
-          this.showParams = element.data;
-        } else {
-          this.showParams += ', ' + element.data;
-        }
-      }
-    });
+    // this.arrOfVar.forEach((element, index) => {
+    //   console.log(this.showParams);
+    //   if (element.data) {
+    //     if (!this.showParams) {
+    //       this.showParams = element.data;
+    //     } else {
+    //       this.showParams += ', ' + element.data;
+    //     }
+    //   }
+    // });
 
-    if (this.employeeType) {
-      this.addParams(this.employeeType);
-    }
+    // if (this.employeeType) {
+    //   this.addParams(this.employeeType);
+    // }
     if (this.clientDepartment) {
       this.addParams(this.clientDepartment);
     }
@@ -336,9 +360,10 @@ export class DashboardComponent implements OnInit {
         data => this.handleSuccess(data),
         error => this.handleError(error)
       );
+    console.log(this.arrOfVar);
     this.resetSearchParams();
-  }
 
+  }
   addParams(params) {
     console.log(this.showParams);
     this.showParams = this.showParams + ', ' + params;
@@ -347,10 +372,10 @@ export class DashboardComponent implements OnInit {
   resetSearchParams() {
     this.clientDepartment = null;
     this.employeeType = null;
-    this.givenName.data = null;
-    this.familyName.data = null;
-    this.clientId.data = null;
-    this.dateOfBirth.data = null;
+    this.arrOfVar.givenName.data = null;
+    this.arrOfVar.familyName.data = null;
+    this.arrOfVar.clientId.data = null;
+    this.arrOfVar.dateOfBirth.data = null;
   }
 
   /**
