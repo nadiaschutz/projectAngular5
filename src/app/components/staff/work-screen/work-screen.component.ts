@@ -42,6 +42,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   docFormGroup: FormGroup;
   checkListItemGroup: FormGroup;
   selectionOfDocsGroup: FormGroup;
+  statusFormGroup: FormGroup;
   checkListDocObject;
   statusObject;
   episodeOfCareId = '';
@@ -1068,7 +1069,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     const statusItemThree = new FHIR.Item;
     const statusItemFour = new FHIR.Item;
     const statusItemFive = new FHIR.Item;
-
+    const statusItemSix = new FHIR.Item;
     const statusItemAnswer = new FHIR.Answer;
 
     statusItemAnswer.valueBoolean = false;
@@ -1092,6 +1093,10 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     statusItemFive.linkId = '5';
     statusItemFive.text = 'Closed';
     statusItemFive.answer = [statusItemAnswer];
+
+    statusItemSix .linkId = '0';
+    statusItemSix.text = 'On-Hold';
+    statusItemSix.answer = [statusItemAnswer];
 
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
