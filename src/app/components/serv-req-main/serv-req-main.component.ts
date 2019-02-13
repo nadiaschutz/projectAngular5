@@ -32,6 +32,9 @@ export class ServReqMainComponent implements OnInit {
   datePickerConfig: Partial<BsDatepickerConfig>;
 
   params = [];
+  showParams = null;
+  searchParamsToShow = [];
+  doNotShowZeroMessage = true;
 
   givenName = {
     prefix: 'subject:Patient.given=',
@@ -159,7 +162,7 @@ export class ServReqMainComponent implements OnInit {
       .getData('')
       .subscribe(
         qData => this.handleSuccessAll(qData),
-        error => this.handleErrorAll(error)
+        error => this.handleError(error)
       );
   }
 
@@ -179,6 +182,11 @@ export class ServReqMainComponent implements OnInit {
   }
 
   dataSearch() {
+    this.searchParamsToShow = [];
+    this.doNotShowZeroMessage = true;
+    // this.showParams = null;
+
+
     if (this.dateOfBirth.data) {
       this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
     }
@@ -191,6 +199,7 @@ export class ServReqMainComponent implements OnInit {
         } else {
           this.str += '&' + element.prefix + element.data.toLowerCase();
         }
+        this.searchParamsToShow.push(element.data);
       }
     });
 
@@ -199,7 +208,7 @@ export class ServReqMainComponent implements OnInit {
       this.qrequestService
         .getData(this.str)
         .subscribe(
-          data => this.handleSuccess(data),
+          data => this.searchWithStr(data),
           error => this.handleError(error)
         );
     } else if (!this.str && (this.region || this.clientDepartment)) {
@@ -207,9 +216,27 @@ export class ServReqMainComponent implements OnInit {
         .getData('')
         .subscribe(
           data => this.handleSuccessAll(data),
-          error => this.handleErrorAll(error)
+          error => this.handleError(error)
         );
     }
+
+    this.searchParamsToShow.push(this.region);
+    this.searchParamsToShow.push(this.clientDepartment);
+
+    this.showSearchParamsOnZeroResults();
+  }
+
+  showSearchParamsOnZeroResults() {
+    this.showParams = null;
+    this.searchParamsToShow.forEach((element, index) => {
+      if (element) {
+        if (!this.showParams) {
+          this.showParams = element;
+        } else {
+          this.showParams += ', ' + element;
+        }
+      }
+    });
   }
 
 
@@ -218,9 +245,14 @@ export class ServReqMainComponent implements OnInit {
   }
 
   handleSuccessAll(data) {
+    this.doNotShowZeroMessage = true;
+
+    if (data.total === 0) {
+      this.doNotShowZeroMessage = false;
+    }
+
 
     if (data.entry) {
-      console.log(data.entry);
 
       if ((this.region || this.clientDepartment) || (this.region && this.clientDepartment)) {
 
@@ -231,7 +263,6 @@ export class ServReqMainComponent implements OnInit {
 
       } else {
 
-        // I WAS CHECKED
         data.entry.forEach(element => {
           this.servRequestsArray.push(element.resource);
         });
@@ -276,17 +307,8 @@ export class ServReqMainComponent implements OnInit {
 
 
 
-  handleErrorAll(error) {
-    console.log(error);
-  }
-
-  showDataOnTable(data) {
-    console.log(data);
-
-  }
-
-
-  handleSuccess(data) {
+  searchWithStr(data) {
+    this.doNotShowZeroMessage = true;
     this.regionString = null;
     this.servRequests = [];
     // assign data.Regional Office for Processing to var regionData
@@ -297,18 +319,20 @@ export class ServReqMainComponent implements OnInit {
         this.servceRequestDatas = data.entry;
         this.filterRegionAndClientDepartment(data);
       }
+    } else {
+      this.doNotShowZeroMessage = false;
     }
     this.resetSearchParams();
-
   }
 
   filterRegionAndClientDepartment(data) {
+    this.doNotShowZeroMessage = true;
 
     this.servRequests = [];
-    const servRequestsArray = [];
-    // let regionMatches = false;
-    // let clientDepartmentMatches = false;
+    // const servRequestsArray = [];
+    this.servRequestsArray = [];
     let regionAndClientDepartmentMatches = true;
+
     data.entry.forEach(eachEntry => {
       if (eachEntry['resource']['item']) {
         eachEntry.resource.item.forEach(item => {
@@ -338,6 +362,7 @@ export class ServReqMainComponent implements OnInit {
             }
 
 
+
           } else if (this.region && !this.clientDepartment) {
             if (item.text === 'Regional Office for Processing') {
               regionAndClientDepartmentMatches = this.checkStringMatches(
@@ -346,6 +371,7 @@ export class ServReqMainComponent implements OnInit {
                 regionAndClientDepartmentMatches
               );
             }
+
           } else if (this.clientDepartment && !this.region) {
             if (item.text === 'Submitting Department') {
               regionAndClientDepartmentMatches = this.checkStringMatches(
@@ -354,6 +380,7 @@ export class ServReqMainComponent implements OnInit {
                 regionAndClientDepartmentMatches
               );
             }
+
           }
         });
       }
@@ -362,7 +389,9 @@ export class ServReqMainComponent implements OnInit {
       }
       this.createServRequestsObject(this.servRequestsArray);
     });
-    this.servRequestsArray = [];
+    if (this.servRequestsArray.length === 0) {
+      this.doNotShowZeroMessage = false;
+    }
   }
 
   checkStringMatches(item, matchingItem, matchesBoolean: boolean) {
@@ -384,6 +413,7 @@ export class ServReqMainComponent implements OnInit {
   handleError(error) {
     console.log(error);
   }
+
   getServiceType(serviceRequestObj): string {
     let result = '-';
     if (serviceRequestObj.item) {
