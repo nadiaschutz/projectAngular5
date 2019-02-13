@@ -179,6 +179,17 @@ export class StaffService {
     });
   }
 
+  getStatusList(context) {
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse?context=' + context + '&identifier=STATUS', {
+      headers: this.getHeaders()
+    });
+  }
+
+  createStatusList(statuslist) {
+    return this.http.post(environment.queryURI + '/QuestionnaireResponse/', statuslist, {
+      headers: this.getPostHeaders()});
+  }
+
   getCommunicationRelatedToEpisodeOfCare(episodeOfCareId) {
     return this.http.get(environment.queryURI +
       '/Communication?context=' + episodeOfCareId, {headers: this.getHeaders()});

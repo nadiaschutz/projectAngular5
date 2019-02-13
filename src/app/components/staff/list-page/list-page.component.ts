@@ -284,7 +284,6 @@ export class ListPageComponent implements OnInit {
       this.taskResultList.push(temp);
     });
     this.selectedTasks = new Array(this.taskResultList.length);
-    console.log(this.taskResultList);
   }
 
   assignTaskToAdmin() {

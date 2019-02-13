@@ -43,6 +43,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   checkListItemGroup: FormGroup;
   selectionOfDocsGroup: FormGroup;
   checkListDocObject;
+  statusObject;
   episodeOfCareId = '';
   practitioners = [];
   practitionersWithId = [];
@@ -54,7 +55,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   showOnlyTasks = false;
   showOnlyNotes = false;
   showOnlyDocs = false;
-  encounterCreated;
+  encounterd;
   currentPractitionerFHIRIDInSession;
 
   documentsList = [];
@@ -102,6 +103,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       error => console.error(error)
     );
     this.checkIfAssociatedDocCheckListExists();
+    this.checkIfAssociatedStatusListExists();
   }
 
   ngOnDestroy() {
@@ -1037,6 +1039,81 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  checkIfAssociatedStatusListExists() {
+    this.staffService.getStatusList(this.episodeOfCareId).subscribe(
+      data => {
+        if (data) {
+          if (data['total'] === 0) {
+            console.log('nothing here, creating status skeleton');
+            this.newStatusList();
+          } else {
+            data['entry'].forEach(entry => {
+              this.statusObject = entry['resource'];
+            });
+          }
+        }
+      }
+    );
+  }
+
+  newStatusList() {
+    const statusQResponse = new FHIR.QuestionnaireResponse();
+    const statusReference = new FHIR.Reference();
+    const statusContextReference = new FHIR.Reference();
+    const statusIdentifier = new FHIR.Identifier();
+    const statusItemOne = new FHIR.Item;
+    const statusItemTwo = new FHIR.Item;
+    const statusItemThree = new FHIR.Item;
+    const statusItemFour = new FHIR.Item;
+    const statusItemFive = new FHIR.Item;
+
+    const statusItemAnswer = new FHIR.Answer;
+
+    statusItemAnswer.valueBoolean = false;
+
+    statusItemOne.linkId = '1';
+    statusItemOne.text = 'Validated';
+    statusItemOne.answer = [statusItemAnswer];
+
+    statusItemTwo.linkId = '2';
+    statusItemTwo.text = 'Scheduled';
+    statusItemTwo.answer = [statusItemAnswer];
+
+    statusItemThree.linkId = '3';
+    statusItemThree.text = 'Assigned';
+    statusItemThree.answer = [statusItemAnswer];
+
+    statusItemFour.linkId = '4';
+    statusItemFour.text = 'Work Completed';
+    statusItemFour.answer = [statusItemAnswer];
+
+    statusItemFive.linkId = '5';
+    statusItemFive.text = 'Closed';
+    statusItemFive.answer = [statusItemAnswer];
+
+    statusReference.reference = 'Questionnaire/13064';
+    statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    statusIdentifier.value = 'STATUS';
+
+    statusQResponse.resourceType = 'QuestionnaireResponse';
+    statusQResponse.identifier = statusIdentifier;
+    statusQResponse.questionnaire = statusReference;
+    statusQResponse.status = 'in-progress';
+    statusQResponse.context = statusContextReference;
+    statusQResponse.item = [statusItemOne, statusItemTwo, statusItemThree, statusItemFour, statusItemFive];
+
+    console.log(statusQResponse);
+
+    this.staffService.createStatusList(JSON.stringify(statusQResponse)).subscribe(
+      data => {
+        console.log('POST SUCCESSFUL', data);
+        this.statusObject = data;
+      }
+    );
+
+
   }
 
   newDocChecklist() {
