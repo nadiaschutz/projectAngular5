@@ -289,8 +289,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       } else {
         temp['value'] = false;
       }
-      console.log(temp);
-      
+
       this.carePlanActivities.push(temp);
     });
   }
