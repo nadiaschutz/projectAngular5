@@ -284,6 +284,9 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       const temp = {};
       temp['description'] = activity['detail']['description'];
       temp['status'] = activity['detail']['status'];
+      if (activity['detail']['statusReason']) {
+        temp['statusChanger'] = activity['detail']['statusReason'];
+      }
       if (activity['detail']['status'] === 'completed') {
         temp['value'] = true;
       } else {
@@ -444,6 +447,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       const annotation = new FHIR.Annotation();
       annotation.time = new Date();
       if (this.carePlanActivities[index]['value']) {
+        console.log(this.carePlanActivities[index]['statusChanger']);
         annotation.text =
           'COMPLETED: User ' +
           this.fetchCurrentUsername() +
@@ -451,6 +455,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           this.carePlan['activity'][index]['detail']['description'] +
           ' as Completed';
         this.carePlan['activity'][index]['detail']['status'] = 'completed';
+        this.onCheckListChangeStatus(this.carePlanActivities[index]);
       } else {
         annotation.text =
           'INCOMPLETE: User ' +
@@ -460,6 +465,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           ' as Incomplete';
         this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
         console.log(this.carePlan['activity'][index]);
+        this.onCheckListChangeStatus(this.carePlanActivities[index]);
       }
       if (this.carePlan['activity'][index]['progress']) {
         this.carePlan['activity'][index]['progress'].push(annotation);
@@ -480,12 +486,47 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     }
   }
 
+  onCheckListChangeStatus(cheklistItem) {
+
+    const newAnswer = new FHIR.Answer;
+
+    newAnswer.valueBoolean = !cheklistItem['value'];
+
+    if (cheklistItem['statusChanger'] === 'on-hold') {
+      this.statusObject['item'].forEach(item => {
+        if (item['text'].toLowerCase() === 'on-hold') {
+          if (item['answer']) {
+            item['answer'][0]['valueBoolean'] = !cheklistItem['value'];
+          } else {
+            item['answer'] = [];
+            item['answer'][0] = newAnswer;
+          }
+        }
+      });
+    }
+    if (cheklistItem['statusChanger'] === 'onhold') {
+      this.statusObject['item'].forEach(item => {
+        if (item['text'].toLowerCase() === 'on-hold') {
+          if (item['answer']) {
+            item['answer'][0]['valueBoolean'] = !cheklistItem['value'];
+          } else {
+            item['answer'] = [];
+            item['answer'][0] = newAnswer;
+          }
+        }
+      });
+    }
+  }
+
   processCarePlanActivityForHistory(carePlanActivity) {
     if (carePlanActivity['progress']) {
       carePlanActivity['progress'].forEach(element => {
         const temp = {};
         temp['type'] = 'checklistItem';
         temp['status'] = carePlanActivity['detail']['status'];
+        if (carePlanActivity['detail']['statusReason']) {
+          temp['statusChanger'] = carePlanActivity['detail']['statusReason'];
+        }
         temp['title'] = 'Item: ' + carePlanActivity['detail']['description'];
         temp['note'] = element['text'];
         temp['lastUpdated'] = element['time'];
@@ -501,6 +542,9 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       const temp = {};
       temp['type'] = 'checklistItem';
       temp['status'] = carePlanActivity['detail']['status'];
+      if (carePlanActivity['detail']['statusReason']) {
+        temp['statusChanger'] = carePlanActivity['detail']['statusReason'];
+      }
       temp['title'] = 'Item: ' + carePlanActivity['detail']['description'];
       temp['note'] = recentActivity['text'];
       temp['lastUpdated'] = recentActivity['time'];
@@ -1077,27 +1121,27 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
 
     statusItemOne.linkId = '1';
     statusItemOne.text = 'Validated';
-    statusItemOne.answer = [statusItemAnswer];
+    // statusItemOne.answer = [statusItemAnswer];
 
     statusItemTwo.linkId = '2';
     statusItemTwo.text = 'Scheduled';
-    statusItemTwo.answer = [statusItemAnswer];
+    // statusItemTwo.answer = [statusItemAnswer];
 
     statusItemThree.linkId = '3';
     statusItemThree.text = 'Assigned';
-    statusItemThree.answer = [statusItemAnswer];
+    // statusItemThree.answer = [statusItemAnswer];
 
     statusItemFour.linkId = '4';
     statusItemFour.text = 'Work Completed';
-    statusItemFour.answer = [statusItemAnswer];
+    // statusItemFour.answer = [statusItemAnswer];
 
     statusItemFive.linkId = '5';
     statusItemFive.text = 'Closed';
-    statusItemFive.answer = [statusItemAnswer];
+    // statusItemFive.answer = [statusItemAnswer];
 
     statusItemSix .linkId = '0';
     statusItemSix.text = 'On-Hold';
-    statusItemSix.answer = [statusItemAnswer];
+    // statusItemSix.answer = [statusItemAnswer];
 
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;

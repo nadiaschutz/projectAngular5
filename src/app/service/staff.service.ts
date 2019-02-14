@@ -51,7 +51,7 @@ export class StaffService {
   }
 
   getAllUnassignedQuestionnaireResponses() {
-    return this.http.get(environment.queryURI + '/QuestionnaireResponse', {headers: this.getHeaders()});
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse' + '?identifier=SERVREQ', {headers: this.getHeaders()});
   }
 
   saveEpisodeOfCare(data) {

@@ -379,6 +379,21 @@
             <p>{{assignedAdmin}}</p>
           </div>
         </div>
+        <div class="card">
+          <div class="card-body">
+            <label class="card-title"><strong>Current Status</strong></label>
+            <div *ngIf="statusObject">
+              <div *ngFor="let item of statusObject['item']">
+                <div *ngIf="item['answer']">
+                  <p *ngIf="item['answer'][0]['valueBoolean']">
+                    {{item['text']}}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
 
         <div class="card">
           <div class="card-body">

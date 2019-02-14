@@ -123,11 +123,15 @@ export class ListPageComponent implements OnInit {
       if (resource.resourceType === 'EpisodeOfCare') {
         this.episodesOfCareList[resource.id] = resource;
       } else if (resource.resourceType === 'QuestionnaireResponse') {
-        if (resource.context) {
-          const associatedEpisodeOfCareId = this.getIdFromReference(resource.context.reference);
-          // Creating a Questionnaire Response List that can refer individual Questionnaire Response
-          // item from an episode of Care id
-          this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
+        if (resource['identifier']) {
+          if (resource['identifier']['value'] === 'SERVREQ') {
+            if (resource.context) {
+              const associatedEpisodeOfCareId = this.getIdFromReference(resource.context.reference);
+              // Creating a Questionnaire Response List that can refer individual Questionnaire Response
+              // item from an episode of Care id
+              this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
+            }
+          }
         }
       } else if (resource.resourceType === 'Patient') {
         this.patientList[resource.id] = resource;
@@ -146,7 +150,9 @@ export class ListPageComponent implements OnInit {
       } else {
         temp['careManager'] = 'Unassigned';
       }
+
       this.episodeResultList.push(temp);
+      // console.log(this.episodeResultList);
     });
     this.selectedEpisodes = new Array(this.episodeResultList.length);
   }
@@ -181,14 +187,26 @@ export class ListPageComponent implements OnInit {
   getQuestionnaireReponseItem(episodeOfCareId, itemText) {
     let answer = '';
     const questionnaireResponse = this.questionnaireResponseList[episodeOfCareId];
-    if (questionnaireResponse && questionnaireResponse.item) {
-      questionnaireResponse.item.forEach(item => {
-        if (item.text === itemText) {
-          answer = item['answer'][0]['valueString'];
+    console.log(this.questionnaireResponseList[episodeOfCareId]);
+
+    if (questionnaireResponse) {
+      if (questionnaireResponse['identifier']) {
+        if ( questionnaireResponse['identifier']['value'] !== 'RDCL' &&
+        questionnaireResponse['identifier']['value'] !== 'STATUS'
+        ) {
+          if (questionnaireResponse && questionnaireResponse.item ) {
+            questionnaireResponse.item.forEach(item => {
+              if (item.text === (itemText)) {
+                // console.log('here we go!',  item['answer'][0]['valueString']);
+                answer = item['answer'][0]['valueString'];
+              }
+            });
+            return answer;
+          }
         }
-      });
-      return answer;
+      }
     }
+
   }
 
   getDaysInQueue(startDateString) {
