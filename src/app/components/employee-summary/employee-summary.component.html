@@ -231,7 +231,7 @@
           </thead>
           <tbody class="body-table">
             <tr *ngFor="let q of servceRequestDatas" class="request-list">
-              <td routerLink="/service-request-summary/{{q.resource.id}}" class="cursor">{{q.resource.id}}</td>
+              <td (click)="setSelectedServiceRequestID(q.resource.id)" class="cursor">{{q.resource.id}}</td>
               <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
               <td>{{getServiceType(q)}}</td>
               <td>{{getAssessmentType(q)}}</td>

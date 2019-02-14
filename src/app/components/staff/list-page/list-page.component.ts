@@ -358,26 +358,37 @@ export class ListPageComponent implements OnInit {
     this.staffService.fetchAllCarePlanTemplates().subscribe(carePlanTemplates => {
       carePlanTemplates['entry'].forEach(element => {
         const carePlanTemplate = element.resource;
-        if (psohpServiceType === carePlanTemplate['description']) {
-          const carePlan = new FHIR.CarePlan;
-          carePlan.resourceType = 'CarePlan';
-          carePlan.status = 'active';
-          carePlan.intent = 'plan';
-          carePlan.subject = episodeOfCare.patient;
+        const regExp = /\(([^)]+)\)/;
+        const pshopCode = regExp.exec(psohpServiceType);
 
-          const episodeOfCareReference = new FHIR.Reference;
-          episodeOfCareReference.reference = 'EpisodeOfCare/' + episodeOfCare.id;
-          carePlan.context = episodeOfCareReference;
+        if  (pshopCode) {
+          if (pshopCode[1]) {
+            if (pshopCode[1] === carePlanTemplate['identifier'][0]['value']) {
+              console.log('testing regex', pshopCode[1], carePlanTemplate['identifier'][0]['value'] );
 
-          carePlan.activity = carePlanTemplate['activity'];
-          carePlan.description = carePlanTemplate['description'];
-          carePlan.identifier = carePlanTemplate['identifier'];
+              const carePlan = new FHIR.CarePlan;
+              carePlan.resourceType = 'CarePlan';
+              carePlan.status = 'active';
+              carePlan.intent = 'plan';
+              carePlan.subject = episodeOfCare.patient;
 
-          console.log(carePlan);
-          this.staffService.saveCarePlan(JSON.stringify(carePlan)).subscribe(data => {
-            console.log(data);
-          });
+              const episodeOfCareReference = new FHIR.Reference;
+              episodeOfCareReference.reference = 'EpisodeOfCare/' + episodeOfCare.id;
+              carePlan.context = episodeOfCareReference;
+
+              carePlan.activity = carePlanTemplate['activity'];
+              carePlan.description = carePlanTemplate['description'];
+              carePlan.identifier = carePlanTemplate['identifier'];
+
+              console.log(carePlan);
+              this.staffService.saveCarePlan(JSON.stringify(carePlan)).subscribe(data => {
+                console.log(data);
+              });
+            }
+          }
+
         }
+
       });
 
     });
