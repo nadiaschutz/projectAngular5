@@ -616,18 +616,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
         this.statusObject = data;
       }
     );
-    // if (cheklistItem['statusChanger'] === 'onhold') {
-    //   this.statusObject['item'].forEach(item => {
-    //     if (item['text'].toLowerCase() === 'on-hold') {
-    //       if (item['answer']) {
-    //         item['answer'][0]['valueBoolean'] = !cheklistItem['value'];
-    //       } else {
-    //         item['answer'] = [];
-    //         item['answer'][0] = newAnswer;
-    //       }
-    //     }
-    //   });
-    // }
   }
 
   enableStatusFormGroup() {
@@ -641,22 +629,40 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   changeStatusToSelected(event) {
     const itemAnswer = new FHIR.Answer;
     const itemTime = new FHIR.Answer;
+    const itemReason = new FHIR.Answer;
 
-    itemAnswer.valueBoolean = true;
     itemTime.valueDate = this.utilService.getCurrentDate();
+    itemReason.valueString = this.statusFormGroup.get('statusNote').value;
     this.statusObject['item'].forEach(element => {
       if (element['text'] === event) {
-        if (!element['answer']) {
+    itemAnswer.valueBoolean = true;
+
           element['answer'] = [];
           element['answer'][0] = itemAnswer;
           element['answer'][1] = itemTime;
-        } else {
-          element['answer'][0] = itemAnswer;
-          element['answer'][1] = itemTime;
-        }
+          element['answer'][2] = itemReason;
+          console.log('mateched', element['answer']);
+      } 
+      if (element['text'] !== event) {
+        element['answer'] = [];
+        // itemAnswer.valueBoolean = false;
+        // element['answer'][0] = itemAnswer;
+        // element['answer'][1] = itemTime;
+        console.log('unmateched', element['answer']);
+
       }
     });
-    console.log(event);
+    this.showStatusFormGroup = !this.showStatusFormGroup;
+    this.staffService.updateStatusList(this.statusObject['id'], JSON.stringify(this.statusObject)).subscribe(
+      data => {
+        console.log(data);
+        this.statusObject = data;
+      }
+    );
+  }
+
+  captureStatusReasonInput(event) {
+    return event;
   }
 
   processCarePlanActivityForHistory(carePlanActivity) {
