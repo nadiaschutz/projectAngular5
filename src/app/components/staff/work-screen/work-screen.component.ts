@@ -1143,6 +1143,9 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
                     docs['entry'].forEach(docFound => {
                       const temp = {};
                       temp['type'] = 'doc';
+                      if (docFound['description']) {
+                        temp['description'] = docFound['description'];
+                      }
                       temp['docID'] = docFound['resource']['id'];
                       temp['docReference'] =  'DocumentReference/' + docFound['resource']['id'];
                       temp['fileFullName'] =
