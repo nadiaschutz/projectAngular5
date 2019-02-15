@@ -196,7 +196,7 @@ export class NewServiceRequestComponent implements OnInit {
     reader.onerror = function (error) {
       console.log('Error: ', error);
     };
-    
+
 
   }
 
@@ -381,6 +381,9 @@ export class NewServiceRequestComponent implements OnInit {
 
   savingData() {
     const questionnaireResponse = new FHIR.QuestionnaireResponse;
+    const questionnaireIdentifier = new FHIR.Identifier;
+
+    questionnaireIdentifier.value = 'SERVREQ';
 
     questionnaireResponse.resourceType = 'QuestionnaireResponse';
 
@@ -391,6 +394,7 @@ export class NewServiceRequestComponent implements OnInit {
 
     questionnaireResponse.authored = new Date;
 
+    questionnaireResponse.identifier = questionnaireIdentifier;
     const subjectReference = new FHIR.Reference;
     subjectReference.reference = 'Patient/' + this.clientId;
     subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;

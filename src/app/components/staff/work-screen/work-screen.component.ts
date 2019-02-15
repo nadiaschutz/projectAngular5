@@ -491,30 +491,42 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
 
     const newAnswer = new FHIR.Answer;
     const itemTime = new FHIR.Answer;
+    const onHoldAnswer = new FHIR.Answer;
+
+    const statusArray =
+    ['on-hold', 'waiting', 'validated', 'scheduled', 'assigned', 'work-completed'];
 
     itemTime.valueDate = this.utilService.getCurrentDate();
     newAnswer.valueBoolean = cheklistItem['value'];
 
-    if (cheklistItem['statusChanger'] === 'on-hold') {
-      this.statusObject['item'].forEach(item => {
-        if (item['text'].toLowerCase() === 'on-hold') {
-          if (item['answer']) {
-            item['answer'][0]['valueBoolean'] = !cheklistItem['value'];
-            item['answer'][1] = itemTime;
-          } else {
-            item['answer'] = [];
-            newAnswer.valueBoolean = !newAnswer.valueBoolean;
-            item['answer'][1] = itemTime;
-            item['answer'][0] = newAnswer;
-          }
-        } else {
-          item['answer'] = [];
-          newAnswer.valueBoolean = false;
-          item['answer'][0] = newAnswer;
-          item['answer'][1] = itemTime;
+    onHoldAnswer.valueBoolean = !cheklistItem['value'];
+    onHoldAnswer.valueDate = this.utilService.getCurrentDate();
 
+    if (statusArray.indexOf(cheklistItem['statusChanger']) > -1 ) {
+      if (cheklistItem['statusChanger'] === 'on-hold') {
+        const onHoldFound = this.statusObject['item'].find(item => {
+          return item['text'].toLowerCase() === 'on-hold';
+        });
+        if (!onHoldFound) {
+          const onHoldItem = new FHIR.Item;
+          onHoldItem.linkId = '0';
+          onHoldItem.text = 'On-Hold';
+          onHoldItem.answer = [onHoldAnswer];
         }
-      });
+        this.statusObject['item'].forEach(item => {
+          if (item['text'].toLowerCase() === 'on-hold' ) {
+            if (item['answer']) {
+              item['answer'] = [onHoldAnswer];
+            } else {
+              item['answer'] = [onHoldAnswer];
+            }
+          } else {
+            const falseAnswer = new FHIR.Answer;
+            falseAnswer.valueBoolean = false;
+            item['answer'] = [falseAnswer];
+          }
+        });
+      }
     }
 
     if (cheklistItem['statusChanger'] === 'validated') {
@@ -562,6 +574,8 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
         }
       });
     }
+
+
 
     if (cheklistItem['statusChanger'] === 'assigned') {
       this.statusObject['item'].forEach(item => {
@@ -642,7 +656,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           element['answer'][1] = itemTime;
           element['answer'][2] = itemReason;
           console.log('mateched', element['answer']);
-      } 
+      }
       if (element['text'] !== event) {
         element['answer'] = [];
         // itemAnswer.valueBoolean = false;
@@ -746,7 +760,8 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     this.showNewTool = false;
     this.docFormGroup = this.formBuilder.group({
       filename: new FormControl(''),
-      filetype: new FormControl('')
+      filetype: new FormControl(''),
+      instruction: new FormControl('')
       // instruction: new FormControl('')
     });
   }
@@ -1007,7 +1022,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     let trimmedFile = '';
     let size: number;
     let type;
-    const date = new Date().toJSON();
+    const date = this.utilService.getCurrentDate();
     console.log(date);
     const fileList = $event.target.files;
     const reader = new FileReader();
@@ -1058,6 +1073,8 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       'title'
     ] = this.docFormGroup.get('filename').value;
     this.uploadedDocument.author = [documentReferenceAuthor];
+
+    this.uploadedDocument.description = this.docFormGroup.get('instruction').value;
 
     const encounterLinkingObject = new FHIR.Reference();
     const encounterContext = new FHIR.Context();
@@ -1353,7 +1370,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     this.showChecklistForm = !this.showChecklistForm;
     this.checkListItemGroup = this.formBuilder.group({
       document: new FormControl(''),
-      selection: new FormControl('')
+      selection: new FormControl(''),
     });
   }
 

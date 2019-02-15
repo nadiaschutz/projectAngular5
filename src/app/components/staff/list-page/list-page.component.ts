@@ -191,9 +191,7 @@ export class ListPageComponent implements OnInit {
 
     if (questionnaireResponse) {
       if (questionnaireResponse['identifier']) {
-        if ( questionnaireResponse['identifier']['value'] !== 'RDCL' &&
-        questionnaireResponse['identifier']['value'] !== 'STATUS'
-        ) {
+
           if (questionnaireResponse && questionnaireResponse.item ) {
             questionnaireResponse.item.forEach(item => {
               if (item.text === (itemText)) {
@@ -202,7 +200,7 @@ export class ListPageComponent implements OnInit {
               }
             });
             return answer;
-          }
+
         }
       }
     }

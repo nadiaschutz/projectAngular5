@@ -203,6 +203,22 @@
               </div>
             </div>
 
+            <div class="row">
+                <div class="col">
+                  <label for="instruction">Instructions (optional)</label>
+                  <input type="text" name="instruction" id="instruction" formControlName="instruction" class="form-control"
+                    required placeholder="Enter">
+                </div>
+              </div>
+
+            <!-- <div class="row">
+                <div class="col">
+                  <label for="filename">Name of Document</label>
+                  <input type="text" name="filename" id="filename" formControlName="filename" class="form-control"
+                    required placeholder="Enter">
+                  </div>
+                </div>
+              </div> -->
 
           </section>
 
@@ -358,6 +374,8 @@
       <div #spacer></div>
       <div #boundary>
         <div class="search-box" stickyThing [spacer]="spacer" [boundary]="boundary">
+          <!-- <button class=" btn special-button col-6">Cancel Request</button>
+          <button class=" btn special-button col-6">Update Request</button> -->
           <div *ngFor="let item of carePlanActivities; let i = index">
             <label>
               <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}"
@@ -392,9 +410,15 @@
                 <div *ngFor="let item of statusObject['item']">
                   <div *ngIf="item['answer']">
                     <div *ngFor="let answer of item['answer']">
-                        <p *ngIf="answer['valueBoolean']">
-                            {{item['text']}}
-                          </p>
+                      <p *ngIf="answer['valueBoolean']">
+                        {{item['text']}}
+                      </p>
+                      <p *ngIf="answer['valueDate']">
+                        Status last updated: {{answer['valueDate']}}
+                      </p>
+                      <p *ngIf="answer['valueString']">
+                        Reason for altered status: {{answer['valueString']}}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -402,22 +426,22 @@
               <div *ngIf="showStatusFormGroup">
                 <form [formGroup]="statusFormGroup" novalidate>
                   <section class="form-section">
-                      <div class="row">
-                          <div class="col">
-                            <label for="statusNote">Reason for change - <strong>Required</strong></label>
-                            <input type="text" name="statusNote" #statusNote id="statusNote" (keyup)="captureStatusReasonInput(statusNote.value)"
-                              formControlName="statusNote" class="form-control" required placeholder="Enter">
-                            <div *ngIf="statusFormGroup.controls['statusNote'].invalid
-                              && (statusFormGroup.controls['statusNote'].touched || statusFormGroup.controls['statusNote'].dirty)">
-                              <div class="error-message">
-                                Field cannot be blank
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                     <div class="row">
                       <div class="col">
-                        <div >
+                        <label for="statusNote">Reason for change - <strong>Required</strong></label>
+                        <input type="text" name="statusNote" #statusNote id="statusNote" (keyup)="captureStatusReasonInput(statusNote.value)"
+                          formControlName="statusNote" class="form-control" required placeholder="Enter">
+                        <div *ngIf="statusFormGroup.controls['statusNote'].invalid
+                              && (statusFormGroup.controls['statusNote'].touched || statusFormGroup.controls['statusNote'].dirty)">
+                          <div class="error-message">
+                            Field cannot be blank
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <div>
                           <label for="status">Select a status</label>
                           <select [disabled]="!statusFormGroup.valid" class="form-control" id="status" (change)="changeStatusToSelected($event.target.value)">
                             <!-- <option value="null">-</option> -->
@@ -428,7 +452,7 @@
                         </div>
                       </div>
                     </div>
-                    
+
                   </section>
                 </form>
               </div>
