@@ -51,21 +51,23 @@
     </div>
   </div>
 
-  <div id="tabs" #tabs>
-    <ul class="nav nav-pills">
-      <li class="nav-item">
-        <a class="nav-link active" [ngClass]="{ 'active':activeTab==='all'}" (click)="displayAll()" data-toggle="tab">All</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab" (click)="displayOnlyTasks()">Tasks</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [ngClass]="{ 'active':activeTab==='notes'}" data-toggle="tab" (click)="displayOnlyNotes()">Notes</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [ngClass]="{ 'active':activeTab==='documents'}" data-toggle="tab" (click)="displayOnlyDocs()">Documents</a>
-      </li>
-    </ul>
+  <div class="tabs-card">
+    <div id="tabs" #tabs>
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" [ngClass]="{ 'active':activeTab==='all'}" (click)="displayAll()" data-toggle="tab">All</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab" (click)="displayOnlyTasks()">Tasks</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [ngClass]="{ 'active':activeTab==='notes'}" data-toggle="tab" (click)="displayOnlyNotes()">Notes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [ngClass]="{ 'active':activeTab==='documents'}" data-toggle="tab" (click)="displayOnlyDocs()">Docs</a>
+        </li>
+      </ul>
+    </div>
   </div>
 
   <div class="row">
@@ -242,14 +244,14 @@
                       </div>
                     </div>
                     <div>
-                      <label for="docSelected{{item['linkId']}}">Select a document</label>
-                      <select class="form-control" id="docSelected{{item['linkId']}}" (change)="updateDocumentsCheckedOff(item, $event.target.value)">
-                        <option value="null">Select a doc</option>
-                        <option *ngFor="let doc of documentsList" [value]="doc['docReference']">
-                          {{doc['fileFullName']}}
-                        </option>
-                      </select>
-                    </div>
+                        <label for="docSelected{{item['linkId']}}">Select a document</label>
+                        <select class="form-control" id="docSelected{{item['linkId']}}" (change)="updateDocumentsCheckedOff(item, $event.target.value)">
+                          <option value="null">Select a doc</option>
+                          <option *ngFor="let doc of documentsList" [value]="doc['docReference']">
+                            {{doc['fileFullName']}}
+                          </option>
+                        </select>
+                      </div>
                   </div>
                 </div>
               </div>
@@ -354,7 +356,7 @@
 
     <div class="col-5">
       <div #spacer></div>
-      <div class="search-box" stickyThing marginTop="30" [spacer]="spacer">
+      <div class="search-box" stickyThing marginBottom="100" [spacer]="spacer">
         <div *ngFor="let item of carePlanActivities; let i = index">
           <label>
             <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}" id="i">
@@ -383,13 +385,46 @@
           <div class="card-body">
             <label class="card-title"><strong>Current Status</strong></label>
             <div *ngIf="statusObject">
-              <div *ngFor="let item of statusObject['item']">
-                <div *ngIf="item['answer']">
-                  <p *ngIf="item['answer'][0]['valueBoolean']">
-                    {{item['text']}}
-                  </p>
+              <div *ngIf="!showStatusFormGroup">
+                <div *ngFor="let item of statusObject['item']">
+                  <div *ngIf="item['answer']">
+                    <p *ngIf="item['answer'][0]['valueBoolean']">
+                      {{item['text']}}
+                    </p>
+                  </div>
                 </div>
               </div>
+              <div *ngIf="showStatusFormGroup">
+                <form [formGroup]="statusFormGroup" novalidate>
+                  <section class="form-section">
+                    <div class="row">
+                      <div class="col">
+                          <div>
+                              <label for="status">Select a status</label>
+                              <select class="form-control" id="status" (change)="changeStatusToSelected($event.target.value)">
+                                <option value="null">Select a doc</option>
+                                <option *ngFor="let item of statusObject['item']" [value]="item['text']">
+                                  {{item['text']}}
+                                </option>
+                              </select>
+                            </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <label for="statusNote">Reason for change</label>
+                        <input type="text" name="statusNote" id="statusNote" formControlName="statusNote" class="form-control"
+                          required placeholder="Enter">
+                   
+                      </div>
+                    </div>
+                  </section>
+                </form>
+              </div>
+              <button class="btn special-button" (click)="enableStatusFormGroup()">
+                Change Status</button>
+              <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="showStatusFormGroup = !showStatusFormGroup">Cancel</button>
+
             </div>
 
           </div>

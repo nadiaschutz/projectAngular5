@@ -37,6 +37,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   showChecklistForm = false;
   showSelectionOfDocsForm = false;
   showShowDocListField = false;
+  showStatusFormGroup = false;
   taskFormGroup: FormGroup;
   noteFormGroup: FormGroup;
   docFormGroup: FormGroup;
@@ -489,33 +490,173 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   onCheckListChangeStatus(cheklistItem) {
 
     const newAnswer = new FHIR.Answer;
+    const itemTime = new FHIR.Answer;
 
-    newAnswer.valueBoolean = !cheklistItem['value'];
+    itemTime.valueDate = this.utilService.getCurrentDate();
+    newAnswer.valueBoolean = cheklistItem['value'];
 
     if (cheklistItem['statusChanger'] === 'on-hold') {
       this.statusObject['item'].forEach(item => {
         if (item['text'].toLowerCase() === 'on-hold') {
           if (item['answer']) {
             item['answer'][0]['valueBoolean'] = !cheklistItem['value'];
+            item['answer'][1] = itemTime;
           } else {
             item['answer'] = [];
+            newAnswer.valueBoolean = !newAnswer.valueBoolean;
+            item['answer'][1] = itemTime;
             item['answer'][0] = newAnswer;
           }
+        } else {
+          item['answer'] = [];
+          newAnswer.valueBoolean = false;
+          item['answer'][0] = newAnswer;
+          item['answer'][1] = itemTime;
+
         }
       });
     }
-    if (cheklistItem['statusChanger'] === 'onhold') {
+
+    if (cheklistItem['statusChanger'] === 'validated') {
       this.statusObject['item'].forEach(item => {
-        if (item['text'].toLowerCase() === 'on-hold') {
+        if (item['text'].toLowerCase() === 'validated') {
           if (item['answer']) {
-            item['answer'][0]['valueBoolean'] = !cheklistItem['value'];
+            item['answer'][0]['valueBoolean'] = cheklistItem['value'];
+            item['answer'][1] = itemTime;
+
           } else {
             item['answer'] = [];
             item['answer'][0] = newAnswer;
+            item['answer'][1] = itemTime;
+
+          }
+        } else {
+          item['answer'] = [];
+          newAnswer.valueBoolean = false;
+          item['answer'][0] = newAnswer;
+          item['answer'][1] = itemTime;
+
+        }
+      });
+    }
+
+    if (cheklistItem['statusChanger'] === 'scheduled') {
+      this.statusObject['item'].forEach(item => {
+        if (item['text'].toLowerCase() === 'scheduled') {
+          if (item['answer']) {
+            item['answer'][0]['valueBoolean'] = cheklistItem['value'];
+            item['answer'][1] = itemTime;
+
+          } else {
+            item['answer'] = [];
+            item['answer'][0] = newAnswer;
+            item['answer'][1] = itemTime;
+
+          }
+        } else {
+          item['answer'] = [];
+          newAnswer.valueBoolean = false;
+          item['answer'][0] = newAnswer;
+          item['answer'][1] = itemTime;
+
+        }
+      });
+    }
+
+    if (cheklistItem['statusChanger'] === 'assigned') {
+      this.statusObject['item'].forEach(item => {
+        if (item['text'].toLowerCase() === 'assigned') {
+          if (item['answer']) {
+            item['answer'][0]['valueBoolean'] = cheklistItem['value'];
+            item['answer'][1] = itemTime;
+
+          } else {
+            item['answer'] = [];
+            item['answer'][0] = newAnswer;
+            item['answer'][1] = itemTime;
+
+          }
+        } else {
+          if ( item['text'].toLowerCase() !== 'waiting') {
+            item['answer'] = [];
+            newAnswer.valueBoolean = false;
+            item['answer'][0] = newAnswer;
+            item['answer'][1] = itemTime;
+
           }
         }
       });
     }
+
+    if (cheklistItem['statusChanger'] === 'work-completed') {
+      this.statusObject['item'].forEach(item => {
+        if (item['text'].toLowerCase() === 'work completed') {
+          if (item['answer']) {
+            item['answer'][0]['valueBoolean'] = cheklistItem['value'];
+            item['answer'][1] = itemTime;
+
+          } else {
+            item['answer'] = [];
+            item['answer'][0] = newAnswer;
+            item['answer'][1] = itemTime;
+
+          }
+        } else {
+          item['answer'] = [];
+          newAnswer.valueBoolean = false;
+          item['answer'][0] = newAnswer;
+          item['answer'][1] = itemTime;
+
+        }
+      });
+    }
+    this.staffService.updateStatusList(this.statusObject['id'], JSON.stringify(this.statusObject)).subscribe(
+      data => {
+        console.log('UPDATED', data);
+        this.statusObject = data;
+      }
+    );
+    // if (cheklistItem['statusChanger'] === 'onhold') {
+    //   this.statusObject['item'].forEach(item => {
+    //     if (item['text'].toLowerCase() === 'on-hold') {
+    //       if (item['answer']) {
+    //         item['answer'][0]['valueBoolean'] = !cheklistItem['value'];
+    //       } else {
+    //         item['answer'] = [];
+    //         item['answer'][0] = newAnswer;
+    //       }
+    //     }
+    //   });
+    // }
+  }
+
+  enableStatusFormGroup() {
+    this.showStatusFormGroup = !this.showStatusFormGroup;
+    this.statusFormGroup = this.formBuilder.group({
+      status: new FormControl(''),
+      statusNote: new FormControl(''),
+    });
+  }
+
+  changeStatusToSelected(event) {
+    const itemAnswer = new FHIR.Answer;
+    const itemTime = new FHIR.Answer;
+
+    itemAnswer.valueBoolean = true;
+    itemTime.valueDate = this.utilService.getCurrentDate();
+    this.statusObject['item'].forEach(element => {
+      if (element['text'] === event) {
+        if (!element['answer']) {
+          element['answer'] = [];
+          element['answer'][0] = itemAnswer;
+          element['answer'][1] = itemTime;
+        } else {
+          element['answer'][0] = itemAnswer;
+          element['answer'][1] = itemTime;
+        }
+      }
+    });
+    console.log(event);
   }
 
   processCarePlanActivityForHistory(carePlanActivity) {
@@ -1115,6 +1256,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     const statusItemFour = new FHIR.Item;
     const statusItemFive = new FHIR.Item;
     const statusItemSix = new FHIR.Item;
+    const statusItemSeven = new FHIR.Item;
     const statusItemAnswer = new FHIR.Answer;
 
     statusItemAnswer.valueBoolean = false;
@@ -1142,6 +1284,11 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     statusItemSix .linkId = '0';
     statusItemSix.text = 'On-Hold';
     // statusItemSix.answer = [statusItemAnswer];
+    statusItemAnswer.valueBoolean = true;
+
+    statusItemSeven .linkId = '6';
+    statusItemSeven.text = 'Waiting';
+    statusItemSeven.answer = [statusItemAnswer];
 
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
@@ -1152,7 +1299,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     statusQResponse.questionnaire = statusReference;
     statusQResponse.status = 'in-progress';
     statusQResponse.context = statusContextReference;
-    statusQResponse.item = [statusItemOne, statusItemTwo, statusItemThree, statusItemFour, statusItemFive];
+    statusQResponse.item = [statusItemOne, statusItemTwo, statusItemThree, statusItemFour, statusItemFive, statusItemSix, statusItemSeven];
 
     console.log(statusQResponse);
 

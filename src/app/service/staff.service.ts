@@ -190,6 +190,12 @@ export class StaffService {
       headers: this.getPostHeaders()});
   }
 
+  updateStatusList(id, data) {
+    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, data, {
+      headers: this.getPostHeaders()
+    });
+  }
+
   getCommunicationRelatedToEpisodeOfCare(episodeOfCareId) {
     return this.http.get(environment.queryURI +
       '/Communication?context=' + episodeOfCareId, {headers: this.getHeaders()});
