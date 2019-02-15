@@ -391,9 +391,11 @@
               <div *ngIf="!showStatusFormGroup">
                 <div *ngFor="let item of statusObject['item']">
                   <div *ngIf="item['answer']">
-                    <p *ngIf="item['answer'][0]['valueBoolean']">
-                      {{item['text']}}
-                    </p>
+                    <div *ngFor="let answer of item['answer']">
+                        <p *ngIf="answer['valueBoolean']">
+                            {{item['text']}}
+                          </p>
+                    </div>
                   </div>
                 </div>
               </div>
