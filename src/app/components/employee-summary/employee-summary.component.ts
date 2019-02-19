@@ -321,7 +321,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    sessionStorage.removeItem('patientSummaryId');
+    // sessionStorage.removeItem('patientSummaryId');
   }
 
   populatePatientArray(data) {

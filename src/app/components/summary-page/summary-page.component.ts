@@ -80,6 +80,8 @@ export class SummaryPageComponent implements OnInit {
       );
 
       // call server with the response id to get data
+
+      this.responseId = sessionStorage.getItem('selectedServiceRequestID');
       this.questionnaireService.getResponse(this.responseId).subscribe(
         data => this.getResponseData(data),
         error => this.getResponseDataError(error)

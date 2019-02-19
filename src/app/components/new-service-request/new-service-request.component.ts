@@ -104,11 +104,9 @@ export class NewServiceRequestComponent implements OnInit {
 
 
     // smile user ID
-    this.smileUserId = this.oauthService.getIdentityClaims()['sub'];
-    console.log(this.smileUserId);
+    // this.smileUserId = this.oauthService.getIdentityClaims()['sub'];
+    // console.log(this.smileUserId);
     this.clientId = sessionStorage.getItem('patientSummaryId');
-    console.log(this.clientId);
-
     if (this.clientId) {
       this.patientService
         .getPatientDataByID(this.clientId)

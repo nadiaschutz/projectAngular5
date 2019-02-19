@@ -16,8 +16,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { log } from 'util';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { __core_private_testing_placeholder__ } from '@angular/core/testing';
-import { _localeFactory } from '@angular/core/src/application_module';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-work-screen',
@@ -85,6 +84,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private formBuilder: FormBuilder,
     private oAuthService: OAuthService,
+    private titleCase: TitleCasePipe,
     private userService: UserService,
     private router: Router
   ) {}
@@ -479,7 +479,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       this.staffService
         .updateCarePlan(this.carePlan['id'], JSON.stringify(this.carePlan))
         .subscribe(data => {
-          this.processRecentCarePlanActivityForHistory(data['activity'][index]);
+          // this.processRecentCarePlanActivityForHistory(data['activity'][index]);
           this.carePlan = data;
           this.processCarePlanForDisplay();
           this.displayAll();
@@ -523,103 +523,30 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           }
         });
       }
-    }
 
-    if (cheklistItem['statusChanger'] === 'validated') {
-      this.statusObject['item'].forEach(item => {
-        if (item['text'].toLowerCase() === 'validated') {
-          if (item['answer']) {
-            item['answer'][0]['valueBoolean'] = cheklistItem['value'];
-            item['answer'][1] = itemTime;
-
+      if (cheklistItem['statusChanger'] !== 'on-hold') {
+        const onHoldFound = this.statusObject['item'].find(item => {
+          console.log('checking on hold status ', item['text'].toLowerCase() !== 'on-hold');
+          return item['text'].toLowerCase() !== 'on-hold';
+        });
+        // if (!onHoldFound) {
+        //   const onHoldItem = new FHIR.Item;
+        //   onHoldItem.linkId = '0';
+        //   onHoldItem.text = this.titleCase.transform(cheklistItem['statusChanger']);
+        //   onHoldItem.answer = [newAnswer, itemTime];
+        // }
+        this.statusObject['item'].forEach(item => {
+          if (item['text'].toLowerCase() == cheklistItem['statusChanger'] ) {
+              item['answer'] = [newAnswer, itemTime];
           } else {
-            item['answer'] = [];
-            item['answer'][0] = newAnswer;
-            item['answer'][1] = itemTime;
-
+            const falseAnswer = new FHIR.Answer;
+            falseAnswer.valueBoolean = false;
+            item['answer'] = [falseAnswer];
           }
-        } else {
-          item['answer'] = [];
-          newAnswer.valueBoolean = false;
-          item['answer'][0] = newAnswer;
-          item['answer'][1] = itemTime;
-
-        }
-      });
+        });
+      }
     }
 
-    if (cheklistItem['statusChanger'] === 'scheduled') {
-      this.statusObject['item'].forEach(item => {
-        if (item['text'].toLowerCase() === 'scheduled') {
-          if (item['answer']) {
-            item['answer'][0]['valueBoolean'] = cheklistItem['value'];
-            item['answer'][1] = itemTime;
-
-          } else {
-            item['answer'] = [];
-            item['answer'][0] = newAnswer;
-            item['answer'][1] = itemTime;
-
-          }
-        } else {
-          item['answer'] = [];
-          newAnswer.valueBoolean = false;
-          item['answer'][0] = newAnswer;
-          item['answer'][1] = itemTime;
-
-        }
-      });
-    }
-
-
-
-    if (cheklistItem['statusChanger'] === 'assigned') {
-      this.statusObject['item'].forEach(item => {
-        if (item['text'].toLowerCase() === 'assigned') {
-          if (item['answer']) {
-            item['answer'][0]['valueBoolean'] = cheklistItem['value'];
-            item['answer'][1] = itemTime;
-
-          } else {
-            item['answer'] = [];
-            item['answer'][0] = newAnswer;
-            item['answer'][1] = itemTime;
-
-          }
-        } else {
-          if ( item['text'].toLowerCase() !== 'waiting') {
-            item['answer'] = [];
-            newAnswer.valueBoolean = false;
-            item['answer'][0] = newAnswer;
-            item['answer'][1] = itemTime;
-
-          }
-        }
-      });
-    }
-
-    if (cheklistItem['statusChanger'] === 'work-completed') {
-      this.statusObject['item'].forEach(item => {
-        if (item['text'].toLowerCase() === 'work completed') {
-          if (item['answer']) {
-            item['answer'][0]['valueBoolean'] = cheklistItem['value'];
-            item['answer'][1] = itemTime;
-
-          } else {
-            item['answer'] = [];
-            item['answer'][0] = newAnswer;
-            item['answer'][1] = itemTime;
-
-          }
-        } else {
-          item['answer'] = [];
-          newAnswer.valueBoolean = false;
-          item['answer'][0] = newAnswer;
-          item['answer'][1] = itemTime;
-
-        }
-      });
-    }
     this.staffService.updateStatusList(this.statusObject['id'], JSON.stringify(this.statusObject)).subscribe(
       data => {
         console.log('UPDATED', data);
@@ -1102,7 +1029,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
         itemFound = selectedValue;
         this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
           newList => {
-            if (data) {
+            if (newList) {
               console.log('UPDATED', newList);
               this.checkListDocObject = newList;
             }
@@ -1195,6 +1122,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
                         docFound['resource']['content'][0]['attachment'][
                           'title'
                         ];
+                      temp['docCategory'] = docFound['resource']['type']['text'];
                       temp['content'] = docFound['resource']['content'][0];
                       temp['context'] = docFound['resource']['context'];
                       if (docFound['resource']['author']) {
@@ -1347,7 +1275,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     // statusItemThree.answer = [statusItemAnswer];
 
     statusItemFour.linkId = '4';
-    statusItemFour.text = 'Work Completed';
+    statusItemFour.text = 'Work-Completed';
     // statusItemFour.answer = [statusItemAnswer];
 
     statusItemFive.linkId = '5';
