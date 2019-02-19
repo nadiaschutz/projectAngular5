@@ -141,7 +141,9 @@ export class EmployeeComponent implements OnInit {
   minDate: Date;
   maxDate: Date;
 
-
+  currentUserDepartment: string;
+  // currentUserDepartmentTEST = 'BARSIK';
+  currentUserBranch: string;
 
 
   i;
@@ -178,6 +180,10 @@ export class EmployeeComponent implements OnInit {
   ];
 
   ngOnInit() {
+
+    this.currentUserDepartment = sessionStorage.getItem('userDept');
+    this.currentUserBranch = sessionStorage.getItem('userBranch');
+
     this.datePickerConfig = Object.assign({},
       {
         containerClass: 'theme-dark-blue',
@@ -258,12 +264,32 @@ export class EmployeeComponent implements OnInit {
       // Department they work in (handled in Patient with an extension)
       departmentName: new FormControl('', Validators.required),
 
+
       // Branch they work in (handled in Patient with an extension)
       departmentBranch: new FormControl('', Validators.required),
 
       // References related to the employee (handled in Patient with an extension)
-      referenceOne: [''],
-      referenceTwo: ['']
+      // referenceOne: [''],
+      // referenceTwo: ['']
+
+      // departmentName.setValue(this.options[0]);
+    });
+
+    this.employeeFormGroup.setValue({
+      familyName: null,
+      givenName: null,
+      dob: null,
+      email: null,
+      phoneNumber: null,
+      addressStreet: null,
+      addressCity: null,
+      addressProv: null,
+      addressPcode: null,
+      addressCountry: null,
+      jobTitle: null,
+      id: null,
+      departmentName: this.currentUserDepartment,
+      departmentBranch: this.currentUserBranch
     });
 
     // tslint:disable-next-line:max-line-length

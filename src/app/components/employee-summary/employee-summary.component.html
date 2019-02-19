@@ -4,13 +4,14 @@
 
 
   <div class="edit-button-row">
-      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()" *ngIf="!editEmployee; else backButton">Edit Client Record</button>
+    <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()" *ngIf="!editEmployee; else backButton">Edit
+      Client Record</button>
 
-      <ng-template #backButton>
-        <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Cancel Edit</button>
-      </ng-template>
-    </div>
-   
+    <ng-template #backButton>
+      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Cancel Edit</button>
+    </ng-template>
+  </div>
+
   <div *ngIf="selected && !editEmployee">
 
     <div class="main-header">
@@ -23,6 +24,34 @@
 
 
       <div *ngIf="selected">
+
+        <div class="row">
+          <div class="col-6" *ngIf='selected.dateCreated'>
+            <label>Date Created</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['dateCreated'] | date: 'dd-MM-yyyy'}}</textarea>
+          </div>
+
+
+          <div class="col-6" *ngIf='selected.createdBy'>
+            <label>Created By</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['createdBy']}}</textarea>
+          </div>
+        </div>
+
+        <div class="row" *ngIf='selected.dateModified'>
+          <div class="col-6">
+            <label>Date Modified</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['dateModified'] | date: 'dd-MM-yyyy'}}</textarea>
+          </div>
+
+
+          <div class="col-6" *ngIf='selected.modifiedBy'>
+            <label>Modified By</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['modifiedBy']}}</textarea>
+          </div>
+        </div>
+
+
         <div class="row">
           <div class="col-6">
             <label>First Name</label>
@@ -191,7 +220,7 @@
     </section>
 
     <ng-template #employeeListSection>
-      <section class="form-section" *ngIf="dependentArray.length > 0"> 
+      <section class="form-section" *ngIf="dependentArray.length > 0">
         <div class='header'>
           <h6>Related to</h6>
         </div>
@@ -440,7 +469,7 @@
             <label for="jobTitle">Job Title</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle"
               required>
-              <div *ngIf="employeeFormGroup.controls['jobTitle'].invalid
+            <div *ngIf="employeeFormGroup.controls['jobTitle'].invalid
               && (employeeFormGroup.controls['jobTitle'].touched || employeeFormGroup.controls['jobTitle'].dirty)">
               <div class="error-message">
                 Must be two or more characters long
@@ -470,7 +499,7 @@
             <div *ngIf="employeeFormGroup.controls['departmentName'].invalid
               && (employeeFormGroup.controls['departmentName'].touched || employeeFormGroup.controls['departmentName'].dirty)">
               <div class="error-message">
-                  Cannot be blank
+                Cannot be blank
               </div>
             </div>
           </div>
@@ -510,7 +539,7 @@
         <button class="btn regular-button" (click)="disableInputsBeforeSubmission()">Next</button>
       </div> -->
       <div class="col">
-        <button class="btn regular-button  float-right" (click)="updateEmployee()" >Update
+        <button class="btn regular-button  float-right" (click)="updateEmployee()">Update
           Client Info</button>
       </div>
 

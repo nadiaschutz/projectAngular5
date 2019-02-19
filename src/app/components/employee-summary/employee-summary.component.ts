@@ -321,9 +321,12 @@ export class EmployeeSummaryComponent implements OnInit {
   }
 
   populatePatientArray(data) {
+    console.log(data);
     this.linkID = '';
     // this.selected = data;
     const temp = {};
+
+    temp['dateModified'] = data['meta']['lastUpdated'];
     temp['id'] = data['id'];
     temp['given'] = data['name'][0]['given'][0];
     temp['family'] = data['name'][0]['family'];
@@ -403,6 +406,17 @@ export class EmployeeSummaryComponent implements OnInit {
       temp['telecom'].push(telecom);
     });
     temp['telecom'] = data['telecom'];
+    const historyQuery = '/' + temp['id'] + '/_history/1';
+    temp['dateModified'] = data['meta']['lastUpdated'];
+
+
+    this.patientService
+      .getPatientData(historyQuery)
+      .subscribe(firstData =>
+        temp['dateCreated'] = firstData['meta']['lastUpdated'],
+        error => this.handleError(error)
+      );
+
     this.selected = temp;
 
     this.patientService
@@ -418,6 +432,11 @@ export class EmployeeSummaryComponent implements OnInit {
         dataSerReq => this.getServReqData(dataSerReq),
         error => this.getServReqDataError(error)
       );
+
+
+
+
+
   }
 
   selectedPatient(event: any) {

@@ -17,7 +17,7 @@
 
 
         <div class="row">
-            <div class="col">
+          <div class="col">
             <label for="givenName">First Name</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName" name="givenName">
 
@@ -60,10 +60,11 @@
               id="dob"
               required> -->
 
-              <input  class="form-control"  type="text" placeholder="Datepicker" formControlName="dob" id="dob"
-                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red (change)="onChange($event)" required>
+              <input class="form-control" type="text" placeholder="Datepicker" formControlName="dob" id="dob"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red (change)="onChange($event)"
+                required>
 
-                <!-- <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="dob" id="dob" bsDatepicker
+              <!-- <input type="text" class="form-control" placeholder="Datepicker" [(bsValue)]="dob" id="dob" bsDatepicker
                 [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red> -->
 
               <div class="invalid-feedback">
@@ -207,6 +208,7 @@
           <div class="col">
             <label for="departmentName">Department Name</label>
             <select class="form-control" formControlName="departmentName" id="departmentName" required>
+              <!-- <option value="">{{currentUserDepartment}}</option> -->
               <option *ngFor="let dept of department" [value]="dept">
                 {{dept}}
               </option>
@@ -215,6 +217,7 @@
           <div class="col">
             <label for="departmentBranch">Department Branch</label>
             <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
+              <!-- <option value="">{{currentUserBranch}}</option> -->
               <option *ngFor="let branch of branches" [value]="branch">
                 {{branch}}
               </option>

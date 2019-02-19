@@ -18,7 +18,7 @@ export class UserService {
     private httpClient: HttpClient,
     private oauthService: OAuthService,
     private router: Router
-  ) {}
+  ) { }
 
   getSelectedID(data) {
     this.selectID = data;
@@ -67,7 +67,7 @@ export class UserService {
     // This takes three inputs, a username and password, and a header.
     // scopeURL is an environment variable that a user sets, containing scopes that are relevant
     // to the user & use case.
-    this.showSpinner = !this.showSpinner ;
+    this.showSpinner = !this.showSpinner;
     this.oauthService
       .fetchTokenUsingPasswordFlow(user, pass, header)
       .then(() => {
@@ -77,9 +77,10 @@ export class UserService {
         Promise.all([
           this.fetchCurrentRole(),
           this.fetchUserFHIRID(),
-          this.fetchCurrentUserDept()
+          this.fetchCurrentUserDept(),
+          this.fetchCurrentUserBranch()
         ]).then(() => {
-          this.showSpinner = !this.showSpinner ;
+          this.showSpinner = !this.showSpinner;
           sessionStorage.setItem(
             'userName',
             this.oauthService.getIdentityClaims()['name']
@@ -120,8 +121,8 @@ export class UserService {
 
     return this.httpClient.get(
       environment.jsonAPI +
-        '/user-management/Master/local_security?searchTerm=' +
-        sub,
+      '/user-management/Master/local_security?searchTerm=' +
+      sub,
       { headers: header }
     );
   }
@@ -140,11 +141,11 @@ export class UserService {
           user['users'].forEach(element => {
             if (
               element['familyName'] ===
-                this.oauthService.getIdentityClaims()['family_name'] &&
+              this.oauthService.getIdentityClaims()['family_name'] &&
               element['givenName'] ===
-                this.oauthService.getIdentityClaims()['given_name'] &&
+              this.oauthService.getIdentityClaims()['given_name'] &&
               element['username'] ===
-                this.oauthService.getIdentityClaims()['sub']
+              this.oauthService.getIdentityClaims()['sub']
             ) {
               let pracID: any;
 
@@ -201,11 +202,11 @@ export class UserService {
           user['users'].forEach(element => {
             if (
               element['familyName'] ===
-                this.oauthService.getIdentityClaims()['family_name'] &&
+              this.oauthService.getIdentityClaims()['family_name'] &&
               element['givenName'] ===
-                this.oauthService.getIdentityClaims()['given_name'] &&
+              this.oauthService.getIdentityClaims()['given_name'] &&
               element['username'] ===
-                this.oauthService.getIdentityClaims()['sub']
+              this.oauthService.getIdentityClaims()['sub']
             ) {
               let pracID: any;
               if (element['defaultLaunchContexts']) {
@@ -279,6 +280,53 @@ export class UserService {
     });
   }
 
+  fetchCurrentUserBranch() {
+    return new Promise((res, rej) => {
+      this.fetchCurrentUserData(
+        this.oauthService.getIdentityClaims()['sub']
+      ).subscribe(
+        user => {
+          const tempUser = this.oauthService.getIdentityClaims();
+          user['users'].forEach(element => {
+            if (
+              element['familyName'] === tempUser['family_name'] &&
+              element['givenName'] === tempUser['given_name'] &&
+              element['username'] === tempUser['sub']
+            ) {
+              let pracID: any;
+              if (element['defaultLaunchContexts']) {
+                pracID = element['defaultLaunchContexts'][0]['resourceId'];
+                this.getPractitionerRoleByPractitionerID(pracID).subscribe(
+                  deptData => {
+                    if (deptData['total'] > 0) {
+                      deptData['entry'].forEach(deptElement => {
+                        console.log('USER SERVICE', deptElement);
+                        const individualEntry = deptElement.resource;
+                        this.getAnyFHIRObjectByReference(
+                          '/' + individualEntry['location'][0]['reference']
+                        ).subscribe(role => {
+                          console.log('role', role);
+                          this.setCurrentUserBranch(role['name']);
+                        });
+                      });
+                    }
+                  }
+                );
+              }
+            }
+          });
+        },
+        error => {
+          console.log(error);
+          rej();
+        },
+        () => {
+          res();
+        }
+      );
+    });
+  }
+
   setCurrentUserRole(data: string) {
     sessionStorage.setItem('userRole', data);
   }
@@ -294,6 +342,11 @@ export class UserService {
   setCurrentUserDept(data: string) {
     sessionStorage.setItem('userDept', data);
   }
+
+  setCurrentUserBranch(data: string) {
+    sessionStorage.setItem('userBranch', data);
+  }
+
 
   getDepartmentList() {
     return this.httpClient.get<JSON>('../../assets/departments.json');
@@ -370,7 +423,7 @@ export class UserService {
   getAllPractitioners() {
     return this.httpClient.get(
       environment.queryURI +
-        '/Practitioner?_revinclude=PractitionerRole:code=admin',
+      '/Practitioner?_revinclude=PractitionerRole:code=admin',
       {
         headers: this.getHeaders()
       }
