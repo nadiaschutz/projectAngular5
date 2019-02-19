@@ -204,12 +204,12 @@
             </div>
 
             <div class="row">
-                <div class="col">
-                  <label for="instruction">Instructions (optional)</label>
-                  <input type="text" name="instruction" id="instruction" formControlName="instruction" class="form-control"
-                    required placeholder="Enter">
-                </div>
+              <div class="col">
+                <label for="instruction">Instructions (optional)</label>
+                <input type="text" name="instruction" id="instruction" formControlName="instruction" class="form-control"
+                  required placeholder="Enter">
               </div>
+            </div>
 
             <!-- <div class="row">
                 <div class="col">
@@ -225,7 +225,7 @@
           <section class="form-buttons">
             <button class="btn special-button" (click)="createEncounterObject()" [disabled]="!docFormGroup.valid">
               Save Document to Work Order</button>
-            <button class="btn special-button" (click)="showDocForm = !showDocForm" [disabled]="docFormGroup.valid">Cancel</button>
+            <button class="btn special-button" (click)="showDocForm = !showDocForm">Cancel</button>
           </section>
 
         </form>
@@ -318,6 +318,9 @@
           </p>
           <p class="card-text" *ngIf="item.author">
             <strong>Author: </strong>{{item.author}}
+          </p>
+          <p class="card-text" *ngIf="item.description">
+            <strong>Instructions: </strong>{{item.description}}
           </p>
           <p class="card-text" *ngIf="item.assignee">
             <strong>Assignee: </strong>{{item.assignee}}

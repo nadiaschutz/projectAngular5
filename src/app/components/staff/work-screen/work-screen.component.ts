@@ -500,7 +500,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     newAnswer.valueBoolean = cheklistItem['value'];
 
     onHoldAnswer.valueBoolean = !cheklistItem['value'];
-    onHoldAnswer.valueDate = this.utilService.getCurrentDate();
+    // onHoldAnswer.valueDate = this.utilService.getCurrentDate();
 
     if (statusArray.indexOf(cheklistItem['statusChanger']) > -1 ) {
       if (cheklistItem['statusChanger'] === 'on-hold') {
@@ -511,15 +511,11 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           const onHoldItem = new FHIR.Item;
           onHoldItem.linkId = '0';
           onHoldItem.text = 'On-Hold';
-          onHoldItem.answer = [onHoldAnswer];
+          onHoldItem.answer = [onHoldAnswer, itemTime];
         }
         this.statusObject['item'].forEach(item => {
           if (item['text'].toLowerCase() === 'on-hold' ) {
-            if (item['answer']) {
-              item['answer'] = [onHoldAnswer];
-            } else {
-              item['answer'] = [onHoldAnswer];
-            }
+              item['answer'] = [onHoldAnswer, itemTime];
           } else {
             const falseAnswer = new FHIR.Answer;
             falseAnswer.valueBoolean = false;
@@ -1074,7 +1070,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     ] = this.docFormGroup.get('filename').value;
     this.uploadedDocument.author = [documentReferenceAuthor];
 
-    this.uploadedDocument.description = this.docFormGroup.get('instruction').value;
+    this.uploadedDocument['description'] = this.docFormGroup.get('instruction').value;
 
     const encounterLinkingObject = new FHIR.Reference();
     const encounterContext = new FHIR.Context();
@@ -1084,6 +1080,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     this.uploadedDocument.context = encounterContext;
     this.staffService.postDataFile(this.uploadedDocument).subscribe(data => {
       this.createDocumentItemForServiceRequest(data);
+      this.showDocForm = false;
     });
   }
 
@@ -1143,11 +1140,14 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
                     docs['entry'].forEach(docFound => {
                       const temp = {};
                       temp['type'] = 'doc';
-                      if (docFound['description']) {
-                        temp['description'] = docFound['description'];
+                      if (docFound['resource']['description']) {
+                        temp['description'] = docFound['resource']['description'];
                       }
                       temp['docID'] = docFound['resource']['id'];
                       temp['docReference'] =  'DocumentReference/' + docFound['resource']['id'];
+                      temp['dateCreated'] = docFound['resource']['content'][0]['attachment'][
+                        'creation'
+                      ];
                       temp['fileFullName'] =
                         docFound['resource']['content'][0]['attachment'][
                           'title'
@@ -1169,11 +1169,14 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
                         ];
                       temp['content'] = docFound['resource']['content'][0];
                       temp['context'] = docFound['resource']['context'];
-                      temp['author'] = docFound['resource']['author'];
+                      if (docFound['resource']['author']) {
+                        temp['author'] = docFound['resource']['author'][0]['reference'];
+                      }
                       temp['lastUpdated'] =
                         docFound['resource']['meta']['lastUpdated'];
                       this.history.push(temp);
                       this.documentsList.push(temp);
+                      this.setupAuthorNameForDisplay();
                       console.log(temp);
                     });
                   }
@@ -1182,6 +1185,22 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           }
         }
       });
+  }
+
+  setupAuthorNameForDisplay() {
+    this.documentsList.forEach(docObject => {
+      if (docObject['author'].toLowerCase().includes('practitioner')) {
+        this.staffService.getAnyFHIRObjectByReference('/' + docObject['author']).subscribe(
+          data => {
+            docObject['author'] = this.utilService.
+              getNameFromResource(data);
+          },
+          error => {
+            console.log(error);
+          }
+        );
+      }
+    });
   }
 
   downloadFile(incomingFile) {
