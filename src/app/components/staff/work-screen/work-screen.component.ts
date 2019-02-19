@@ -757,6 +757,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     this.docFormGroup = this.formBuilder.group({
       filename: new FormControl(''),
       filetype: new FormControl(''),
+      checkListItem: new FormControl(''),
       instruction: new FormControl('')
       // instruction: new FormControl('')
     });
@@ -1412,6 +1413,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           if (data) {
             console.log('UPDATED', data);
             this.checkListDocObject = data;
+            this.showChecklistForm = !this.showChecklistForm;
           }
         }
       );
