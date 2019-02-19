@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import {
   FormBuilder,
@@ -28,7 +28,7 @@ export interface LanguageType {
   templateUrl: './employee-summary.component.html',
   styleUrls: ['./employee-summary.component.scss']
 })
-export class EmployeeSummaryComponent implements OnInit {
+export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   summaryId = '';
   // linkID = 'a44109ad-e58b-47cd-b348-7556e4d2c117';
   linkID = '';
@@ -320,6 +320,10 @@ export class EmployeeSummaryComponent implements OnInit {
 
   }
 
+  ngOnDestroy() {
+    // sessionStorage.removeItem('patientSummaryId');
+  }
+
   populatePatientArray(data) {
     this.linkID = '';
     // this.selected = data;
@@ -418,6 +422,11 @@ export class EmployeeSummaryComponent implements OnInit {
         dataSerReq => this.getServReqData(dataSerReq),
         error => this.getServReqDataError(error)
       );
+  }
+
+  setSelectedServiceRequestID(id) {
+    sessionStorage.setItem('selectedServiceRequestID', id);
+    this.router.navigateByUrl('/service-request-summary');
   }
 
   selectedPatient(event: any) {

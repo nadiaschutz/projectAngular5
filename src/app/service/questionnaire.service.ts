@@ -42,7 +42,7 @@ export class QuestionnaireService {
   getResponse(query: string) {
     // tslint:disable-next-line:max-line-length
     return this.http.get(
-      environment.queryURI + '/QuestionnaireResponse/' + query,
+      environment.queryURI + '/QuestionnaireResponse/' + query ,
       { headers: this.getHeaders() }
     );
   }

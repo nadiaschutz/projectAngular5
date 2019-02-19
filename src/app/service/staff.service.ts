@@ -51,7 +51,7 @@ export class StaffService {
   }
 
   getAllUnassignedQuestionnaireResponses() {
-    return this.http.get(environment.queryURI + '/QuestionnaireResponse', {headers: this.getHeaders()});
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse?identifier=SERVREQ', {headers: this.getHeaders()});
   }
 
   saveEpisodeOfCare(data) {
@@ -175,6 +175,23 @@ export class StaffService {
 
   updateDocumentsChecklist(id, questionnaire) {
     return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, questionnaire, {
+      headers: this.getPostHeaders()
+    });
+  }
+
+  getStatusList(context) {
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse?context=' + context + '&identifier=STATUS', {
+      headers: this.getHeaders()
+    });
+  }
+
+  createStatusList(statuslist) {
+    return this.http.post(environment.queryURI + '/QuestionnaireResponse/', statuslist, {
+      headers: this.getPostHeaders()});
+  }
+
+  updateStatusList(id, data) {
+    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, data, {
       headers: this.getPostHeaders()
     });
   }

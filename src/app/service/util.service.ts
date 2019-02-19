@@ -17,7 +17,7 @@ export class UtilService {
   itemReference;
   documents = [];
 
-  getNameFromResource(resource: string) {
+  getNameFromResource(resource) {
     let lastName = '';
     let firstName = '';
     if (resource && resource['name']) {

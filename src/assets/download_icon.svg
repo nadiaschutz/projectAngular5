@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="18px" viewBox="0 0 16 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.3 (51167) - http://www.bohemiancoding.com/sketch -->
+    <title>download</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Admin" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Work-Screen-Task" transform="translate(-1096.000000, -1967.000000)" stroke="#0F73E6">
+            <g id="download" transform="translate(1097.000000, 1968.000000)">
+                <path d="M0,12 L0,14.4 C0,15.2836556 0.696445945,16 1.55555556,16 L12.4444444,16 C13.3035541,16 14,15.2836556 14,14.4 L14,12" id="Shape"></path>
+                <polyline id="Shape" points="3.88888889 8 7 11.2 10.1111111 8"></polyline>
+                <path d="M7,0 L7,11.2" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>

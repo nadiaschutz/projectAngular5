@@ -579,6 +579,7 @@ export class DocumentReference extends Resource implements Serializable<Document
     type: CodeableConcept;
     subject: Reference;
     created: Date;
+    description: string;
     author: Reference[];
     content: Content[];
     instant: string;
