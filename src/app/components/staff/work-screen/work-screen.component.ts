@@ -1082,6 +1082,33 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     this.staffService.postDataFile(this.uploadedDocument).subscribe(data => {
       this.createDocumentItemForServiceRequest(data);
       this.showDocForm = false;
+      this.associateDocumentWithChecklistItemOnUpload(data);
+    });
+  }
+
+  associateDocumentWithChecklistItemOnUpload (data) {
+    const newAnswer = new FHIR.Answer;
+    const newAnswerBoolean = new FHIR.Answer;
+    const newReference = new FHIR.Reference;
+    const selectedValue = this.docFormGroup.get('checkListItem').value;
+
+    newReference.reference = 'Practitioner/' + data['id'];
+    newAnswer.valueReference = newReference;
+    newAnswerBoolean.valueBoolean = true;
+    this.checkListDocObject['item'].forEach(itemFound => {
+      if ( itemFound['linkId'] === selectedValue['linkId'] ) {
+        selectedValue['answer'][0] = newAnswerBoolean;
+        selectedValue['answer'][1] = newAnswer;
+        itemFound = selectedValue;
+        this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
+          newList => {
+            if (data) {
+              console.log('UPDATED', newList);
+              this.checkListDocObject = newList;
+            }
+          }
+        );
+      }
     });
   }
 

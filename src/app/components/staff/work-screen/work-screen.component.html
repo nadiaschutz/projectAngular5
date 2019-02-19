@@ -207,18 +207,29 @@
               <div class="col">
                 <label for="instruction">Instructions (optional)</label>
                 <input type="text" name="instruction" id="instruction" formControlName="instruction" class="form-control"
-                  required placeholder="Enter">
+                   placeholder="Enter">
               </div>
             </div>
 
-            <div class="row">
+            <!-- <div class="row"> checkListDocObject
                 <div class="col">
                   <label for="checkListItem">Associate file with checklist (optional)</label>
                   <input type="text" name="checkListItem" id="checkListItem" formControlName="checkListItem" class="form-control"
                     required placeholder="Enter">
                 </div>
-              </div>
+              </div> -->
 
+              <div class="row">
+                  <div class="col">
+                    <label for="checkListItem">Associate document with a checklist item (optional)</label>
+                    <select name="checkListItem" id="checkListItem" formControlName="checkListItem" class="form-control">
+                      <option *ngFor="let selectedItem of checkListDocObject['item']" [ngValue]="selectedItem ">
+                        <span> {{selectedItem['text']}} </span>
+                      </option>
+                    </select>
+                  </div>
+                </div>
+    
             <!-- <div class="row">
                 <div class="col">
                   <label for="filename">Name of Document</label>
@@ -343,11 +354,14 @@
             <strong>Instructions: </strong>{{item.note}}
           </p>
           <p class="card-text" *ngIf="item.type==='doc'">
-            <strong>Filename: </strong>{{item['fileFullName']}}
+            <strong (click)="downloadFile(item)" >Filename: </strong> 
+            <span class="cursor">
+                {{item['fileFullName']}} ↓
+            </span>
           </p>
           <p class="card-text" *ngIf="item.type==='doc'">
             <span class="cursor">
-              <strong (click)="downloadFile(item)">Download {{item['fileFullName']}} </strong>
+              <strong ></strong>
             </span>
           </p>
           <p class="card-text" *ngIf="item.type==='doc' && item['filetype'] === 'pdf'">
