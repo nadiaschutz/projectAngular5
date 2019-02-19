@@ -53,7 +53,7 @@ export class NewAccountComponent implements OnInit {
     private userService: UserService,
     private router: Router,
     private titleCase: TitleCasePipe
-  ) {}
+  ) { }
 
   accountTypes: AccountType[] = [
     { value: 'Client Department', viewValue: 'Client Department' },
@@ -95,7 +95,7 @@ export class NewAccountComponent implements OnInit {
     /**
      * Initializes the names of all departments on our system
      */
-    this.userService.fetchAllDepartmentNames().subscribe (
+    this.userService.fetchAllDepartmentNames().subscribe(
       data => this.populateDeptNames(data),
       error => this.handleError(error)
     );
@@ -103,7 +103,7 @@ export class NewAccountComponent implements OnInit {
     /**
      * Initializes the list of branches from our system
      */
-    this.userService.fetchAllDepartmentBranches().subscribe (
+    this.userService.fetchAllDepartmentBranches().subscribe(
       data => this.populateDeptBranches(data),
       error => this.handleError(error)
     );
@@ -156,7 +156,7 @@ export class NewAccountComponent implements OnInit {
 
     practitioner.extension = [pracEx];
     // Set the identifier for the Practitioner
-    pracIdentifier.system =  'http://www.acme.org/practitioners';
+    pracIdentifier.system = 'http://www.acme.org/practitioners';
     pracIdentifier.value = 'testID';
 
     // Set the users name
@@ -169,7 +169,7 @@ export class NewAccountComponent implements OnInit {
     practitioner.resourceType = 'Practitioner';
 
     // Stringify the object for posting
-    const finalJSON  = JSON.stringify(practitioner);
+    const finalJSON = JSON.stringify(practitioner);
 
     /**
      * Calls the savePractitioner function in the user service.
@@ -180,19 +180,19 @@ export class NewAccountComponent implements OnInit {
      * If uncesseful, it'll throw an error.
      */
 
-      this.userService.savePractitioner(finalJSON).subscribe(
-        data => {
-          this.successHeaderCheck = true;
-          this.disableInputsBeforeSubmission();
-          this.confirmSubmit = !this.confirmSubmit;
-          console.log('Success! A practitioner has been created: ', data);
-          this.capturePractitionerPieces(data);
-          this.createUser(this.practitionerPieces);
-          this.createPractitionerRoleForOffices(this.practitionerPieces);
-          this.createPractitionerRoleForDepartments(this.practitionerPieces);
-        },
-        error => this.handleError(error)
-      );
+    this.userService.savePractitioner(finalJSON).subscribe(
+      data => {
+        this.successHeaderCheck = true;
+        this.disableInputsBeforeSubmission();
+        this.confirmSubmit = !this.confirmSubmit;
+        console.log('Success! A practitioner has been created: ', data);
+        this.capturePractitionerPieces(data);
+        this.createUser(this.practitionerPieces);
+        this.createPractitionerRoleForOffices(this.practitionerPieces);
+        this.createPractitionerRoleForDepartments(this.practitionerPieces);
+      },
+      error => this.handleError(error)
+    );
   }
 
   // Creates a Smile CDR user in the system. Note that this is not a FHIR object,
@@ -228,7 +228,7 @@ export class NewAccountComponent implements OnInit {
     smileUser.password = this.accountFormGroup.get('password').value;
 
     // Stringify the object for posting
-    const finalJSON  = JSON.stringify(smileUser);
+    const finalJSON = JSON.stringify(smileUser);
 
     // Call the user service to POST the user to the JSON Admin API endpoint
     this.userService.createAccount(finalJSON).subscribe(
@@ -272,7 +272,7 @@ export class NewAccountComponent implements OnInit {
 
 
     practitionerCoding.system = 'https://bcip.smilecdr.com/fhir/practitionerrole';
-    practitionerCoding.display = this.titleCase.transform (
+    practitionerCoding.display = this.titleCase.transform(
       this.accountFormGroup.get('role').value
     );
 
@@ -301,7 +301,7 @@ export class NewAccountComponent implements OnInit {
     }
 
     if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'businessuser') {
-        practitionerCoding.code = 'businessuser';
+      practitionerCoding.code = 'businessuser';
     }
 
     practitionerCode.coding = [practitionerCoding];
@@ -316,7 +316,7 @@ export class NewAccountComponent implements OnInit {
     practitionerRole.active = true;
     practitionerRole.code = [practitionerCode];
 
-    const finalJSON  = JSON.stringify(practitionerRole);
+    const finalJSON = JSON.stringify(practitionerRole);
 
     this.userService.savePractitionerRole(finalJSON).subscribe(
       data => console.log('Success! A role has been assigned: ', data),
@@ -358,7 +358,7 @@ export class NewAccountComponent implements OnInit {
 
 
     practitionerCoding.system = 'https://bcip.smilecdr.com/fhir/practitionerrole';
-    practitionerCoding.display = this.titleCase.transform (
+    practitionerCoding.display = this.titleCase.transform(
       this.accountFormGroup.get('role').value
     );
 
@@ -387,7 +387,7 @@ export class NewAccountComponent implements OnInit {
     }
 
     if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'businessuser') {
-        practitionerCoding.code = 'businessuser';
+      practitionerCoding.code = 'businessuser';
     }
 
     practitionerCode.coding = [practitionerCoding];
@@ -402,7 +402,7 @@ export class NewAccountComponent implements OnInit {
     practitionerRole.active = true;
     practitionerRole.code = [practitionerCode];
 
-    const finalJSON  = JSON.stringify(practitionerRole);
+    const finalJSON = JSON.stringify(practitionerRole);
 
     this.userService.savePractitionerRole(finalJSON).subscribe(
       data => console.log('Success! A role has been assigned: ', data),
@@ -423,17 +423,17 @@ export class NewAccountComponent implements OnInit {
 
     // Only add values from the data input if data exists
     if (data) {
-        temp['id'] = data['id'];
-        temp['family'] = this.accountFormGroup.get('family').value;
-        temp['given'] = this.accountFormGroup.get('given').value;
-        temp['role'] = this.accountFormGroup.get('role').value;
-        temp['phone'] = this.accountFormGroup.get('phoneNumber').value;
-        temp['email'] = this.accountFormGroup.get('email').value;
-        temp['roleDescription'] = this.accountFormGroup.get('roleDescription').value;
-        temp['regionalOffice'] = this.accountFormGroup.get('regionalOffice').value;
-        temp['districtOffice'] = this.accountFormGroup.get('districtOffice').value;
-        temp['departmentName'] = this.accountFormGroup.get('departmentName').value;
-        temp['departmentBranch'] = this.accountFormGroup.get('departmentBranch').value;
+      temp['id'] = data['id'];
+      temp['family'] = this.accountFormGroup.get('family').value;
+      temp['given'] = this.accountFormGroup.get('given').value;
+      temp['role'] = this.accountFormGroup.get('role').value;
+      temp['phone'] = this.accountFormGroup.get('phoneNumber').value;
+      temp['email'] = this.accountFormGroup.get('email').value;
+      temp['roleDescription'] = this.accountFormGroup.get('roleDescription').value;
+      temp['regionalOffice'] = this.accountFormGroup.get('regionalOffice').value;
+      temp['districtOffice'] = this.accountFormGroup.get('districtOffice').value;
+      temp['departmentName'] = this.accountFormGroup.get('departmentName').value;
+      temp['departmentBranch'] = this.accountFormGroup.get('departmentBranch').value;
     }
 
     /**
@@ -494,7 +494,9 @@ export class NewAccountComponent implements OnInit {
    * @param data
    */
   populateDeptBranches(data: any) {
+    console.log(data.entry);
     data.entry.forEach(element => {
+      console.log(element.resource);
       this.deptBranch.push(element.resource);
     });
   }

@@ -15,3 +15,13 @@ export interface ServRequest {
     clientName: string;
     status: string;
 }
+
+export interface Client {
+    id: string;
+    given: string;
+    family: string;
+    dob: string;
+    employeeType: string;
+    department: string;
+    branch: string;
+}

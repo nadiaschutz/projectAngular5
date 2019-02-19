@@ -85,7 +85,6 @@ export class ServReqMainComponent implements OnInit {
   currentUserRole;
   // comes from the responce object
   region: string = null;
-  regionString;
   departmentString;
   clientDepartment: string = null;
 
@@ -103,7 +102,6 @@ export class ServReqMainComponent implements OnInit {
 
   servRequests: ServRequest[];
   servRequestsArray = [];
-  servceRequestDatas = [];
 
 
 
@@ -158,13 +156,10 @@ export class ServReqMainComponent implements OnInit {
     this.currentUserDepartment = sessionStorage.getItem('userDept');
     this.currentUserRole = sessionStorage.getItem('userRole');
 
-    this.qrequestService
-      .getData('')
-      .subscribe(
-        qData => this.handleSuccessAll(qData),
-        error => this.handleError(error)
-      );
+    this.getAllData();
   }
+
+
 
   populateDeptNames(data: any) {
     data.entry.forEach(element => {
@@ -172,14 +167,16 @@ export class ServReqMainComponent implements OnInit {
     });
   }
 
+  // run on button 'refresh'
+  refreshSearch() {
+    location.reload();
+  }
+
   setSelectedServiceRequestID(id) {
     sessionStorage.setItem('selectedServiceRequestID', id);
     this.router.navigateByUrl('/service-request-summary');
   }
 
-  refreshSearch() {
-    location.reload();
-  }
 
   dataSearch() {
     this.searchParamsToShow = [];
@@ -212,18 +209,22 @@ export class ServReqMainComponent implements OnInit {
           error => this.handleError(error)
         );
     } else if (!this.str && (this.region || this.clientDepartment)) {
-      this.qrequestService
-        .getData('')
-        .subscribe(
-          data => this.handleSuccessAll(data),
-          error => this.handleError(error)
-        );
+      this.getAllData();
     }
 
     this.searchParamsToShow.push(this.region);
     this.searchParamsToShow.push(this.clientDepartment);
 
     this.showSearchParamsOnZeroResults();
+  }
+
+  getAllData() {
+    this.qrequestService
+      .getData('')
+      .subscribe(
+        qData => this.handleSuccessAll(qData),
+        error => this.handleError(error)
+      );
   }
 
   showSearchParamsOnZeroResults() {
@@ -245,6 +246,7 @@ export class ServReqMainComponent implements OnInit {
   }
 
   handleSuccessAll(data) {
+
     this.doNotShowZeroMessage = true;
 
     if (data.total === 0) {
@@ -254,15 +256,9 @@ export class ServReqMainComponent implements OnInit {
 
     if (data.entry) {
 
-      if ((this.region || this.clientDepartment) || (this.region && this.clientDepartment)) {
-
-        this.servceRequestDatas = null;
-        this.regionString = null;
-        this.servceRequestDatas = data.entry;
+      if (this.region || this.clientDepartment) {
         this.filterRegionAndClientDepartment(data);
-
       } else {
-
         data.entry.forEach(element => {
           this.servRequestsArray.push(element.resource);
         });
@@ -299,24 +295,17 @@ export class ServReqMainComponent implements OnInit {
     this.serviceRequestId.data = null;
     this.dateOfBirth.data = null;
     this.status.data = null;
-
-
     this.str = null;
-    this.regionString = null;
   }
 
 
 
   searchWithStr(data) {
     this.doNotShowZeroMessage = true;
-    this.regionString = null;
     this.servRequests = [];
     // assign data.Regional Office for Processing to var regionData
     if (data.total > 0) {
       if (data.entry) {
-        this.servceRequestDatas = null;
-        this.regionString = null;
-        this.servceRequestDatas = data.entry;
         this.filterRegionAndClientDepartment(data);
       }
     } else {
@@ -325,76 +314,78 @@ export class ServReqMainComponent implements OnInit {
     this.resetSearchParams();
   }
 
-  filterRegionAndClientDepartment(data) {
-    this.doNotShowZeroMessage = true;
 
+
+  filterRegionAndClientDepartment(data) {
+
+    this.doNotShowZeroMessage = true;
     this.servRequests = [];
-    // const servRequestsArray = [];
     this.servRequestsArray = [];
     let regionAndClientDepartmentMatches = true;
+
+    let flag = false;
+    let matches = false;
+    const sortedDataArr = [];
+    if (this.region || this.clientDepartment) {
+      regionAndClientDepartmentMatches = false;
+    }
 
     data.entry.forEach(eachEntry => {
       if (eachEntry['resource']['item']) {
         eachEntry.resource.item.forEach(item => {
           if (this.region && this.clientDepartment) {
-            if (item.text) {
-              let flag = true;
 
-              if (item.text === 'Regional Office for Processing') {
-                flag = this.checkStringMatches(
-                  item,
-                  this.region,
-                  flag
-                );
-              }
-              if (flag) {
-
-                eachEntry.resource.item.forEach(element => {
-                  if (element.text === 'Submitting Department') {
-                    regionAndClientDepartmentMatches = this.checkStringMatches(
-                      element,
-                      this.clientDepartment,
-                      regionAndClientDepartmentMatches
-                    );
-                  }
-                });
-              }
+            if (item.text === 'Regional Office for Processing') {
+              flag = this.checkStringMatches(item, this.region);
             }
-
-
 
           } else if (this.region && !this.clientDepartment) {
             if (item.text === 'Regional Office for Processing') {
-              regionAndClientDepartmentMatches = this.checkStringMatches(
-                item,
-                this.region,
-                regionAndClientDepartmentMatches
-              );
+              regionAndClientDepartmentMatches = this.checkStringMatches(item, this.region);
             }
 
           } else if (this.clientDepartment && !this.region) {
             if (item.text === 'Submitting Department') {
-              regionAndClientDepartmentMatches = this.checkStringMatches(
-                item,
-                this.clientDepartment,
-                regionAndClientDepartmentMatches
-              );
+              regionAndClientDepartmentMatches = this.checkStringMatches(item, this.clientDepartment);
             }
 
           }
         });
       }
+      if (flag) {
+        sortedDataArr.push(eachEntry);
+      }
+
       if (regionAndClientDepartmentMatches) {
         this.servRequestsArray.push(eachEntry.resource);
+        this.createServRequestsObject(this.servRequestsArray);
       }
-      this.createServRequestsObject(this.servRequestsArray);
+
     });
+
+    if (sortedDataArr) {
+      sortedDataArr.forEach(individItem => {
+        individItem.resource.item.forEach(element => {
+          if (element.text === 'Submitting Department') {
+            matches = this.checkStringMatches(element, this.clientDepartment);
+          }
+        });
+        if (matches) {
+          this.servRequestsArray.push(individItem.resource);
+          this.createServRequestsObject(this.servRequestsArray);
+        }
+      });
+
+    }
+
     if (this.servRequestsArray.length === 0) {
       this.doNotShowZeroMessage = false;
     }
   }
 
-  checkStringMatches(item, matchingItem, matchesBoolean: boolean) {
+  checkStringMatches(item, matchingItem) {
+
+    let matchesBoolean = true;
     // remove anything after 1st dash
     let matchingString = item.answer[0].valueString.toLowerCase();
     if (matchingString.indexOf('-') !== -1) {
