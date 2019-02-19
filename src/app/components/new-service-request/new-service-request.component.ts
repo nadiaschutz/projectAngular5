@@ -102,10 +102,6 @@ export class NewServiceRequestComponent implements OnInit {
         error => this.handleError(error)
       );
 
-
-    // smile user ID
-    // this.smileUserId = this.oauthService.getIdentityClaims()['sub'];
-    // console.log(this.smileUserId);
     this.clientId = sessionStorage.getItem('patientSummaryId');
     if (this.clientId) {
       this.patientService

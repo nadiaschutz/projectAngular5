@@ -776,12 +776,15 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
 
   saveTask() {
     const task = new FHIR.Task();
+    const identifier = new FHIR.Identifier();
     const context = new FHIR.Reference();
     const taskOwner = new FHIR.Reference();
     const taskAnnotation = new FHIR.Annotation();
 
     const requester = new FHIR.Requester();
     const requesterReference = new FHIR.Reference();
+
+    identifier.value = 'WORKORDERTASK';
     requesterReference.reference =
       'Practitioner/' + sessionStorage.getItem('userFHIRID');
     requester.agent = requesterReference;
@@ -799,6 +802,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     task.owner = taskOwner;
     task.note = [taskAnnotation];
     task.resourceType = 'Task';
+    task.identifier = [identifier];
     this.staffService.saveTask(JSON.stringify(task)).subscribe(data => {
       this.showTaskForm = false;
       this.processTaskForHistory(data);

@@ -56,38 +56,42 @@ export class ListPageComponent implements OnInit {
       const questionnaireResponse = entry.resource;
       if (questionnaireResponse.subject && !questionnaireResponse.context) {
 
-        const episodeOfCare = new FHIR.EpisodeOfCare;
-        episodeOfCare.resourceType = 'EpisodeOfCare';
-        episodeOfCare.status = 'planned';
+        if (questionnaireResponse['identifier']) {
+          if (questionnaireResponse['identifier']['value'] === 'SERVREQ') {
+            const episodeOfCare = new FHIR.EpisodeOfCare;
+            episodeOfCare.resourceType = 'EpisodeOfCare';
+            episodeOfCare.status = 'planned';
 
-        const type = new FHIR.CodeableConcept;
-        type.text = 'Episode of Care';
-        episodeOfCare.type = [type];
+            const type = new FHIR.CodeableConcept;
+            type.text = 'Episode of Care';
+            episodeOfCare.type = [type];
 
-        const managingOrganization = new FHIR.Reference;
-        managingOrganization.reference = 'Organization/NOHIS';
+            const managingOrganization = new FHIR.Reference;
+            managingOrganization.reference = 'Organization/NOHIS';
 
-        const patient = new FHIR.Reference;
-        patient.reference = questionnaireResponse.subject.reference;
-        episodeOfCare.patient = patient;
+            const patient = new FHIR.Reference;
+            patient.reference = questionnaireResponse.subject.reference;
+            episodeOfCare.patient = patient;
 
-        const period = new FHIR.Period;
-        period.start = formatDate(new Date, 'yyyy-MM-dd', 'en');
-        episodeOfCare.period = period;
+            const period = new FHIR.Period;
+            period.start = formatDate(new Date, 'yyyy-MM-dd', 'en');
+            episodeOfCare.period = period;
 
-        this.staffService.saveEpisodeOfCare(JSON.stringify(episodeOfCare)).subscribe(createdEpisodeOfCare => {
-          const reference = new FHIR.Reference;
-          reference.reference = '/EpisodeOfCare/' + createdEpisodeOfCare['id'];
-          this.associateCarePlanToEpisodeOfCare(createdEpisodeOfCare, questionnaireResponse);
-          // Questionnaire Response needs to be updated
-          // to refer to the created episode of care
-          questionnaireResponse['context'] = reference;
-          this.questionnaireService.changeRequest(questionnaireResponse).subscribe(data => {
-            console.log(data);
-          }, error => console.error(error));
-        }, error => {
-          console.error(error);
-        });
+            this.staffService.saveEpisodeOfCare(JSON.stringify(episodeOfCare)).subscribe(createdEpisodeOfCare => {
+              const reference = new FHIR.Reference;
+              reference.reference = '/EpisodeOfCare/' + createdEpisodeOfCare['id'];
+              this.associateCarePlanToEpisodeOfCare(createdEpisodeOfCare, questionnaireResponse);
+              // Questionnaire Response needs to be updated
+              // to refer to the created episode of care
+              questionnaireResponse['context'] = reference;
+              this.questionnaireService.changeRequest(questionnaireResponse).subscribe(data => {
+                console.log(data);
+              }, error => console.error(error));
+            }, error => {
+              console.error(error);
+            });
+          }
+        }
       } else {
         // Check if all Questionnaire Responses have Care Plans associated to them
         if (questionnaireResponse.context) {
@@ -123,16 +127,16 @@ export class ListPageComponent implements OnInit {
       if (resource.resourceType === 'EpisodeOfCare') {
         this.episodesOfCareList[resource.id] = resource;
       } else if (resource.resourceType === 'QuestionnaireResponse') {
-        if (resource['identifier']) {
-          if (resource['identifier']['value'] === 'SERVREQ') {
+        // if (resource['identifier']) {
+        //   if (resource['identifier']['value'] === 'SERVREQ') {
             if (resource.context) {
               const associatedEpisodeOfCareId = this.getIdFromReference(resource.context.reference);
               // Creating a Questionnaire Response List that can refer individual Questionnaire Response
               // item from an episode of Care id
               this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
             }
-          }
-        }
+        //   }
+        // }
       } else if (resource.resourceType === 'Patient') {
         this.patientList[resource.id] = resource;
       }

@@ -399,8 +399,8 @@
       <div #spacer></div>
       <div #boundary>
         <div class="search-box" stickyThing [spacer]="spacer" [boundary]="boundary">
-          <!-- <button class=" btn special-button col-6">Cancel Request</button>
-          <button class=" btn special-button col-6">Update Request</button> -->
+          <button class=" btn special-button col-6">Cancel Update</button>
+          <button class=" btn special-button col-6">Update Worklist Items</button>
           <div *ngFor="let item of carePlanActivities; let i = index">
             <label>
               <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}"
