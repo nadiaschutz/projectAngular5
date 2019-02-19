@@ -180,14 +180,12 @@ export class DashboardComponent implements OnInit {
 
   populateDeptBranches(data: any) {
     data.entry.forEach(element => {
-      console.log(element.resource);
       this.listOfBranches.push(element.resource);
     });
   }
 
 
   dataSearch() {
-    console.log('dataSearch', this.clientDepartment, this.branch);
     this.searchParamsToShow = [];
     if (this.dateOfBirth.data) {
       this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
@@ -197,7 +195,6 @@ export class DashboardComponent implements OnInit {
 
 
     this.arrOfVar.forEach((element, index) => {
-      console.log(element);
       if (element.data !== null) {
         if (this.str === null) {
           this.str = '?' + element.prefix + element.data.toLowerCase();
@@ -207,7 +204,6 @@ export class DashboardComponent implements OnInit {
         this.searchParamsToShow.push(element.data);
       }
     });
-    console.log('dataSearch', this.arrOfVar);
 
     // calling get request with updated string
     if (this.str) {
@@ -219,7 +215,6 @@ export class DashboardComponent implements OnInit {
           error => this.handleError(error)
         );
     } else if (!this.str && (this.branch || this.clientDepartment)) {
-      console.log('dataSearch', this.clientDepartment, this.branch);
       this.getAllData();
     }
 
@@ -249,7 +244,6 @@ export class DashboardComponent implements OnInit {
 
   // get initiall patients from server
   getAllData() {
-    console.log('GETALLDATA', this.clientDepartment, this.branch);
     this.patientService
       .getAllPatientData()
       .subscribe(
@@ -320,8 +314,6 @@ export class DashboardComponent implements OnInit {
   // }
 
   handleSuccessAll(data) {
-    console.log('handleSuccessAll', this.clientDepartment, this.branch);
-    console.log(data);
     this.doNotShowZeroMessage = true;
 
     if (data.total === 0) {
@@ -331,7 +323,6 @@ export class DashboardComponent implements OnInit {
     if (data.entry) {
 
       if ((this.branch || this.clientDepartment) || (this.branch && this.clientDepartment)) {
-        console.log('handleSuccessAll2', this.clientDepartment, this.branch);
         this.filterRegionAndClientDepartment(data);
 
       } else {
@@ -339,7 +330,6 @@ export class DashboardComponent implements OnInit {
           this.clientsArray.push(element.resource);
         });
         this.createClientsObject(this.clientsArray);
-        console.log('handleSuccessAll3', this.clientDepartment, this.branch);
       }
     }
 
@@ -402,29 +392,29 @@ export class DashboardComponent implements OnInit {
   }
 
   sorterFunction(colName) {
-    this.patientList = this.utilService.sortArray(colName, this.patientList);
+    this.clients = this.utilService.sortArray(colName, this.clients);
   }
 
-  checkForEmployeeTypeAndClientDepartment(individualEntry) {
-    individualEntry.extension.forEach(individualExtension => {
-      if (
-        this.employeeType &&
-        individualExtension.url ===
-        'https://bcip.smilecdr.com/fhir/employeetype'
-      ) {
-        if (individualExtension.valueString === this.employeeType) {
-          this.patientList.push(individualEntry);
-        }
-      } else if (
-        this.clientDepartment &&
-        individualExtension.url === 'https://bcip.smilecdr.com/fhir/workplace'
-      ) {
-        if (individualExtension.valueString === this.clientDepartment) {
-          this.patientList.push(individualEntry);
-        }
-      }
-    });
-  }
+  // checkForEmployeeTypeAndClientDepartment(individualEntry) {
+  //   individualEntry.extension.forEach(individualExtension => {
+  //     if (
+  //       this.employeeType &&
+  //       individualExtension.url ===
+  //       'https://bcip.smilecdr.com/fhir/employeetype'
+  //     ) {
+  //       if (individualExtension.valueString === this.employeeType) {
+  //         this.patientList.push(individualEntry);
+  //       }
+  //     } else if (
+  //       this.clientDepartment &&
+  //       individualExtension.url === 'https://bcip.smilecdr.com/fhir/workplace'
+  //     ) {
+  //       if (individualExtension.valueString === this.clientDepartment) {
+  //         this.patientList.push(individualEntry);
+  //       }
+  //     }
+  //   });
+  // }
 
   handleError(error) {
     console.log(error);
@@ -491,11 +481,9 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
-    console.log(this.showParams);
   }
 
   searchWithStr(data) {
-    console.log(this.clientDepartment, this.branch);
     this.doNotShowZeroMessage = true;
 
     this.clients = []; // this.servRequests = [];
@@ -525,55 +513,44 @@ export class DashboardComponent implements OnInit {
     if (this.branch || this.clientDepartment) {
       regionAndClientDepartmentMatches = false;
     }
-    console.log('CHECKING REG AND DEPARTMENT', this.branch, this.clientDepartment, regionAndClientDepartmentMatches);
 
 
     data.entry.forEach(eachEntry => {
       if (eachEntry['resource']['extension']) {
         eachEntry.resource.extension.forEach(item => {
           if (this.branch && this.clientDepartment) {
-            console.log('checking client department', this.clientDepartment, this.branch);
 
             if (item['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
               flag = this.checkStringMatches(item, this.branch);
             }
 
           } else if (this.branch && !this.clientDepartment) {
-            console.log('this.branch checking 1', regionAndClientDepartmentMatches);
             if (item['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
               regionAndClientDepartmentMatches = this.checkStringMatches(item, this.branch);
             }
-            console.log('this.branch checking 2', regionAndClientDepartmentMatches);
 
           } else if (this.clientDepartment && !this.branch) {
-            console.log('this.clientDepartment checking 1', regionAndClientDepartmentMatches);
             if (item['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
               regionAndClientDepartmentMatches = this.checkStringMatches(item, this.clientDepartment);
             }
-            console.log('this.clientDepartment checking 2', regionAndClientDepartmentMatches);
           }
         });
       }
       if (flag) {
         sortedDataArr.push(eachEntry);
-        console.log('FLAG', eachEntry);
         flag = false;
       }
       if (regionAndClientDepartmentMatches) {
-        console.log(eachEntry);
         this.clientsArray.push(eachEntry.resource);
         regionAndClientDepartmentMatches = false;
       }
       this.createClientsObject(this.clientsArray);
     });
     if (sortedDataArr) {
-      console.log(sortedDataArr);
       sortedDataArr.forEach(individItem => {
-        console.log(individItem);
         individItem.resource.extension.forEach(element => {
 
           if (element['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
-            console.log(element);
             matches = this.checkStringMatches(element, this.clientDepartment);
           }
         });
@@ -614,7 +591,6 @@ export class DashboardComponent implements OnInit {
 
 
   addParams(params) {
-    console.log(this.showParams);
     this.showParams = this.showParams + ', ' + params;
   }
 
