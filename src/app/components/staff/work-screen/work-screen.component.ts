@@ -456,7 +456,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           this.carePlan['activity'][index]['detail']['description'] +
           ' as Completed';
         this.carePlan['activity'][index]['detail']['status'] = 'completed';
-        this.onCheckListChangeStatus(this.carePlanActivities[index]);
+        // this.onCheckListChangeStatus(this.carePlanActivities[index]);
       } else {
         annotation.text =
           'INCOMPLETE: User ' +
@@ -466,7 +466,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           ' as Incomplete';
         this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
         console.log(this.carePlan['activity'][index]);
-        this.onCheckListChangeStatus(this.carePlanActivities[index]);
+        // this.onCheckListChangeStatus(this.carePlanActivities[index]);
       }
       if (this.carePlan['activity'][index]['progress']) {
         this.carePlan['activity'][index]['progress'].push(annotation);
@@ -479,6 +479,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       this.staffService
         .updateCarePlan(this.carePlan['id'], JSON.stringify(this.carePlan))
         .subscribe(data => {
+          console.log(data['activity'][index]);
           // this.processRecentCarePlanActivityForHistory(data['activity'][index]);
           this.carePlan = data;
           this.processCarePlanForDisplay();
@@ -487,73 +488,74 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCheckListChangeStatus(cheklistItem) {
+  // TODO - revisit functionality with updated logic after March 1st
+  // onCheckListChangeStatus(cheklistItem) {
 
-    const newAnswer = new FHIR.Answer;
-    const itemTime = new FHIR.Answer;
-    const onHoldAnswer = new FHIR.Answer;
+  //   const newAnswer = new FHIR.Answer;
+  //   const itemTime = new FHIR.Answer;
+  //   const onHoldAnswer = new FHIR.Answer;
 
-    const statusArray =
-    ['on-hold', 'waiting', 'validated', 'scheduled', 'assigned', 'work-completed'];
+  //   const statusArray =
+  //   ['on-hold', 'waiting', 'validated', 'scheduled', 'assigned', 'work-completed'];
 
-    itemTime.valueDate = this.utilService.getCurrentDate();
-    newAnswer.valueBoolean = cheklistItem['value'];
+  //   itemTime.valueDate = this.utilService.getCurrentDate();
+  //   newAnswer.valueBoolean = cheklistItem['value'];
 
-    onHoldAnswer.valueBoolean = !cheklistItem['value'];
-    // onHoldAnswer.valueDate = this.utilService.getCurrentDate();
+  //   onHoldAnswer.valueBoolean = !cheklistItem['value'];
+  //   // onHoldAnswer.valueDate = this.utilService.getCurrentDate();
 
-    if (statusArray.indexOf(cheklistItem['statusChanger']) > -1 ) {
-      if (cheklistItem['statusChanger'] === 'on-hold') {
-        const onHoldFound = this.statusObject['item'].find(item => {
-          return item['text'].toLowerCase() === 'on-hold';
-        });
-        if (!onHoldFound) {
-          const onHoldItem = new FHIR.Item;
-          onHoldItem.linkId = '0';
-          onHoldItem.text = 'On-Hold';
-          onHoldItem.answer = [onHoldAnswer, itemTime];
-        }
-        this.statusObject['item'].forEach(item => {
-          if (item['text'].toLowerCase() === 'on-hold' ) {
-              item['answer'] = [onHoldAnswer, itemTime];
-          } else {
-            const falseAnswer = new FHIR.Answer;
-            falseAnswer.valueBoolean = false;
-            item['answer'] = [falseAnswer];
-          }
-        });
-      }
+  //   if (statusArray.indexOf(cheklistItem['statusChanger']) > -1 ) {
+  //     if (cheklistItem['statusChanger'] === 'on-hold') {
+  //       const onHoldFound = this.statusObject['item'].find(item => {
+  //         return item['text'].toLowerCase() === 'on-hold';
+  //       });
+  //       if (!onHoldFound) {
+  //         const onHoldItem = new FHIR.Item;
+  //         onHoldItem.linkId = '0';
+  //         onHoldItem.text = 'On-Hold';
+  //         onHoldItem.answer = [onHoldAnswer, itemTime];
+  //       }
+  //       this.statusObject['item'].forEach(item => {
+  //         if (item['text'].toLowerCase() === 'on-hold' ) {
+  //             item['answer'] = [onHoldAnswer, itemTime];
+  //         } else {
+  //           const falseAnswer = new FHIR.Answer;
+  //           falseAnswer.valueBoolean = false;
+  //           item['answer'] = [falseAnswer];
+  //         }
+  //       });
+  //     }
 
-      if (cheklistItem['statusChanger'] !== 'on-hold') {
-        const onHoldFound = this.statusObject['item'].find(item => {
-          console.log('checking on hold status ', item['text'].toLowerCase() !== 'on-hold');
-          return item['text'].toLowerCase() !== 'on-hold';
-        });
-        // if (!onHoldFound) {
-        //   const onHoldItem = new FHIR.Item;
-        //   onHoldItem.linkId = '0';
-        //   onHoldItem.text = this.titleCase.transform(cheklistItem['statusChanger']);
-        //   onHoldItem.answer = [newAnswer, itemTime];
-        // }
-        this.statusObject['item'].forEach(item => {
-          if (item['text'].toLowerCase() == cheklistItem['statusChanger'] ) {
-              item['answer'] = [newAnswer, itemTime];
-          } else {
-            const falseAnswer = new FHIR.Answer;
-            falseAnswer.valueBoolean = false;
-            item['answer'] = [falseAnswer];
-          }
-        });
-      }
-    }
+  //     if (cheklistItem['statusChanger'] !== 'on-hold') {
+  //       const onHoldFound = this.statusObject['item'].find(item => {
+  //         console.log('checking on hold status ', item['text'].toLowerCase() !== 'on-hold');
+  //         return item['text'].toLowerCase() !== 'on-hold';
+  //       });
+  //       // if (!onHoldFound) {
+  //       //   const onHoldItem = new FHIR.Item;
+  //       //   onHoldItem.linkId = '0';
+  //       //   onHoldItem.text = this.titleCase.transform(cheklistItem['statusChanger']);
+  //       //   onHoldItem.answer = [newAnswer, itemTime];
+  //       // }
+  //       this.statusObject['item'].forEach(item => {
+  //         if (item['text'].toLowerCase() == cheklistItem['statusChanger'] ) {
+  //             item['answer'] = [newAnswer, itemTime];
+  //         } else {
+  //           const falseAnswer = new FHIR.Answer;
+  //           falseAnswer.valueBoolean = false;
+  //           item['answer'] = [falseAnswer];
+  //         }
+  //       });
+  //     }
+  //   }
 
-    this.staffService.updateStatusList(this.statusObject['id'], JSON.stringify(this.statusObject)).subscribe(
-      data => {
-        console.log('UPDATED', data);
-        this.statusObject = data;
-      }
-    );
-  }
+  //   this.staffService.updateStatusList(this.statusObject['id'], JSON.stringify(this.statusObject)).subscribe(
+  //     data => {
+  //       console.log('UPDATED', data);
+  //       this.statusObject = data;
+  //     }
+  //   );
+  // }
 
   enableStatusFormGroup() {
     this.showStatusFormGroup = !this.showStatusFormGroup;
