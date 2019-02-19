@@ -300,7 +300,6 @@ export class UserService {
                   deptData => {
                     if (deptData['total'] > 0) {
                       deptData['entry'].forEach(deptElement => {
-                        console.log('USER SERVICE', deptElement);
                         const individualEntry = deptElement.resource;
                         this.getAnyFHIRObjectByReference(
                           '/' + individualEntry['location'][0]['reference']

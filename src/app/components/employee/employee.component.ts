@@ -344,6 +344,7 @@ export class EmployeeComponent implements OnInit {
     this.employee_language_coding = new Employee.Coding();
     this.employee_communication = new Employee.Communication();
     this.employee_identifier = new Employee.Identifier();
+    this.employee_created_by = new Employee.Identifier();
     this.employee_extension_jobtitle = new Employee.Extension();
     this.employee_extension_workplace = new Employee.Extension();
     this.employee_extension_branch = new Employee.Extension();
@@ -360,6 +361,11 @@ export class EmployeeComponent implements OnInit {
     this.employee_identifier.value = this.employeeFormGroup.get('id').value;
     this.employee_identifier.system =
       'https://bcip.smilecdr.com/fhir/employeeid';
+
+
+    // created by
+
+    this.employee_created_by
 
     // Employee Address
 
