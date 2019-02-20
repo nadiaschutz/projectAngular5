@@ -70,6 +70,12 @@ p {
     }
 }
 
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: 0px;
+    margin-left: -15px;
+}
 
 /* global responsive styling */
 
