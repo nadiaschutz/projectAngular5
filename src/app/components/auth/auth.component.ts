@@ -21,9 +21,10 @@ export class AuthComponent implements OnInit {
   ) { }
 
   logInForm: FormGroup;
-
+  versionNumber;
   ngOnInit() {
 
+    this.versionNumber = '0.3.7';
 
     if (this.oauthService.getAccessToken()) {
       this.router.navigateByUrl('/dashboard');
