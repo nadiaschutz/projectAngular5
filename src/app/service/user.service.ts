@@ -304,7 +304,6 @@ export class UserService {
                         this.getAnyFHIRObjectByReference(
                           '/' + individualEntry['location'][0]['reference']
                         ).subscribe(role => {
-                          console.log('role', role);
                           this.setCurrentUserBranch(role['name']);
                         });
                       });
