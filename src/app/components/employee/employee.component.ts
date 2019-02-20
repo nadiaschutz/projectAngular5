@@ -269,28 +269,29 @@ export class EmployeeComponent implements OnInit {
       departmentBranch: new FormControl('', Validators.required),
 
       // References related to the employee (handled in Patient with an extension)
-      // referenceOne: [''],
+      referenceOne: new FormControl(''),
+      referenceTwo: new FormControl('')
       // referenceTwo: ['']
 
       // departmentName.setValue(this.options[0]);
     });
 
-    this.employeeFormGroup.setValue({
-      familyName: null,
-      givenName: null,
-      dob: null,
-      email: null,
-      phoneNumber: null,
-      addressStreet: null,
-      addressCity: null,
-      addressProv: null,
-      addressPcode: null,
-      addressCountry: null,
-      jobTitle: null,
-      id: null,
-      departmentName: this.currentUserDepartment,
-      departmentBranch: this.currentUserBranch
-    });
+    // this.employeeFormGroup.setValue({
+    //   familyName: null,
+    //   givenName: null,
+    //   dob: null,
+    //   email: null,
+    //   phoneNumber: null,
+    //   addressStreet: null,
+    //   addressCity: null,
+    //   addressProv: null,
+    //   addressPcode: null,
+    //   addressCountry: null,
+    //   jobTitle: null,
+    //   id: null,
+    //   departmentName: this.currentUserDepartment,
+    //   departmentBranch: this.currentUserBranch
+    // });
 
     // tslint:disable-next-line:max-line-length
     // Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
