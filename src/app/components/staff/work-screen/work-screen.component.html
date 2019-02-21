@@ -399,8 +399,8 @@
       <div #spacer></div>
       <div #boundary>
         <div class="search-box" stickyThing [spacer]="spacer" [boundary]="boundary">
-          <button class=" btn special-button col-6">Cancel Update</button>
-          <button class=" btn special-button col-6">Update Worklist Items</button>
+          <button class=" btn regular-button col-6">Cancel Work Order</button>
+          <button class=" btn regular-button col-6">Update Worklist</button>
           <div *ngFor="let item of carePlanActivities; let i = index">
             <label>
               <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}"
@@ -468,9 +468,9 @@
                       <div class="col">
                         <div>
                           <label for="status">Select a status</label>
-                          <select [disabled]="!statusFormGroup.valid" class="form-control" id="status" (change)="changeStatusToSelected($event.target.value)">
+                          <select formControlName="status" class="form-control" id="status" name="status">
                             <!-- <option value="null">-</option> -->
-                            <option *ngFor="let item of statusObject['item']" [value]="item['text']">
+                            <option  [disabled]="!statusFormGroup.valid"  *ngFor="let item of statusObject['item']" [value]="item['text']">
                               {{item['text']}}
                             </option>
                           </select>
@@ -481,8 +481,10 @@
                   </section>
                 </form>
               </div>
-              <button class="btn special-button" (click)="enableStatusFormGroup()">
+              <button *ngIf="!showStatusFormGroup" class="btn special-button" (click)="enableStatusFormGroup()">
                 Change Status</button>
+                <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="changeStatusToSelected()">
+                  Change Status</button>
               <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="showStatusFormGroup = !showStatusFormGroup">Cancel</button>
 
             </div>
@@ -523,6 +525,20 @@
             <p class="card-text" *ngIf="summary.ohagEnvironmentalModifier">
               <strong>OHAG Environmental Modifier: </strong> {{summary.ohagEnvironmentalModifier}}
             </p>
+          </div>
+        </div>
+
+        <div class="card" *ngIf="dependentList.length > 0">
+          <div class="card-body">
+            <label class="card-title"><strong>Dependent(s)</strong></label>
+            <div *ngFor="let dependent of dependentList">
+              <p class="card-text" *ngIf="dependent.dep_clientName">
+                <strong>Client Name: </strong> {{dependent.dep_clientName}}
+              </p>
+              <p class="card-text" *ngIf="dependent.dep_clientDOB">
+                <strong>Birth Date: </strong> {{dependent.dep_clientDOB}}
+              </p>
+            </div>
           </div>
         </div>
       </div>
