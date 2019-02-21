@@ -13,9 +13,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { log } from 'util';
 import { Router } from '@angular/router';
-import { Location } from '@angular/common';
 import { TitleCasePipe } from '@angular/common';
 import { PatientService } from 'src/app/service/patient.service';
 
@@ -72,6 +70,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   cliniciansWithId = [];
   showClinicianButtons = false;
   clinicalAssignmentTask = {};
+  showSpinner = false;
   fileTypeList = [
     { value: 'ADMINISTRATIVE', viewValue: 'ADMINISTRATIVE' },
     { value: 'CLINICAL', viewValue: 'CLINICAL' },
@@ -253,6 +252,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           this.processPatientForSummary(element.resource);
         } else if (element.resource.resourceType === 'QuestionnaireResponse') {
           this.serviceRequestInfoObject = element['resource'];
+          console.log(element.resource);
           if (element['resource']['identifier']) {
             if (element['resource']['identifier']['value'].includes('SERVREQ')) {
               this.processQuestionnaireResponseForSummary(element.resource);
@@ -943,30 +943,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     });
   }
 
-  createEncounterObject() {
-    const encounter = new FHIR.Encounter();
-    const episodeOfCareReference = new FHIR.Reference();
-    const patientInEpisodeOfCare = new FHIR.Reference();
 
-    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
-    patientInEpisodeOfCare.reference =
-      'Patient/' + this.summary['patientFHIRID'];
-
-    encounter.subject = patientInEpisodeOfCare;
-    encounter.episodeOfCare = [episodeOfCareReference];
-    encounter.resourceType = 'Encounter';
-
-    const encounterStringified = JSON.stringify(encounter);
-
-    if (patientInEpisodeOfCare.reference !== null) {
-      this.staffService.createEncounter(encounterStringified).subscribe(
-        data => {
-          this.postDocumentObject(data['id']);
-        },
-        error => console.log(error)
-      );
-    }
-  }
 
   // Documents Features
 
@@ -1019,6 +996,33 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     };
   }
 
+  createEncounterObjectToLinkToEpisodeOfCare() {
+    const encounter = new FHIR.Encounter();
+    const episodeOfCareReference = new FHIR.Reference();
+    const patientInEpisodeOfCare = new FHIR.Reference();
+
+    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    patientInEpisodeOfCare.reference =
+      'Patient/' + this.summary['patientFHIRID'];
+
+    encounter.subject = patientInEpisodeOfCare;
+    encounter.episodeOfCare = [episodeOfCareReference];
+    encounter.resourceType = 'Encounter';
+
+    const encounterStringified = JSON.stringify(encounter);
+
+    if (patientInEpisodeOfCare.reference !== null) {
+      this.staffService.createEncounter(encounterStringified).subscribe(
+        data => {
+          this.postDocumentObject(data['id']);
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    }
+  }
+
   postDocumentObject(encounterID) {
     const documentReferenceCodeableConcept = new FHIR.CodeableConcept();
     const documentReferenceAuthor = new FHIR.Reference();
@@ -1043,47 +1047,75 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     encounterLinkingObject.reference = 'Encounter/' + encounterID;
 
 
+    this.showSpinner = true;
+    // this.showDocForm = false;
 
     encounterContext.encounter = encounterLinkingObject;
     this.uploadedDocument.context = encounterContext;
-    this.staffService.postDataFile(this.uploadedDocument).subscribe(data => {
-      this.createDocumentItemForServiceRequest(data);
-      this.associateDocumentWithChecklistItemOnUpload(data['id']);
-      this.showDocForm = false;
-    });
+    this.staffService.postDataFile(this.uploadedDocument).subscribe(
+      data => {
+        this.createDocumentItemForServiceRequest(data);
+        this.associateDocumentWithChecklistItemOnUpload(data['id']);
+        // this.showDocForm = true;
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.showDocForm = false;
+        setTimeout(() => {
+          this.showSpinner = false;
+          location.reload();
+        }, 500);
+      }
+    );
   }
 
   associateDocumentWithChecklistItemOnUpload (data) {
-    const newAnswer = new FHIR.Answer;
-    const newAnswerBoolean = new FHIR.Answer;
-    const newReference = new FHIR.Reference;
-    const selectedValue = this.docFormGroup.get('checkListItem').value;
+    if (this.docFormGroup.get('checkListItem').value && data) {
+      const newAnswer = new FHIR.Answer;
+      const newAnswerBoolean = new FHIR.Answer;
+      const newReference = new FHIR.Reference;
+      const selectedValue = this.docFormGroup.get('checkListItem').value;
 
-    newReference.reference = 'DocumentReference/' + data;
-    newAnswer.valueReference = newReference;
-    newAnswerBoolean.valueBoolean = true;
-    console.log(newReference.reference, this.checkListDocObject, selectedValue);
-    this.checkListDocObject['item'].forEach(itemFound => {
-      if ( itemFound['text'] === selectedValue['text'] ) {
-        selectedValue['answer'][0] = newAnswerBoolean;
-        selectedValue['answer'][1] = newAnswer;
-        itemFound = selectedValue;
+      newReference.reference = 'DocumentReference/' + data;
+      newAnswer.valueReference = newReference;
+      newAnswerBoolean.valueBoolean = true;
+      console.log(newReference.reference, this.checkListDocObject, selectedValue);
+      this.checkListDocObject['item'].forEach(itemFound => {
+        if ( itemFound['text'] === selectedValue['text'] ) {
+          selectedValue['answer'][0] = newAnswerBoolean;
+          selectedValue['answer'][1] = newAnswer;
+          itemFound = selectedValue;
 
-        console.log('match!,', this.checkListDocObject['id']);
+          console.log('match!,', this.checkListDocObject['id']);
 
-        this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
-          newList => {
-            if (newList) {
-              console.log('UPDATED', newList);
-              this.checkListDocObject = newList;
+          this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
+            newList => {
+              this.showSpinner = true;
+              if (newList) {
+                console.log('UPDATED', newList);
+                this.checkListDocObject = newList;
+              }
+            },
+            error => {
+              console.log(error);
+            },
+            () => {
+              location.reload();
             }
-          }
-        );
-      }
-    });
+          );
+        }
+      });
+    }
   }
 
   createDocumentItemForServiceRequest(document) {
+    if (this.serviceRequestInfoObject['item']) {
+      console.log(this.serviceRequestInfoObject['item'])
+    }
+
+    console.log(this.serviceRequestInfoObject);
     const linkID = this.serviceRequestInfoObject['item'].length;
 
     const newDocumentItemObject = new FHIR.Item();
@@ -1099,7 +1131,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     newDocumentItemObject.linkId = linkID.toString();
     newDocumentItemObject.text = 'Document';
 
-    this.addItemToServiceRequest(newDocumentItemObject);
+    // this.addItemToServiceRequest(newDocumentItemObject);
   }
 
   addItemToServiceRequest(item) {
@@ -1116,7 +1148,8 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         data => {
-          this.showDocForm = false;
+          this.serviceRequestInfoObject = data;
+          // this.showDocForm = false;
           console.log(data);
         },
         error => console.log(error)
@@ -1453,6 +1486,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
         );
       }
     });
+
 
   }
 

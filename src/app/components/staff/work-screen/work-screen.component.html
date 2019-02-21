@@ -207,47 +207,48 @@
               <div class="col">
                 <label for="instruction">Instructions (optional)</label>
                 <input type="text" name="instruction" id="instruction" formControlName="instruction" class="form-control"
-                   placeholder="Enter">
+                  placeholder="Enter">
               </div>
             </div>
 
-            <!-- <div class="row"> checkListDocObject
-                <div class="col">
-                  <label for="checkListItem">Associate file with checklist (optional)</label>
-                  <input type="text" name="checkListItem" id="checkListItem" formControlName="checkListItem" class="form-control"
-                    required placeholder="Enter">
-                </div>
-              </div> -->
-
-              <div class="row">
-                  <div class="col">
-                    <label for="checkListItem">Associate document with a checklist item (optional)</label>
-                    <select name="checkListItem" id="checkListItem" formControlName="checkListItem" class="form-control">
-                      <option *ngFor="let selectedItem of checkListDocObject['item']" [ngValue]="selectedItem ">
-                        <span> {{selectedItem['text']}} </span>
-                      </option>
-                    </select>
-                  </div>
-                </div>
-    
-            <!-- <div class="row">
-                <div class="col">
-                  <label for="filename">Name of Document</label>
-                  <input type="text" name="filename" id="filename" formControlName="filename" class="form-control"
-                    required placeholder="Enter">
-                  </div>
-                </div>
-              </div> -->
+            <div class="row">
+              <div class="col">
+                <label for="checkListItem">Associate document with a checklist item (optional)</label>
+                <select name="checkListItem" id="checkListItem" formControlName="checkListItem" class="form-control">
+                  <option *ngFor="let selectedItem of checkListDocObject['item']" [ngValue]="selectedItem ">
+                    <span> {{selectedItem['text']}} </span>
+                  </option>
+                </select>
+              </div>
+            </div>
 
           </section>
 
           <section class="form-buttons">
-            <button class="btn special-button" (click)="createEncounterObject()" [disabled]="!docFormGroup.valid">
+            <button class="btn special-button" (click)="createEncounterObjectToLinkToEpisodeOfCare()" [disabled]="!docFormGroup.valid">
               Save Document to Work Order</button>
             <button class="btn special-button" (click)="showDocForm = !showDocForm">Cancel</button>
           </section>
 
         </form>
+
+        <div *ngIf="showSpinner">
+          <div class="lds-spinner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </div>
+
         <hr>
       </div>
 
@@ -354,14 +355,14 @@
             <strong>Instructions: </strong>{{item.note}}
           </p>
           <p class="card-text" *ngIf="item.type==='doc'">
-            <strong (click)="downloadFile(item)" >Filename: </strong> 
+            <strong (click)="downloadFile(item)">Filename: </strong>
             <span class="cursor">
-                {{item['fileFullName']}} ↓
+              {{item['fileFullName']}} ↓
             </span>
           </p>
           <p class="card-text" *ngIf="item.type==='doc'">
             <span class="cursor">
-              <strong ></strong>
+              <strong></strong>
             </span>
           </p>
           <p class="card-text" *ngIf="item.type==='doc' && item['filetype'] === 'pdf'">
@@ -470,7 +471,8 @@
                           <label for="status">Select a status</label>
                           <select formControlName="status" class="form-control" id="status" name="status">
                             <!-- <option value="null">-</option> -->
-                            <option  [disabled]="!statusFormGroup.valid"  *ngFor="let item of statusObject['item']" [value]="item['text']">
+                            <option [disabled]="!statusFormGroup.valid" *ngFor="let item of statusObject['item']"
+                              [value]="item['text']">
                               {{item['text']}}
                             </option>
                           </select>
@@ -483,8 +485,8 @@
               </div>
               <button *ngIf="!showStatusFormGroup" class="btn special-button" (click)="enableStatusFormGroup()">
                 Change Status</button>
-                <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="changeStatusToSelected()">
-                  Change Status</button>
+              <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="changeStatusToSelected()">
+                Change Status</button>
               <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="showStatusFormGroup = !showStatusFormGroup">Cancel</button>
 
             </div>

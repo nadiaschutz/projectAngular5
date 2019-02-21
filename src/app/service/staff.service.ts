@@ -168,6 +168,12 @@ export class StaffService {
     });
   }
 
+  updateDocumentFile(id, doc) {
+    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id , doc, {
+      headers: this.getHeaders()
+    });
+  }
+
   createDocumentsChecklist(checklist) {
     return this.http.post(environment.queryURI + '/QuestionnaireResponse/', checklist, {
       headers: this.getPostHeaders()});

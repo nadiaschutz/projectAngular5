@@ -270,8 +270,11 @@ export class NewServiceRequestComponent implements OnInit {
   onSave() {
     // this.savingData();
     const questionnaireResponse = new FHIR.QuestionnaireResponse;
-
+    const questionnaireIdentifier = new FHIR.Identifier;
+    
+    questionnaireIdentifier.value = 'SERVREQ';
     questionnaireResponse.resourceType = 'QuestionnaireResponse';
+    questionnaireResponse.identifier = questionnaireIdentifier;
 
     const questionnaireReference = new FHIR.Reference;
     questionnaireReference.reference = 'Questionnaire/' + this.formId;
@@ -374,6 +377,8 @@ export class NewServiceRequestComponent implements OnInit {
   }
 
   savingData() {
+    console.log('iam saved');
+    
     const questionnaireResponse = new FHIR.QuestionnaireResponse;
     const questionnaireIdentifier = new FHIR.Identifier;
 
@@ -388,10 +393,11 @@ export class NewServiceRequestComponent implements OnInit {
 
     questionnaireResponse.authored = new Date;
 
-    questionnaireResponse.identifier = questionnaireIdentifier;
     const subjectReference = new FHIR.Reference;
     subjectReference.reference = 'Patient/' + this.clientId;
     subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
+
+    questionnaireResponse.identifier = questionnaireIdentifier;
     questionnaireResponse.subject = subjectReference;
 
     const items = [];
