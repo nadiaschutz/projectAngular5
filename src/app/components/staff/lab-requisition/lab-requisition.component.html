@@ -31,7 +31,7 @@
     </select>
   </div>
 
-    <!-- Consultation & Medical Information -->
+  <!-- Consultation & Medical Information -->
 
   <div *ngIf="requisitionType==='Consultation' || requisitionType==='Medical Information'" class="search-box">
     <h6 class="consultation-header">{{requisitionType}}</h6>
@@ -79,30 +79,30 @@
       <label class="title">Instructions: </label>
       <textarea [(ngModel)]="instructions" class="form-control instructions"></textarea>
     </div>
-  
+
     <!-- Items -->
-    <div *ngIf="serviceDeliveryType.length>0">
-      <div id="print">
-        <ul>
-          <li *ngFor="let item of labTestArray">
-            <label class="item-header">{{item.text | uppercase}}</label>
-            <section *ngIf="item.items">
-              <div *ngFor="let element of item.items">
-                <label class="item">
-                  <input type="checkbox" [(ngModel)]="element.checked">
-                  <span class="checklist-item">{{element.text}}</span>
-                </label>
-              </div>
-            </section>
-          </li>
-        </ul>
-      </div>
-    
+    <!-- <div *ngIf="serviceDeliveryType.length>0"> -->
+    <div id="print">
+      <ul>
+        <li *ngFor="let item of labTestArray">
+          <label class="item-header">{{item.text | uppercase}}</label>
+          <section *ngIf="item.items">
+            <div *ngFor="let element of item.items">
+              <label class="item">
+                <input type="checkbox" [(ngModel)]="element.checked">
+                <span class="checklist-item">{{element.text}}</span>
+              </label>
+            </div>
+          </section>
+        </li>
+      </ul>
+      <!-- </div> -->
+
       <button class="btn special-button" (click)="saveProcedureRequest()">Submit</button>
       <button class="btn special-button" (click)="printToPDF()">Print</button>
     </div>
 
-</div>
+  </div>
 
-  
+
 </div>

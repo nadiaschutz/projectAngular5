@@ -13,10 +13,9 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { log } from 'util';
 import { Router } from '@angular/router';
-import { Location } from '@angular/common';
 import { TitleCasePipe } from '@angular/common';
+import { PatientService } from 'src/app/service/patient.service';
 
 @Component({
   selector: 'app-work-screen',
@@ -59,6 +58,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   encounterd;
   currentPractitionerFHIRIDInSession;
 
+  dependentList = [];
   documentsList = [];
   uploadedDocument;
   serviceRequestInfoObject;
@@ -70,6 +70,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   cliniciansWithId = [];
   showClinicianButtons = false;
   clinicalAssignmentTask = {};
+  showSpinner = false;
   fileTypeList = [
     { value: 'ADMINISTRATIVE', viewValue: 'ADMINISTRATIVE' },
     { value: 'CLINICAL', viewValue: 'CLINICAL' },
@@ -85,6 +86,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private oAuthService: OAuthService,
     private titleCase: TitleCasePipe,
+    private patientService: PatientService,
     private userService: UserService,
     private router: Router
   ) {}
@@ -250,8 +252,9 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           this.processPatientForSummary(element.resource);
         } else if (element.resource.resourceType === 'QuestionnaireResponse') {
           this.serviceRequestInfoObject = element['resource'];
+          console.log(element.resource);
           if (element['resource']['identifier']) {
-            if (!element['resource']['identifier']['value'].includes('RDCL')) {
+            if (element['resource']['identifier']['value'].includes('SERVREQ')) {
               this.processQuestionnaireResponseForSummary(element.resource);
             }
           }
@@ -320,7 +323,11 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
         this.summary['jobTitle'] = extension.valueString;
       } else if (extension.url === 'https://bcip.smilecdr.com/fhir/branch') {
         this.summary['clientBranch'] = extension.valueString;
+      } else if (extension.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+        this.summary['dependentLink'] = extension.valueString;
+        this.processListOfDependents(this.summary['dependentLink']);
       }
+
     });
     // this.createEncounterObject();
   }
@@ -557,6 +564,29 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   //   );
   // }
 
+  processListOfDependents(patientLinkId) {
+    this.staffService.getAnyFHIRObjectByReference('/Patient?dependentlink=' + patientLinkId + '&employeetype=Dependent').subscribe(
+      data => {
+        if (data) {
+          if (data['total'] > 0) {
+            data['entry'].forEach(element => {
+              const individualEntry = element['resource'];
+              const temp = {};
+              temp['dep_clientName'] = this.utilService.getNameFromResource(individualEntry);
+              temp['dep_id'] = individualEntry['id'];
+              temp['dep_clientDOB'] = individualEntry['birthDate'];
+              this.dependentList.push(temp);
+          });
+          }
+
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
   enableStatusFormGroup() {
     this.showStatusFormGroup = !this.showStatusFormGroup;
     this.statusFormGroup = this.formBuilder.group({
@@ -565,29 +595,31 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeStatusToSelected(event) {
+  changeStatusToSelected() {
     const itemAnswer = new FHIR.Answer;
     const itemTime = new FHIR.Answer;
     const itemReason = new FHIR.Answer;
 
+    const selectedStatus = this.statusFormGroup.get('status').value;
+
     itemTime.valueDate = this.utilService.getCurrentDate();
     itemReason.valueString = this.statusFormGroup.get('statusNote').value;
     this.statusObject['item'].forEach(element => {
-      if (element['text'] === event) {
+      if (element['text'] === selectedStatus) {
     itemAnswer.valueBoolean = true;
 
           element['answer'] = [];
           element['answer'][0] = itemAnswer;
           element['answer'][1] = itemTime;
           element['answer'][2] = itemReason;
-          console.log('mateched', element['answer']);
+          console.log('matched', element['answer']);
       }
-      if (element['text'] !== event) {
+      if (element['text'] !== selectedStatus) {
         element['answer'] = [];
         // itemAnswer.valueBoolean = false;
         // element['answer'][0] = itemAnswer;
         // element['answer'][1] = itemTime;
-        console.log('unmateched', element['answer']);
+        console.log('unmatched', element['answer']);
 
       }
     });
@@ -911,30 +943,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     });
   }
 
-  createEncounterObject() {
-    const encounter = new FHIR.Encounter();
-    const episodeOfCareReference = new FHIR.Reference();
-    const patientInEpisodeOfCare = new FHIR.Reference();
 
-    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
-    patientInEpisodeOfCare.reference =
-      'Patient/' + this.summary['patientFHIRID'];
-
-    encounter.subject = patientInEpisodeOfCare;
-    encounter.episodeOfCare = [episodeOfCareReference];
-    encounter.resourceType = 'Encounter';
-
-    const encounterStringified = JSON.stringify(encounter);
-
-    if (patientInEpisodeOfCare.reference !== null) {
-      this.staffService.createEncounter(encounterStringified).subscribe(
-        data => {
-          this.postDocumentObject(data['id']);
-        },
-        error => console.log(error)
-      );
-    }
-  }
 
   // Documents Features
 
@@ -987,6 +996,33 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     };
   }
 
+  createEncounterObjectToLinkToEpisodeOfCare() {
+    const encounter = new FHIR.Encounter();
+    const episodeOfCareReference = new FHIR.Reference();
+    const patientInEpisodeOfCare = new FHIR.Reference();
+
+    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    patientInEpisodeOfCare.reference =
+      'Patient/' + this.summary['patientFHIRID'];
+
+    encounter.subject = patientInEpisodeOfCare;
+    encounter.episodeOfCare = [episodeOfCareReference];
+    encounter.resourceType = 'Encounter';
+
+    const encounterStringified = JSON.stringify(encounter);
+
+    if (patientInEpisodeOfCare.reference !== null) {
+      this.staffService.createEncounter(encounterStringified).subscribe(
+        data => {
+          this.postDocumentObject(data['id']);
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    }
+  }
+
   postDocumentObject(encounterID) {
     const documentReferenceCodeableConcept = new FHIR.CodeableConcept();
     const documentReferenceAuthor = new FHIR.Reference();
@@ -1010,42 +1046,76 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     const encounterContext = new FHIR.Context();
     encounterLinkingObject.reference = 'Encounter/' + encounterID;
 
+
+    this.showSpinner = true;
+    // this.showDocForm = false;
+
     encounterContext.encounter = encounterLinkingObject;
     this.uploadedDocument.context = encounterContext;
-    this.staffService.postDataFile(this.uploadedDocument).subscribe(data => {
-      this.createDocumentItemForServiceRequest(data);
-      this.showDocForm = false;
-      this.associateDocumentWithChecklistItemOnUpload(data);
-    });
+    this.staffService.postDataFile(this.uploadedDocument).subscribe(
+      data => {
+        this.createDocumentItemForServiceRequest(data);
+        this.associateDocumentWithChecklistItemOnUpload(data['id']);
+        // this.showDocForm = true;
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.showDocForm = false;
+        setTimeout(() => {
+          this.showSpinner = false;
+          location.reload();
+        }, 500);
+      }
+    );
   }
 
   associateDocumentWithChecklistItemOnUpload (data) {
-    const newAnswer = new FHIR.Answer;
-    const newAnswerBoolean = new FHIR.Answer;
-    const newReference = new FHIR.Reference;
-    const selectedValue = this.docFormGroup.get('checkListItem').value;
+    if (this.docFormGroup.get('checkListItem').value && data) {
+      const newAnswer = new FHIR.Answer;
+      const newAnswerBoolean = new FHIR.Answer;
+      const newReference = new FHIR.Reference;
+      const selectedValue = this.docFormGroup.get('checkListItem').value;
 
-    newReference.reference = 'Practitioner/' + data['id'];
-    newAnswer.valueReference = newReference;
-    newAnswerBoolean.valueBoolean = true;
-    this.checkListDocObject['item'].forEach(itemFound => {
-      if ( itemFound['linkId'] === selectedValue['linkId'] ) {
-        selectedValue['answer'][0] = newAnswerBoolean;
-        selectedValue['answer'][1] = newAnswer;
-        itemFound = selectedValue;
-        this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
-          newList => {
-            if (newList) {
-              console.log('UPDATED', newList);
-              this.checkListDocObject = newList;
+      newReference.reference = 'DocumentReference/' + data;
+      newAnswer.valueReference = newReference;
+      newAnswerBoolean.valueBoolean = true;
+      console.log(newReference.reference, this.checkListDocObject, selectedValue);
+      this.checkListDocObject['item'].forEach(itemFound => {
+        if ( itemFound['text'] === selectedValue['text'] ) {
+          selectedValue['answer'][0] = newAnswerBoolean;
+          selectedValue['answer'][1] = newAnswer;
+          itemFound = selectedValue;
+
+          console.log('match!,', this.checkListDocObject['id']);
+
+          this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
+            newList => {
+              this.showSpinner = true;
+              if (newList) {
+                console.log('UPDATED', newList);
+                this.checkListDocObject = newList;
+              }
+            },
+            error => {
+              console.log(error);
+            },
+            () => {
+              location.reload();
             }
-          }
-        );
-      }
-    });
+          );
+        }
+      });
+    }
   }
 
   createDocumentItemForServiceRequest(document) {
+    if (this.serviceRequestInfoObject['item']) {
+      console.log(this.serviceRequestInfoObject['item'])
+    }
+
+    console.log(this.serviceRequestInfoObject);
     const linkID = this.serviceRequestInfoObject['item'].length;
 
     const newDocumentItemObject = new FHIR.Item();
@@ -1061,7 +1131,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     newDocumentItemObject.linkId = linkID.toString();
     newDocumentItemObject.text = 'Document';
 
-    this.addItemToServiceRequest(newDocumentItemObject);
+    // this.addItemToServiceRequest(newDocumentItemObject);
   }
 
   addItemToServiceRequest(item) {
@@ -1078,7 +1148,8 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         data => {
-          this.showDocForm = false;
+          this.serviceRequestInfoObject = data;
+          // this.showDocForm = false;
           console.log(data);
         },
         error => console.log(error)
@@ -1151,16 +1222,18 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
 
   setupAuthorNameForDisplay() {
     this.documentsList.forEach(docObject => {
-      if (docObject['author'].toLowerCase().includes('practitioner')) {
-        this.staffService.getAnyFHIRObjectByReference('/' + docObject['author']).subscribe(
-          data => {
-            docObject['author'] = this.utilService.
-              getNameFromResource(data);
-          },
-          error => {
-            console.log(error);
-          }
-        );
+      if (docObject['author']) {
+        if (docObject['author'].toLowerCase().includes('practitioner')) {
+          this.staffService.getAnyFHIRObjectByReference('/' + docObject['author']).subscribe(
+            data => {
+              docObject['author'] = this.utilService.
+                getNameFromResource(data);
+            },
+            error => {
+              console.log(error);
+            }
+          );
+        }
       }
     });
   }
@@ -1413,6 +1486,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
         );
       }
     });
+
 
   }
 
