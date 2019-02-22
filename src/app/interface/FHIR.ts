@@ -475,7 +475,8 @@ export class Resource {
     id: string;
     meta: Meta;
     implicitRules: string;
-    language: Code;
+    // TODO - Solve Code structure, save language as a code
+    language: string;
     extension: Extension[];
 }
 
@@ -512,7 +513,8 @@ export class Questionnaire extends Resource implements Serializable<Questionnair
     version: string;
     name: string;
     title: string;
-    status: Code;
+    // TODO - fix Code and change status to type Code
+    status: string;
     experimental: boolean;
     date: string;
     publisher: string;

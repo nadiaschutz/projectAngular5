@@ -59,7 +59,8 @@ import { DemoComponent } from './components/demo/demo.component';
 
 import { ContactUsFormResolverService } from './service/contact-us-form-resolver.service';
 
-import { DepartmentListResolverService } from './service/department-list-resolver.service'
+import { DepartmentListResolverService } from './service/department-list-resolver.service';
+import { FormBuilderComponent } from './components/form-builder/form-builder.component'
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -96,6 +97,7 @@ const routes: Routes = [
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
+  { path: 'form-builder', component: FormBuilderComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
 ];
 
@@ -141,7 +143,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     DynamicFormComponent,
     DemoComponent,
     DistrictOfficeAddComponent,
-    LabRequisitionComponent
+    LabRequisitionComponent,
+    FormBuilderComponent
 
   ],
   imports: [
