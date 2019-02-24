@@ -7,7 +7,7 @@
   <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
       <div class="form-inline">
-        <label class="title">All Patients</label>
+        <label class="title">Employees</label>
         <select [(ngModel)]="selectedPatient" class="form-control value" >
           <option *ngFor="let patient of listOfPatient"> {{getNameFromResource(patient.resource)}} - {{getDate(patient.resource.birthDate)}} </option>
         </select>
