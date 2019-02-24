@@ -57,4 +57,9 @@ export class PatientService {
     });
     return headers;
   }
+
+    getPatientByWorkplace(workplace) {
+        return this.httpClient.get<JSON>(environment.queryURI +
+            '/Patient?workplace=' + workplace /*'Defence Research and Development Canada (DRDC'*/, { headers: this.getHeaders() });
+    }
 }

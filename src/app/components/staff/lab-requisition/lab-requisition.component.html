@@ -1,14 +1,27 @@
+<div>
 <div class="main-header">
-  <h5>Lab Requisition</h5>
+  <h5>Public Service Occupational / Health program</h5>
 </div>
-<div class="container">
+<div class="container" >
+
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="form-inline">
+        <label class="title">All Patients</label>
+        <select [(ngModel)]="selectedPatient" class="form-control value" >
+          <option *ngFor="let patient of listOfPatient"> {{getNameFromResource(patient.resource)}} - {{getDate(patient.resource.birthDate)}} </option>
+        </select>
+      </div>
+    </div>
+
+  </div>
 
   <div class="row patient-table">
     <table>
       <thead class="patient-table-header">
         <th class="patient-table-data-cells">Name</th>
         <th class="patient-table-data-cells">Date of Birth</th>
-        <th class="patient-table-data-cells">Employee ID</th>
+        <th class="patient-table-data-cells">PRI</th>
         <th class="patient-table-data-cells">Department</th>
         <th class="patient-table-data-cells">Branch</th>
       </thead>
@@ -39,7 +52,7 @@
     <form [formGroup]="consultationFormGroup">
       <div class="field form-inline">
         <label for="assignTo" class="title">Assign Clinician: </label>
-        <select class="form-control value" required name="assignTo" formControlName="assignTo">
+        <select id="assignTo" class="form-control value" required name="assignTo" formControlName="assignTo">
           <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
             <span>{{clinician.name}}</span>
           </option>
@@ -47,11 +60,14 @@
       </div>
       <div class="field form-inline">
         <label for="speciality" class="title">Speciality: </label>
-        <input type="text" class="form-control value" name="speciality" formControlName="speciality">
+       <!-- <input type="text" class="form-control value" name="speciality" formControlName="speciality">-->
+        <select id="speciality" class="form-control value" name="speciality" formControlName="speciality">
+          <option *ngFor="let speciality of specialities" [value]="speciality"> {{speciality}}</option>
+        </select>
       </div>
       <div class="field form-inline">
         <label for="instructions" class="title">Instructions: </label>
-        <textarea class="form-control instructions" name="instructions" formControlName="instructions"></textarea>
+        <textarea id="instructions" class="form-control instructions" name="instructions" formControlName="instructions"></textarea>
       </div>
     </form>
 
@@ -82,7 +98,7 @@
 
     <!-- Items -->
     <!-- <div *ngIf="serviceDeliveryType.length>0"> -->
-    <div id="print">
+    <div> <!--id="print"-->
       <ul>
         <li *ngFor="let item of labTestArray">
           <label class="item-header">{{item.text | uppercase}}</label>
@@ -100,6 +116,87 @@
 
       <button class="btn special-button" (click)="saveProcedureRequest()">Submit</button>
       <button class="btn special-button" (click)="printToPDF()">Print</button>
+    </div>
+
+  </div>
+
+  <div class="row footer" *ngIf="requisitionType=='Diagnostics Test'">
+    <div class="col-md-12">
+      <div class="bottom-line"></div>
+    </div>
+
+    <div class="col-md-6">
+      <span class="clinician_id">
+       Clinician ID: {{clinician_id}}
+      </span>
+
+      <span *ngIf="userName" class="user_name">
+        Name:  {{userName}}
+      </span>
+
+    </div>
+    <div class="col-md-6">
+      <span class="currentDate">
+        {{todayDate}}
+      </span>
+    </div>
+
+  </div>
+
+
+
+</div>
+</div>
+<div class="container" style="position: absolute; left: -9999px; top: -9999px;">
+  <div class="print-main-section" id="print" >
+    <div class="row-log">
+      <div class="logo-left">
+        <img  src="../../../../assets/healthcanada-logo.png" alt="">
+      </div>
+    </div>
+    <div class="print-main-header">
+      <h5>Public Service Occupational / Health program</h5>
+    </div>
+    <div class="print-patient-table">
+      <table>
+        <thead class="patient-table-header">
+        <th class="patient-table-data-cells">Name</th>
+        <th class="patient-table-data-cells">Date of Birth</th>
+        <th class="patient-table-data-cells">PRI</th>
+        <th class="patient-table-data-cells">Department</th>
+        <th class="patient-table-data-cells">Branch</th>
+        </thead>
+        <tbody class="patient-table-body">
+        <td class="patient-table-data-cells">{{patient.name}}</td>
+        <td class="patient-table-data-cells">{{patient.dob}}</td>
+        <td class="patient-table-data-cells">{{patient.employeeId}}</td>
+        <td class="patient-table-data-cells">{{patient.workplace}}</td>
+        <td class="patient-table-data-cells">{{patient.branch}}</td>
+        </tbody>
+      </table>
+    </div>
+    <div class="lable-test-main">
+      <ul>
+        <li *ngFor="let item of labTestArray">
+          <label class="item-header">{{item.text | uppercase}}</label>
+          <section *ngIf="item.items">
+            <div *ngFor="let element of item.items">
+              <label class="item">
+                <input type="checkbox" [(ngModel)]="element.checked">
+                <span class="checklist-item">{{element.text}}</span>
+              </label>
+            </div>
+          </section>
+        </li>
+      </ul>
+    </div>
+    <div class="footer-print">
+      <div class="bottom-line"></div>
+      <div class="print-text">
+        <span class="clinician-print"> Clinician ID: {{clinician_id}} </span>
+        <span class="left-print"> Name: {{userName}}</span>
+        <span class="right-print text-right"> {{todayDate}}</span>
+      </div>
     </div>
 
   </div>

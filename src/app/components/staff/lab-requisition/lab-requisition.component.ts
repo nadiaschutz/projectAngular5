@@ -7,6 +7,8 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { environment } from '../../../../environments/environment';
 import * as jspdf from 'jspdf';
 import * as html2canvas from 'html2canvas';
+import {PatientService} from '../../../service/patient.service';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-lab-requisition',
@@ -14,7 +16,35 @@ import * as html2canvas from 'html2canvas';
   styleUrls: ['./lab-requisition.component.scss']
 })
 export class LabRequisitionComponent implements OnInit {
-
+  id_token_claims_obj = JSON.parse(sessionStorage.getItem('id_token_claims_obj'));
+  userName = sessionStorage.getItem('userName');
+  todayDate: any;
+  listOfPatient: any;
+  selectedPatient: any;
+  specialities = [
+      'Anaesthesia',
+      'Dermatology',
+      'Emergency medicine',
+      'Cardiac Surgery',
+      'Family medicine',
+      'Internal medicine',
+      'Neurology',
+      'Obstetrics and Gynecology',
+      'Ophthalmology',
+      'Orthopedic surgery',
+      'Otolaryngology',
+      'Oral and Maxillofacial Surgery',
+      'Pediatrics',
+      'Podiatry',
+      'Psychiatry',
+      'Radiology (diagnostic)',
+      'Surgery (general)',
+      'Urology',
+      'Neurosurgery',
+      'Plastic surgery',
+      'Gastroenterology',
+      'Pulmonology'
+  ];
   episodeOfCareId = '2965';
   requisitionType = '';
   serviceDeliveryType = '';
@@ -27,9 +57,14 @@ export class LabRequisitionComponent implements OnInit {
   patient = {} as any;
   consultationFormGroup: FormGroup;
   currentPractitionerFHIRIDInSession;
+    patients: any;
+    clinician_id: any;
 
-  constructor(private staffService: StaffService, private userService: UserService,
-  private utilService: UtilService, private formBuilder: FormBuilder) { }
+  constructor(private staffService: StaffService,
+              private patientService: PatientService,
+              private userService: UserService,
+              private utilService: UtilService,
+              private formBuilder: FormBuilder) { }
 
   ngOnInit() {
 
@@ -45,7 +80,24 @@ export class LabRequisitionComponent implements OnInit {
     for (let i = 0; i < 34; i++) {
       this.checkboxArray.push('item: ' + i);
     }
+
+    if (sessionStorage.getItem('userDept') !== null) {
+      this.getPatientByDepartment();
+    }
+
+    this.todayDate = this.utilService.getCurrentDate();
+    if (this.id_token_claims_obj) {
+     const profile = this.id_token_claims_obj.profile;
+     const clinician_id = this.getProfileIdFromURL(profile);
+     this.clinician_id = clinician_id;
+    }
+
   }
+
+    getProfileIdFromURL(url) {
+        const n = url.split('/');
+        return n[n.length - 1];
+    }
 
   processPatientDetails(episodeOfCareAndRelatedData) {
     episodeOfCareAndRelatedData.entry.forEach(element => {
@@ -182,4 +234,39 @@ export class LabRequisitionComponent implements OnInit {
     });
   }
 
+    getPatientByDepartment() {
+     const userDept = sessionStorage.getItem('userDept');
+        this.patientService.getPatientByWorkplace(userDept).subscribe(
+            data => {
+               this.patients = data;
+               if (this.patients && this.patients.entry) {
+                this.listOfPatient = this.patients.entry;
+               }
+            },
+            error => this.handleError(error)
+        );
+
+    }
+
+    handleError(error) {
+        console.log(error);
+    }
+
+    getNameFromResource(resource) {
+        let lastName = '';
+        let firstName = '';
+        if (resource && resource['name']) {
+            resource['name'].forEach(resourceName => {
+                lastName = resourceName['family'];
+                resourceName.given.forEach(givenName => {
+                    firstName += givenName;
+                });
+            });
+            return firstName + ' ' + lastName;
+        }
+    }
+
+    getDate(dateTime) {
+        return formatDate(new Date(dateTime), 'MMM d, y', 'en');
+    }
 }
