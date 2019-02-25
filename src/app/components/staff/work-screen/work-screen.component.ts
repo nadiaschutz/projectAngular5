@@ -34,15 +34,12 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   showSelectionOfDocsForm = false;
   showShowDocListField = false;
   showStatusFormGroup = false;
-  showVaccineForm = false;
   taskFormGroup: FormGroup;
   noteFormGroup: FormGroup;
   docFormGroup: FormGroup;
   checkListItemGroup: FormGroup;
   selectionOfDocsGroup: FormGroup;
   statusFormGroup: FormGroup;
-  clinicialFormGroup: FormGroup;
-  vaccinationFormGroup: FormGroup;
   checkListDocObject;
   statusObject;
   episodeOfCareId = '';
@@ -94,7 +91,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     this.currentPractitionerFHIRIDInSession = sessionStorage.getItem(
       'userFHIRID'
     );
-    let enableClinicalPiece = false;
     this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
     this.userService.fetchCurrentRole();
     this.staffService.getAllPractitioners().subscribe(
@@ -109,39 +105,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     this.checkIfAssociatedDocCheckListExists();
     this.checkIfAssociatedStatusListExists();
 
-    if (sessionStorage.getItem('userRole')) {
-      if (sessionStorage.getItem('userRole') === 'clinician') {
-        this.clinicialFormGroup = this.formBuilder.group({
-          historyNotes: new FormControl('')
-        });
-        this.vaccinationFormGroup = this.formBuilder.group({
-          dateAdministered: new FormControl(''),
-          vaccine: new FormControl(''),
-          dose: new FormControl(''),
-          site: new FormControl(''),
-          productName: new FormControl(''),
-          lotNumber: new FormControl(''),
-          expirationDate: new FormControl(''),
-          diluentLotNumber: new FormControl(''),
-          adminBy: new FormControl('')
-        });
-        this.staffService
-          .getAnyFHIRObjectByCustomQuery(
-            'Questionnaire?identifier=IMMUNREV&_language=en-CA'
-          )
-          .subscribe(
-            data => {
-              this.processClinicalQuestionnaire(data);
-            },
-            error => {
-              console.log(error);
-            },
-            () => {
-              enableClinicalPiece = true;
-            }
-          );
-      }
-    }
+
   }
 
   ngOnDestroy() {
@@ -225,41 +189,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
         console.log(data);
         this.createTaskToAssignClinician();
       });
-  }
-
-  processClinicalQuestionnaire(data) {
-    if (data) {
-      if (data['entry']) {
-        for (const currentEntry of data['entry']) {
-          const individualEntry = currentEntry['resource'];
-          individualEntry['item'].forEach(element => {
-            const temp = {};
-            temp['id'] = element['linkId'];
-            temp['text'] = element['text'];
-            temp['type'] = element['type'];
-            temp['code'] = element['code'];
-            if (element.item) {
-              temp['items'] = new Array();
-              element.item.forEach(items => {
-                const itemObj = {
-                  id: items['linkId'],
-                  code: items['code'],
-                  type: items['type'],
-                  text: items['text'],
-                  checked: false
-                };
-                if (items['item']) {
-                  itemObj['item'] = items['item'];
-                }
-                temp['items'].push(itemObj);
-              });
-            }
-            this.clinicalQuestionnaireArray.push(temp);
-          });
-          console.log(this.clinicalQuestionnaireArray);
-        }
-      }
-    }
   }
 
   createTaskToAssignClinician() {
@@ -1605,59 +1534,8 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl('/staff/lab-requisition');
   }
 
-  /* Clinical Functions  */
-
-  addVaccination() {
-    this.showVaccineForm = !this.showVaccineForm;
-    if (this.showVaccineForm) {
-
-    }
+  redirectToImmunizations() {
+    // this.router
   }
 
-  saveProcedureRequest() {
-    const procedureRequest = new FHIR.ProcedureRequest();
-    const requester = new FHIR.Requester();
-    const requesterReference = new FHIR.Reference();
-    const episodeOfCareReference = new FHIR.Reference();
-    procedureRequest.resourceType = 'ProcedureRequest';
-    procedureRequest.status = 'active';
-    procedureRequest.intent = 'plan';
-    procedureRequest.authoredOn = this.utilService.getCurrentDate();
-    requesterReference.reference =
-      'Practitioner/' + this.currentPractitionerFHIRIDInSession;
-    requester.agent = requesterReference;
-    procedureRequest.requester = requester;
-
-    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
-    procedureRequest.context = episodeOfCareReference;
-    const categoryCodingArray = new Array<FHIR.Coding>();
-    this.clinicalQuestionnaireArray.forEach(item => {
-      if (item['items']) {
-        item['items'].forEach(element => {
-          if (element.checked) {
-            const coding = new FHIR.Coding();
-            coding.display = element.text;
-            categoryCodingArray.push(coding);
-          }
-        });
-      }
-      console.log('dummy item', item);
-    });
-
-    const category = new FHIR.CodeableConcept();
-    category.coding = categoryCodingArray;
-    procedureRequest.category = [category];
-
-    const annotation = new FHIR.Annotation();
-    annotation.text = this.clinicialFormGroup.get('historyNotes').value;
-    procedureRequest.note = [annotation];
-
-    console.log(procedureRequest);
-
-    // this.staffService
-    //   .saveProcedureRequest(JSON.stringify(procedureRequest))
-    //   .subscribe(data => {
-    //     // this.requisitionType = '';
-    //   });
-  }
 }
