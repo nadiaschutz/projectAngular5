@@ -1492,6 +1492,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
 
   redirectToLabRequisition() {
     this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
-    this.router.navigateByUrl('/staff/lab-requisition');
+    this.router.navigateByUrl('/staff/lab-requisition/' + this.episodeOfCareId);
   }
 }

@@ -92,7 +92,7 @@ const routes: Routes = [
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/lab-requisition/:eocId', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
