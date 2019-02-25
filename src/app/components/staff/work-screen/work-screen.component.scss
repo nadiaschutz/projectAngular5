@@ -1,17 +1,20 @@
-.left-style{
-    float:left;
-    width:48.5%;
+.left-style {
+    float: left;
+    width: 48.5%;
 }
-.right-style{
-    float:right;
-    width:48.5%;
+
+.right-style {
+    float: right;
+    width: 48.5%;
 }
+
 .row {
     margin-top: 20px;
 }
+
 .fixed-old {
     position: sticky;
-    top:0;
+    top: 0;
     z-index: 999;
 }
 
@@ -29,6 +32,7 @@
     box-shadow: 0 2px 6px 0 rgba(181, 181, 181, 0.5);
     background-color: #ffffff;
 }
+
 .card {
     margin-bottom: 15px;
     border-radius: 3px;
@@ -44,12 +48,12 @@
 // }
 
 .tools {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  width: 150px;
-  background-color: white;
-  border: 1px solid #dee2e6;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 150px;
+    background-color: white;
+    border: 1px solid #dee2e6;
 }
 
 .tool-item a {
@@ -64,6 +68,7 @@
     // color: white;
     cursor: pointer;
 }
+
 .special-button {
     background-color: #398ef2;
     color: white;
@@ -100,7 +105,7 @@
 }
 
 .nav-pills {
-  background-color: white;
+    background-color: white;
 }
 
 .nav-link {
@@ -113,12 +118,13 @@
     background-color: white;
 }
 
-.nav-item a:hover{
+.nav-item a:hover {
     color: black;
     cursor: pointer;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
     color: black;
     border-bottom: 4px solid #7fd6ed;
 }
@@ -128,6 +134,7 @@ hr {
     margin-bottom: 25px;
     border: 1px solid #398ef2;
 }
+
 .task-status {
     float: right;
     color: #5aa107;
@@ -151,26 +158,33 @@ button {
     width: 220px;
     margin-left: 10px;
 }
+
 .assign-clinician {
     position: relative;
-    top:50%;
-    left:50%; 
+    top: 50%;
+    left: 50%;
 }
+
 .cancel-activity {
     margin-left: 15px;
 }
+
 .activity {
     margin-top: 10px;
 }
+
 .activity-buttons {
     margin-top: 10px;
 }
+
 .main-header {
     margin-bottom: 40px;
 }
+
 .assign-buttons {
     margin-top: 10px;
 }
+
 .clinician {
     padding-right: 250px;
 }
@@ -178,3 +192,24 @@ button {
 .tabs-card {
     width: 348px;
 }
+
+
+.clinical-checklist {
+    list-style-type: none;
+    // margin: 0;
+    // padding: 0;
+    // overflow: hidden;
+}
+.clinical-checklist-items {
+    display: block;
+    float: left;
+    // text-align: center;
+    padding: 7px;
+}
+
+// li
+// {
+//    display:block;
+//    float:left;
+
+// }

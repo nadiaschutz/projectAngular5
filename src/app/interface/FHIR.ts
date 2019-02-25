@@ -206,6 +206,32 @@ export class UsageContext extends FHIRElement {
 
 }
 
+export class PractitionerForImmunization extends BackboneElement {
+    role: CodeableConcept;
+    actor: Reference;
+}
+
+export class ImmunizationExplaination extends BackboneElement {
+    reason: CodeableConcept[];
+    reasonNotGiven: CodeableConcept[];
+}
+
+export class ImmunizationReaction extends BackboneElement {
+    date: Date;
+    detail: Reference;
+    reported: boolean;
+}
+
+export class VaccinationProtocol extends BackboneElement {
+    doseSequence: number;
+    description: string;
+    authority: Reference;
+    series: string;
+    seriesDoses: number;
+    targetDiseases: CodeableConcept[];
+    doseStatus: CodeableConcept;
+    doseStatusReason: CodeableConcept;
+}
 export class Attachment extends FHIRElement {
 
     // should be of type code
@@ -953,6 +979,43 @@ export class Practitioner extends Resource implements Serializable<Practitioner>
         return this;
     }
 }
+
+export class Immunization extends Resource implements Serializable<Immunization> {
+
+    identifier: Identifier[];
+    status: string;
+    notGiven: boolean;
+    vaccineCode: CodeableConcept;
+    patient: Reference;
+    encounter: Reference;
+    date: Date;
+    primarySource: boolean;
+    reportOrigin: CodeableConcept;
+    location: Reference;
+    manufacturer: Reference;
+    lotNumber: string;
+    expirationDate: Date;
+    site: CodeableConcept;
+    route: CodeableConcept;
+    doseQuantity: Coding;
+    practitioner: PractitionerForImmunization;
+    note: Annotation[];
+    reaction: ImmunizationReaction[];
+    vaccinationProtocol: VaccinationProtocol[];
+
+    deserialize(jsonObject: any): Immunization {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
 
 export class Bundle extends Resource implements Serializable<Bundle> {
 

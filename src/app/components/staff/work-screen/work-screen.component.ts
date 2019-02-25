@@ -40,6 +40,8 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   checkListItemGroup: FormGroup;
   selectionOfDocsGroup: FormGroup;
   statusFormGroup: FormGroup;
+  clinicialFormGroup: FormGroup;
+  vaccinationFormGroup: FormGroup;
   checkListDocObject;
   statusObject;
   episodeOfCareId = '';
@@ -108,8 +110,13 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
 
     if (sessionStorage.getItem('userRole')) {
       if (sessionStorage.getItem('userRole') === 'clinician') {
+        this.clinicialFormGroup = this.formBuilder.group({
+          historyNotes: new FormControl('')
+        });
         this.staffService
-          .getAnyFHIRObjectByCustomQuery('Questionnaire?identifier=IMMUNREV&_language=en-CA')
+          .getAnyFHIRObjectByCustomQuery(
+            'Questionnaire?identifier=IMMUNREV&_language=en-CA'
+          )
           .subscribe(
             data => {
               this.processClinicalQuestionnaire(data);
@@ -123,8 +130,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
           );
       }
     }
-
-
   }
 
   ngOnDestroy() {
@@ -211,7 +216,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   }
 
   processClinicalQuestionnaire(data) {
-
     if (data) {
       if (data['entry']) {
         for (const currentEntry of data['entry']) {
@@ -220,25 +224,30 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
             const temp = {};
             temp['id'] = element['linkId'];
             temp['text'] = element['text'];
+            temp['type'] = element['type'];
             temp['code'] = element['code'];
             if (element.item) {
               temp['items'] = new Array();
               element.item.forEach(items => {
-                temp['items'].push({
+                const itemObj = {
                   id: items['linkId'],
                   code: items['code'],
+                  type: items['type'],
                   text: items['text'],
                   checked: false
-                });
+                };
+                if (items['item']) {
+                  itemObj['item'] = items['item'];
+                }
+                temp['items'].push(itemObj);
               });
             }
             this.clinicalQuestionnaireArray.push(temp);
           });
-          console.log(this.clinicalQuestionnaireArray);        }
+          console.log(this.clinicalQuestionnaireArray);
+        }
       }
     }
-
-
   }
 
   createTaskToAssignClinician() {
@@ -860,9 +869,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     });
   }
 
-  saveDoc($event) {
-    this.addDocument($event);
-  }
 
   saveTask() {
     const task = new FHIR.Task();
@@ -1001,6 +1007,209 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     });
   }
 
+
+
+  createEncounterObjectToLinkToEpisodeOfCare() {
+    const encounter = new FHIR.Encounter();
+    const episodeOfCareReference = new FHIR.Reference();
+    const patientInEpisodeOfCare = new FHIR.Reference();
+
+    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    patientInEpisodeOfCare.reference =
+      'Patient/' + this.summary['patientFHIRID'];
+
+    encounter.subject = patientInEpisodeOfCare;
+    encounter.episodeOfCare = [episodeOfCareReference];
+    encounter.resourceType = 'Encounter';
+
+    const encounterStringified = JSON.stringify(encounter);
+
+    if (patientInEpisodeOfCare.reference !== null) {
+      this.staffService.createEncounter(encounterStringified).subscribe(
+        data => {
+          this.postDocumentObject(data['id']);
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    }
+  }
+
+  setupAuthorNameForDisplay() {
+    this.documentsList.forEach(docObject => {
+      if (docObject['author']) {
+        if (docObject['author'].toLowerCase().includes('practitioner')) {
+          this.staffService
+            .getAnyFHIRObjectByReference('/' + docObject['author'])
+            .subscribe(
+              data => {
+                docObject['author'] = this.utilService.getNameFromResource(
+                  data
+                );
+              },
+              error => {
+                console.log(error);
+              }
+            );
+        }
+      }
+    });
+  }
+
+  checkIfAssociatedStatusListExists() {
+    this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
+      if (data) {
+        if (data['total'] === 0) {
+          console.log('nothing here, creating status skeleton');
+          this.newStatusList();
+        } else {
+          data['entry'].forEach(entry => {
+            this.statusObject = entry['resource'];
+          });
+        }
+      }
+    });
+  }
+
+  newStatusList() {
+    const statusQResponse = new FHIR.QuestionnaireResponse();
+    const statusReference = new FHIR.Reference();
+    const statusContextReference = new FHIR.Reference();
+    const statusIdentifier = new FHIR.Identifier();
+    const statusItemOne = new FHIR.Item();
+    const statusItemTwo = new FHIR.Item();
+    const statusItemThree = new FHIR.Item();
+    const statusItemFour = new FHIR.Item();
+    const statusItemFive = new FHIR.Item();
+    const statusItemSix = new FHIR.Item();
+    const statusItemSeven = new FHIR.Item();
+    const statusItemAnswer = new FHIR.Answer();
+
+    statusItemAnswer.valueBoolean = false;
+
+    statusItemOne.linkId = '1';
+    statusItemOne.text = 'Validated';
+    // statusItemOne.answer = [statusItemAnswer];
+
+    statusItemTwo.linkId = '2';
+    statusItemTwo.text = 'Scheduled';
+    // statusItemTwo.answer = [statusItemAnswer];
+
+    statusItemThree.linkId = '3';
+    statusItemThree.text = 'Assigned';
+    // statusItemThree.answer = [statusItemAnswer];
+
+    statusItemFour.linkId = '4';
+    statusItemFour.text = 'Work-Completed';
+    // statusItemFour.answer = [statusItemAnswer];
+
+    statusItemFive.linkId = '5';
+    statusItemFive.text = 'Closed';
+    // statusItemFive.answer = [statusItemAnswer];
+
+    statusItemSix.linkId = '0';
+    statusItemSix.text = 'On-Hold';
+    // statusItemSix.answer = [statusItemAnswer];
+    statusItemAnswer.valueBoolean = true;
+
+    statusItemSeven.linkId = '6';
+    statusItemSeven.text = 'Waiting';
+    statusItemSeven.answer = [statusItemAnswer];
+
+    statusReference.reference = 'Questionnaire/13064';
+    statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    statusIdentifier.value = 'STATUS';
+
+    statusQResponse.resourceType = 'QuestionnaireResponse';
+    statusQResponse.identifier = statusIdentifier;
+    statusQResponse.questionnaire = statusReference;
+    statusQResponse.status = 'in-progress';
+    statusQResponse.context = statusContextReference;
+    statusQResponse.item = [
+      statusItemOne,
+      statusItemTwo,
+      statusItemThree,
+      statusItemFour,
+      statusItemFive,
+      statusItemSix,
+      statusItemSeven
+    ];
+
+    console.log(statusQResponse);
+
+    this.staffService
+      .createStatusList(JSON.stringify(statusQResponse))
+      .subscribe(data => {
+        console.log('POST SUCCESSFUL', data);
+        this.statusObject = data;
+      });
+  }
+
+  /* Documents Functions */
+
+  checkIfAssociatedDocCheckListExists() {
+    this.staffService
+      .getDocumentsChecklist(this.episodeOfCareId)
+      .subscribe(data => {
+        if (data) {
+          if (data['total'] === 0) {
+            console.log('nothing here, creating checklist skeleton');
+            this.newDocChecklist();
+          } else {
+            data['entry'].forEach(element => {
+              this.checkListDocObject = element['resource'];
+              if (!this.checkListDocObject['item']) {
+                this.checkListDocObject['item'] = [];
+              }
+            });
+          }
+        }
+      });
+  }
+
+  newDocChecklist() {
+    const checkListQResponse = new FHIR.QuestionnaireResponse();
+    const checklistReference = new FHIR.Reference();
+    const checklistContextReference = new FHIR.Reference();
+    const checklistIdentifier = new FHIR.Identifier();
+
+    checklistReference.reference = 'Questionnaire/13019';
+    checklistContextReference.reference =
+      'EpisodeOfCare/' + this.episodeOfCareId;
+    checklistIdentifier.value = 'RDCL';
+
+    checkListQResponse.identifier = checklistIdentifier;
+    checkListQResponse.resourceType = 'QuestionnaireResponse';
+    checkListQResponse.questionnaire = checklistReference;
+    checkListQResponse.status = 'in-progress';
+    checkListQResponse.context = checklistContextReference;
+
+    this.staffService
+      .createDocumentsChecklist(JSON.stringify(checkListQResponse))
+      .subscribe(
+        data => {
+          console.log('POST SUCCESSFUL', data);
+          this.checkListDocObject = data;
+          this.checkListDocObject['item'] = [];
+        },
+        error => {
+          console.log(error);
+        }
+      );
+  }
+
+  newDocChecklistItem() {
+    this.showChecklistForm = !this.showChecklistForm;
+    this.checkListItemGroup = this.formBuilder.group({
+      document: new FormControl(''),
+      selection: new FormControl('')
+    });
+  }
+
+  saveDoc($event) {
+    this.addDocument($event);
+  }
   // Documents Features
 
   /**
@@ -1050,33 +1259,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     reader.onerror = function(error) {
       console.log('ERROR: ', error);
     };
-  }
-
-  createEncounterObjectToLinkToEpisodeOfCare() {
-    const encounter = new FHIR.Encounter();
-    const episodeOfCareReference = new FHIR.Reference();
-    const patientInEpisodeOfCare = new FHIR.Reference();
-
-    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
-    patientInEpisodeOfCare.reference =
-      'Patient/' + this.summary['patientFHIRID'];
-
-    encounter.subject = patientInEpisodeOfCare;
-    encounter.episodeOfCare = [episodeOfCareReference];
-    encounter.resourceType = 'Encounter';
-
-    const encounterStringified = JSON.stringify(encounter);
-
-    if (patientInEpisodeOfCare.reference !== null) {
-      this.staffService.createEncounter(encounterStringified).subscribe(
-        data => {
-          this.postDocumentObject(data['id']);
-        },
-        error => {
-          console.log(error);
-        }
-      );
-    }
   }
 
   postDocumentObject(encounterID) {
@@ -1291,227 +1473,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       });
   }
 
-  setupAuthorNameForDisplay() {
-    this.documentsList.forEach(docObject => {
-      if (docObject['author']) {
-        if (docObject['author'].toLowerCase().includes('practitioner')) {
-          this.staffService
-            .getAnyFHIRObjectByReference('/' + docObject['author'])
-            .subscribe(
-              data => {
-                docObject['author'] = this.utilService.getNameFromResource(
-                  data
-                );
-              },
-              error => {
-                console.log(error);
-              }
-            );
-        }
-      }
-    });
-  }
-
-  downloadFile(incomingFile) {
-    const byteCharacters = atob(incomingFile['content']['attachment']['data']);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let index = 0; index < byteCharacters.length; index++) {
-      byteNumbers[index] = byteCharacters.charCodeAt(index);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {
-      type: incomingFile['content']['attachment']['contentType']
-    });
-
-    if (navigator.msSaveBlob) {
-      const filename = incomingFile['fileFullName'];
-      navigator.msSaveBlob(blob, filename);
-    } else {
-      const fileLink = document.createElement('a');
-      fileLink.href = URL.createObjectURL(blob);
-      fileLink.setAttribute('visibility', 'hidden');
-      fileLink.download = incomingFile['fileFullName'];
-      document.body.appendChild(fileLink);
-      fileLink.click();
-      document.body.removeChild(fileLink);
-    }
-  }
-
-  previewFile(incomingFile) {
-    const byteCharacters = atob(incomingFile['content']['attachment']['data']);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let index = 0; index < byteCharacters.length; index++) {
-      byteNumbers[index] = byteCharacters.charCodeAt(index);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {
-      type: incomingFile['content']['attachment']['contentType']
-    });
-    const filename = incomingFile['fileFullName'];
-
-    if (navigator.msSaveBlob) {
-      navigator.msSaveBlob(blob, filename);
-    } else {
-      console.log(filename);
-      const fileLink = document.createElement('a');
-      fileLink.href = URL.createObjectURL(blob);
-      fileLink.name = filename;
-      fileLink.target = '_blank';
-      fileLink.setAttribute('download', filename);
-      window.open(fileLink.href);
-    }
-  }
-
-  checkIfAssociatedDocCheckListExists() {
-    this.staffService
-      .getDocumentsChecklist(this.episodeOfCareId)
-      .subscribe(data => {
-        if (data) {
-          if (data['total'] === 0) {
-            console.log('nothing here, creating checklist skeleton');
-            this.newDocChecklist();
-          } else {
-            data['entry'].forEach(element => {
-              this.checkListDocObject = element['resource'];
-              if (!this.checkListDocObject['item']) {
-                this.checkListDocObject['item'] = [];
-              }
-            });
-          }
-        }
-      });
-  }
-
-  checkIfAssociatedStatusListExists() {
-    this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
-      if (data) {
-        if (data['total'] === 0) {
-          console.log('nothing here, creating status skeleton');
-          this.newStatusList();
-        } else {
-          data['entry'].forEach(entry => {
-            this.statusObject = entry['resource'];
-          });
-        }
-      }
-    });
-  }
-
-  newStatusList() {
-    const statusQResponse = new FHIR.QuestionnaireResponse();
-    const statusReference = new FHIR.Reference();
-    const statusContextReference = new FHIR.Reference();
-    const statusIdentifier = new FHIR.Identifier();
-    const statusItemOne = new FHIR.Item();
-    const statusItemTwo = new FHIR.Item();
-    const statusItemThree = new FHIR.Item();
-    const statusItemFour = new FHIR.Item();
-    const statusItemFive = new FHIR.Item();
-    const statusItemSix = new FHIR.Item();
-    const statusItemSeven = new FHIR.Item();
-    const statusItemAnswer = new FHIR.Answer();
-
-    statusItemAnswer.valueBoolean = false;
-
-    statusItemOne.linkId = '1';
-    statusItemOne.text = 'Validated';
-    // statusItemOne.answer = [statusItemAnswer];
-
-    statusItemTwo.linkId = '2';
-    statusItemTwo.text = 'Scheduled';
-    // statusItemTwo.answer = [statusItemAnswer];
-
-    statusItemThree.linkId = '3';
-    statusItemThree.text = 'Assigned';
-    // statusItemThree.answer = [statusItemAnswer];
-
-    statusItemFour.linkId = '4';
-    statusItemFour.text = 'Work-Completed';
-    // statusItemFour.answer = [statusItemAnswer];
-
-    statusItemFive.linkId = '5';
-    statusItemFive.text = 'Closed';
-    // statusItemFive.answer = [statusItemAnswer];
-
-    statusItemSix.linkId = '0';
-    statusItemSix.text = 'On-Hold';
-    // statusItemSix.answer = [statusItemAnswer];
-    statusItemAnswer.valueBoolean = true;
-
-    statusItemSeven.linkId = '6';
-    statusItemSeven.text = 'Waiting';
-    statusItemSeven.answer = [statusItemAnswer];
-
-    statusReference.reference = 'Questionnaire/13064';
-    statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
-    statusIdentifier.value = 'STATUS';
-
-    statusQResponse.resourceType = 'QuestionnaireResponse';
-    statusQResponse.identifier = statusIdentifier;
-    statusQResponse.questionnaire = statusReference;
-    statusQResponse.status = 'in-progress';
-    statusQResponse.context = statusContextReference;
-    statusQResponse.item = [
-      statusItemOne,
-      statusItemTwo,
-      statusItemThree,
-      statusItemFour,
-      statusItemFive,
-      statusItemSix,
-      statusItemSeven
-    ];
-
-    console.log(statusQResponse);
-
-    this.staffService
-      .createStatusList(JSON.stringify(statusQResponse))
-      .subscribe(data => {
-        console.log('POST SUCCESSFUL', data);
-        this.statusObject = data;
-      });
-  }
-
-  newDocChecklist() {
-    const checkListQResponse = new FHIR.QuestionnaireResponse();
-    const checklistReference = new FHIR.Reference();
-    const checklistContextReference = new FHIR.Reference();
-    const checklistIdentifier = new FHIR.Identifier();
-
-    checklistReference.reference = 'Questionnaire/13019';
-    checklistContextReference.reference =
-      'EpisodeOfCare/' + this.episodeOfCareId;
-    checklistIdentifier.value = 'RDCL';
-
-    checkListQResponse.identifier = checklistIdentifier;
-    checkListQResponse.resourceType = 'QuestionnaireResponse';
-    checkListQResponse.questionnaire = checklistReference;
-    checkListQResponse.status = 'in-progress';
-    checkListQResponse.context = checklistContextReference;
-
-    this.staffService
-      .createDocumentsChecklist(JSON.stringify(checkListQResponse))
-      .subscribe(
-        data => {
-          console.log('POST SUCCESSFUL', data);
-          this.checkListDocObject = data;
-          this.checkListDocObject['item'] = [];
-        },
-        error => {
-          console.log(error);
-        }
-      );
-  }
-
-  newDocChecklistItem() {
-    this.showChecklistForm = !this.showChecklistForm;
-    this.checkListItemGroup = this.formBuilder.group({
-      document: new FormControl(''),
-      selection: new FormControl('')
-    });
-  }
-
   saveItemToQResponse() {
     const itemToAdd = new FHIR.Item();
     const itemBoolAnswer = new FHIR.Answer();
@@ -1576,8 +1537,115 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     });
   }
 
+  downloadFile(incomingFile) {
+    const byteCharacters = atob(incomingFile['content']['attachment']['data']);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let index = 0; index < byteCharacters.length; index++) {
+      byteNumbers[index] = byteCharacters.charCodeAt(index);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], {
+      type: incomingFile['content']['attachment']['contentType']
+    });
+
+    if (navigator.msSaveBlob) {
+      const filename = incomingFile['fileFullName'];
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      const fileLink = document.createElement('a');
+      fileLink.href = URL.createObjectURL(blob);
+      fileLink.setAttribute('visibility', 'hidden');
+      fileLink.download = incomingFile['fileFullName'];
+      document.body.appendChild(fileLink);
+      fileLink.click();
+      document.body.removeChild(fileLink);
+    }
+  }
+
+  previewFile(incomingFile) {
+    const byteCharacters = atob(incomingFile['content']['attachment']['data']);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let index = 0; index < byteCharacters.length; index++) {
+      byteNumbers[index] = byteCharacters.charCodeAt(index);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], {
+      type: incomingFile['content']['attachment']['contentType']
+    });
+    const filename = incomingFile['fileFullName'];
+
+    if (navigator.msSaveBlob) {
+      navigator.msSaveBlob(blob, filename);
+    } else {
+      console.log(filename);
+      const fileLink = document.createElement('a');
+      fileLink.href = URL.createObjectURL(blob);
+      fileLink.name = filename;
+      fileLink.target = '_blank';
+      fileLink.setAttribute('download', filename);
+      window.open(fileLink.href);
+    }
+  }
+
+  /* Document Functions (end) */
+
   redirectToLabRequisition() {
     this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
     this.router.navigateByUrl('/staff/lab-requisition');
+  }
+
+  /* Clinical Functions  */
+
+  addVaccination() {
+
+  }
+
+  saveProcedureRequest() {
+    const procedureRequest = new FHIR.ProcedureRequest();
+    const requester = new FHIR.Requester();
+    const requesterReference = new FHIR.Reference();
+    const episodeOfCareReference = new FHIR.Reference();
+    procedureRequest.resourceType = 'ProcedureRequest';
+    procedureRequest.status = 'active';
+    procedureRequest.intent = 'plan';
+    procedureRequest.authoredOn = this.utilService.getCurrentDate();
+    requesterReference.reference =
+      'Practitioner/' + this.currentPractitionerFHIRIDInSession;
+    requester.agent = requesterReference;
+    procedureRequest.requester = requester;
+
+    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    procedureRequest.context = episodeOfCareReference;
+    const categoryCodingArray = new Array<FHIR.Coding>();
+    this.clinicalQuestionnaireArray.forEach(item => {
+      if (item['items']) {
+        item['items'].forEach(element => {
+          if (element.checked) {
+            const coding = new FHIR.Coding();
+            coding.display = element.text;
+            categoryCodingArray.push(coding);
+          }
+        });
+      }
+      console.log('dummy item', item);
+    });
+
+    const category = new FHIR.CodeableConcept();
+    category.coding = categoryCodingArray;
+    procedureRequest.category = [category];
+
+    const annotation = new FHIR.Annotation();
+    annotation.text = this.clinicialFormGroup.get('historyNotes').value;
+    procedureRequest.note = [annotation];
+
+    console.log(procedureRequest);
+
+    // this.staffService
+    //   .saveProcedureRequest(JSON.stringify(procedureRequest))
+    //   .subscribe(data => {
+    //     // this.requisitionType = '';
+    //   });
   }
 }
