@@ -60,6 +60,7 @@ export class LabRequisitionComponent implements OnInit {
   patients: any;
   clinician_id: any;
     listQuestionary: any;
+    questionaryData: any;
 
   constructor(private staffService: StaffService,
               private patientService: PatientService,
@@ -274,10 +275,10 @@ export class LabRequisitionComponent implements OnInit {
 
     onChangeEmploye(patient) {
       const selectedPatient = JSON.parse(patient);
-      if(selectedPatient) {
+      if (selectedPatient) {
           this.patient = this.utilService.getPatientJsonObjectFromPatientFhirObject(selectedPatient.resource);
 
-          this.getQuestionnaireResponse(selectedPatient.resource.resourceType, selectedPatient.resource.id)
+          this.getQuestionnaireResponse(selectedPatient.resource.resourceType, selectedPatient.resource.id);
 
       }
     }
@@ -286,9 +287,11 @@ export class LabRequisitionComponent implements OnInit {
 
         this.patientService.QuestionnaireResponse(resourceType , resourseId).subscribe(
             data => {
-                console.log("QuestionnaireResponse",data);
-                if(data && data.entry && data.entry.length > 0){
-                    this.listQuestionary = data.entry;
+                console.log(data);
+                this.questionaryData = data;
+
+                if (this.questionaryData && this.questionaryData.entry && this.questionaryData.entry.length > 0) {
+                    this.listQuestionary = this.questionaryData.entry;
                 }
 
             },
@@ -297,15 +300,15 @@ export class LabRequisitionComponent implements OnInit {
 
     }
 
-    onChangeServerQ(quetionary){
+    onChangeServerQ(quetionary) {
         const selectedQuestionay = JSON.parse(quetionary);
-        if(selectedQuestionay) {
+        if (selectedQuestionay) {
             console.log(selectedQuestionay);
         }
 
     }
 
-    printConsutationMadicalInfo(name){
+    printConsutationMadicalInfo(name) {
         const data = document.getElementById('print2');
         html2canvas(data).then(canvas => {
             // Few necessary setting options
