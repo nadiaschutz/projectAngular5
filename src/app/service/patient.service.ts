@@ -60,6 +60,12 @@ export class PatientService {
 
     getPatientByWorkplace(workplace) {
         return this.httpClient.get<JSON>(environment.queryURI +
-            '/Patient?workplace=' + workplace /*'Defence Research and Development Canada (DRDC'*/, { headers: this.getHeaders() });
+            '/Patient?workplace=' + /*workplace*/ 'Defence Research and Development Canada (DRDC', { headers: this.getHeaders() });
+    }
+
+
+    QuestionnaireResponse(resourceType , id) {
+        return this.httpClient.get<JSON>(environment.queryURI +
+            '/QuestionnaireResponse?subject=' + resourceType + '/' + id +'&identifier=SERVREQ', { headers: this.getHeaders() });
     }
 }

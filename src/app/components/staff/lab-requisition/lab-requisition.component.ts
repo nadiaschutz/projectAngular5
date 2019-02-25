@@ -57,8 +57,9 @@ export class LabRequisitionComponent implements OnInit {
   patient = {} as any;
   consultationFormGroup: FormGroup;
   currentPractitionerFHIRIDInSession;
-    patients: any;
-    clinician_id: any;
+  patients: any;
+  clinician_id: any;
+    listQuestionary: any;
 
   constructor(private staffService: StaffService,
               private patientService: PatientService,
@@ -103,6 +104,7 @@ export class LabRequisitionComponent implements OnInit {
     episodeOfCareAndRelatedData.entry.forEach(element => {
       if (element.resource.resourceType === 'Patient') {
         this.patient = this.utilService.getPatientJsonObjectFromPatientFhirObject(element.resource);
+         this.getQuestionnaireResponse(element.resource.resourceType , element.resource.id);
       }
     });
   }
@@ -269,4 +271,56 @@ export class LabRequisitionComponent implements OnInit {
     getDate(dateTime) {
         return formatDate(new Date(dateTime), 'MMM d, y', 'en');
     }
+
+    onChangeEmploye(patient) {
+      const selectedPatient = JSON.parse(patient);
+      if(selectedPatient) {
+          this.patient = this.utilService.getPatientJsonObjectFromPatientFhirObject(selectedPatient.resource);
+
+          this.getQuestionnaireResponse(selectedPatient.resource.resourceType, selectedPatient.resource.id)
+
+      }
+    }
+
+    getQuestionnaireResponse(resourceType , resourseId) {
+
+        this.patientService.QuestionnaireResponse(resourceType , resourseId).subscribe(
+            data => {
+                console.log("QuestionnaireResponse",data);
+                if(data && data.entry && data.entry.length > 0){
+                    this.listQuestionary = data.entry;
+                }
+
+            },
+            error => this.handleError(error)
+        );
+
+    }
+
+    onChangeServerQ(quetionary){
+        const selectedQuestionay = JSON.parse(quetionary);
+        if(selectedQuestionay) {
+            console.log(selectedQuestionay);
+        }
+
+    }
+
+    printConsutationMadicalInfo(name){
+        const data = document.getElementById('print2');
+        html2canvas(data).then(canvas => {
+            // Few necessary setting options
+            const imgWidth = 190;
+            const pageHeight = 350;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            const heightLeft = imgHeight;
+
+            const contentDataURL = canvas.toDataURL('image/png');
+            const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+            const position = 0;
+            pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
+            pdf.save( name + '.pdf'); // Generated PDF
+        });
+    }
+
+
 }

@@ -1,22 +1,31 @@
-<div>
-<div class="main-header">
-  <h5>Public Service Occupational / Health program</h5>
-</div>
-<div class="container" >
 
+
+<div class="container" id="print2" style="padding-top: 30px;" >
+  <div class="main-header" style="margin-top: 20px;">
+    <h5>Public Service Occupational / Health program</h5>
+  </div>
   <div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-      <div class="form-inline">
+    <div class="col-md-6 col-sm-6 col-xs-12">
+      <div class="form-group">
         <label class="title">Employees</label>
-        <select [(ngModel)]="selectedPatient" class="form-control value" >
-          <option *ngFor="let patient of listOfPatient"> {{getNameFromResource(patient.resource)}} - {{getDate(patient.resource.birthDate)}} </option>
+        <select (change)="onChangeEmploye($event.target.value)" class="custom-form-control" >
+          <option *ngFor="let patient of listOfPatient" [value]="patient | json"> {{getNameFromResource(patient.resource)}} - {{getDate(patient.resource.birthDate)}} </option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-6 col-sm-6 col-xs-12">
+      <div class="form-group">
+        <label for="SERVREQ"> SERVREQ</label>
+        <select id="SERVREQ" class="custom-form-control" (change)="onChangeServerQ($event.target.value)" >
+
+          <option *ngFor="let questionay of listQuestionary" [value]="questionay | json">  {{questionay.resource.id}} </option>
         </select>
       </div>
     </div>
 
   </div>
 
-  <div class="row patient-table">
+  <div class="patient-table">
     <table>
       <thead class="patient-table-header">
         <th class="patient-table-data-cells">Name</th>
@@ -35,14 +44,20 @@
     </table>
   </div>
 
-  <div class="form-inline">
-    <label class="title">Type of Requisition</label>
-    <select [(ngModel)]="requisitionType" class="form-control value" (change)="checkForChangeInRequisitionType()">
-      <option>Diagnostics Test</option>
-      <option>Consultation</option>
-      <option>Medical Information</option>
-    </select>
+  <div class="row">
+    <div class="col-sm-6 col-md-6">
+      <div class="form-group">
+        <label >Type of Requisition</label>
+        <select [(ngModel)]="requisitionType" class="custom-form-control" (change)="checkForChangeInRequisitionType()">
+          <option>Diagnostics Test</option>
+          <option>Consultation</option>
+          <option>Medical Information</option>
+        </select>
+      </div>
+    </div>
   </div>
+
+
 
   <!-- Consultation & Medical Information -->
 
@@ -50,30 +65,40 @@
     <h6 class="consultation-header">{{requisitionType}}</h6>
 
     <form [formGroup]="consultationFormGroup">
-      <div class="field form-inline">
-        <label for="assignTo" class="title">Assign Clinician: </label>
-        <select id="assignTo" class="form-control value" required name="assignTo" formControlName="assignTo">
-          <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
-            <span>{{clinician.name}}</span>
-          </option>
-        </select>
+
+      <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="form-group">
+            <label for="assignTo">Assign Clinician: </label>
+            <select id="assignTo" class="custom-form-control" required name="assignTo" formControlName="assignTo">
+              <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
+                <span>{{clinician.name}}</span>
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="speciality" >Speciality: </label>
+            <!-- <input type="text" class="form-control value" name="speciality" formControlName="speciality">-->
+            <select id="speciality" class="custom-form-control" name="speciality" formControlName="speciality">
+              <option *ngFor="let speciality of specialities" [value]="speciality"> {{speciality}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="instructions" >Instructions: </label>
+            <textarea id="instructions" style="height: auto" class="custom-form-control instructions" name="instructions" formControlName="instructions"></textarea>
+          </div>
+        </div>
+
       </div>
-      <div class="field form-inline">
-        <label for="speciality" class="title">Speciality: </label>
-       <!-- <input type="text" class="form-control value" name="speciality" formControlName="speciality">-->
-        <select id="speciality" class="form-control value" name="speciality" formControlName="speciality">
-          <option *ngFor="let speciality of specialities" [value]="speciality"> {{speciality}}</option>
-        </select>
-      </div>
-      <div class="field form-inline">
-        <label for="instructions" class="title">Instructions: </label>
-        <textarea id="instructions" class="form-control instructions" name="instructions" formControlName="instructions"></textarea>
-      </div>
+
+
     </form>
 
     <div class="consultation-buttons">
       <button class="btn special-button" (click)="saveConsultation()">Submit</button>
       <button class="btn special-button" (click)="requisitionType=''">Cancel</button>
+      <button class="btn special-button" *ngIf="requisitionType === 'Consultation'" (click)="printConsutationMadicalInfo(requisitionType)">Print</button>
+      <button class="btn special-button" *ngIf="requisitionType === 'Medical Information'" (click)="printConsutationMadicalInfo(requisitionType)">Print</button>
     </div>
 
 
@@ -83,19 +108,36 @@
 
   <div *ngIf="requisitionType=='Diagnostics Test'">
 
-    <div class="field form-inline">
-      <label class="title">Service Delivery: </label>
-      <select [(ngModel)]="serviceDeliveryType" class="form-control value">
-        <option>Point of Care</option>
-        <option>Referral</option>
-      </select>
+    <div class="row">
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <label >Service Delivery: </label>
+          <select [(ngModel)]="serviceDeliveryType" class="custom-form-control">
+            <option>Point of Care</option>
+            <option>Referral</option>
+          </select>
+        </div>
+      </div>
+
     </div>
 
-    <div class="field form-inline">
+    <div class="row">
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <label class="title">Instructions: </label>
+          <textarea style="height: auto" [(ngModel)]="instructions" class="custom-form-control instructions"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+
+
+   <!-- <div class="field form-inline">
       <label class="title">Instructions: </label>
       <textarea [(ngModel)]="instructions" class="form-control instructions"></textarea>
     </div>
-
+-->
     <!-- Items -->
     <!-- <div *ngIf="serviceDeliveryType.length>0"> -->
     <div> <!--id="print"-->
@@ -121,32 +163,25 @@
   </div>
 
   <div class="row footer" *ngIf="requisitionType=='Diagnostics Test'">
-    <div class="col-md-12">
-      <div class="bottom-line"></div>
+    <div class="col-md-12 col-sm-12">
+        <div class="print-footer">
+          <div class="clinician">
+            <label>Clinician: {{clinician_id}} </label>
+          </div>
+          <div class="userName">
+            <label>Name: {{userName}} </label>
+          </div>
+          <div class="todayDate">
+            <label> Date: {{todayDate}} </label>
+          </div>
+        </div>
     </div>
-
-    <div class="col-md-6">
-      <span class="clinician_id">
-       Clinician ID: {{clinician_id}}
-      </span>
-
-      <span *ngIf="userName" class="user_name">
-        Name:  {{userName}}
-      </span>
-
-    </div>
-    <div class="col-md-6">
-      <span class="currentDate">
-        {{todayDate}}
-      </span>
-    </div>
-
   </div>
 
 
 
 </div>
-</div>
+
 <div class="container" style="position: absolute; left: -9999px; top: -9999px;">
   <div class="print-main-section" id="print" >
     <div class="row-log">
@@ -190,12 +225,15 @@
         </li>
       </ul>
     </div>
-    <div class="footer-print">
-      <div class="bottom-line"></div>
-      <div class="print-text">
-        <span class="clinician-print"> Clinician ID: {{clinician_id}} </span>
-        <span class="left-print"> Name: {{userName}}</span>
-        <span class="right-print text-right"> {{todayDate}}</span>
+    <div class="print-footer" style="margin-top: 20px;">
+      <div class="clinician">
+        <label>  Clinician ID: {{clinician_id}} </label>
+      </div>
+      <div class="userName">
+        <label>  Name: {{userName}} </label>
+      </div>
+      <div class="todayDate">
+        <label> Date: {{todayDate}} </label>
       </div>
     </div>
 
