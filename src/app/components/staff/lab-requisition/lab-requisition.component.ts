@@ -28,7 +28,7 @@ export class LabRequisitionComponent implements OnInit {
   consultationFormGroup: FormGroup;
   currentPractitionerFHIRIDInSession;
 
-  constructor(private staffService: StaffService, private userService: UserService,
+  constructor(private staffService: StaffService,
   private utilService: UtilService, private formBuilder: FormBuilder) { }
 
   ngOnInit() {

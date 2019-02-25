@@ -8,12 +8,21 @@
           placeholder="Enter Identifier">
 
 
+        <label for="language">Select a language</label>
+        <select name="language" id="language" formControlName="language" class="form-control" (change)="showSubItemBasedOnSelection($event.target.value)">
+          <option *ngFor="let lang of languageType" [value]="lang.value">
+            {{lang.viewValue}}
+          </option>
+        </select>
       </section>
 
       <section class="form-section">
 
         <label for="question">Question</label>
         <input type="text" name="question" id="question" formControlName="question" class="form-control" placeholder="Enter question">
+
+        <label for="code">Code</label>
+        <input type="text" name="code" id="code" formControlName="code" class="form-control" placeholder="Enter a code">
 
         <label for="type">Create main item</label>
         <select name="type" id="type" formControlName="type" class="form-control" (change)="showSubItemBasedOnSelection($event.target.value)">
@@ -51,18 +60,8 @@
     <button class="btn regular-button" (click)="saveQuestionnaire()">
       Show Questionnaire
     </button>
-    <div [innerHTML]="questionnaireForDisplay"></div>
-    <section class="form-section">
-
-
-      <div *ngIf="questionnaireItemsGroup">
-        <div *ngFor="let item of questionnaireItemsGroup">
-          <textarea type="text" class="form-control view-summary-name-box" rows="1" readonly>{{item['linkId']}}</textarea>
-          <textarea type="text" class="form-control view-summary-name-box" rows="1" readonly>{{item['type']}}</textarea>
-          <textarea type="text" class="form-control view-summary-name-box" rows="1" readonly>{{item['text']}}</textarea>
-        </div>
-      </div>
-    </section>
+    <pre>{{questionnaireForDisplay}}</pre>
+    
 
   </div>
 </div>

@@ -122,6 +122,12 @@ export class StaffService {
     });
   }
 
+  getAnyFHIRObjectByCustomQuery(query: string) {
+    return this.http.get(environment.queryURI + '/' + query, {
+      headers: this.getHeaders()
+    });
+  }
+
   updateTask(id, data) {
     return this.http.put(environment.queryURI + '/Task/' + id, data, {
       headers: this.getPostHeaders()
