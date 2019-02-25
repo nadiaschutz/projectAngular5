@@ -34,6 +34,7 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   showSelectionOfDocsForm = false;
   showShowDocListField = false;
   showStatusFormGroup = false;
+  showVaccineForm = false;
   taskFormGroup: FormGroup;
   noteFormGroup: FormGroup;
   docFormGroup: FormGroup;
@@ -112,6 +113,17 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
       if (sessionStorage.getItem('userRole') === 'clinician') {
         this.clinicialFormGroup = this.formBuilder.group({
           historyNotes: new FormControl('')
+        });
+        this.vaccinationFormGroup = this.formBuilder.group({
+          dateAdministered: new FormControl(''),
+          vaccine: new FormControl(''),
+          dose: new FormControl(''),
+          site: new FormControl(''),
+          productName: new FormControl(''),
+          lotNumber: new FormControl(''),
+          expirationDate: new FormControl(''),
+          diluentLotNumber: new FormControl(''),
+          adminBy: new FormControl('')
         });
         this.staffService
           .getAnyFHIRObjectByCustomQuery(
@@ -869,7 +881,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     });
   }
 
-
   saveTask() {
     const task = new FHIR.Task();
     const identifier = new FHIR.Identifier();
@@ -1006,8 +1017,6 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
         });
     });
   }
-
-
 
   createEncounterObjectToLinkToEpisodeOfCare() {
     const encounter = new FHIR.Encounter();
@@ -1599,7 +1608,10 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   /* Clinical Functions  */
 
   addVaccination() {
+    this.showVaccineForm = !this.showVaccineForm;
+    if (this.showVaccineForm) {
 
+    }
   }
 
   saveProcedureRequest() {

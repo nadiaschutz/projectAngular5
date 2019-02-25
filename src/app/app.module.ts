@@ -60,7 +60,9 @@ import { DemoComponent } from './components/demo/demo.component';
 import { ContactUsFormResolverService } from './service/contact-us-form-resolver.service';
 
 import { DepartmentListResolverService } from './service/department-list-resolver.service';
-import { FormBuilderComponent } from './components/form-builder/form-builder.component'
+import { FormBuilderComponent } from './components/form-builder/form-builder.component';
+import { ImmunizationScreenComponent } from './components/staff/clinical/immunization-screen/immunization-screen.component';
+import { AudiogramScreenComponent } from './components/staff/clinical/audiogram-screen/audiogram-screen.component'
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -144,7 +146,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     DemoComponent,
     DistrictOfficeAddComponent,
     LabRequisitionComponent,
-    FormBuilderComponent
+    FormBuilderComponent,
+    ImmunizationScreenComponent,
+    AudiogramScreenComponent
 
   ],
   imports: [

@@ -33,7 +33,10 @@
 </div>
 
 <div class="row">
-  <div class="container">
+  <div class="card">
+    <div class="card-header">
+      Immunization Function
+    </div>
     <!-- <ul class="clinical-checklist">
     <li *ngFor="let item of clinicalQuestionnaireArray">
       <div *ngIf="item['code'][0]['code'] !== 'IMMUNREVQ4'">
@@ -63,7 +66,8 @@
       <textarea name="notesforimmunization" id="notesforimmunization" cols="30" rows="3"></textarea>
     </div>
   </div> -->
-    <div *ngFor="let item of clinicalQuestionnaireArray">
+
+    <div class="card-body" *ngFor="let item of clinicalQuestionnaireArray">
       <div *ngIf="item['code'][0]['code'] === 'IMMUNREVQ1'">
         <ul class="clinical-checklist">
           <li>
