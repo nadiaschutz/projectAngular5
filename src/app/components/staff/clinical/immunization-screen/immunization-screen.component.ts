@@ -125,9 +125,7 @@ export class ImmunizationScreenComponent implements OnInit {
     }
   }
 
-  processClinicalQuestionnaireResponseForHistory(data) {
-    
-  }
+  processClinicalQuestionnaireResponseForHistory(data) {}
 
   saveQuestionnaireResponse() {
     const questionnaireResponse = new FHIR.QuestionnaireResponse();
@@ -143,20 +141,47 @@ export class ImmunizationScreenComponent implements OnInit {
     const itemArray = new Array<FHIR.Item>();
     console.log(this.clinicalQuestionnaireArray);
     this.clinicalQuestionnaireArray.forEach(item => {
-      const baseItem = new FHIR.Item;
+      const baseItem = new FHIR.Item();
+      const codingAnswer = new FHIR.Answer;
+      const coding = new FHIR.Coding;
       // console.log(item['id']);
-
-      // const baseAnswer = = new FHIR.Answer;
       baseItem.linkId = item['id'];
       baseItem.type = item['type'];
-      baseItem.code = item['code'];
+      // baseItem.code = item['code'];
       baseItem.text = item['text'];
+      baseItem.answer = [];
       baseItem.item = [];
+
+      coding.code = item['code'][0]['code'];
+      codingAnswer.valueCoding = coding;
+
+      baseItem.answer.push(codingAnswer);
+
+      if (item['code'][0]['code'] === 'IMMUNREVQ4') {
+        const historyAnswer = new FHIR.Answer();
+
+        if (this.clinicialFormGroup.get('historyNotes').value) {
+          historyAnswer.valueString = this.clinicialFormGroup.get(
+            'historyNotes'
+          ).value;
+          baseItem.answer.push(historyAnswer);
+        }
+        console.log('baseItem 4', baseItem);
+      }
+
       if (item.items) {
         item.items.forEach(element => {
-          const itemToSave = new FHIR.Item;
-          const answer = new FHIR.Answer;
+          const itemToSave = new FHIR.Item();
+          const answer = new FHIR.Answer();
+          const codingElementAnswer = new FHIR.Answer;
+          const elementCoding = new FHIR.Coding;
+
           itemToSave.answer = [];
+
+          elementCoding.code = element['code'][0]['code'];
+          codingElementAnswer.valueCoding = elementCoding;
+
+          itemToSave.answer.push(codingElementAnswer);
 
           if (!element['item']) {
             if (element.checked) {
@@ -170,27 +195,19 @@ export class ImmunizationScreenComponent implements OnInit {
           }
 
           itemToSave.linkId = element['id'];
-          itemToSave.code = element['code'];
           itemToSave.text = element['text'];
           itemToSave.type = element['type'];
           itemToSave.item = [];
-          // console.log('first layer', itemToSave)
 
           if (element['item']) {
-            // console.log('checking items', console.log(element['item']));
 
             element['item'].forEach(nestedItem => {
-
-              console.log(nestedItem);
-
-              const nestedObj = new FHIR.Item;
-              const nestedAnswer = new FHIR.Answer;
+              const nestedObj = new FHIR.Item();
+              const nestedAnswer = new FHIR.Answer();
               nestedObj.linkId = nestedItem['linkId'];
               nestedObj.type = nestedItem['type'];
               nestedObj.text = nestedItem['text'];
-              nestedObj.code = nestedItem['code'];
               nestedObj.answer = [];
-              // console.log('nestedItem found!'nestedItem.checked)
               if (nestedItem.checked) {
                 nestedAnswer.valueBoolean = true;
                 nestedObj.answer.push(nestedAnswer);
@@ -198,38 +215,6 @@ export class ImmunizationScreenComponent implements OnInit {
                 nestedAnswer.valueBoolean = false;
                 nestedObj.answer.push(nestedAnswer);
               }
-
-
-              // if (!nestedItem['item']) {
-
-              // }
-              // if (nestedItem['item']) {
-
-              //   nestedItem['item'].forEach(modifier => {
-              //     const modifierToSave = new FHIR.Item();
-              //     const modifierAnswer = new FHIR.Answer();
-
-              //     modifierToSave.answer = [];
-
-              //     if (modifier.checked) {
-              //       modifierAnswer.valueBoolean = true;
-              //       console.log((answer));
-
-              //       modifierToSave.answer.push(modifierAnswer);
-              //     } else {
-              //       modifierAnswer.valueBoolean = false;
-              //       modifierToSave.answer.push(modifierAnswer);
-              //     }
-
-              //     modifierToSave.linkId = modifier['id'];
-              //     modifierToSave.code = modifier['code'];
-              //     modifierToSave.text = modifier['text'];
-              //     modifierToSave.type = modifier['type'];
-
-              //     nestedObj.item.push(modifierToSave);
-              //   });
-              // }
-
               itemToSave.item.push(nestedObj);
             });
           }
@@ -253,7 +238,6 @@ export class ImmunizationScreenComponent implements OnInit {
     questionnaireResponse.item = itemArray;
     questionnaireResponse.id = '13354';
     console.log(JSON.stringify(questionnaireResponse));
-    // console.log(questionnaireResponse);
   }
 
   saveProcedureRequest() {
