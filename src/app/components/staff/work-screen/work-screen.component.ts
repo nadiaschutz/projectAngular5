@@ -1,26 +1,23 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
 import { UserService } from '../../../service/user.service';
 import {
   FormBuilder,
   FormGroup,
-  Validators,
   FormControl
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-import { TitleCasePipe } from '@angular/common';
-import { PatientService } from 'src/app/service/patient.service';
+
 
 @Component({
   selector: 'app-work-screen',
   templateUrl: './work-screen.component.html',
   styleUrls: ['./work-screen.component.scss']
 })
-export class WorkScreenComponent implements OnInit, OnDestroy {
+export class WorkScreenComponent implements OnInit {
   documentChecklistItemsList = [];
 
   carePlanActivities = [];
@@ -78,6 +75,12 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
     { value: 'OTHER', viewValue: 'OTHER' }
   ];
 
+  assessmentType  = [
+    { value: 'IMMUNIZATION', viewValue: 'Immunization' },
+    { value: 'AUDIOGRAM', viewValue: 'Audiogram' },
+    { value: 'TURBTEST', viewValue: 'Turberculosis' },
+  ];
+
   constructor(
     private staffService: StaffService,
     private utilService: UtilService,
@@ -108,9 +111,9 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
 
   }
 
-  ngOnDestroy() {
-    sessionStorage.removeItem('selectedEpisodeId');
-  }
+  // ngOnDestroy() {
+  //   sessionStorage.removeItem('selectedEpisodeId');
+  // }
 
   fetchAllData() {
     this.staffService
@@ -1530,12 +1533,26 @@ export class WorkScreenComponent implements OnInit, OnDestroy {
   /* Document Functions (end) */
 
   redirectToLabRequisition() {
-    this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
-    this.router.navigateByUrl('/staff/lab-requisition');
+    if (sessionStorage.getItem('userRole') === 'clinician') {
+      this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
+      this.router.navigateByUrl('/staff/lab-requisition');
+    }
   }
 
-  redirectToImmunizations() {
-    // this.router
+  redirectToAssessmentSelected(event) {
+    if (sessionStorage.getItem('userRole') === 'clinician') {
+      console.log(event);
+      
+      if (event === ('IMMUNIZATION')) {
+        this.router.navigateByUrl('/staff/clinical/immunization-screen');
+      }
+      if (event === ('AUDIOGRAM')) {
+
+      }
+      if (event === ('TURBTEST')) {
+
+      }
+    }
   }
 
 }

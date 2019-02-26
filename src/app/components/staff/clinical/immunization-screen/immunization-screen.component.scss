@@ -1,0 +1,51 @@
+.card {
+    margin-bottom: 15px;
+    border-radius: 3px;
+    box-shadow: 0 2px 4px 0 rgba(215, 215, 215, 0.5);
+    background-color: #ffffff;
+}
+
+
+.clinical-checklist {
+    list-style-type: none;
+    // font-size: 14px;
+
+    font-size: 14px !important;
+    // margin: 0;
+    // padding: 0;
+    // overflow: hidden;
+}
+
+.clinical-checklist-items {
+    display: block;
+    float: left;
+    font-size: 14px !important;
+    // text-align: center;
+    padding: 7px;
+}
+
+.clinical-checklist-checkbox {
+    margin: 0 12px 0 0;
+
+    object-fit: contain;
+    border-radius: 2px;
+}
+
+.clinical-checklist-checkbox::after {
+
+    color: #626262 !important;
+    background-color: #626262 !important;
+}
+
+.label-checklist {
+    font-size: 14px !important;
+
+}
+
+.testClass {
+    width: 20px;
+    height: 20px;
+    // color: #626262 !important;
+
+    background-color: #626262 !important;
+}
