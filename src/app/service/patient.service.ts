@@ -66,6 +66,6 @@ export class PatientService {
 
     QuestionnaireResponse(resourceType , id) {
         return this.httpClient.get<JSON>(environment.queryURI +
-            '/QuestionnaireResponse?subject=' + resourceType + '/' + id +'&identifier=SERVREQ', { headers: this.getHeaders() });
+            '/QuestionnaireResponse?context=' + resourceType + '/' + id +'&identifier=SERVREQ', { headers: this.getHeaders() });
     }
 }

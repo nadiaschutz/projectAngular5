@@ -9,6 +9,7 @@ import * as jspdf from 'jspdf';
 import * as html2canvas from 'html2canvas';
 import {PatientService} from '../../../service/patient.service';
 import { formatDate } from '@angular/common';
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-lab-requisition',
@@ -45,7 +46,7 @@ export class LabRequisitionComponent implements OnInit {
       'Gastroenterology',
       'Pulmonology'
   ];
-  episodeOfCareId = '2965';
+  episodeOfCareId = null;
   requisitionType = '';
   serviceDeliveryType = '';
   instructions = '';
@@ -61,51 +62,61 @@ export class LabRequisitionComponent implements OnInit {
   clinician_id: any;
     listQuestionary: any;
     questionaryData: any;
+    eocId: any;
+    assessmentType: any;
 
   constructor(private staffService: StaffService,
               private patientService: PatientService,
+              private route: ActivatedRoute,
               private userService: UserService,
               private utilService: UtilService,
               private formBuilder: FormBuilder) { }
 
   ngOnInit() {
+      this.route.params.subscribe(params => {
+          this.episodeOfCareId = params['eocId'];
+
+
+          this.staffService.getLabTestQuestionnaire().subscribe(data => {
+              this.processQuestionnaire(data);
+              this.fetchAllClinicians();
+              this.staffService.getIncludedItemsForEpisodeOfCare(this.episodeOfCareId).subscribe(episodeOfCareAndRelatedData => {
+
+                  this.processPatientDetails(episodeOfCareAndRelatedData);
+              });
+          });
+          for (let i = 0; i < 34; i++) {
+              this.checkboxArray.push('item: ' + i);
+          }
+
+
+
+      });
+
+
 
     this.currentPractitionerFHIRIDInSession = sessionStorage.getItem('userFHIRID');
 
-    this.staffService.getLabTestQuestionnaire().subscribe(data => {
-      this.processQuestionnaire(data);
-      this.fetchAllClinicians();
-      this.staffService.getIncludedItemsForEpisodeOfCare(this.episodeOfCareId).subscribe(episodeOfCareAndRelatedData => {
-        this.processPatientDetails(episodeOfCareAndRelatedData);
-      });
-    });
-    for (let i = 0; i < 34; i++) {
-      this.checkboxArray.push('item: ' + i);
-    }
 
-    if (sessionStorage.getItem('userDept') !== null) {
+
+   /* if (sessionStorage.getItem('userDept') !== null) {
       this.getPatientByDepartment();
-    }
+    }*/
 
     this.todayDate = this.utilService.getCurrentDate();
     if (this.id_token_claims_obj) {
-     const profile = this.id_token_claims_obj.profile;
-     const clinician_id = this.getProfileIdFromURL(profile);
-     this.clinician_id = clinician_id;
+     this.clinician_id = this.id_token_claims_obj.sub;
     }
 
   }
-
-    getProfileIdFromURL(url) {
-        const n = url.split('/');
-        return n[n.length - 1];
-    }
 
   processPatientDetails(episodeOfCareAndRelatedData) {
     episodeOfCareAndRelatedData.entry.forEach(element => {
       if (element.resource.resourceType === 'Patient') {
         this.patient = this.utilService.getPatientJsonObjectFromPatientFhirObject(element.resource);
-         this.getQuestionnaireResponse(element.resource.resourceType , element.resource.id);
+      }
+      if(element.resource.resourceType === 'EpisodeOfCare'){
+          this.getQuestionnaireResponse(element.resource.resourceType , element.resource.id);
       }
     });
   }
@@ -237,7 +248,7 @@ export class LabRequisitionComponent implements OnInit {
     });
   }
 
-    getPatientByDepartment() {
+   /* getPatientByDepartment() {
      const userDept = sessionStorage.getItem('userDept');
         this.patientService.getPatientByWorkplace(userDept).subscribe(
             data => {
@@ -249,49 +260,42 @@ export class LabRequisitionComponent implements OnInit {
             error => this.handleError(error)
         );
 
-    }
+    }*/
 
     handleError(error) {
         console.log(error);
     }
 
-    getNameFromResource(resource) {
-        let lastName = '';
-        let firstName = '';
-        if (resource && resource['name']) {
-            resource['name'].forEach(resourceName => {
-                lastName = resourceName['family'];
-                resourceName.given.forEach(givenName => {
-                    firstName += givenName;
-                });
-            });
-            return firstName + ' ' + lastName;
-        }
-    }
+
 
     getDate(dateTime) {
         return formatDate(new Date(dateTime), 'MMM d, y', 'en');
     }
 
-    onChangeEmploye(patient) {
-      const selectedPatient = JSON.parse(patient);
-      if (selectedPatient) {
-          this.patient = this.utilService.getPatientJsonObjectFromPatientFhirObject(selectedPatient.resource);
-
-          this.getQuestionnaireResponse(selectedPatient.resource.resourceType, selectedPatient.resource.id);
-
-      }
-    }
 
     getQuestionnaireResponse(resourceType , resourseId) {
 
         this.patientService.QuestionnaireResponse(resourceType , resourseId).subscribe(
             data => {
-                console.log(data);
+
                 this.questionaryData = data;
+
 
                 if (this.questionaryData && this.questionaryData.entry && this.questionaryData.entry.length > 0) {
                     this.listQuestionary = this.questionaryData.entry;
+                    if(this.listQuestionary && this.listQuestionary.length > 0){
+
+                        this.assessmentType = this.listQuestionary[0].resource.item.filter( data => {
+                            if(data && data.text === 'PSOHP Service'){
+                                return data
+                            }
+                        })[0].answer[0].valueString;
+                    }
+
+
+
+
+
                 }
 
             },
@@ -300,13 +304,6 @@ export class LabRequisitionComponent implements OnInit {
 
     }
 
-    onChangeServerQ(quetionary) {
-        const selectedQuestionay = JSON.parse(quetionary);
-        if (selectedQuestionay) {
-            console.log(selectedQuestionay);
-        }
-
-    }
 
     printConsutationMadicalInfo(name) {
         const data = document.getElementById('print2');
