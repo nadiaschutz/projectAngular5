@@ -5,7 +5,6 @@ import { UserService } from '../../../../service/user.service';
 import {
   FormBuilder,
   FormGroup,
-  Validators,
   FormControl
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -31,10 +30,7 @@ export class ImmunizationScreenComponent implements OnInit {
   constructor(
     private staffService: StaffService,
     private utilService: UtilService,
-    private formBuilder: FormBuilder,
-    private oAuthService: OAuthService,
-    private userService: UserService,
-    private router: Router
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit() {
@@ -77,9 +73,9 @@ export class ImmunizationScreenComponent implements OnInit {
         this.staffService.getAnyFHIRObjectByCustomQuery('QuestionnaireResponse?context='
         + episodeId + '&identifier=' + queryString).subscribe(
           data => {
-            console.log('called')
+            console.log('called');
             if (data) {
-              console.log(data)
+              console.log(data);
               if (data['total'] > 0) {
                 this.processClinicalQuestionnaireResponseForHistory(data);
               } else {
@@ -155,7 +151,6 @@ export class ImmunizationScreenComponent implements OnInit {
         for (const currentEntry of data['entry']) {
           const individualEntry = currentEntry['resource'];
           this.questionnaireResponse = individualEntry;
-          console.log(this.questionnaireResponse);
         }
       }
     }
@@ -270,8 +265,18 @@ export class ImmunizationScreenComponent implements OnInit {
     questionnaireResponse.identifier = identifier;
     questionnaireResponse.status = 'in-progress';
     questionnaireResponse.item = itemArray;
-    questionnaireResponse.id = '13354';
-    console.log(JSON.stringify(questionnaireResponse));
+
+    this.staffService.saveClinicalQuestionnaireResponse(JSON.stringify(questionnaireResponse)).subscribe(
+      data => {
+        if (data) {
+          console.log(data);
+        }
+      }
+    );
+  }
+
+  displayFHIRObject() {
+    console.log(this.questionnaireResponse);
   }
 
   saveProcedureRequest() {

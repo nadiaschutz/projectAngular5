@@ -248,6 +248,16 @@ export class StaffService {
     return this.http.post(environment.queryURI + '/ProcedureRequest', procedureRequestData, {headers: this.getPostHeaders()});
   }
 
+  saveClinicalQuestionnaireResponse(data) {
+    return this.http.post(environment.queryURI + '/QuestionnaireResponse', data,  {headers: this.getPostHeaders()});
+  }
+
+  updateClinicalQuestionnaireResponse(id, data) {
+    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, data, {
+      headers: this.getPostHeaders()
+    });
+  }
+
   getNoCacheHeaders() {
     const headers = new HttpHeaders({
       'Content-Type' : 'application/json',
