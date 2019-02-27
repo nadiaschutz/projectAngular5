@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, SkipSelf, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, SkipSelf } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -6,7 +6,6 @@ import { UserService } from '../../service/user.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
 
 import { QuestionnaireService } from '../../service/questionnaire.service';
 import { Item } from '../models/item.model';
@@ -19,57 +18,17 @@ import { formatDate } from '@angular/common';
 import * as FHIR from '../../interface/FHIR';
 import { link } from 'fs';
 
-
-// for custom form components to work
-import { Validators } from '@angular/forms';
-import { Field } from '../dynamic-forms/field.interface';
-import { FieldConfig } from '../dynamic-forms/field-config.interface';
-import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
-import { CustomValidator } from '../dynamic-forms/custom-validator';
-import { FileDetector } from 'protractor';
-import { ValueAddress } from 'src/app/interface/organization';
-
-class TextInput {
-  static create(event: FieldConfig) {
-    return {
-      type: event.type,
-      label: event.label,
-      inputType: event.inputType,
-      name: event.name
-    };
-  }
-}
-
-class SelectField {
-  static create(event: FieldConfig) {
-    return {
-      type: event.type,
-      label: event.label,
-      inputType: event.inputType,
-      name: event.name
-    };
-  }
-}
-
 @Component({
   selector: 'app-new-service-request',
   templateUrl: './new-service-request.component.html',
   styleUrls: ['./new-service-request.component.scss']
 })
-export class NewServiceRequestComponent implements OnInit, AfterViewInit {
+export class NewServiceRequestComponent implements OnInit {
   // @ViewChild('advReqForm') form: NgForm;
   // serviceRequestResponce: ServiceRequestResponce = {
   // };
 
-  style = 'col-11';
-  configuration;
-  userName;
-  loaded = false;
-  @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
-  config: FieldConfig[] = [];
-
-  formId = 'TEST3';
-
+  formId = 'TEST1';
   responseId = null;
   clientId = null;
   smileUserId = null;
@@ -125,7 +84,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     public translate: TranslateService,
     private questionnaireService: QuestionnaireService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
     private userService: UserService,
     private patientService: PatientService,
     private oauthService: OAuthService
@@ -133,18 +91,18 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
 
-    // this.activatedRoute.data.subscribe(data => this.processQuestionnaire(data.fields));
-    this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
-    // this.activatedRoute.data.subscribe(data => console.log(data));
 
-    // this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
 
 
     this.createdsuccessfully = false;
-
+    this.questionnaireService
+      .getForm(this.formId)
+      .subscribe(
+        data => this.processQuestionnaire(data),
+        error => this.handleError(error)
+      );
 
     this.clientId = sessionStorage.getItem('patientSummaryId');
-
     if (this.clientId) {
       this.patientService
         .getPatientDataByID(this.clientId)
@@ -154,20 +112,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         );
     } else if (!this.clientId) {
       this.router.navigateByUrl('/dashboard');
-    }
-  }
-
-  wrap() {
-    const x = $('.field-holder-2 form-input');
-    for (let i = 0; i < x.length; i++) {
-      $(x[i]).wrap('<div class=\'' + this.style + '\'></div>');
-    }
-  }
-
-  addDiv() {
-    const sections = $('.dynamic-form .' + this.style);
-    for (let i = 0; i < sections.length; i += 2) {
-      sections.slice(i, i + 2).wrapAll('<div class=\'row\'></div>');
     }
   }
 
@@ -247,11 +191,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       console.log('Error: ', error);
     };
 
+
   }
 
   retrieveDocuments(data) {
     this.documents.push(data);
-    console.log(this.documents);
+    console.log (this.documents);
   }
 
   downloadFile(incomingFile) {
@@ -260,12 +205,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     const byteNumbers = new Array(byteCharacters.length);
     for (let index = 0; index < byteCharacters.length; index++) {
-      byteNumbers[index] = byteCharacters.charCodeAt(index);
+        byteNumbers[index] = byteCharacters.charCodeAt(index);
     }
 
     const byteArray = new Uint8Array(byteNumbers);
 
-    const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
+    const blob = new Blob([byteArray], {'type': incomingFile['content'][0]['attachment']['contentType']});
 
     if (navigator.msSaveBlob) {
       const filename = incomingFile['content'][0]['attachment']['title'];
@@ -278,7 +223,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       document.body.appendChild(fileLink);
       fileLink.click();
       document.body.removeChild(fileLink);
-    }
+  }
 
 
     // const linkSource =
@@ -326,7 +271,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // this.savingData();
     const questionnaireResponse = new FHIR.QuestionnaireResponse;
     const questionnaireIdentifier = new FHIR.Identifier;
-
+    
     questionnaireIdentifier.value = 'SERVREQ';
     questionnaireResponse.resourceType = 'QuestionnaireResponse';
     questionnaireResponse.identifier = questionnaireIdentifier;
@@ -433,7 +378,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   savingData() {
     console.log('iam saved');
-
+    
     const questionnaireResponse = new FHIR.QuestionnaireResponse;
     const questionnaireIdentifier = new FHIR.Identifier;
 
@@ -522,223 +467,45 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   //   }
   // }
 
-  getFormData(data) {
-    console.log(data);
+  processQuestionnaire(data) {
     this.qrequest = data.item;
-
-    this.configuration = this.qrequest.map(el => {
-      // text
-      if (el.type === 'text') {
-        if (el.text === 'Contact Phone No') {
-
-          // const formField = this.textInput(el);
-          // formField['placeholder'] = 'type your phone';
-          // formField['validation'] = [
-          //   Validators.required,
-          //   Validators.pattern(
-          //     '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-          //   )
-          // ];
-          // return formField;
-          return {
-            type: 'input',
-            label: el.text,
-            inputType: 'text',
-            placeholder: 'type your phone',
-            name: el.linkId,
-            value: '',
-            validation: [Validators.required, Validators.pattern(
-              '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-            )]
-          };
-
-        } else if (el.text === 'Contact Email') {
-
-          const formField = this.textInput(el);
-          formField['placeholder'] = 'type your email';
-          formField['validation'] = [Validators.required, Validators.email];
-          return formField;
-
-        } else if (el.text === 'Name of the Requester') {
-
-          const formField = this.textInput(el);
-          formField['value'] = 'null';
-          formField['placeholder'] = 'type your text';
-          formField['validation'] = [
-            Validators.required,
-            Validators.minLength(4)
-          ];
-          return formField;
-        } else {
-          return {
-            type: 'input',
-            label: el.text,
-            inputType: 'text',
-            placeholder: 'type your text',
-            name: el.linkId,
-            enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-            enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
-            value: '',
-            validation: [Validators.required, Validators.minLength(4)]
-          };
-        }
-      }
-      if (el.type === 'choice') {
-        const options = [];
-        el.option.forEach(el1 => {
-          options.push(el1.valueCoding.code);
-        });
-        // if (el.text === 'Department Name') {
-        //   const formField = this.selectField(el);
-        //   formField['value'] = '';
-        //   formField['options'] = this.departmentList;
-        //   return formField;
-
-        // } else {
-        return {
-          type: 'select',
-          label: el.text,
-          name: el.linkId,
-          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
-          options: options,
-          placeholder: 'Select an option',
-          validation: [Validators.required],
-          value: ''
-        };
-        // }
-
-      } if (el.type === 'open-choice') {
-        return {
-          type: 'select',
-          label: el.text,
-          name: el.linkId,
-          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
-          class: 'checkEnableWhen($event.target.value, i)',
-          placeholder: 'Select an option',
-          value: ''
-        };
-
-      } if (el.type === 'boolean') {
-        return {
-          type: 'checkbox',
-          label: el.text,
-          name: el.linkId,
-          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
-          // placeholder: 'Select an option',
-          // validation: [Validators.required],
-          value: ''
-        };
-      }
-    });
-
-    this.configuration.push(
-      {
-        type: 'doc',
-        class: 'documents',
-        name: 'doc'
-      },
-      {
-        type: 'line',
-        name: 'line'
-      },
-      {
-        type: 'button',
-        name: 'submit',
-        label: 'Next'
-      }
-    );
-
-    this.config = this.configuration;
-
-
-    console.log(this.configuration);
-    console.log(this.config);
-    this.config.forEach(element => {
-      if (element.enableWhenA && element.enableWhenQ) {
-        console.log('HEY BABY!', element.enableWhenA, element.enableWhenQ);
-        element.elementClass = 'enable-when-hide';
+    const questions = [];
+    const enableWhenList = [];
+    for (const questionnaire of this.qrequest) {
+      if (!questionnaire['enableWhen']) {
+        const temp: any = {};
+        const linkId = questionnaire['linkId'];
+        temp['linkId'] = linkId;
+        temp['text'] = questionnaire['text'];
+        temp['type'] = questionnaire['type'];
+        temp['required'] = questionnaire['required'];
+        temp['option'] = questionnaire['option'];
+        temp['answer'] = '';
+        questions[linkId] = [temp];
       } else {
-        element.elementClass = 'enable-when-show';
+        const temp = {};
+        temp['linkId'] = questionnaire['linkId'];
+        temp['text'] = questionnaire['text'];
+        temp['type'] = questionnaire['type'];
+        temp['answer'] = '';
+        temp['enableWhen'] = questionnaire['enableWhen'];
+        enableWhenList.push(temp);
       }
-
-    });
-
-
-    // maping part of the data from the server to item
-    this.items = this.qrequest.map(el => ({
-      ...this.item,
-      linkId: el.linkId,
-      text: el.text
-    }));
-  }
-
-
-
-  textInput(data) {
-    return TextInput.create({
-      type: 'input',
-      label: data.text,
-      inputType: 'text',
-      name: data.linkId,
-    });
-  }
-
-
-  // options: options,
-  // validation: [Validators.required]
-
-  selectField(data) {
-    return SelectField.create({
-      type: 'select',
-      label: data.text,
-      inputType: 'text',
-      placeholder: 'Select an option',
-      name: data.linkId,
-      validation: [Validators.required]
-    });
-  }
-  /************************************************/
-  // settingFunction() {
-  ngAfterViewInit() {
-    setTimeout(() => {
-      let previousValid = this.form.valid;
-      this.form.changes.subscribe(() => {
-        if (this.form.valid !== previousValid) {
-          previousValid = this.form.valid;
-          this.form.setDisabled('submit', !previousValid);
-        }
-      });
-
-      this.form.setDisabled('submit', true);
-      // this.form.setValue('1', this.userName);
-      // this.form.setValue('2', this.currentUserDepartment);
-
-    });
-
-    // if you want to style 2 form fields per a row do these :
-    // this.wrap();
-    // this.addDiv();
-  }
-
-  public checkEnableWhen(value, index) {
-
-    console.log('hey', value, index);
-    this.config.forEach(element => {
-      if (element.enableWhenA && element.enableWhenQ) {
-        // console.log('work you butt off!', element.enableWhenA, element.enableWhenQ);
-        if (value === element.enableWhenA && index === element.enableWhenQ) {
-          console.log('BINGO!!');
-          element.elementClass = 'enable-when-show';
-        } else {
-          element.elementClass = 'enable-when-hide';
-        }
+    }
+    console.log(questions);
+    console.log(enableWhenList);
+    for (const enableQuestion of enableWhenList) {
+      const parentQuestionLinkId = enableQuestion.enableWhen[0]['question'];
+      questions[parentQuestionLinkId].push(enableQuestion);
+      console.log(questions[parentQuestionLinkId]);
+    }
+    console.log(questions);
+    if (Object.keys(questions).length > 0) {
+      for (const key of Object.keys(questions)) {
+        this.questionsList.push(questions[key]);
       }
-
-    });
-
+    }
+    console.log(this.questionsList);
   }
 
   handleError(error) {

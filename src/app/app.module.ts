@@ -60,6 +60,7 @@ import { DemoComponent } from './components/demo/demo.component';
 import { ContactUsFormResolverService } from './service/contact-us-form-resolver.service';
 
 import { DepartmentListResolverService } from './service/department-list-resolver.service'
+import { NewServReqService } from './service/new-serv-req.service';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -69,7 +70,11 @@ const routes: Routes = [
   {
     path: 'newservicerequest',
     component: NewServiceRequestComponent,
-    canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService],
+    resolve: {
+      fields: NewServReqService,
+      departments: DepartmentListResolverService
+    },
   },
   { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
   {
@@ -77,7 +82,8 @@ const routes: Routes = [
     component: NewServiceRequestNoClientComponent,
     resolve: {
       fields: ContactUsFormResolverService,
-      departments: DepartmentListResolverService
+      departments: DepartmentListResolverService,
+      servreq: NewServReqService
     },
     canActivate: [AuthGuardService]
   },
@@ -89,13 +95,13 @@ const routes: Routes = [
   { path: 'clientdepartment', component: ClientDepartmentComponent, canActivate: [AuthGuardService] },
   { path: 'assigntasks', component: TasklistComponent, canActivate: [AuthGuardService] },
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
-  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
-  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
+  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
   { path: '', component: AuthComponent }
 ];
 

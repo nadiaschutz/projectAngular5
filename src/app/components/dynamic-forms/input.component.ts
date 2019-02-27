@@ -8,9 +8,9 @@ import { FieldConfig } from './field-config.interface';
   template: `
  
   <div
-  [formGroup]="group">
+  [formGroup]="group" [class]='config.elementClass'>
 
-  <label class="label-name">{{ config.label }}</label>
+  <label class="label-name">{{ config.label }}{{ config.name }}</label>
   <input
   class="form-control field-box-name"
   [type]="config.type"
@@ -30,12 +30,12 @@ import { FieldConfig } from './field-config.interface';
         </div>
         
         `
-      })
-      export class InputComponent implements Field {
-        config: FieldConfig;
-        group: FormGroup;
-      }
-      
+})
+export class InputComponent implements Field {
+  config: FieldConfig;
+  group: FormGroup;
+}
+
       // <div  [hidden]="!group.get(config.name).errors.required">{{config.label | titlecase}} is required.</div>
       //  <div *ngIf="group.get(config.name) = 'phone'">
       //             
@@ -43,7 +43,7 @@ import { FieldConfig } from './field-config.interface';
       // <div *ngIf="config.name==='phone'">
       //     <div [hidden]="!group.get(config.name).errors.patternInvalid">{{config.label | titlecase}} is invalid.</div>
       // </div>
-      
+
       // @property {boolean} $untouched True if control has not lost focus yet.
       // @property {boolean} $touched True if control has lost focus.
       // @property {boolean} $pristine True if user has not interacted with the control yet.
@@ -52,7 +52,7 @@ import { FieldConfig } from './field-config.interface';
 
 
       // <div *ngIf="(group.get(config.name).touched && group.get(config.name).pristine)" class="invalid-feedback">
-          
+
       //     <div  ng-show="group.get(config.name).errors.required">{{config.label | titlecase}} is required.</div>
       // </div>
 
