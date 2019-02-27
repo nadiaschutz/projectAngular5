@@ -13,7 +13,6 @@ import * as FHIR from '../../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
-import { PatientService } from 'src/app/service/patient.service';
 @Component({
   selector: 'app-immunization-screen',
   templateUrl: './immunization-screen.component.html',
@@ -25,8 +24,10 @@ export class ImmunizationScreenComponent implements OnInit {
   vaccinationFormGroup: FormGroup;
 
   showVaccineForm = false;
+  switchClinicalChecklist = false;
   episodeOfCare;
   questionnaireID;
+  questionnaireResponse;
   constructor(
     private staffService: StaffService,
     private utilService: UtilService,
@@ -70,6 +71,28 @@ export class ImmunizationScreenComponent implements OnInit {
           diluentLotNumber: new FormControl(''),
           adminBy: new FormControl('')
         });
+
+        const episodeId = sessionStorage.getItem('selectedEpisodeId');
+        const queryString = 'IMMUNHIST-' + episodeId;
+        this.staffService.getAnyFHIRObjectByCustomQuery('QuestionnaireResponse?context='
+        + episodeId + '&identifier=' + queryString).subscribe(
+          data => {
+            console.log('called')
+            if (data) {
+              console.log(data)
+              if (data['total'] > 0) {
+                this.processClinicalQuestionnaireResponseForHistory(data);
+              } else {
+                // this
+              }
+            }
+          },
+          error => {
+            console.log(error);
+          },
+          () => {
+          }
+        );
         this.staffService
           .getAnyFHIRObjectByCustomQuery(
             'Questionnaire?identifier=IMMUNREV&_language=en-CA'
@@ -125,7 +148,18 @@ export class ImmunizationScreenComponent implements OnInit {
     }
   }
 
-  processClinicalQuestionnaireResponseForHistory(data) {}
+  processClinicalQuestionnaireResponseForHistory(data) {
+    if (data) {
+      if (data['entry']) {
+        this.showVaccineForm = true;
+        for (const currentEntry of data['entry']) {
+          const individualEntry = currentEntry['resource'];
+          this.questionnaireResponse = individualEntry;
+          console.log(this.questionnaireResponse);
+        }
+      }
+    }
+  }
 
   saveQuestionnaireResponse() {
     const questionnaireResponse = new FHIR.QuestionnaireResponse();
