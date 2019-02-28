@@ -80,7 +80,8 @@
     <div class="card immunization-card">
       <div class="card-header">
         Historical Information
-        <button class="btn regular-button" (click)="displayFHIRObject()">Display FHIR Object</button>
+        <button class="btn regular-button" (click)="checkboxHistoryFormDisabled = !checkboxHistoryFormDisabled">Update
+          History</button>
       </div>
       <div class="card-body" *ngFor="let item of questionnaireResponse['item']">
         <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ1'">
@@ -90,7 +91,8 @@
               <section>
                 <div *ngFor="let itemDepthTwo of item['item']" class="clinical-checklist-items">
                   <label class="label-checklist ">
-                    <input type="checkbox" class="clinical-checklist-checkbox" [(ngModel)]="itemDepthTwo['answer'][1]['valueBoolean']">
+                    <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                      [(ngModel)]="itemDepthTwo['answer'][1]['valueBoolean']">
                     <span class="checklist-item">{{itemDepthTwo.text}}</span>
                   </label>
                 </div>
@@ -110,7 +112,8 @@
                   <div *ngIf="itemDepthTwo['item']">
                     <div *ngFor="let innerElement of itemDepthTwo['item']" class="clinical-checklist-items">
                       <label class="label-checklist">
-                        <input type="checkbox" class="clinical-checklist-checkbox" [(ngModel)]="innerElement['answer'][0]['valueBoolean']">
+                        <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                          [(ngModel)]="innerElement['answer'][0]['valueBoolean']">
                         <span class="checklist-items">{{innerElement['text']}}</span>
                       </label>
                     </div>
@@ -127,7 +130,8 @@
               <section>
                 <div *ngFor="let itemDepthTwo of item['item']" class="clinical-checklist-items">
                   <label class="label-checklist">
-                    <input type="checkbox" class="clinical-checklist-checkbox" [(ngModel)]="itemDepthTwo['answer'][1]['valueBoolean']">
+                    <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                      [(ngModel)]="itemDepthTwo['answer'][1]['valueBoolean']">
                     <span class="checklist-item">{{itemDepthTwo.text}}</span>
                   </label>
                 </div>
@@ -164,7 +168,7 @@
     </div>
   </div>
 
-  <div class="row">
+  <div class="card-row">
     <div class="card immunization-card">
       <div class="card-body">
         <form [formGroup]="vaccinationFormGroup" novalidate class="center-align">
@@ -177,7 +181,7 @@
             </div>
             <div class="col">
               <label for="vaccine">Vaccine</label>
-              <select class="form-control" formControlName="vaccine" id="vaccine" (change)="printThis($event)">
+              <select class="form-control" formControlName="vaccine" id="vaccine">
                 <option *ngFor="let vaccineFound of vaccineList" [ngValue]="vaccineFound">
                   {{vaccineFound.display}}
                 </option>
@@ -201,17 +205,31 @@
               <label for="productName">Product Name</label>
               <input type="text" class="form-control" placeholder="Enter" formControlName="productName" id="productName">
             </div>
-            <label for="lotNumber">Lot #</label>
+            <div class="col">
+              <label for="lotNumber">Lot #</label>
               <input type="text" class="form-control" placeholder="Enter" formControlName="lotNumber" id="lotNumber">
-          </div>dateAdministered
-          <div class="col">
-            <label for="expirationDate">Expiration Date</label>
-            <input class="form-control" type="text" placeholder="Datepicker" formControlName="expirationDate" id="expirationDate"
-              bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate">
+            </div>
+            <div class="col">
+              <label for="expirationDate">Expiration Date</label>
+              <input class="form-control" type="text" placeholder="Datepicker" formControlName="expirationDate" id="expirationDate"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate">
+            </div>
+            <div class="col" *ngIf="cliniciansList">
+              <label for="adminBy">Administered By</label>
+              <select class="form-control" formControlName="adminBy" id="adminBy" (change)="printThis($event)">
+                <option *ngFor="let clinician of cliniciansList" [ngValue]="clinician">
+                  {{clinician.name}}
+                </option>
+              </select>
+            </div>
           </div>
+        </form>
       </div>
-      </form>
+      <div class="card-footer">
+        <button class="btn regular-button" (click)="createEncounter()">
+          Save Immunization
+        </button>
+      </div>
     </div>
   </div>
-</div>
 </div>

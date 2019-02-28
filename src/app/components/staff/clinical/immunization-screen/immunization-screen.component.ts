@@ -36,7 +36,9 @@ export class ImmunizationScreenComponent implements OnInit {
   maxDate: Date;
 
   vaccineList = [];
+  cliniciansList = [];
   selectedVaccine;
+  checkboxHistoryFormDisabled = true;
   constructor(
     private staffService: StaffService,
     private utilService: UtilService,
@@ -48,7 +50,7 @@ export class ImmunizationScreenComponent implements OnInit {
     this.maxDate.setDate(this.maxDate.getDate());
   }
 
-  siteList  = [
+  siteList = [
     { value: 'LA', viewValue: 'Left Arm' },
     { value: 'RA', viewValue: 'Right Arm' }
   ];
@@ -61,7 +63,7 @@ export class ImmunizationScreenComponent implements OnInit {
         showWeekNumbers: false
       });
     let enableClinicalPiece = false;
-
+    this.fetchAllClinicians();
     if (sessionStorage.getItem('userRole')) {
       if (sessionStorage.getItem('userRole') === 'clinician') {
         this.staffService.getVaccineList().subscribe(
@@ -105,24 +107,24 @@ export class ImmunizationScreenComponent implements OnInit {
         const episodeId = sessionStorage.getItem('selectedEpisodeId');
         const queryString = 'IMMUNHIST-' + episodeId;
         this.staffService.getAnyFHIRObjectByCustomQuery('QuestionnaireResponse?context='
-        + episodeId + '&identifier=' + queryString).subscribe(
-          data => {
-            console.log('called');
-            if (data) {
-              console.log(data);
-              if (data['total'] > 0) {
-                this.processClinicalQuestionnaireResponseForHistory(data);
-              } else {
-                // this
+          + episodeId + '&identifier=' + queryString).subscribe(
+            data => {
+              console.log('called');
+              if (data) {
+                console.log(data);
+                if (data['total'] > 0) {
+                  this.processClinicalQuestionnaireResponseForHistory(data);
+                } else {
+                  // this
+                }
               }
+            },
+            error => {
+              console.log(error);
+            },
+            () => {
             }
-          },
-          error => {
-            console.log(error);
-          },
-          () => {
-          }
-        );
+          );
         this.staffService
           .getAnyFHIRObjectByCustomQuery(
             'Questionnaire?identifier=IMMUNREV&_language=en-CA'
@@ -367,18 +369,32 @@ export class ImmunizationScreenComponent implements OnInit {
 
   createEncounter() {
     const encounter = new FHIR.Encounter;
+    const identifier = new FHIR.Identifier;
+    const eoc = new FHIR.Reference;
 
+    eoc.reference = 'EpisodeOfCare/' + this.episodeOfCare['id'];
+
+    encounter.identifier = [];
+
+    identifier.value = 'VACCINE-ENCOUNTER';
+
+    encounter.episodeOfCare = [];
+    encounter.episodeOfCare.push(eoc);
+    encounter.identifier.push(identifier);
     encounter.status = 'finisihed';
     encounter.resourceType = 'Encounter';
+    encounter.id = '12333';
+    console.log('test');
 
-    this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
-      data => {
-        console.log(data);
-      },
-      error => {
-        console.log(error);
-      }
-    );
+    this.addImmunization(encounter);
+    // this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
+    //   data => {
+    //     console.log(data);
+    //   },
+    //   error => {
+    //     console.log(error);
+    //   }
+    // );
 
   }
 
@@ -394,16 +410,17 @@ export class ImmunizationScreenComponent implements OnInit {
     site.coding = [];
     vaccine.coding = [];
 
-    encounterReference.reference = 'Encounter/' +  data['id'];
+    encounterReference.reference = 'Encounter/' + data['id'];
     patientReference.reference = 'Patient/' + this.episodeOfCare['patient']['reference'];
 
     doseCoding.code = 'mg';
     doseCoding.system = 'http://unitsofmeasure.org';
     doseCoding.value = this.vaccinationFormGroup.get('dose').value;
 
-    vaccineCoding.code = this.vaccinationFormGroup.get('vaccine').value;
+    const vaccineFromForm = this.vaccinationFormGroup.get('vaccine').value;
+    vaccineCoding.code = vaccineFromForm['code'];
     vaccineCoding.system = 'http://hl7.org/fhir/sid/cvx';
-
+    vaccineCoding.display = vaccineFromForm['display'];
 
     siteCoding.code = this.vaccinationFormGroup.get('site').value;
     siteCoding.system = 'http://hl7.org/fhir/v3/ActSite';
@@ -413,6 +430,7 @@ export class ImmunizationScreenComponent implements OnInit {
       }
     });
 
+    vaccine.coding.push(vaccineCoding);
     site.coding.push(siteCoding);
     immunization.encounter = encounterReference;
     immunization.site = site;
@@ -420,11 +438,28 @@ export class ImmunizationScreenComponent implements OnInit {
     immunization.lotNumber = this.vaccinationFormGroup.get('lotNumber').value;
     immunization.date = this.vaccinationFormGroup.get('dateAdministered').value;
     immunization.doseQuantity = doseCoding;
+    immunization.vaccineCode = vaccine;
     // if (immunization.date)
+
+    console.log(immunization);
   }
 
-  printThis(event) {
-    this.selectedVaccine = this.vaccinationFormGroup.get('vaccine').value;
-    console.log(this.selectedVaccine);
+  // printThis(event) {
+  //   this.selectedVaccine = this.vaccinationFormGroup.get('vaccine').value;
+  //   console.log(this.selectedVaccine);
+  // }
+
+  fetchAllClinicians() {
+    this.staffService.getAllClinicians().subscribe(data => {
+      if (data['entry']) {
+        data['entry'].forEach(element => {
+          const clinician = element['resource'];
+          this.cliniciansList.push({
+            id: clinician['id'],
+            name: this.utilService.getNameFromResource(clinician)
+          });
+        });
+      }
+    });
   }
 }
