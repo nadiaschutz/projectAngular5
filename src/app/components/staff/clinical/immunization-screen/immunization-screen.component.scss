@@ -52,7 +52,7 @@
 
 
 .immunization-card {
-    width: 80%;
+    min-width: 100%;
 }
 
 .add-margin-left {
@@ -74,4 +74,34 @@
 
 .button-section {
     margin-right: auto;
+}
+
+.summary-card {
+    padding: 0px 0px 0px 0px;
+}
+
+.table-summary {
+    margin-left: 29px;
+    thead {
+        th {
+            font-size: 11px;
+            font-weight: normal;
+            text-transform: capitalize;
+            margin-left: 29px;
+        }
+    }
+
+    tbody.body-table {
+
+        tr {
+            td {
+                font-size: 13px;
+                font-weight: normal;
+            }
+        }
+    }
+}
+
+.notes-row {
+    margin: 0 0 0 34px !important;
 }

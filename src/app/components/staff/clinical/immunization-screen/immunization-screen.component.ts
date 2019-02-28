@@ -42,10 +42,13 @@ export class ImmunizationScreenComponent implements OnInit {
   cliniciansList = [];
   selectedVaccine;
   checkboxHistoryFormDisabled = true;
+  serviceRequestSummary;
+
   constructor(
     private staffService: StaffService,
     private utilService: UtilService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.minDate = new Date();
     this.maxDate = new Date();
@@ -59,6 +62,7 @@ export class ImmunizationScreenComponent implements OnInit {
   ];
 
   ngOnInit() {
+
     this.datePickerConfig = Object.assign({},
       {
         containerClass: 'theme-dark-blue',
@@ -91,6 +95,7 @@ export class ImmunizationScreenComponent implements OnInit {
               console.log(error);
             },
             () => {
+              this.processServiceRequestForSummary();
               this.staffService.getAdministerededVaccinesFromServer(this.episodeOfCare['id']).subscribe(
                 data => {
                   this.processAdministeredVaccines(data);
@@ -154,6 +159,39 @@ export class ImmunizationScreenComponent implements OnInit {
           );
       }
     }
+  }
+
+  processServiceRequestForSummary() {
+    const temp = {};
+    this.staffService.getAnyFHIRObjectByCustomQuery('QuestionnaireResponse?identifier=SERVREQ&context='
+    + this.episodeOfCare['id']).subscribe(
+      questionnaireFound => {
+        if (questionnaireFound) {
+          if (questionnaireFound['entry']) {
+            for (const currentEntry of questionnaireFound['entry']) {
+              const individualEntry = currentEntry['resource'];
+              temp['id'] = individualEntry['id'];
+              this.staffService.getAnyFHIRObjectByCustomQuery(individualEntry['subject']['reference']).subscribe(
+                patient => {
+                  if (patient) {
+                    temp['name'] = this.utilService.getNameFromResource(patient);
+                    this.serviceRequestSummary = temp;
+
+                  }
+                }
+              );
+            }
+          }
+
+        }
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        console.log('we set them boys');
+      }
+    );
   }
 
   processAdministeredVaccines(data) {
@@ -588,9 +626,10 @@ export class ImmunizationScreenComponent implements OnInit {
         this.checkboxHistoryFormDisabled = !this.checkboxHistoryFormDisabled;
       }
     );
-    // if () {
-    //   console.log(this.newNoteValue);
-    // }
+
   }
 
+  viewDetailedContext() {
+    this.router.navigateByUrl('/staff/work-screen');
+  }
 }

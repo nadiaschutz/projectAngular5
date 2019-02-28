@@ -1,11 +1,31 @@
 <div class="container">
 
+  <div class="edit-button-row">
+    <button type="button" class="btn regular-dark-button float-right" (click)="viewDetailedContext()">
+      View Detailed Context
+    </button>
+  </div>
+
+  <div class="main-header">
+    <h5>Immunization Function</h5>
+  </div>
+
+  <div class="row" *ngIf="serviceRequestSummary">
+    <div class="card immunization-card">
+      <div class="card-body">
+        <div class="col-4 float-left">Service Request ID: {{serviceRequestSummary['id']}}</div>
+        <div class="col-4 float-right">Client Name: {{serviceRequestSummary['name']}}</div>
+      </div>
+    </div>
+  </div>
+
   <div class="row" *ngIf="!hasPreviousHistory">
     <div class="card immunization-card">
       <div class="card-header">
         Historical Information
         <div class="float-right">
-          <button class="btn regular-button" (click)="checkboxHistoryFormDisabled = !checkboxHistoryFormDisabled" >Update History</button>
+          <button class="btn regular-button" (click)="checkboxHistoryFormDisabled = !checkboxHistoryFormDisabled">Update
+            History</button>
 
         </div>
       </div>
@@ -17,7 +37,7 @@
               <section *ngIf="item.items">
                 <div *ngFor="let element of item.items" class="clinical-checklist-items">
                   <label class="label-checklist ">
-                    <input type="checkbox"  [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                    <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
                       [(ngModel)]="element.checked" *ngIf="element['type'] !== 'group'">
                     <span class="checklist-item">{{element.text}}</span>
                   </label>
@@ -38,7 +58,8 @@
                   <div *ngIf="element['item']">
                     <div *ngFor="let innerElement of element['item']" class="clinical-checklist-items">
                       <label class="label-checklist">
-                        <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox" [(ngModel)]="innerElement.checked">
+                        <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                          [(ngModel)]="innerElement.checked">
                         <span class="checklist-items">{{innerElement['text']}}</span>
                       </label>
                     </div>
@@ -55,7 +76,8 @@
               <section *ngIf="item.items">
                 <div *ngFor="let element of item.items" class="clinical-checklist-items">
                   <label class="label-checklist">
-                    <input type="checkbox"[disabled]="checkboxHistoryFormDisabled"  class="clinical-checklist-checkbox" [(ngModel)]="element.checked" *ngIf="element['type'] !== 'group'">
+                    <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                      [(ngModel)]="element.checked" *ngIf="element['type'] !== 'group'">
                     <span class="checklist-items">{{element.text}}</span>
                   </label>
                 </div>
@@ -63,29 +85,29 @@
             </li>
           </ul>
         </div>
-        <div *ngIf="item['code'][0]['code'] === 'IMMUNREVQ4'">
+        <div *ngIf="item['code'][0]['code'] === 'IMMUNREVQ4'" class="notes-row">
           <div class="clinical-checklist-items">
             <label class="label-checklist">{{item.text | uppercase}}</label>
             <div *ngIf="!checkboxHistoryFormDisabled">
 
               <form [formGroup]="clinicialFormGroup" novalidate>
                 <input type="text" name="historyNotes" id="historyNotes" formControlName="historyNotes" class="form-control"
-                placeholder="additional notes">
+                  placeholder="additional notes">
               </form>
             </div>
           </div>
         </div>
       </div>
       <div class="card-footer" *ngIf="!checkboxHistoryFormDisabled">
-          <div class="float-right">
-            <button class="btn regular-button" (click)="saveProcedureRequest()">
-              Save Updates
-            </button>
-            <button class="btn regular-button add-margin-left" (click)="checkboxHistoryFormDisabled = !checkboxHistoryFormDisabled">
-              Cancel
-            </button>
-          </div>
+        <div class="float-right">
+          <button class="btn regular-button" (click)="saveProcedureRequest()">
+            Save Updates
+          </button>
+          <button class="btn regular-button add-margin-left" (click)="checkboxHistoryFormDisabled = !checkboxHistoryFormDisabled">
+            Cancel
+          </button>
         </div>
+      </div>
     </div>
 
     <!-- <button class="btn regular-button" (click)="addVaccination()"> Add new vaccination</button> -->
@@ -158,7 +180,7 @@
             </li>
           </ul>
         </div>
-        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ4'">
+        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ4'" class="notes-row">
           <div class="clinical-checklist-items">
             <label class="label-checklist">{{item.text | uppercase}}</label>
             <!-- <form [formGroup]="clinicialFormGroup" novalidate>
