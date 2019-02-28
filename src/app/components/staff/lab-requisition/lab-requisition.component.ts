@@ -187,6 +187,11 @@ export class LabRequisitionComponent implements OnInit {
     performerType.text = this.consultationFormGroup.get('speciality').value;
     procedureRequest.performerType = performerType;
 
+    const identifier = new FHIR.Identifier;
+    identifier.system = 'requisition-type';
+    identifier.value = this.requisitionType;
+    procedureRequest.identifier = [identifier];
+
     this.staffService.saveProcedureRequest(JSON.stringify(procedureRequest)).subscribe(data => {
       this.requisitionType = '';
     });
@@ -220,11 +225,38 @@ export class LabRequisitionComponent implements OnInit {
 
     const category = new FHIR.CodeableConcept;
     category.coding = categoryCodingArray;
+
     procedureRequest.category = [category];
+    
+    if (this.serviceDeliveryType != '') {
+      const category2CodingArray = new Array<FHIR.Coding>();
+      
+      const coding2 = new FHIR.Coding;
+      coding2.code = this.serviceDeliveryType === 'Point of Care' ? 'point-of-care' : 'referral';
+      coding2.display = this.serviceDeliveryType;
+      category2CodingArray.push(coding2);
+  
+      const category2 = new FHIR.CodeableConcept;
+      category2.coding = category2CodingArray;
+      category2.text = 'Service Delivery';
+
+      procedureRequest.category.push(category2);
+    }
+
 
     const annotation = new FHIR.Annotation;
     annotation.text = this.instructions;
     procedureRequest.note = [annotation];
+
+    const identifier = new FHIR.Identifier;
+    identifier.system = 'requisition-type';
+    identifier.value = 'Diagnostics Test';
+    procedureRequest.identifier = [identifier];
+
+
+
+    // console.log('serviceDeliveryType', this.serviceDeliveryType);
+    // console.log('procedurerequest', procedureRequest);
 
     this.staffService.saveProcedureRequest(JSON.stringify(procedureRequest)).subscribe(data => {
       this.requisitionType = '';
