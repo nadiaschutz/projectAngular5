@@ -552,7 +552,15 @@ export class ImmunizationScreenComponent implements OnInit {
         console.log(error);
       },
       () => {
-        this.processAdministeredVaccines(this.episodeOfCare['id']);
+        this.staffService.getAdministerededVaccinesFromServer(this.episodeOfCare['id']).subscribe(
+          results => {
+            this.processAdministeredVaccines(results);
+          },
+          error => {
+            console.log(error);
+          }
+        );
+        this.showVaccineForm = !this.showVaccineForm;
       }
     );
   }
