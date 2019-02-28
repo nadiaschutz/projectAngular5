@@ -191,7 +191,7 @@ export class ListPageComponent implements OnInit {
   getQuestionnaireReponseItem(episodeOfCareId, itemText) {
     let answer = '';
     const questionnaireResponse = this.questionnaireResponseList[episodeOfCareId];
-    console.log(this.questionnaireResponseList[episodeOfCareId]);
+    // console.log(this.questionnaireResponseList[episodeOfCareId]);
 
     if (questionnaireResponse) {
       if (questionnaireResponse['identifier']) {

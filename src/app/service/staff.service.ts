@@ -8,6 +8,7 @@ import * as FHIR from '../interface/FHIR';
 @Injectable({
   providedIn: 'root'
 })
+
 export class StaffService {
 
   selectedEpisodeId = '';
@@ -118,6 +119,12 @@ export class StaffService {
 
   getAnyFHIRObjectByReference(query: string) {
     return this.http.get(environment.queryURI + query, {
+      headers: this.getHeaders()
+    });
+  }
+
+  getAnyFHIRObjectByCustomQuery(query: string) {
+    return this.http.get(environment.queryURI + '/' + query, {
       headers: this.getHeaders()
     });
   }
@@ -240,6 +247,32 @@ export class StaffService {
 
   saveProcedureRequest(procedureRequestData) {
     return this.http.post(environment.queryURI + '/ProcedureRequest', procedureRequestData, {headers: this.getPostHeaders()});
+  }
+
+  saveClinicalQuestionnaireResponse(data) {
+    return this.http.post(environment.queryURI + '/QuestionnaireResponse', data,  {headers: this.getPostHeaders()});
+  }
+
+  updateClinicalQuestionnaireResponse(id, data) {
+    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id, data, {
+      headers: this.getPostHeaders()
+    });
+  }
+
+  getVaccineList() {
+    return this.http.get('/src/app/components/staff/clinical/immunization-screen/vaccine-list.json');
+  }
+
+  createImmunizationInfo(data) {
+    return this.http.post(environment.queryURI + '/Immunization/', data, {
+      headers: this.getPostHeaders()
+    });
+  }
+
+  getAdministerededVaccinesFromServer(episodeOfCareId) {
+    return this.http.get(
+      environment.queryURI + '/Immunization?encounter.identifier=VACCINE-ENCOUNTER&encounter.episodeofcare='
+      + episodeOfCareId, {headers: this.getHeaders()});
   }
 
   getNoCacheHeaders() {

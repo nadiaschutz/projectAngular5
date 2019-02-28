@@ -1,0 +1,67 @@
+<div class="row">
+  <div class="col">
+    <form [formGroup]="questionnaireFormGroup" novalidate>
+      <section class="form-section">
+
+        <label for="identifier">Identifier for this Form</label>
+        <input type="text" name="identifier" id="identifier" formControlName="identifier" class="form-control"
+          placeholder="Enter Identifier">
+
+
+        <label for="language">Select a language</label>
+        <select name="language" id="language" formControlName="language" class="form-control" (change)="showSubItemBasedOnSelection($event.target.value)">
+          <option *ngFor="let lang of languageType" [value]="lang.value">
+            {{lang.viewValue}}
+          </option>
+        </select>
+      </section>
+
+      <section class="form-section">
+
+        <label for="question">Question</label>
+        <input type="text" name="question" id="question" formControlName="question" class="form-control" placeholder="Enter question">
+
+        <label for="code">Code</label>
+        <input type="text" name="code" id="code" formControlName="code" class="form-control" placeholder="Enter a code">
+
+        <label for="type">Create main item</label>
+        <select name="type" id="type" formControlName="type" class="form-control" (change)="showSubItemBasedOnSelection($event.target.value)">
+          <option *ngFor="let type of questionType" [value]="type.value">
+            {{type.viewValue}}
+          </option>
+        </select>
+
+        <button class="btn regular-button" (click)="newQuestionnaireCategory()">
+          create main category
+        </button>
+      </section>
+
+      <section class="form-section" *ngIf="linkSubItemToItem">
+        <form [formGroup]="subItemGroup" novalidate>
+          <label for="question">Question</label>
+          <input type="text" name="question" id="question" formControlName="question" class="form-control" placeholder="Enter question">
+
+          <label for="type">Create main item</label>
+          <select name="type" id="type" formControlName="type" class="form-control">
+            <option *ngFor="let type of questionType" [value]="type.value">
+              {{type.viewValue}}
+            </option>
+          </select>
+        </form>
+        <button class="btn regular-button" (click)="newQuestionnaireItem($event)">
+          create main category
+        </button>
+      </section>
+    </form>
+  </div>
+
+  <div class="col">
+
+    <button class="btn regular-button" (click)="saveQuestionnaire()">
+      Show Questionnaire
+    </button>
+    <pre>{{questionnaireForDisplay}}</pre>
+    
+
+  </div>
+</div>

@@ -28,7 +28,7 @@ export class LabRequisitionComponent implements OnInit {
   consultationFormGroup: FormGroup;
   currentPractitionerFHIRIDInSession;
 
-  constructor(private staffService: StaffService, private userService: UserService,
+  constructor(private staffService: StaffService,
   private utilService: UtilService, private formBuilder: FormBuilder) { }
 
   ngOnInit() {
@@ -128,17 +128,17 @@ export class LabRequisitionComponent implements OnInit {
 
   saveProcedureRequest() {
     const procedureRequest = new FHIR.ProcedureRequest;
+    const requester = new FHIR.Requester;
+    const requesterReference = new FHIR.Reference();
+    const episodeOfCareReference = new FHIR.Reference;
     procedureRequest.resourceType = 'ProcedureRequest';
     procedureRequest.status = 'active';
     procedureRequest.intent = 'plan';
     procedureRequest.authoredOn = this.utilService.getCurrentDate();
-    const requester = new FHIR.Requester;
-    const requesterReference = new FHIR.Reference();
     requesterReference.reference = 'Practitioner/' + this.currentPractitionerFHIRIDInSession;
     requester.agent = requesterReference;
     procedureRequest.requester = requester;
 
-    const episodeOfCareReference = new FHIR.Reference;
     episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     procedureRequest.context = episodeOfCareReference;
     const categoryCodingArray = new Array<FHIR.Coding>();
