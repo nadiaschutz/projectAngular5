@@ -16,6 +16,7 @@ import { QuestionnaireService } from './service/questionnaire.service';
 import { PatientService } from './service/patient.service';
 import { UserService } from './service/user.service';
 import { StaffService } from '../app/service/staff.service';
+import { AdminHomeScreenService } from '../app/service/admin-home-screen.service';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -44,6 +45,8 @@ import { ListPageComponent } from './components/staff/list-page/list-page.compon
 import { WorkScreenComponent } from './components/staff/work-screen/work-screen.component';
 import { CreateTaskComponent } from './components/staff/create-task/create-task.component';
 import { DistrictOfficeAddComponent } from './components/district-office-add/district-office-add.component';
+import { AdminHomeScreenComponent } from './components/admin-home-screen/admin-home-screen.component';
+
 
 import { InputComponent } from './components/dynamic-forms/input.component';
 import { ButtonComponent } from './components/dynamic-forms/button.component';
@@ -100,6 +103,7 @@ const routes: Routes = [
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
+  { path: 'adminhome', component: AdminHomeScreenComponent, canActivate: [AuthGuardService] },
   { path: 'form-builder', component: FormBuilderComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
 ];
@@ -147,6 +151,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     DemoComponent,
     DistrictOfficeAddComponent,
     LabRequisitionComponent,
+    AdminHomeScreenComponent,
     FormBuilderComponent,
     ImmunizationScreenComponent,
     AudiogramScreenComponent
@@ -181,6 +186,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     DatePipe,
     TitleCasePipe,
     StaffService,
+    AdminHomeScreenService,
   ],
   bootstrap: [AppComponent],
   entryComponents: [
