@@ -11,6 +11,8 @@ import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { formatDate } from '@angular/common';
 import { TitleCasePipe } from '@angular/common';
 @Component({
   selector: 'app-immunization-screen',
@@ -27,13 +29,34 @@ export class ImmunizationScreenComponent implements OnInit {
   episodeOfCare;
   questionnaireID;
   questionnaireResponse;
+
+  datePickerConfig: Partial<BsDatepickerConfig>;
+
+  minDate: Date;
+  maxDate: Date;
   constructor(
     private staffService: StaffService,
     private utilService: UtilService,
     private formBuilder: FormBuilder
-  ) {}
+  ) {
+    this.minDate = new Date();
+    this.maxDate = new Date();
+    this.minDate.setDate(this.minDate.getDate() - 43800);
+    this.maxDate.setDate(this.maxDate.getDate());
+  }
+
+  siteList  = [
+    { value: 'LA', viewValue: 'Left Arm' },
+    { value: 'RE', viewValue: 'Right Arm' }
+  ];
 
   ngOnInit() {
+    this.datePickerConfig = Object.assign({},
+      {
+        containerClass: 'theme-dark-blue',
+        dateInputFormat: 'YYYY-MM-DD',
+        showWeekNumbers: false
+      });
     let enableClinicalPiece = false;
 
     if (sessionStorage.getItem('userRole')) {
@@ -255,7 +278,7 @@ export class ImmunizationScreenComponent implements OnInit {
     });
 
     questionnaireResponse.resourceType = 'QuestionnaireResponse';
-    questionnaireResponse.subject.reference = this.episodeOfCare['patient'][
+    questionnaireResponse.subject.reference = 'Patient/' + this.episodeOfCare['patient'][
       'reference'
     ];
     questionnaireResponse.questionnaire.reference =
@@ -329,5 +352,63 @@ export class ImmunizationScreenComponent implements OnInit {
     annotation.text = this.clinicialFormGroup.get('historyNotes').value;
     procedureRequest.note = [annotation];
     this.saveQuestionnaireResponse();
+  }
+
+  createEncounter() {
+    const encounter = new FHIR.Encounter;
+
+    encounter.status = 'finisihed';
+    encounter.resourceType = 'Encounter';
+
+    this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
+      data => {
+        console.log(data);
+      },
+      error => {
+        console.log(error);
+      }
+    );
+
+  }
+
+  addImmunization(data) {
+    const immunization = new FHIR.Immunization;
+    const encounterReference = new FHIR.Reference;
+    const patientReference = new FHIR.Reference;
+    const site = new FHIR.CodeableConcept;
+    const siteCoding = new FHIR.Coding;
+    const vaccine = new FHIR.CodeableConcept;
+    const vaccineCoding = new FHIR.Coding;
+    const doseCoding = new FHIR.Coding;
+    site.coding = [];
+    vaccine.coding = [];
+
+    encounterReference.reference = 'Encounter/' +  data['id'];
+    patientReference.reference = 'Patient/' + this.episodeOfCare['patient']['reference'];
+
+    doseCoding.code = 'mg';
+    doseCoding.system = 'http://unitsofmeasure.org';
+    doseCoding.value = this.vaccinationFormGroup.get('dose').value;
+
+    vaccineCoding.code = this.vaccinationFormGroup.get('vaccine').value;
+    vaccineCoding.system = 'http://hl7.org/fhir/sid/cvx';
+
+
+    siteCoding.code = this.vaccinationFormGroup.get('site').value;
+    siteCoding.system = 'http://hl7.org/fhir/v3/ActSite';
+    this.siteList.forEach(site => {
+      if (this.vaccinationFormGroup.get('site').value === site.value) {
+        siteCoding.display = site['viewValue'];
+      }
+    });
+
+    site.coding.push(siteCoding);
+    immunization.encounter = encounterReference;
+    immunization.site = site;
+    immunization.patient = patientReference;
+    immunization.lotNumber = this.vaccinationFormGroup.get('lotNumber').value;
+    immunization.date = this.vaccinationFormGroup.get('dateAdministered').value;
+    immunization.doseQuantity = doseCoding;
+    // if (immunization.date)
   }
 }

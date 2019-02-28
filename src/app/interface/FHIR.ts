@@ -80,6 +80,7 @@ export class Coding extends FHIRElement {
     code: string;
     display: string;
     userSelected: boolean;
+    value: string;
 
     deserialize(jsonObject: any): Coding {
         const that = this;

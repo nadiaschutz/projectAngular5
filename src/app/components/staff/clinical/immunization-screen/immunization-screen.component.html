@@ -163,4 +163,23 @@
 
     </div>
   </div>
+
+  <div class="row">
+    <div class="card immunization-card">
+      <div class="card-body">
+        <form [formGroup]="vaccinationFormGroup" novalidate class="center-align">
+          <div class="col">
+              <label for="dateAdministered">Date Administered</label>
+              <input type="text" class="form-control" formControlName="dateAdministered" id="dateAdministered" name="dateAdministered">
+              <div *ngIf="vaccinationFormGroup.controls['dateAdministered'].invalid
+                        && (vaccinationFormGroup.controls['dateAdministered'].touched || vaccinationFormGroup.controls['dateAdministered'].dirty)">
+                <div class="error-message">
+                  Must be 9 characters characters long
+                </div>
+              </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
