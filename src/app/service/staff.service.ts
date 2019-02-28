@@ -8,6 +8,7 @@ import * as FHIR from '../interface/FHIR';
 @Injectable({
   providedIn: 'root'
 })
+
 export class StaffService {
 
   selectedEpisodeId = '';
@@ -266,6 +267,12 @@ export class StaffService {
     return this.http.post(environment.queryURI + '/Immunization/', data, {
       headers: this.getPostHeaders()
     });
+  }
+
+  getAdministerededVaccinesFromServer(episodeOfCareId) {
+    return this.http.get(
+      environment.queryURI + '/Immunization?encounter.identifier=VACCINE-ENCOUNTER&encounter.episodeofcare='
+      + episodeOfCareId, {headers: this.getHeaders()});
   }
 
   getNoCacheHeaders() {

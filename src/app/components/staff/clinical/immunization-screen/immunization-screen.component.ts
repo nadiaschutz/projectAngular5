@@ -35,6 +35,7 @@ export class ImmunizationScreenComponent implements OnInit {
   minDate: Date;
   maxDate: Date;
 
+  administeredVaccines = [];
   vaccineList = [];
   cliniciansList = [];
   selectedVaccine;
@@ -86,6 +87,16 @@ export class ImmunizationScreenComponent implements OnInit {
             },
             error => {
               console.log(error);
+            },
+            () => {
+              this.staffService.getAdministerededVaccinesFromServer(this.episodeOfCare['id']).subscribe(
+                data => {
+                  this.processAdministeredVaccines(data);
+                },
+                error => {
+                  console.log(error);
+                }
+              );
             }
           );
 
@@ -139,6 +150,48 @@ export class ImmunizationScreenComponent implements OnInit {
               enableClinicalPiece = true;
             }
           );
+      }
+    }
+  }
+
+  processAdministeredVaccines(data) {
+    if (data) {
+      if (data['entry']) {
+        for (const currentEntry of data['entry']) {
+          const individualEntry = currentEntry['resource'];
+          const temp = {};
+
+          temp['dateAdmined'] = individualEntry['date'];
+          individualEntry['vaccineCode']['coding'].forEach(codeFound => {
+            temp['vaccine'] = {
+              'code': codeFound['code'],
+              'display': codeFound['display']
+            };
+          });
+
+          individualEntry['site']['coding'].forEach(siteFound => {
+            temp['site'] = {
+              'code': siteFound['code'],
+              'display': siteFound['display']
+            };
+          });
+          temp['dose'] = individualEntry['doseQuantity']['value'] + ' ' + individualEntry['doseQuantity']['code'];
+          temp['name'] = individualEntry['note'][0]['text'];
+          temp['lotNumber'] = individualEntry['lotNumber'];
+          temp['expirationDate'] = individualEntry['expirationDate'];
+
+          this.staffService.getAnyFHIRObjectByReference('/'
+            + individualEntry['practitioner'][0]['actor']['reference']).subscribe(
+              practitioner => {
+                if (practitioner) {
+                  temp['adminBy'] = this.utilService.getNameFromResource(practitioner);
+                }
+              }
+            );
+
+          this.administeredVaccines.push(temp);
+          console.log(temp);
+        }
       }
     }
   }
@@ -406,7 +459,7 @@ export class ImmunizationScreenComponent implements OnInit {
 
   }
 
-  addImmunization(data) {
+  addImmunization(data: any) {
     const immunization = new FHIR.Immunization;
     const encounterReference = new FHIR.Reference;
     const patientReference = new FHIR.Reference;
@@ -417,17 +470,19 @@ export class ImmunizationScreenComponent implements OnInit {
     const doseCoding = new FHIR.Coding;
     const practitioner = new FHIR.PractitionerForImmunization;
     const identifier = new FHIR.Identifier;
+    const note = new FHIR.Annotation;
     practitioner.actor = new FHIR.Reference;
     site.coding = [];
     vaccine.coding = [];
     immunization.identifier = [];
+    immunization.note = [];
 
     identifier.value = 'VACCINATION';
 
     const practitionerObject = this.vaccinationFormGroup.get('adminBy').value;
     practitioner.actor.reference = 'Practitioner/' + practitionerObject['id'];
     encounterReference.reference = 'Encounter/' + data['id'];
-    patientReference.reference =  this.episodeOfCare['patient']['reference'];
+    patientReference.reference = this.episodeOfCare['patient']['reference'];
 
     doseCoding.code = 'mg';
     doseCoding.system = 'http://unitsofmeasure.org';
@@ -440,9 +495,9 @@ export class ImmunizationScreenComponent implements OnInit {
 
     siteCoding.code = this.vaccinationFormGroup.get('site').value;
     siteCoding.system = 'http://hl7.org/fhir/v3/ActSite';
-    this.siteList.forEach(site => {
-      if (this.vaccinationFormGroup.get('site').value === site.value) {
-        siteCoding.display = site['viewValue'];
+    this.siteList.forEach(siteFound => {
+      if (this.vaccinationFormGroup.get('site').value === siteFound['value']) {
+        siteCoding.display = siteFound['viewValue'];
       }
     });
 
@@ -451,7 +506,10 @@ export class ImmunizationScreenComponent implements OnInit {
     const dateAdmined = formatDate(this.vaccinationFormGroup.get('dateAdministered').value, 'yyyy-MM-dd', 'en');
     const expiryDate = formatDate(this.vaccinationFormGroup.get('expirationDate').value, 'yyyy-MM-dd', 'en');
 
+    note.text = this.vaccinationFormGroup.get('productName').value;
+
     immunization.identifier.push(identifier);
+    immunization.note.push(note);
     immunization.practitioner = practitioner;
     immunization.encounter = encounterReference;
     immunization.site = site;
@@ -471,6 +529,9 @@ export class ImmunizationScreenComponent implements OnInit {
       },
       error => {
         console.log(error);
+      },
+      () => {
+        this.processAdministeredVaccines(this.episodeOfCare['id']);
       }
     );
   }

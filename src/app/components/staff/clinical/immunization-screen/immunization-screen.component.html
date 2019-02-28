@@ -168,6 +168,32 @@
         Recent Immunizations
       </div>
       <div class="card-body">
+          <table class="table  table-hover">
+              <thead class="header-table">
+                <tr>
+                  <th scope="col">Date Administered</th>
+                  <th scope="col">Vaccine</th>
+                  <th scope="col">Dose</th>
+                  <th scope="col">Site</th>
+                  <th scope="col">Product Name</th>
+                  <th scope="col">Lot #</th>
+                  <th scope="col">Expiration Date</th>
+                  <th scope="col">Administered By</th>
+                </tr>
+              </thead>
+              <tbody class="body-table">
+                <tr *ngFor="let vaccine of administeredVaccines">
+                  <td>{{vaccine['dateAdmined']}}</td>
+                  <td>{{vaccine['vaccine']['display']}}</td>
+                  <td>{{vaccine['dose']}}</td>
+                  <td>{{vaccine['site']['display']}}</td>
+                  <td>{{vaccine['name']}}</td>
+                  <td>{{vaccine['lotNumber']}}</td>
+                  <td>{{vaccine['expirationDate']}}</td>
+                  <td>{{vaccine['adminBy']}}</td>
+                </tr>
+              </tbody>
+            </table>
       </div>
 
     </div>
