@@ -26,9 +26,11 @@ export class ImmunizationScreenComponent implements OnInit {
 
   showVaccineForm = false;
   switchClinicalChecklist = false;
+  hasPreviousHistory = false;
   episodeOfCare;
   questionnaireID;
   questionnaireResponse;
+  newNoteValue;
 
   datePickerConfig: Partial<BsDatepickerConfig>;
 
@@ -234,7 +236,7 @@ export class ImmunizationScreenComponent implements OnInit {
   processClinicalQuestionnaireResponseForHistory(data) {
     if (data) {
       if (data['entry']) {
-        this.showVaccineForm = true;
+        this.hasPreviousHistory = true;
         for (const currentEntry of data['entry']) {
           const individualEntry = currentEntry['resource'];
           this.questionnaireResponse = individualEntry;
@@ -342,7 +344,7 @@ export class ImmunizationScreenComponent implements OnInit {
     });
 
     questionnaireResponse.resourceType = 'QuestionnaireResponse';
-    questionnaireResponse.subject.reference = 'Patient/' + this.episodeOfCare['patient'][
+    questionnaireResponse.subject.reference = this.episodeOfCare['patient'][
       'reference'
     ];
     questionnaireResponse.questionnaire.reference =
@@ -356,8 +358,16 @@ export class ImmunizationScreenComponent implements OnInit {
     this.staffService.saveClinicalQuestionnaireResponse(JSON.stringify(questionnaireResponse)).subscribe(
       data => {
         if (data) {
+          this.questionnaireResponse = data;
           console.log(data);
         }
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.checkboxHistoryFormDisabled = !this.checkboxHistoryFormDisabled;
+        location.reload();
       }
     );
   }
@@ -425,7 +435,18 @@ export class ImmunizationScreenComponent implements OnInit {
     const annotation = new FHIR.Annotation();
     annotation.text = this.clinicialFormGroup.get('historyNotes').value;
     procedureRequest.note = [annotation];
-    this.saveQuestionnaireResponse();
+
+    this.staffService.saveProcedureRequest(JSON.stringify(procedureRequest)).subscribe(
+      data => {
+        console.log(data);
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.saveQuestionnaireResponse();
+      }
+    );
   }
 
   createEncounter() {
@@ -534,6 +555,34 @@ export class ImmunizationScreenComponent implements OnInit {
         this.processAdministeredVaccines(this.episodeOfCare['id']);
       }
     );
+  }
+
+  updateQuestionnaireResponse() {
+    for (const item of this.questionnaireResponse['item']) {
+      if (item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ4' && this.newNoteValue) {
+        const temp = {};
+        temp['valueString'] = this.newNoteValue;
+        item['answer'].push(temp);
+        console.log(item, this.questionnaireResponse);
+      }
+    }
+
+    this.staffService.updateClinicalQuestionnaireResponse(
+      this.questionnaireResponse['id'], JSON.stringify(this.questionnaireResponse)).subscribe(
+      data => {
+        console.log('SUCESS', data);
+        this.questionnaireResponse = data;
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.checkboxHistoryFormDisabled = !this.checkboxHistoryFormDisabled;
+      }
+    );
+    // if () {
+    //   console.log(this.newNoteValue);
+    // }
   }
 
 }
