@@ -259,7 +259,13 @@ export class StaffService {
   }
 
   getVaccineList() {
-    return this.http.get('/src/app/components/staff/clinical/immunization-screen/vaccine-list.json')
+    return this.http.get('/src/app/components/staff/clinical/immunization-screen/vaccine-list.json');
+  }
+
+  createImmunizationInfo(data) {
+    return this.http.post(environment.queryURI + '/Immunization/', data, {
+      headers: this.getPostHeaders()
+    });
   }
 
   getNoCacheHeaders() {

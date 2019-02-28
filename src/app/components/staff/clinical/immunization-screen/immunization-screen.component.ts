@@ -391,20 +391,18 @@ export class ImmunizationScreenComponent implements OnInit {
     encounter.subject = patient;
     encounter.episodeOfCare.push(eoc);
     encounter.identifier.push(identifier);
-    encounter.status = 'finisihed';
+    encounter.status = 'finished';
     encounter.resourceType = 'Encounter';
-    encounter.id = '12333';
     console.log(encounter);
 
-    this.addImmunization(encounter);
-    // this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
-    //   data => {vaccination
-    //     console.log(data);
-    //   },
-    //   error => {
-    //     console.log(error);
-    //   }
-    // );
+    this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
+      data => {
+        this.addImmunization(data);
+      },
+      error => {
+        console.log(error);
+      }
+    );
 
   }
 
@@ -429,7 +427,7 @@ export class ImmunizationScreenComponent implements OnInit {
     const practitionerObject = this.vaccinationFormGroup.get('adminBy').value;
     practitioner.actor.reference = 'Practitioner/' + practitionerObject['id'];
     encounterReference.reference = 'Encounter/' + data['id'];
-    patientReference.reference = 'Patient/' + this.episodeOfCare['patient']['reference'];
+    patientReference.reference =  this.episodeOfCare['patient']['reference'];
 
     doseCoding.code = 'mg';
     doseCoding.system = 'http://unitsofmeasure.org';
@@ -463,8 +461,18 @@ export class ImmunizationScreenComponent implements OnInit {
     immunization.expirationDate = expiryDate;
     immunization.doseQuantity = doseCoding;
     immunization.vaccineCode = vaccine;
+    immunization.resourceType = 'Immunization';
 
-    console.log(immunization);
+    this.staffService.createImmunizationInfo(JSON.stringify(immunization)).subscribe(
+      dataImmunization => {
+        if (data) {
+          console.log(dataImmunization);
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
 }
