@@ -29,6 +29,11 @@
       <a (click)="acccountCreation()">Add New Account</a>
     </li>
   </div>
+  <div [ngClass]="roleInSession">
+    <li (click)="adminHomeScreen()" class="menu-item">
+      <a (click)="adminHomeScreen()">Admin Home Screen</a>
+    </li>
+  </div>
   <!-- </div> -->
   <div [ngClass]="roleInSession">
     <li (click)="labRequisition()" class="menu-item">

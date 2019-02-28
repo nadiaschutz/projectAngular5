@@ -8,6 +8,7 @@ import { UtilService } from '../../../service/util.service';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { routerNgProbeToken } from '@angular/router/src/router_module';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-list-page',
@@ -167,6 +168,7 @@ export class ListPageComponent implements OnInit {
   }
 
   getClientName(patientReference: string) {
+  
     let lastName = '';
     let firstName = '';
     if (patientReference) {
@@ -191,7 +193,7 @@ export class ListPageComponent implements OnInit {
   getQuestionnaireReponseItem(episodeOfCareId, itemText) {
     let answer = '';
     const questionnaireResponse = this.questionnaireResponseList[episodeOfCareId];
-    console.log(this.questionnaireResponseList[episodeOfCareId]);
+    // console.log(this.questionnaireResponseList[episodeOfCareId]);
 
     if (questionnaireResponse) {
       if (questionnaireResponse['identifier']) {
@@ -212,12 +214,21 @@ export class ListPageComponent implements OnInit {
   }
 
   getDaysInQueue(startDateString) {
+    // if (startDateString.length > 0) {
+    //   const startDate = new Date(startDateString);
+    //   const currentDate = new Date;
+    //   const diff = currentDate.getTime() - startDate.getTime();
+    //   return Math.ceil(diff / (1000 * 3600 * 24));
+    // }
     if (startDateString.length > 0) {
-      const startDate = new Date(startDateString);
-      const currentDate = new Date;
-      const diff = currentDate.getTime() - startDate.getTime();
-      return Math.ceil(diff / (1000 * 3600 * 24));
+      // const startDate = new Date(startDateString);
+      // const currentDate = new Date;
+      // const diff = currentDate.getTime() - startDate.getTime();
+      // return Math.ceil(diff / (1000 * 3600 * 24));
+      return moment().diff(moment(startDateString), 'days');
     }
+
+    return null;
   }
 
   assignEpisodeOfCare() {

@@ -1,0 +1,332 @@
+<div class="container">
+
+  <div class="edit-button-row">
+    <button type="button" class="btn regular-dark-button float-right" (click)="viewDetailedContext()">
+      View Detailed Context
+    </button>
+  </div>
+
+  <div class="main-header">
+    <h5>Immunization Function</h5>
+  </div>
+
+  <div class="row" *ngIf="serviceRequestSummary">
+    <div class="card immunization-card">
+      <div class="card-body">
+        <div class="col-4 float-left">Service Request ID: {{serviceRequestSummary['id']}}</div>
+        <div class="col-4 float-right">Client Name: {{serviceRequestSummary['name']}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="!hasPreviousHistory">
+    <div class="card immunization-card">
+      <div class="card-header">
+        Historical Information
+        <div class="float-right">
+          <button class="btn regular-button" (click)="checkboxHistoryFormDisabled = !checkboxHistoryFormDisabled">Update
+            History</button>
+
+        </div>
+      </div>
+      <div class="card-body" *ngFor="let item of clinicalQuestionnaireArray">
+        <div *ngIf="item['code'][0]['code'] === 'IMMUNREVQ1'">
+          <ul class="clinical-checklist">
+            <li>
+              <label class="label-checklist">{{item.text | uppercase}}</label>
+              <section *ngIf="item.items">
+                <div *ngFor="let element of item.items" class="clinical-checklist-items">
+                  <label class="label-checklist ">
+                    <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                      [(ngModel)]="element.checked" *ngIf="element['type'] !== 'group'">
+                    <span class="checklist-item">{{element.text}}</span>
+                  </label>
+                </div>
+              </section>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="item['code'][0]['code'] === 'IMMUNREVQ2'">
+          <ul class="clinical-checklist">
+            <li>
+              <label class="label-checklist">{{item.text | uppercase}}</label>
+              <section *ngIf="item.items">
+                <div *ngFor="let element of item.items" class="clinical-checklist-items">
+                  <label class="label-checklist">
+                    <span class="checklist-items">{{element.text}}</span>
+                  </label>
+                  <div *ngIf="element['item']">
+                    <div *ngFor="let innerElement of element['item']" class="clinical-checklist-items">
+                      <label class="label-checklist">
+                        <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                          [(ngModel)]="innerElement.checked">
+                        <span class="checklist-items">{{innerElement['text']}}</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="item['code'][0]['code'] === 'IMMUNREVQ3'">
+          <ul class="clinical-checklist">
+            <li>
+              <label class="label-checklist">{{item.text | uppercase}}</label>
+              <section *ngIf="item.items">
+                <div *ngFor="let element of item.items" class="clinical-checklist-items">
+                  <label class="label-checklist">
+                    <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                      [(ngModel)]="element.checked" *ngIf="element['type'] !== 'group'">
+                    <span class="checklist-items">{{element.text}}</span>
+                  </label>
+                </div>
+              </section>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="item['code'][0]['code'] === 'IMMUNREVQ4'" class="notes-row">
+          <div class="clinical-checklist-items">
+            <label class="label-checklist">{{item.text | uppercase}}</label>
+            <div *ngIf="!checkboxHistoryFormDisabled">
+
+              <form [formGroup]="clinicialFormGroup" novalidate>
+                <input type="text" name="historyNotes" id="historyNotes" formControlName="historyNotes" class="form-control"
+                  placeholder="additional notes">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer" *ngIf="!checkboxHistoryFormDisabled">
+        <div class="float-right">
+          <button class="btn regular-button" (click)="saveProcedureRequest()">
+            Save Updates
+          </button>
+          <button class="btn regular-button add-margin-left" (click)="checkboxHistoryFormDisabled = !checkboxHistoryFormDisabled">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- <button class="btn regular-button" (click)="addVaccination()"> Add new vaccination</button> -->
+
+  </div>
+
+  <div class="row" *ngIf="hasPreviousHistory">
+    <div class="card immunization-card">
+      <div class="card-header">
+        Historical Information
+        <div class="float-right">
+          <button class="btn regular-button" (click)="checkboxHistoryFormDisabled = !checkboxHistoryFormDisabled">Update
+            History
+          </button>
+        </div>
+      </div>
+      <div class="card-body" *ngFor="let item of questionnaireResponse['item']">
+        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ1'">
+          <ul class="clinical-checklist">
+            <li>
+              <label class="label-checklist">{{item.text | uppercase}}</label>
+              <section>
+                <div *ngFor="let itemDepthTwo of item['item']" class="clinical-checklist-items">
+                  <label class="label-checklist ">
+                    <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                      [(ngModel)]="itemDepthTwo['answer'][1]['valueBoolean']">
+                    <span class="checklist-item">{{itemDepthTwo.text}}</span>
+                  </label>
+                </div>
+              </section>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ2'">
+          <ul class="clinical-checklist">
+            <li>
+              <label class="label-checklist">{{item.text | uppercase}}</label>
+              <section *ngIf="item.item">
+                <div *ngFor="let itemDepthTwo of item['item']" class="clinical-checklist-items">
+                  <label class="label-checklist">
+                    <span class="checklist-items">{{itemDepthTwo.text}}</span>
+                  </label>
+                  <div *ngIf="itemDepthTwo['item']">
+                    <div *ngFor="let innerElement of itemDepthTwo['item']" class="clinical-checklist-items">
+                      <label class="label-checklist">
+                        <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                          [(ngModel)]="innerElement['answer'][0]['valueBoolean']">
+                        <span class="checklist-items">{{innerElement['text']}}</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ3'">
+          <ul class="clinical-checklist">
+            <li>
+              <label class="label-checklist">{{item.text | uppercase}}</label>
+              <section>
+                <div *ngFor="let itemDepthTwo of item['item']" class="clinical-checklist-items">
+                  <label class="label-checklist">
+                    <input type="checkbox" [disabled]="checkboxHistoryFormDisabled" class="clinical-checklist-checkbox"
+                      [(ngModel)]="itemDepthTwo['answer'][1]['valueBoolean']">
+                    <span class="checklist-item">{{itemDepthTwo.text}}</span>
+                  </label>
+                </div>
+              </section>
+            </li>
+          </ul>
+        </div>
+        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ4'" class="notes-row">
+          <div class="clinical-checklist-items">
+            <label class="label-checklist">{{item.text | uppercase}}</label>
+            <!-- <form [formGroup]="clinicialFormGroup" novalidate>
+              <input type="text" name="historyNotes" id="historyNotes" formControlName="historyNotes" class="form-control"
+              placeholder="additional notes">
+            </form> -->
+            <div *ngFor="let text of item['answer']">
+              <div *ngIf="text['valueString']">
+                <p>{{text['valueString']}}</p>
+              </div>
+            </div>
+            <div *ngIf="!checkboxHistoryFormDisabled">
+              <label for="newNote">Add a note</label>
+              <input type="text" class="form-control" placeholder="Enter" [(ngModel)]="newNoteValue" id="newNote" name="newNote">
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer" *ngIf="!checkboxHistoryFormDisabled">
+        <div class="float-right">
+          <button class="btn regular-button" (click)="updateQuestionnaireResponse()">
+            Save Updates
+          </button>
+          <button class="btn regular-button add-margin-left" (click)="checkboxHistoryFormDisabled = !checkboxHistoryFormDisabled">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- <button class="btn regular-button" (click)="addVaccination()"> Add new vaccination</button> -->
+
+  </div>
+
+  <div class="row">
+    <div class="card immunization-card">
+
+      <div class="card-header">
+        Recent Immunizations
+        <div class="float-right">
+
+          <button class="btn special-button" (click)="showVaccineForm = true">
+            Add a Vaccine
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <table class="table  table-hover">
+          <thead class="header-table">
+            <tr>
+              <th scope="col">Date Administered</th>
+              <th scope="col">Vaccine</th>
+              <th scope="col">Dose</th>
+              <th scope="col">Site</th>
+              <th scope="col">Product Name</th>
+              <th scope="col">Lot #</th>
+              <th scope="col">Expiration Date</th>
+              <th scope="col">Administered By</th>
+            </tr>
+          </thead>
+          <tbody class="body-table">
+            <tr *ngFor="let vaccine of administeredVaccines">
+              <td>{{vaccine['dateAdmined']}}</td>
+              <td>{{vaccine['vaccine']['display']}}</td>
+              <td>{{vaccine['dose']}}</td>
+              <td>{{vaccine['site']['display']}}</td>
+              <td>{{vaccine['name']}}</td>
+              <td>{{vaccine['lotNumber']}}</td>
+              <td>{{vaccine['expirationDate']}}</td>
+              <td>{{vaccine['adminBy']}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="row" *ngIf="showVaccineForm">
+    <div class="card immunization-card">
+      <div class="card-body">
+        <form [formGroup]="vaccinationFormGroup" novalidate class="center-align">
+
+          <div class="row">
+            <div class="col">
+              <label for="dateAdministered">Date Administered</label>
+              <input class="form-control" type="text" placeholder="Datepicker" formControlName="dateAdministered" id="dateAdministered"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate">
+            </div>
+            <div class="col">
+              <label for="vaccine">Vaccine</label>
+              <select class="form-control" formControlName="vaccine" id="vaccine">
+                <option *ngFor="let vaccineFound of vaccineList" [ngValue]="vaccineFound">
+                  {{vaccineFound.display}}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="dose">Dose (in mg) </label>
+              <input type="text" class="form-control" placeholder="Enter" formControlName="dose" id="dose">
+            </div>
+            <div class="col">
+              <label for="site">Site</label>
+              <select class="form-control" formControlName="site" id="site">
+                <option *ngFor="let sitePicked of siteList" [value]="sitePicked.value">
+                  {{sitePicked.viewValue}}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="productName">Product Name</label>
+              <input type="text" class="form-control" placeholder="Enter" formControlName="productName" id="productName">
+            </div>
+            <div class="col">
+              <label for="lotNumber">Lot #</label>
+              <input type="text" class="form-control" placeholder="Enter" formControlName="lotNumber" id="lotNumber">
+            </div>
+            <div class="col">
+              <label for="expirationDate">Expiration Date</label>
+              <input class="form-control" type="text" placeholder="Datepicker" formControlName="expirationDate" id="expirationDate"
+                bsDatepicker [bsConfig]='datePickerConfig'>
+            </div>
+            <div class="col" *ngIf="cliniciansList">
+              <label for="adminBy">Administered By</label>
+              <select class="form-control" formControlName="adminBy" id="adminBy">
+                <option *ngFor="let clinician of cliniciansList" [ngValue]="clinician">
+                  {{clinician.name}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer">
+        <div class="float-right">
+          <button class="btn regular-button" (click)="createEncounter()">
+            Save Immunization
+          </button>
+          <button class="btn regular-button add-margin-left" (click)="showVaccineForm = !showVaccineForm">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
