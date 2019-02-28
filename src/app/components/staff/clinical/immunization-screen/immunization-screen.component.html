@@ -143,10 +143,15 @@
           <div class="clinical-checklist-items">
             <label class="label-checklist">{{item.text | uppercase}}</label>
             <!-- <form [formGroup]="clinicialFormGroup" novalidate>
-                  <input type="text" name="historyNotes" id="historyNotes" formControlName="historyNotes" class="form-control"
-                    placeholder="additional notes">
-                </form> -->
+              <input type="text" name="historyNotes" id="historyNotes" formControlName="historyNotes" class="form-control"
+              placeholder="additional notes">
+            </form> -->
             <p>{{item['answer'][1]['valueString']}}</p>
+
+            <div *ngIf="!checkboxHistoryFormDisabled">
+              <button class="btn regular-button">add note</button>
+
+            </div>
           </div>
         </div>
       </div>
@@ -212,11 +217,11 @@
             <div class="col">
               <label for="expirationDate">Expiration Date</label>
               <input class="form-control" type="text" placeholder="Datepicker" formControlName="expirationDate" id="expirationDate"
-                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate">
+                bsDatepicker [bsConfig]='datePickerConfig'>
             </div>
             <div class="col" *ngIf="cliniciansList">
               <label for="adminBy">Administered By</label>
-              <select class="form-control" formControlName="adminBy" id="adminBy" (change)="printThis($event)">
+              <select class="form-control" formControlName="adminBy" id="adminBy">
                 <option *ngFor="let clinician of cliniciansList" [ngValue]="clinician">
                   {{clinician.name}}
                 </option>

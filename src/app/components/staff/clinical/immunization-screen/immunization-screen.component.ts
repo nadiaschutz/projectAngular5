@@ -109,7 +109,6 @@ export class ImmunizationScreenComponent implements OnInit {
         this.staffService.getAnyFHIRObjectByCustomQuery('QuestionnaireResponse?context='
           + episodeId + '&identifier=' + queryString).subscribe(
             data => {
-              console.log('called');
               if (data) {
                 console.log(data);
                 if (data['total'] > 0) {
@@ -174,7 +173,6 @@ export class ImmunizationScreenComponent implements OnInit {
             }
             this.clinicalQuestionnaireArray.push(temp);
           });
-          console.log(this.clinicalQuestionnaireArray);
         }
       }
     }
@@ -311,8 +309,18 @@ export class ImmunizationScreenComponent implements OnInit {
     );
   }
 
-  displayFHIRObject() {
-    console.log(this.questionnaireResponse);
+  fetchAllClinicians() {
+    this.staffService.getAllClinicians().subscribe(data => {
+      if (data['entry']) {
+        data['entry'].forEach(element => {
+          const clinician = element['resource'];
+          this.cliniciansList.push({
+            id: clinician['id'],
+            name: this.utilService.getNameFromResource(clinician)
+          });
+        });
+      }
+    });
   }
 
   saveProcedureRequest() {
@@ -370,25 +378,27 @@ export class ImmunizationScreenComponent implements OnInit {
   createEncounter() {
     const encounter = new FHIR.Encounter;
     const identifier = new FHIR.Identifier;
+    const patient = new FHIR.Reference;
     const eoc = new FHIR.Reference;
 
     eoc.reference = 'EpisodeOfCare/' + this.episodeOfCare['id'];
+    patient.reference = this.episodeOfCare['patient']['reference'];
 
     encounter.identifier = [];
+    encounter.episodeOfCare = [];
 
     identifier.value = 'VACCINE-ENCOUNTER';
-
-    encounter.episodeOfCare = [];
+    encounter.subject = patient;
     encounter.episodeOfCare.push(eoc);
     encounter.identifier.push(identifier);
     encounter.status = 'finisihed';
     encounter.resourceType = 'Encounter';
     encounter.id = '12333';
-    console.log('test');
+    console.log(encounter);
 
     this.addImmunization(encounter);
     // this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
-    //   data => {
+    //   data => {vaccination
     //     console.log(data);
     //   },
     //   error => {
@@ -407,9 +417,17 @@ export class ImmunizationScreenComponent implements OnInit {
     const vaccine = new FHIR.CodeableConcept;
     const vaccineCoding = new FHIR.Coding;
     const doseCoding = new FHIR.Coding;
+    const practitioner = new FHIR.PractitionerForImmunization;
+    const identifier = new FHIR.Identifier;
+    practitioner.actor = new FHIR.Reference;
     site.coding = [];
     vaccine.coding = [];
+    immunization.identifier = [];
 
+    identifier.value = 'VACCINATION';
+
+    const practitionerObject = this.vaccinationFormGroup.get('adminBy').value;
+    practitioner.actor.reference = 'Practitioner/' + practitionerObject['id'];
     encounterReference.reference = 'Encounter/' + data['id'];
     patientReference.reference = 'Patient/' + this.episodeOfCare['patient']['reference'];
 
@@ -432,34 +450,21 @@ export class ImmunizationScreenComponent implements OnInit {
 
     vaccine.coding.push(vaccineCoding);
     site.coding.push(siteCoding);
+    const dateAdmined = formatDate(this.vaccinationFormGroup.get('dateAdministered').value, 'yyyy-MM-dd', 'en');
+    const expiryDate = formatDate(this.vaccinationFormGroup.get('expirationDate').value, 'yyyy-MM-dd', 'en');
+
+    immunization.identifier.push(identifier);
+    immunization.practitioner = practitioner;
     immunization.encounter = encounterReference;
     immunization.site = site;
     immunization.patient = patientReference;
     immunization.lotNumber = this.vaccinationFormGroup.get('lotNumber').value;
-    immunization.date = this.vaccinationFormGroup.get('dateAdministered').value;
+    immunization.date = dateAdmined;
+    immunization.expirationDate = expiryDate;
     immunization.doseQuantity = doseCoding;
     immunization.vaccineCode = vaccine;
-    // if (immunization.date)
 
     console.log(immunization);
   }
 
-  // printThis(event) {
-  //   this.selectedVaccine = this.vaccinationFormGroup.get('vaccine').value;
-  //   console.log(this.selectedVaccine);
-  // }
-
-  fetchAllClinicians() {
-    this.staffService.getAllClinicians().subscribe(data => {
-      if (data['entry']) {
-        data['entry'].forEach(element => {
-          const clinician = element['resource'];
-          this.cliniciansList.push({
-            id: clinician['id'],
-            name: this.utilService.getNameFromResource(clinician)
-          });
-        });
-      }
-    });
-  }
 }

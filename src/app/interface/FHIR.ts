@@ -989,13 +989,13 @@ export class Immunization extends Resource implements Serializable<Immunization>
     vaccineCode: CodeableConcept;
     patient: Reference;
     encounter: Reference;
-    date: Date;
+    date: string;
     primarySource: boolean;
     reportOrigin: CodeableConcept;
     location: Reference;
     manufacturer: Reference;
     lotNumber: string;
-    expirationDate: Date;
+    expirationDate: string;
     site: CodeableConcept;
     route: CodeableConcept;
     doseQuantity: Coding;
