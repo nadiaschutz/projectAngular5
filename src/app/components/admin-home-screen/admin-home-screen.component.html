@@ -1,0 +1,256 @@
+<div class="container">
+
+    <div>
+        <div class="main-header">
+            <h5>Admin Home Screen</h5>
+            <!-- <h6>CHANDLER BING > SERVICE REQUEST # > WORK ORDER-HACAT1</h6> -->
+        </div>
+    </div>
+
+    <div class="row">
+        <h5 class="col-3">Filter</h5>
+    </div>
+
+    <form [formGroup]="adminHomeFormGroup" novalidate class="center-align" (ngSubmit)="onSubmit(adminHomeFormGroup)" autocomplete="off">
+        <div class="form-group">
+            <div class="row">
+                <div class="col">
+                    <label for="firstName">First Name</label>
+                    <input type="text" class="form-control value" name="firstName" formControlName="firstName" />
+                </div>
+                <div class="col">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" class="form-control value" name="lastName" formControlName="lastName" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <label for="dob">Date of Birth</label>
+                    <!-- <input class="form-control" type="text" placeholder="Select Date" formControlName="dob" id="dob"
+                        bsDatepicker [bsConfig]='datePickerConfig' red /> -->
+                    <input type="text" placeholder="Date of Birth" class="form-control" bsDatepicker formControlName="dob" id="dob" [bsConfig]='datePickerConfig'>    
+                </div>
+                <div class="col">
+                    <label for="pri">PRI</label>
+                    <input type="text" class="form-control value" name="pri" formControlName="pri" />
+                </div>
+            </div>
+
+            <section class="form-section" *ngIf="showAdvanceSearch">
+                <div class="row">
+                    <div class="col">
+                        <label for="employingDepartment">Employee Department</label>
+                        <select class="form-control" formControlName="employeeDepartment" id="employeeDepartment">
+                            <option value="">(Select)</option>
+                            <option *ngFor="let item of employeeDepartmentList" [value]="item.value">
+                                {{item.text}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="jobLocation">Job Location</label>
+                        <select class="form-control" formControlName="jobLocation" id="jobLocation">
+                            <option value="">(Select)</option>
+                            <option *ngFor="let item of jobLocationList" [value]="item.value">
+                                {{item.text}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="psohp">PSOHP Service</label>
+                        <select class="form-control" formControlName="psohp" id="psohp">
+                            <option value="">(Select)</option>
+                            <option *ngFor="let item of psohpList" [value]="item.value">
+                                {{item.text}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="serviceRequest">Service Request ID#</label>
+                        <input type="text" class="form-control value" name="serviceRequest"
+                            formControlName="serviceRequest" />
+                    </div>
+                </div>
+                <!-- <div class="row">
+                    <div class="col">
+                        <label for="assesmentType">Assesment Type</label>
+                        <select class="form-control" formControlName="assesmentType" id="assesmentType">
+                            <option value="">(Select)</option>
+                            <option *ngFor="let item of assesmentTypeList" [value]="item.Value">
+                                {{item.Text}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="assesmentCat">Assesment CAT</label>
+                        <select class="form-control" formControlName="assesmentCat" id="assesmentCat">
+                            <option value="">(Select)</option>
+                            <option *ngFor="let item of assesmentCatList" [value]="item.Value">
+                                {{item.Text}}
+                            </option>
+                        </select>
+                    </div>
+                </div> -->
+                <div class="row">
+                    <div class="col-6">
+                        <label for="dateRange">Date Range From</label>                        
+                        <input type="text" placeholder="Select Date Range" class="form-control" bsDaterangepicker formControlName="dateRange" id="dateRange" [bsConfig]='datePickerConfig' red>    
+                    </div>
+                    <!-- <div class="col-3">
+                        <div class="form-group">
+                            <label for="dateFrom">Date Range From</label>
+                            <input class="form-control" type="text" placeholder="Select Date" formControlName="dateFrom"
+                                id="dateFrom" bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate"
+                                [maxDate]="maxDate" red>
+                            <div
+                                *ngIf="adminHomeFormGroup.controls['dateFrom'].invalid
+                                            && (adminHomeFormGroup.controls['dateFrom'].touched || adminHomeFormGroup.controls['dateFrom'].dirty)">
+                                <div class="error-message">
+                                    Must enter a valid date
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="dateEnd">Date End</label>
+                            <input class="form-control" type="text" placeholder="Select Date" formControlName="dateEnd"
+                                id="dateEnd" bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate"
+                                [maxDate]="maxDate" red>
+                            <div
+                                *ngIf="adminHomeFormGroup.controls['dateEnd'].invalid
+                                            && (adminHomeFormGroup.controls['dateEnd'].touched || adminHomeFormGroup.controls['dateEnd'].dirty)">
+                                <div class="error-message">
+                                    Must enter a valid date
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    <!-- <div class="col-6">
+                        <label for="processingLocation">Processing Location</label>
+                        <input type="text" class="form-control value" name="processingLocation"
+                            formControlName="processingLocation" />
+                    </div> -->
+                </div>
+                <!-- <div class="col-3">
+                    <div class="form-group">
+                        <div class="col-3" class="chargeback-checkbox">
+                            <input type="checkbox" id="changeBack" name="changeBack" class="form-check-input"
+                                formControlName="changeBack">
+                            <label for="changeBack" class="form-check-label">Charge Back Client</label>
+                        </div>
+                    </div>
+                </div> -->
+            </section>
+        </div>
+
+        <button type="submit" class="btn regular-dark-button" [disabled]="validateForm()">Apply</button>
+        <button type="button" class="btn regular-button" (click)="clear()">Clear</button>
+        
+        <a class="float-right" href="javascript:;" *ngIf="!showAdvanceSearch" (click)="toggleAdvanceSearch()">
+            Show advance filter</a>
+        <a class="float-right" href="javascript:;" *ngIf="showAdvanceSearch" (click)="toggleAdvanceSearch()">
+            Hide advance filter</a>
+    </form>
+
+    <div class="row">
+        <div class="col">
+            <div id="tabs" #tabs>
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" (click)="setTab('All')">All</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" (click)="setTab('On-Hold')">On-Hold</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" (click)="setTab('Validated')">Validated</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" (click)="setTab('Scheduled')">Scheduled</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" (click)="setTab('Assigned')">Assigned</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" (click)="setTab('Work-Completed')">Work-Completed</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" (click)="setTab('Closed')">Closed</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" (click)="setTab('Waiting')">Waiting</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-7">
+            <div class="row">
+                <h5 class="col">Service Request</h5>
+            </div>
+
+            <div *ngFor="let item of serviceRequestList;">
+                
+                <div class="card" *ngIf="renderItemsBasedOnTab(item)">
+                    <div class="card-body">
+                        <div class="card-title">
+                            ID# {{item.id}} - {{item.header}}
+                            <font class="task-status first-letter-uppercase">{{item.status}}</font>
+                        </div>
+                        <p class="card-text">
+                            <strong>Assign to: </strong>{{item.careManager}}
+                        </p>
+                        <p class="card-text">
+                            <strong>Client Name: </strong>{{item.clientName}}
+                        </p>
+                        <p class="card-text">
+                            <strong>Client Department: </strong>{{item.clientDepartment}}
+                        </p>
+                        <p class="card-text">
+                            <strong>Total Days in Queue: </strong>{{item.daysInQueue}}
+                        </p>
+                        <p class="card-text">
+                        
+                            {{item.dateToday}}
+                            <button type="button" class="btn regular-button float-right" (click)="setEOCID(item.eocId)">Work Screen</button>
+                        </p>
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="row">
+                <h5 class="col-3">Task</h5>
+            </div>
+            <div *ngFor="let item of serviceTaskRequestList;">
+                <div class="card" *ngIf="renderTaskItemsBasedOnTab(item)">
+                    <div class="card-body">
+                        <div class="card-title">
+                        {{item.title}}
+                            <font class="task-status first-letter-uppercase">{{item.status}}</font>
+                        </div>
+                        <p class="card-text">
+                            <strong>Assign to: </strong>{{item.careManager}}
+                        </p>
+                        <p class="card-text">
+                            Instructions : {{item.instructions}}
+                        </p>
+                        <p class="card-text">
+                            {{item.authoredOn}}
+                        </p>
+                        <p class="card-text" *ngIf="item.status !='completed'">
+                            <span (click)="taskCompleted(item.id)" style="color: #398ef2; cursor: pointer;">Mark as done</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

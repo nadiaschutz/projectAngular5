@@ -68,6 +68,11 @@ export class StaffService {
     + episodeOfCareId, {headers: this.getHeaders()});
   }
 
+   getEpisodeOfCareEagerLoading(episodeOfCareId) {
+    return  this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_id='
+        + episodeOfCareId, { headers: this.getHeaders() })
+   }
+
   getAllPractitioners() {
     return this.http.get(environment.queryURI +
       '/Practitioner?_revinclude=PractitionerRole:code=admin', {

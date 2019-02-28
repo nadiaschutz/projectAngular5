@@ -87,6 +87,8 @@ export class UserService {
           );
           setTimeout(() => {
             if (sessionStorage.getItem('userRole') === 'admin') {
+              this.router.navigate(['/adminhome']);
+            } else if (sessionStorage.getItem('userRole') === 'manager') {
               this.router.navigate(['/staff/list-page']);
             } else {
               this.router.navigate(['/dashboard']);

@@ -47,6 +47,10 @@ export class SidebarComponent implements OnInit {
     this.router.navigateByUrl('/newaccount');
   }
 
+  adminHomeScreen() {
+    this.router.navigateByUrl('/adminhome');
+  }
+
   labRequisition() {
     this.router.navigateByUrl('/staff/lab-requisition');
   }
