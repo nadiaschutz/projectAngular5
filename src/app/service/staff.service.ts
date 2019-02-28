@@ -258,6 +258,10 @@ export class StaffService {
     });
   }
 
+  getVaccineList() {
+    return this.http.get('/src/app/components/staff/clinical/immunization-screen/vaccine-list.json')
+  }
+
   getNoCacheHeaders() {
     const headers = new HttpHeaders({
       'Content-Type' : 'application/json',

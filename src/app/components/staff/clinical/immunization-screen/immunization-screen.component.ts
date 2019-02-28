@@ -34,6 +34,9 @@ export class ImmunizationScreenComponent implements OnInit {
 
   minDate: Date;
   maxDate: Date;
+
+  vaccineList = [];
+  selectedVaccine;
   constructor(
     private staffService: StaffService,
     private utilService: UtilService,
@@ -47,7 +50,7 @@ export class ImmunizationScreenComponent implements OnInit {
 
   siteList  = [
     { value: 'LA', viewValue: 'Left Arm' },
-    { value: 'RE', viewValue: 'Right Arm' }
+    { value: 'RA', viewValue: 'Right Arm' }
   ];
 
   ngOnInit() {
@@ -61,6 +64,14 @@ export class ImmunizationScreenComponent implements OnInit {
 
     if (sessionStorage.getItem('userRole')) {
       if (sessionStorage.getItem('userRole') === 'clinician') {
+        this.staffService.getVaccineList().subscribe(
+          data => {
+            data['list'].forEach(element => {
+              this.vaccineList.push(element);
+            });
+          }
+        );
+
         this.staffService
           .getAnyFHIRObjectByCustomQuery(
             'EpisodeOfCare/' + sessionStorage.getItem('selectedEpisodeId')
@@ -410,5 +421,10 @@ export class ImmunizationScreenComponent implements OnInit {
     immunization.date = this.vaccinationFormGroup.get('dateAdministered').value;
     immunization.doseQuantity = doseCoding;
     // if (immunization.date)
+  }
+
+  printThis(event) {
+    this.selectedVaccine = this.vaccinationFormGroup.get('vaccine').value;
+    console.log(this.selectedVaccine);
   }
 }

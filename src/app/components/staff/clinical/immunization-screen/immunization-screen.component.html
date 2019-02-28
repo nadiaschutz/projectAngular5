@@ -168,18 +168,50 @@
     <div class="card immunization-card">
       <div class="card-body">
         <form [formGroup]="vaccinationFormGroup" novalidate class="center-align">
-          <div class="col">
+
+          <div class="row">
+            <div class="col">
               <label for="dateAdministered">Date Administered</label>
-              <input type="text" class="form-control" formControlName="dateAdministered" id="dateAdministered" name="dateAdministered">
-              <div *ngIf="vaccinationFormGroup.controls['dateAdministered'].invalid
-                        && (vaccinationFormGroup.controls['dateAdministered'].touched || vaccinationFormGroup.controls['dateAdministered'].dirty)">
-                <div class="error-message">
-                  Must be 9 characters characters long
-                </div>
-              </div>
+              <input class="form-control" type="text" placeholder="Datepicker" formControlName="dateAdministered" id="dateAdministered"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate">
+            </div>
+            <div class="col">
+              <label for="vaccine">Vaccine</label>
+              <select class="form-control" formControlName="vaccine" id="vaccine" (change)="printThis($event)">
+                <option *ngFor="let vaccineFound of vaccineList" [ngValue]="vaccineFound">
+                  {{vaccineFound.display}}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="dose">Dose (in mg) </label>
+              <input type="text" class="form-control" placeholder="Enter" formControlName="dose" id="dose" required>
+            </div>
+            <div class="col">
+              <label for="site">Site</label>
+              <select class="form-control" formControlName="site" id="site">
+                <option *ngFor="let sitePicked of siteList" [value]="sitePicked.value">
+                  {{sitePicked.viewValue}}
+                </option>
+              </select>
+            </div>
           </div>
-        </form>
+          <div class="row">
+            <div class="col">
+              <label for="productName">Product Name</label>
+              <input type="text" class="form-control" placeholder="Enter" formControlName="productName" id="productName">
+            </div>
+            <label for="lotNumber">Lot #/label>
+              <input type="text" class="form-control" placeholder="Enter" formControlName="lotNumber" id="lotNumber">
+          </div>
+          <div class="col">
+            <label for="expirationDate">Expiration Date</label>
+            <input class="form-control" type="text" placeholder="Datepicker" formControlName="expirationDate" id="expirationDate"
+              bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate">
+          </div>
       </div>
+      </form>
     </div>
   </div>
+</div>
 </div>
