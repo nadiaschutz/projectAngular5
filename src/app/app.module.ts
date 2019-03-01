@@ -65,7 +65,8 @@ import { ContactUsFormResolverService } from './service/contact-us-form-resolver
 import { DepartmentListResolverService } from './service/department-list-resolver.service';
 import { FormBuilderComponent } from './components/form-builder/form-builder.component';
 import { ImmunizationScreenComponent } from './components/staff/clinical/immunization-screen/immunization-screen.component';
-import { AudiogramScreenComponent } from './components/staff/clinical/audiogram-screen/audiogram-screen.component'
+import { AudiogramScreenComponent } from './components/staff/clinical/audiogram-screen/audiogram-screen.component';
+import { AssessmentFunctionComponent } from './components/staff/clinical/assessment-function/assessment-function.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -100,6 +101,7 @@ const routes: Routes = [
   { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService]},
   { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
   { path: 'staff/clinical/immunization-screen', component: ImmunizationScreenComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/clinical/assessment-function', component: AssessmentFunctionComponent, canActivate: [AuthGuardService]},
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
@@ -154,7 +156,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     AdminHomeScreenComponent,
     FormBuilderComponent,
     ImmunizationScreenComponent,
-    AudiogramScreenComponent
+    AudiogramScreenComponent,
+    AssessmentFunctionComponent
 
   ],
   imports: [

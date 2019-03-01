@@ -503,7 +503,7 @@ export class ImmunizationScreenComponent implements OnInit {
     encounter.subject = patient;
     encounter.episodeOfCare.push(eoc);
     encounter.identifier.push(identifier);
-    encounter.status = 'finished';
+    encounter.status = 'in-progress';
     encounter.resourceType = 'Encounter';
     console.log(encounter);
 
