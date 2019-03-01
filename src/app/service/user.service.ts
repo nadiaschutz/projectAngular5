@@ -86,7 +86,7 @@ export class UserService {
             this.oauthService.getIdentityClaims()['name']
           );
           setTimeout(() => {
-            if (sessionStorage.getItem('userRole') === 'admin') {
+            if (sessionStorage.getItem('userRole') === 'admin' || sessionStorage.getItem('userRole') === 'clinician') {
               this.router.navigate(['/adminhome']);
             } else if (sessionStorage.getItem('userRole') === 'manager') {
               this.router.navigate(['/staff/list-page']);

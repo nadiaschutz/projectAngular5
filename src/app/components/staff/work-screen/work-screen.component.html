@@ -28,20 +28,13 @@
   
     </div>
     <div class="col">
-        <button (click)="redirectToLabRequisition()" class="btn special-button">Create Lab Requisition</button>
-      </div>
-      <div class="col">
-          <label><strong>Clinician Assigned</strong></label>
-          <select class="form-control select-clinician" required (change)="redirectToAssessmentSelected($event.target.value)">
-            <option value="null"></option>
-            <option *ngFor="let selectedAssessment of assessmentType" [value]="selectedAssessment.value">
-              <span>{{selectedAssessment.viewValue}}</span>
-            </option>
-          </select>
-      </div>
+      <button (click)="redirectToLabRequisition()" class="btn special-button">Create Lab Requisition</button>
+    </div>
+  
   
   </div>
   
+<div class="container">
   <div class="container">
   
     <div class="row">
@@ -54,9 +47,13 @@
           New
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a class="dropdown-item" (click)="openTaskForm()">New Task</a>
-          <a class="dropdown-item" (click)="openNoteForm()">New Note</a>
+          <a class="dropdown-item" (click)="openTaskForm()">Task</a>
+          <a class="dropdown-item" (click)="openNoteForm()">Note</a>
           <a class="dropdown-item" (click)="openDocForm()">New Document</a>
+          <a class="dropdown-item" (click)="redirectToAssessmentSelected('IMMUNIZATION')">New Immunization</a>
+          <a class="dropdown-item" (click)="redirectToAssessmentSelected('AUDIOGRAM')">New Audiogram</a>
+          <a class="dropdown-item" (click)="redirectToAssessmentSelected('TURBTEST')">New Tuberculosis</a>
+          
         </div>
       </div>
     </div>
@@ -407,11 +404,15 @@
       <!-- 2. Care Plan section, shown only when needed -->
   
       <div class="col-5">
+        <!-- <div class="col-6">Worklist</div> -->
+        <!-- <div class="col-6">
+          <button class=" btn regular-button col-6 float-right">Update</button>
+
+        </div> -->
+        <!-- <button class=" btn regular-button col-6">Cancel Work Order</button> -->
         <div #spacer></div>
         <div #boundary>
           <div class="search-box" stickyThing [spacer]="spacer" [boundary]="boundary">
-            <button class=" btn regular-button col-6">Cancel Work Order</button>
-            <button class=" btn regular-button col-6">Update Worklist</button>
             <div *ngFor="let item of carePlanActivities; let i = index">
               <label>
                 <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}"
@@ -561,3 +562,4 @@
   
   </div>
   
+</div>
