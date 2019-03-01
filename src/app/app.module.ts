@@ -65,7 +65,9 @@ import { ContactUsFormResolverService } from './service/contact-us-form-resolver
 import { DepartmentListResolverService } from './service/department-list-resolver.service';
 import { FormBuilderComponent } from './components/form-builder/form-builder.component';
 import { ImmunizationScreenComponent } from './components/staff/clinical/immunization-screen/immunization-screen.component';
-import { AudiogramScreenComponent } from './components/staff/clinical/audiogram-screen/audiogram-screen.component'
+import { AudiogramScreenComponent } from './components/staff/clinical/audiogram-screen/audiogram-screen.component';
+import { AudiogramComponent } from './components/staff/audiogram/audiogram.component';
+import { AudiogramNewComponent } from './components/staff/audiogram-new/audiogram-new.component'
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -100,6 +102,8 @@ const routes: Routes = [
   { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService]},
   { path: 'staff/lab-requisition/:eocId', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
   { path: 'staff/clinical/immunization-screen', component: ImmunizationScreenComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/audiogram/:eocId', component: AudiogramComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/audiogram/new/:eocId', component: AudiogramNewComponent, canActivate: [AuthGuardService]},
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
@@ -154,7 +158,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     AdminHomeScreenComponent,
     FormBuilderComponent,
     ImmunizationScreenComponent,
-    AudiogramScreenComponent
+    AudiogramScreenComponent,
+    AudiogramComponent,
+    AudiogramNewComponent
 
   ],
   imports: [
