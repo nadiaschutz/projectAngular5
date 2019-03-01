@@ -293,6 +293,12 @@ export class ContactDetail extends FHIRElement {
     telecom: ContactPoint;
 }
 
+class Related extends BackboneElement {
+    // TODO - change to Code once code is sorted out
+    type: string;
+    target: Reference;
+}
+
 export class Reference extends FHIRElement {
     reference: string;
     identifier: Identifier;
@@ -363,6 +369,7 @@ export class Answer extends BackboneElement {
     valueReference: Reference;
 }
 
+
 export class FHIROption extends BackboneElement {
     value: any;
 
@@ -393,6 +400,15 @@ export class Context extends BackboneElement {
     sourcePatientInfo: Reference;
 }
 
+export class ReferenceRange extends BackboneElement {
+    low: string;
+    high: string;
+    type: CodeableConcept;
+    appliesTo: CodeableConcept [];
+    age: Range;
+    text: string [];
+}
+
 export class Activity extends BackboneElement {
     outcomeCodeableConcept: CodeableConcept[];
     outcomeReference: Reference[];
@@ -416,6 +432,29 @@ export class Timing extends FHIRElement {
 
 }
 
+export class Component extends BackboneElement {
+    code: CodeableConcept;
+    valueQuantity: Quantity;
+    valueCodeableConcept: CodeableConcept;
+    valueString: string;
+    valueBoolean: boolean;
+    valueRange: Range;
+    valueRatio: Ratio;
+    valueSampledData: SampledData;
+    valueAttachmnet: Attachment;
+    valueTime: string;
+    valueDateTime: Date;
+    valuePeriod: Period;
+    dataAbsentReason: CodeableConcept;
+    interpretation: CodeableConcept;
+    referenceRange: ReferenceRange [];
+}
+
+export class Ratio extends FHIRElement {
+    numerator: Quantity;
+    denominator: Quantity;
+}
+
 export class Input extends BackboneElement {
     type: CodeableConcept;
     value: any;
@@ -426,6 +465,15 @@ export class Output extends BackboneElement {
     value: any;
 }
 
+export class SampledData extends FHIRElement {
+    origin: number;
+    period: number;
+    factor: number;
+    lowerLimit: number;
+    upperLimit: number;
+    dimensions: number;
+    data: string;
+}
 export class Restriction extends BackboneElement {
     repetitions: number;
     preiod: Period;
@@ -969,6 +1017,54 @@ export class Practitioner extends Resource implements Serializable<Practitioner>
     communication: CodeableConcept[];
 
     deserialize(jsonObject: any): Practitioner {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+export class Observation extends Resource implements Serializable<Observation> {
+
+    identifier: Identifier [];
+    basedOn: Reference [];
+    status: string;
+    category: CodeableConcept [];
+    code: CodeableConcept;
+    subject: Reference;
+    context: Reference;
+    effectiveDateTime: Date;
+    effectivePeriod: Period;
+    issued: string;
+    performer: Reference [];
+    valueQuantity: Quantity;
+    valueCodeableConcept: CodeableConcept;
+    valueString: string;
+    valueBoolean: boolean;
+    valueRange: Range;
+    valueRatio: Ratio;
+    valueSampledData: SampledData;
+    valueAttachmnet: Attachment;
+    valueTime: string;
+    valueDateTime: Date;
+    valuePeriod: Period;
+    dataAbsentReason: CodeableConcept;
+    interpretation: CodeableConcept;
+    comment: string;
+    bodySite: CodeableConcept;
+    method: CodeableConcept;
+    specimen: Reference;
+    device: Reference;
+    referenceRange: ReferenceRange [];
+    related: Related [];
+    component: Component [];
+
+    deserialize(jsonObject: any): Observation {
         const that = this;
         Object.entries(jsonObject).forEach(function (value) {
             if (!(typeof value[1] === 'object')) {
