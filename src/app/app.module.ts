@@ -17,6 +17,7 @@ import { PatientService } from './service/patient.service';
 import { UserService } from './service/user.service';
 import { StaffService } from '../app/service/staff.service';
 import { AdminHomeScreenService } from '../app/service/admin-home-screen.service';
+import { AudiogramService } from '../app/service/audiogram.service';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -65,7 +66,6 @@ import { ContactUsFormResolverService } from './service/contact-us-form-resolver
 import { DepartmentListResolverService } from './service/department-list-resolver.service';
 import { FormBuilderComponent } from './components/form-builder/form-builder.component';
 import { ImmunizationScreenComponent } from './components/staff/clinical/immunization-screen/immunization-screen.component';
-import { AudiogramScreenComponent } from './components/staff/clinical/audiogram-screen/audiogram-screen.component';
 import { AudiogramComponent } from './components/staff/audiogram/audiogram.component';
 import { AudiogramNewComponent } from './components/staff/audiogram-new/audiogram-new.component'
 
@@ -158,7 +158,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AdminHomeScreenComponent,
     FormBuilderComponent,
     ImmunizationScreenComponent,
-    AudiogramScreenComponent,
     AudiogramComponent,
     AudiogramNewComponent
 
@@ -193,6 +192,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TitleCasePipe,
     StaffService,
     AdminHomeScreenService,
+    AudiogramService
   ],
   bootstrap: [AppComponent],
   entryComponents: [

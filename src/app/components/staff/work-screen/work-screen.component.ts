@@ -1547,7 +1547,7 @@ export class WorkScreenComponent implements OnInit {
         this.router.navigateByUrl('/staff/clinical/immunization-screen');
       }
       if (event === ('AUDIOGRAM')) {
-          this.router.navigateByUrl('/staff/audiogram/' + + this.episodeOfCareId);
+          this.router.navigateByUrl('/staff/audiogram/' + this.episodeOfCareId);
       }
       if (event === ('TURBTEST')) {
 
