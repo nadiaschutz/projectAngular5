@@ -65,6 +65,7 @@ export class WorkScreenComponent implements OnInit {
   clinicians = [];
   cliniciansWithId = [];
   showClinicianButtons = false;
+  showClinicalFunctions = false;
   clinicalAssignmentTask = {};
   showSpinner = false;
   fileTypeList = [
@@ -94,6 +95,9 @@ export class WorkScreenComponent implements OnInit {
     this.currentPractitionerFHIRIDInSession = sessionStorage.getItem(
       'userFHIRID'
     );
+    if (sessionStorage.getItem('userRole') === 'clinician') {
+      this.showClinicalFunctions = true;
+    }
     this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
     this.userService.fetchCurrentRole();
     this.staffService.getAllPractitioners().subscribe(
@@ -1541,6 +1545,14 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
+  redirectToAssessment() {
+    if (sessionStorage.getItem('userRole') === 'clinician') {
+      this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
+      this.router.navigateByUrl('/staff/lab-requisition');
+    }
+  }
+
+  
   redirectToAssessmentSelected(event) {
     if (sessionStorage.getItem('userRole') === 'clinician') {
       console.log(event);

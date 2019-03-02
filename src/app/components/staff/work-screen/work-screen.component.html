@@ -1,565 +1,593 @@
 <div class="main-header">
 
-    <div class="row">
-      <div class="col">
-        <h5>Work Screen</h5>
-      </div>
-  
-      <div *ngIf="clinicians.length>0" class="col clinician">
-        <div class="assign-clinician">
-          <section class="form-inline">
-            <label><strong>Clinician Assigned</strong></label>
-            <select class="form-control select-clinician" required (change)="showClinicianButtons=!showClinicianButtons"
-              [(ngModel)]="selectedClinician" [compareWith]="compareClinicians">
-              <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
-                <span>{{clinician.name}}</span>
-              </option>
-            </select>
-          </section>
-          <section *ngIf="showClinicianButtons" class="assign-buttons">
-            <button class="btn special-button" (click)="assignClinicianToEpisodeOfCare()">
-              Assign</button>
-            <button class="btn special-button" (click)="showClinicianButtons = !showClinicianButtons">Cancel</button>
-          </section>
-        </div>
-      </div>
-     
-  
-  
-    </div>
+  <div class="row">
     <div class="col">
-      <button (click)="redirectToLabRequisition()" class="btn special-button">Create Lab Requisition</button>
+      <h5>Work Screen</h5>
     </div>
-  
-  
+
+    <div *ngIf="clinicians.length>0" class="col clinician">
+      <div class="assign-clinician">
+        <section class="form-inline">
+          <label><strong>Clinician Assigned</strong></label>
+          <select class="form-control select-clinician" required (change)="showClinicianButtons=!showClinicianButtons"
+            [(ngModel)]="selectedClinician" [compareWith]="compareClinicians">
+            <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
+              <span>{{clinician.name}}</span>
+            </option>
+          </select>
+        </section>
+        <section *ngIf="showClinicianButtons" class="assign-buttons">
+          <button class="btn special-button" (click)="assignClinicianToEpisodeOfCare()">
+            Assign</button>
+          <button class="btn special-button" (click)="showClinicianButtons = !showClinicianButtons">Cancel</button>
+        </section>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col" *ngIf="showClinicalFunctions">
+        <button (click)="redirectToLabRequisition()" class="btn special-button">Create Lab Requisition</button>
+      </div>
+      <div class="col" *ngIf="showClinicalFunctions">
+        <button (click)="redirectToAssessment()" class="btn special-button">Assessments</button>
+      </div>
+    </div>
+
+
   </div>
-  
+
+
+
+</div>
+
 <div class="container">
-  <div class="container">
-  
-    <div class="row">
-      <h6 class="col-3">History</h6>
-  
-      <!-- Tool Bar -->
-  
-      <div class="dropdown">
-        <button class="btn special-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" (click)="showNewTool = !showNewTool">
-          New
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a class="dropdown-item" (click)="openTaskForm()">Task</a>
-          <a class="dropdown-item" (click)="openNoteForm()">Note</a>
-          <a class="dropdown-item" (click)="openDocForm()">New Document</a>
-          <a class="dropdown-item" (click)="redirectToAssessmentSelected('IMMUNIZATION')">New Immunization</a>
-          <a class="dropdown-item" (click)="redirectToAssessmentSelected('AUDIOGRAM')">New Audiogram</a>
-          <a class="dropdown-item" (click)="redirectToAssessmentSelected('TURBTEST')">New Tuberculosis</a>
-          
-        </div>
+
+  <div class="row">
+    <h6 class="col-3">History</h6>
+
+    <!-- Tool Bar -->
+
+    <div class="dropdown">
+      <button class="btn special-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+        (click)="showNewTool = !showNewTool">
+        New
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item" (click)="openTaskForm()">Task</a>
+        <a class="dropdown-item" (click)="openNoteForm()">Note</a>
+        <a class="dropdown-item" (click)="openDocForm()">Document</a>
+        <a class="dropdown-item" *ngIf="showClinicalFunctions"
+          (click)="redirectToAssessmentSelected('IMMUNIZATION')">Immunization</a>
+        <a class="dropdown-item" *ngIf="showClinicalFunctions"
+          (click)="redirectToAssessmentSelected('AUDIOGRAM')">Audiogram</a>
+        <a class="dropdown-item" *ngIf="showClinicalFunctions"
+          (click)="redirectToAssessmentSelected('TURBTEST')">Tuberculosis</a>
+
       </div>
     </div>
-  
-    <div class="tabs-card">
-      <div id="tabs" #tabs>
-        <ul class="nav nav-pills">
-          <li class="nav-item">
-            <a class="nav-link active" [ngClass]="{ 'active':activeTab==='all'}" (click)="displayAll()" data-toggle="tab">All</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab" (click)="displayOnlyTasks()">Tasks</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [ngClass]="{ 'active':activeTab==='notes'}" data-toggle="tab" (click)="displayOnlyNotes()">Notes</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [ngClass]="{ 'active':activeTab==='documents'}" data-toggle="tab" (click)="displayOnlyDocs()">Docs</a>
-          </li>
-        </ul>
-      </div>
+  </div>
+
+  <div class="tabs-card">
+    <div id="tabs" #tabs>
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" [ngClass]="{ 'active':activeTab==='all'}" (click)="displayAll()"
+            data-toggle="tab">All</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab"
+            (click)="displayOnlyTasks()">Tasks</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [ngClass]="{ 'active':activeTab==='notes'}" data-toggle="tab"
+            (click)="displayOnlyNotes()">Notes</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [ngClass]="{ 'active':activeTab==='documents'}" data-toggle="tab"
+            (click)="displayOnlyDocs()">Docs</a>
+        </li>
+      </ul>
     </div>
-  
-    <div class="row">
-      <!-- 1. History -->
-      <div class="col-4">
-        <div *ngIf="showNoteForm">
-          <form [formGroup]="noteFormGroup" novalidate>
-            <section class="form-section">
-  
-              <label for="title">Note Title</label>
-              <input type="text" name="title" id="title" formControlName="title" class="form-control" required
-                placeholder="Enter Note Title">
-  
-              <label for="note">Note</label>
-              <input type="text" name="note" id="note" formControlName="note" class="form-control note" required
-                placeholder="Enter Notes">
-  
-            </section>
-  
-            <section class="form-buttons">
-              <button class="btn special-button" (click)="saveNotes()">Save</button>
-              <button class="btn special-button" (click)="showNoteForm = !showNoteForm">Cancel</button>
-            </section>
-          </form>
-          <hr>
-        </div>
+  </div>
+
+  <div class="row">
+    <!-- 1. History -->
+    <div class="col-4">
+      <div *ngIf="showNoteForm">
+        <form [formGroup]="noteFormGroup" novalidate>
+          <section class="form-section">
+
+            <label for="title">Note Title</label>
+            <input type="text" name="title" id="title" formControlName="title" class="form-control" required
+              placeholder="Enter Note Title">
+
+            <label for="note">Note</label>
+            <input type="text" name="note" id="note" formControlName="note" class="form-control note" required
+              placeholder="Enter Notes">
+
+          </section>
+
+          <section class="form-buttons">
+            <button class="btn special-button" (click)="saveNotes()">Save</button>
+            <button class="btn special-button" (click)="showNoteForm = !showNoteForm">Cancel</button>
+          </section>
+        </form>
+        <hr>
+      </div>
+      <!-- Task Form -->
+      <div *ngIf="showTaskForm">
         <!-- Task Form -->
-        <div *ngIf="showTaskForm">
-          <!-- Task Form -->
-          <form [formGroup]="taskFormGroup" novalidate>
-  
-            <section class="form-section">
-              <div class="row">
-                <div class="col">
-                  <label for="description">Task</label>
-                  <input type="text" name="description" id="description" formControlName="description" class="form-control"
-                    required placeholder="Enter">
-                  <div *ngIf="taskFormGroup.controls['description'].invalid
+        <form [formGroup]="taskFormGroup" novalidate>
+
+          <section class="form-section">
+            <div class="row">
+              <div class="col">
+                <label for="description">Task</label>
+                <input type="text" name="description" id="description" formControlName="description"
+                  class="form-control" required placeholder="Enter">
+                <div
+                  *ngIf="taskFormGroup.controls['description'].invalid
                                && (taskFormGroup.controls['description'].touched || taskFormGroup.controls['description'].dirty)">
-                    <div class="error-message">
-                      Title cannot be empty
-                    </div>
+                  <div class="error-message">
+                    Title cannot be empty
                   </div>
                 </div>
               </div>
-  
-              <div class="row" *ngIf="practitioners.length > 0">
-                <div class="col">
-                  <label for="assignTo">Assign To</label>
-                  <select name="assignTo" id="assignTo" formControlName="assignTo" class="form-control" required>
-                    <option *ngFor="let practitioner of practitioners" [value]="practitioner.id">
-                      <span *ngFor="let name of practitioner.name">{{name.given}} {{name.family}} </span>
-                    </option>
-                  </select>
-                  <div *ngIf="taskFormGroup.controls['assignTo'].invalid
+            </div>
+
+            <div class="row" *ngIf="practitioners.length > 0">
+              <div class="col">
+                <label for="assignTo">Assign To</label>
+                <select name="assignTo" id="assignTo" formControlName="assignTo" class="form-control" required>
+                  <option *ngFor="let practitioner of practitioners" [value]="practitioner.id">
+                    <span *ngFor="let name of practitioner.name">{{name.given}} {{name.family}} </span>
+                  </option>
+                </select>
+                <div
+                  *ngIf="taskFormGroup.controls['assignTo'].invalid
                                && (taskFormGroup.controls['assignTo'].touched || taskFormGroup.controls['assignTo'].dirty)">
-                    <div class="error-message">
-                      Assignee cannot be empty
-                    </div>
+                  <div class="error-message">
+                    Assignee cannot be empty
                   </div>
                 </div>
               </div>
-  
-              <div class="row">
-                <div class="col">
-                  <label for="instruction">Instructions</label>
-                  <input type="text" name="instruction" id="instruction" formControlName="instruction" class="form-control"
-                    required placeholder="Enter">
-                  <div *ngIf="taskFormGroup.controls['instruction'].invalid
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="instruction">Instructions</label>
+                <input type="text" name="instruction" id="instruction" formControlName="instruction"
+                  class="form-control" required placeholder="Enter">
+                <div
+                  *ngIf="taskFormGroup.controls['instruction'].invalid
                                && (taskFormGroup.controls['instruction'].touched || taskFormGroup.controls['instruction'].dirty)">
-                    <div class="error-message">
-                      Instructions cannot be blank
-                    </div>
+                  <div class="error-message">
+                    Instructions cannot be blank
                   </div>
                 </div>
               </div>
-            </section>
-  
-            <section class="form-buttons">
-              <button class="btn special-button" (click)="saveTask()" [disabled]="!taskFormGroup.valid">
-                Create Task</button>
-              <button class="btn special-button" (click)="showTaskForm = !showTaskForm" [disabled]="taskFormGroup.valid">Cancel</button>
-            </section>
-  
-          </form>
-          <hr>
-        </div>
-  
+            </div>
+          </section>
+
+          <section class="form-buttons">
+            <button class="btn special-button" (click)="saveTask()" [disabled]="!taskFormGroup.valid">
+              Create Task</button>
+            <button class="btn special-button" (click)="showTaskForm = !showTaskForm"
+              [disabled]="taskFormGroup.valid">Cancel</button>
+          </section>
+
+        </form>
+        <hr>
+      </div>
+
+      <!-- Documents Form -->
+      <div *ngIf="showDocForm">
         <!-- Documents Form -->
-        <div *ngIf="showDocForm">
-          <!-- Documents Form -->
-          <form [formGroup]="docFormGroup" novalidate>
-  
-            <section class="form-section">
-  
-              <div class="row">
-                <div class="col">
-                  <span class="btn regular-button btn-file" (change)='saveDoc($event)'>
-                    Add a Document <input type="file">
-                  </span>
-  
-                </div>
+        <form [formGroup]="docFormGroup" novalidate>
+
+          <section class="form-section">
+
+            <div class="row">
+              <div class="col">
+                <span class="btn regular-button btn-file" (change)='saveDoc($event)'>
+                  Add a Document <input type="file">
+                </span>
+
               </div>
-  
-              <div class="row">
-                <div class="col">
-                  <label for="filename">Name of Document</label>
-                  <input type="text" name="filename" id="filename" formControlName="filename" class="form-control"
-                    required placeholder="Enter">
-                  <div *ngIf="docFormGroup.controls['filename'].invalid
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="filename">Name of Document</label>
+                <input type="text" name="filename" id="filename" formControlName="filename" class="form-control"
+                  required placeholder="Enter">
+                <div
+                  *ngIf="docFormGroup.controls['filename'].invalid
                                && (docFormGroup.controls['filename'].touched || docFormGroup.controls['filename'].dirty)">
-                    <div class="error-message">
-                      Title cannot be empty
-                    </div>
+                  <div class="error-message">
+                    Title cannot be empty
                   </div>
                 </div>
               </div>
-  
-              <div class="row">
-                <div class="col">
-                  <label for="filetype">Select document category</label>
-                  <select name="filetype" id="filetype" formControlName="filetype" class="form-control" required>
-                    <option *ngFor="let fileSelection of fileTypeList" [value]="fileSelection.value">
-                      <span> {{fileSelection.viewValue}} </span>
-                    </option>
-                  </select>
-                  <div *ngIf="docFormGroup.controls['filetype'].invalid
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="filetype">Select document category</label>
+                <select name="filetype" id="filetype" formControlName="filetype" class="form-control" required>
+                  <option *ngFor="let fileSelection of fileTypeList" [value]="fileSelection.value">
+                    <span> {{fileSelection.viewValue}} </span>
+                  </option>
+                </select>
+                <div
+                  *ngIf="docFormGroup.controls['filetype'].invalid
                                && (docFormGroup.controls['filetype'].touched || docFormGroup.controls['filetype'].dirty)">
-                    <div class="error-message">
-                      Please make a selection
-                    </div>
+                  <div class="error-message">
+                    Please make a selection
                   </div>
                 </div>
               </div>
-  
-              <div class="row">
-                <div class="col">
-                  <label for="instruction">Instructions (optional)</label>
-                  <input type="text" name="instruction" id="instruction" formControlName="instruction" class="form-control"
-                    placeholder="Enter">
-                </div>
-              </div>
-  
-              <div class="row">
-                <div class="col">
-                  <label for="checkListItem">Associate document with a checklist item (optional)</label>
-                  <select name="checkListItem" id="checkListItem" formControlName="checkListItem" class="form-control">
-                    <option *ngFor="let selectedItem of checkListDocObject['item']" [ngValue]="selectedItem ">
-                      <span> {{selectedItem['text']}} </span>
-                    </option>
-                  </select>
-                </div>
-              </div>
-  
-            </section>
-  
-            <section class="form-buttons">
-              <button class="btn special-button" (click)="createEncounterObjectToLinkToEpisodeOfCare()" [disabled]="!docFormGroup.valid">
-                Save Document to Work Order</button>
-              <button class="btn special-button" (click)="showDocForm = !showDocForm">Cancel</button>
-            </section>
-  
-          </form>
-  
-          <div *ngIf="showSpinner">
-            <div class="lds-spinner">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
             </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="instruction">Instructions (optional)</label>
+                <input type="text" name="instruction" id="instruction" formControlName="instruction"
+                  class="form-control" placeholder="Enter">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="checkListItem">Associate document with a checklist item (optional)</label>
+                <select name="checkListItem" id="checkListItem" formControlName="checkListItem" class="form-control">
+                  <option *ngFor="let selectedItem of checkListDocObject['item']" [ngValue]="selectedItem ">
+                    <span> {{selectedItem['text']}} </span>
+                  </option>
+                </select>
+              </div>
+            </div>
+
+          </section>
+
+          <section class="form-buttons">
+            <button class="btn special-button" (click)="createEncounterObjectToLinkToEpisodeOfCare()"
+              [disabled]="!docFormGroup.valid">
+              Save Document to Work Order</button>
+            <button class="btn special-button" (click)="showDocForm = !showDocForm">Cancel</button>
+          </section>
+
+        </form>
+
+        <div *ngIf="showSpinner">
+          <div class="lds-spinner">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
-  
-          <hr>
         </div>
-  
-  
-        <div class="card search-box" *ngIf="showOnlyDocs">
-          <div class="card-body">
-            <div class="card-title">
-              Required Documents Checklist
+
+        <hr>
+      </div>
+
+
+      <div class="card search-box" *ngIf="showOnlyDocs">
+        <div class="card-body">
+          <div class="card-title">
+            Required Documents Checklist
+          </div>
+          <div class="card-text">
+            <div *ngIf="!showChecklistForm && checkListDocObject['item'].length === 0">
+              Add a required document to this checklist
             </div>
-            <div class="card-text">
-              <div *ngIf="!showChecklistForm && checkListDocObject['item'].length === 0">
-                Add a required document to this checklist
-              </div>
-              <div *ngIf="!showChecklistForm">
-                <div *ngFor="let item of checkListDocObject['item']">
-                  <div>
-                    <input class="form-check-input" (change)="docChecklistItemStateChange(item)" type="checkbox" value="item['answer'][0]['valueBoolean']"
-                      id="doclabel{{item['linkId']}}" [(ngModel)]="item['answer'][0]['valueBoolean']" checked="{{item['answer'][0]['valueBoolean']}}">
-                    <label class="form-check-label checklist-label " for="doclabel{{item['linkId']}}">
-                      {{item['text']}}
-                    </label>
-                    <div *ngIf="item['answer'][0]['valueBoolean']">
-                      <div *ngFor="let display of documentsList">
-                        <div *ngIf="item['answer'][1]">
-                          <div *ngIf="item['answer'][1]['valueReference']['reference'] === display['docReference']">
-                            <label for="">Document Associated: <strong>{{display['fileFullName']}}</strong></label>
-                            <label for=""></label>
-                          </div>
+            <div *ngIf="!showChecklistForm">
+              <div *ngFor="let item of checkListDocObject['item']">
+                <div>
+                  <input class="form-check-input" (change)="docChecklistItemStateChange(item)" type="checkbox"
+                    value="item['answer'][0]['valueBoolean']" id="doclabel{{item['linkId']}}"
+                    [(ngModel)]="item['answer'][0]['valueBoolean']" checked="{{item['answer'][0]['valueBoolean']}}">
+                  <label class="form-check-label checklist-label " for="doclabel{{item['linkId']}}">
+                    {{item['text']}}
+                  </label>
+                  <div *ngIf="item['answer'][0]['valueBoolean']">
+                    <div *ngFor="let display of documentsList">
+                      <div *ngIf="item['answer'][1]">
+                        <div *ngIf="item['answer'][1]['valueReference']['reference'] === display['docReference']">
+                          <label for="">Document Associated: <strong>{{display['fileFullName']}}</strong></label>
+                          <label for=""></label>
                         </div>
                       </div>
-                      <div>
-                        <label for="docSelected{{item['linkId']}}">Select a document</label>
-                        <select class="form-control" id="docSelected{{item['linkId']}}" (change)="updateDocumentsCheckedOff(item, $event.target.value)">
-                          <option value="null">Select a doc</option>
-                          <option *ngFor="let doc of documentsList" [value]="doc['docReference']">
-                            {{doc['fileFullName']}}
-                          </option>
-                        </select>
-                      </div>
+                    </div>
+                    <div>
+                      <label for="docSelected{{item['linkId']}}">Select a document</label>
+                      <select class="form-control" id="docSelected{{item['linkId']}}"
+                        (change)="updateDocumentsCheckedOff(item, $event.target.value)">
+                        <option value="null">Select a doc</option>
+                        <option *ngFor="let doc of documentsList" [value]="doc['docReference']">
+                          {{doc['fileFullName']}}
+                        </option>
+                      </select>
                     </div>
                   </div>
                 </div>
-  
               </div>
-  
-              <div *ngIf="showChecklistForm">
-                <form [formGroup]="checkListItemGroup" novalidate>
-  
-                  <section class="form-section">
-  
-                    <div class="row">
-                      <div class="col">
-                        <input type="text" name="document" id="document" formControlName="document" class="form-control"
-                          required placeholder="Enter">
-                      </div>
-                    </div>
-  
-                    <div class="row">
-                      <div class="col">
-                        <button class="btn regular-button btn-file" [disabled]='!checkListItemGroup.valid' (click)='saveItemToQResponse()'>
-                          Add checklist item
-                        </button>
-                      </div>
-                    </div>
-                  </section>
-                </form>
-              </div>
-  
+
             </div>
-          </div>
-          <div class="card-footer bg-transparent text-center checklist-footer">
-            <small *ngIf="!showChecklistForm" (click)="newDocChecklistItem()" class="checklist-footer-text">Add checklist
-              item</small>
-            <small *ngIf="showChecklistForm" (click)="newDocChecklistItem()" class="checklist-footer-text">Return to list</small>
+
+            <div *ngIf="showChecklistForm">
+              <form [formGroup]="checkListItemGroup" novalidate>
+
+                <section class="form-section">
+
+                  <div class="row">
+                    <div class="col">
+                      <input type="text" name="document" id="document" formControlName="document" class="form-control"
+                        required placeholder="Enter">
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col">
+                      <button class="btn regular-button btn-file" [disabled]='!checkListItemGroup.valid'
+                        (click)='saveItemToQResponse()'>
+                        Add checklist item
+                      </button>
+                    </div>
+                  </div>
+                </section>
+              </form>
+            </div>
+
           </div>
         </div>
-  
-        <!-- Showing History -->
-        <div class="card" *ngFor="let item of historyToDisplay;let i = index;">
-          <div class="card-body">
-            <div class="card-title">
-              {{item.title}}
-              <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
-            </div>
-            <p class="card-text" *ngIf="item.note && item.type!=='task' && item.type !=='doc'">
-              {{item.note}}
-            </p>
-            <p class="card-text" *ngIf="item.author">
-              <strong>Author: </strong>{{item.author}}
-            </p>
-            <p class="card-text" *ngIf="item.description">
-              <strong>Instructions: </strong>{{item.description}}
-            </p>
-            <p class="card-text" *ngIf="item.assignee">
-              <strong>Assignee: </strong>{{item.assignee}}
-            </p>
-            <p class="card-text" *ngIf="item.assignor">
-              <strong>Assignor: </strong>{{item.assignor}}
-            </p>
-            <p class="card-text" *ngIf="item.dateCreated">
-              <strong>Date created: </strong>{{item.dateCreated}}
-            </p>
-            <p class="card-text" *ngIf="item.note && item.type==='task'">
-              <strong>Instructions: </strong>{{item.note}}
-            </p>
-            <p class="card-text" *ngIf="item.type==='doc'">
-              <strong (click)="downloadFile(item)">Filename: </strong>
-              <span class="cursor">
-                {{item['fileFullName']}} ↓
-              </span>
-            </p>
-            <p class="card-text" *ngIf="item.type==='doc'">
-              <span class="cursor">
-                <strong></strong>
-              </span>
-            </p>
-            <p class="card-text" *ngIf="item.type==='doc' && item['filetype'] === 'pdf'">
-              <span class="cursor">
-                <strong (click)="previewFile(item)">Preview {{item['fileFullName']}}</strong>
-              </span>
-            </p>
-            <p class="card-text" *ngIf="item.closingNotes">
-              <strong>Closing Notes: </strong>{{item.closingNotes}}
-            </p>
-            <div class="card-link">
-              <a *ngIf="item.type==='task' && item.status==='in-progress'" (click)="completeTask(i)">Mark as done</a>
-  
-              <a *ngIf="item.type==='task' && item.status==='Assigned - Waiting' && !item.showActivity && !item.note"
-                (click)="item.showActivity=true">Mark as done</a>
-              <div *ngIf="item.showActivity">
-  
-                <label><strong>Closing notes: </strong></label>
-                <input type="text" [(ngModel)]="item.closingNotes" class="form-control activity" placeholder="Closing notes">
-                <div class="activity-buttons">
-                  <a (click)="completeClinicalAssignment(item)">Save</a>
-                  <a *ngIf="item.type==='task' && item.status==='Assigned - Waiting' && item.showActivity" (click)="item.showActivity=false"
-                    class="cancel-activity">Cancel</a>
-                </div>
-  
+        <div class="card-footer bg-transparent text-center checklist-footer">
+          <small *ngIf="!showChecklistForm" (click)="newDocChecklistItem()" class="checklist-footer-text">Add
+            checklist
+            item</small>
+          <small *ngIf="showChecklistForm" (click)="newDocChecklistItem()" class="checklist-footer-text">Return to
+            list</small>
+        </div>
+      </div>
+
+      <!-- Showing History -->
+      <div class="card" *ngFor="let item of historyToDisplay;let i = index;">
+        <div class="card-body">
+          <div class="card-title">
+            {{item.title}}
+            <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
+          </div>
+          <p class="card-text" *ngIf="item.note && item.type!=='task' && item.type !=='doc'">
+            {{item.note}}
+          </p>
+          <p class="card-text" *ngIf="item.author">
+            <strong>Author: </strong>{{item.author}}
+          </p>
+          <p class="card-text" *ngIf="item.description">
+            <strong>Instructions: </strong>{{item.description}}
+          </p>
+          <p class="card-text" *ngIf="item.assignee">
+            <strong>Assignee: </strong>{{item.assignee}}
+          </p>
+          <p class="card-text" *ngIf="item.assignor">
+            <strong>Assignor: </strong>{{item.assignor}}
+          </p>
+          <p class="card-text" *ngIf="item.dateCreated">
+            <strong>Date created: </strong>{{item.dateCreated}}
+          </p>
+          <p class="card-text" *ngIf="item.note && item.type==='task'">
+            <strong>Instructions: </strong>{{item.note}}
+          </p>
+          <p class="card-text" *ngIf="item.type==='doc'">
+            <strong (click)="downloadFile(item)">Filename: </strong>
+            <span class="cursor">
+              {{item['fileFullName']}} ↓
+            </span>
+          </p>
+          <p class="card-text" *ngIf="item.type==='doc'">
+            <span class="cursor">
+              <strong></strong>
+            </span>
+          </p>
+          <p class="card-text" *ngIf="item.type==='doc' && item['filetype'] === 'pdf'">
+            <span class="cursor">
+              <strong (click)="previewFile(item)">Preview {{item['fileFullName']}}</strong>
+            </span>
+          </p>
+          <p class="card-text" *ngIf="item.closingNotes">
+            <strong>Closing Notes: </strong>{{item.closingNotes}}
+          </p>
+          <div class="card-link">
+            <a *ngIf="item.type==='task' && item.status==='in-progress'" (click)="completeTask(i)">Mark as done</a>
+
+            <a *ngIf="item.type==='task' && item.status==='Assigned - Waiting' && !item.showActivity && !item.note"
+              (click)="item.showActivity=true">Mark as done</a>
+            <div *ngIf="item.showActivity">
+
+              <label><strong>Closing notes: </strong></label>
+              <input type="text" [(ngModel)]="item.closingNotes" class="form-control activity"
+                placeholder="Closing notes">
+              <div class="activity-buttons">
+                <a (click)="completeClinicalAssignment(item)">Save</a>
+                <a *ngIf="item.type==='task' && item.status==='Assigned - Waiting' && item.showActivity"
+                  (click)="item.showActivity=false" class="cancel-activity">Cancel</a>
               </div>
+
             </div>
           </div>
         </div>
       </div>
-  
-      <!-- 2. Care Plan section, shown only when needed -->
-  
-      <div class="col-5">
-        <!-- <div class="col-6">Worklist</div> -->
-        <!-- <div class="col-6">
+    </div>
+
+    <!-- 2. Care Plan section, shown only when needed -->
+
+    <div class="col-5">
+      <!-- <div class="col-6">Worklist</div> -->
+      <!-- <div class="col-6">
           <button class=" btn regular-button col-6 float-right">Update</button>
 
         </div> -->
-        <!-- <button class=" btn regular-button col-6">Cancel Work Order</button> -->
-        <div #spacer></div>
-        <div #boundary>
-          <div class="search-box" stickyThing [spacer]="spacer" [boundary]="boundary">
-            <div *ngFor="let item of carePlanActivities; let i = index">
-              <label>
-                <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}"
-                  id="i">
-                <span class="checklist-label">{{item.description}}</span>
-              </label>
-            </div>
+      <!-- <button class=" btn regular-button col-6">Cancel Work Order</button> -->
+      <div #spacer></div>
+      <div #boundary>
+        <div class="search-box" stickyThing [spacer]="spacer" [boundary]="boundary">
+          <div *ngFor="let item of carePlanActivities; let i = index">
+            <label>
+              <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}"
+                id="i">
+              <span class="checklist-label">{{item.description}}</span>
+            </label>
           </div>
         </div>
       </div>
-  
-  
-      <!-- 3. Right fixed section -->
-  
-      <div class="col-3">
-        <!-- 3a. Status of Care Plan -->
-  
-        <!-- 3b. Summary: Client information -->
-        <div stickyThing marginTop="30" [spacer]="spacer">
-  
-          <div class="card">
-            <div class="card-body">
-              <label class="card-title"><strong>Assigned Admin</strong></label>
-              <p>{{assignedAdmin}}</p>
-            </div>
+    </div>
+
+
+    <!-- 3. Right fixed section -->
+
+    <div class="col-3">
+      <!-- 3a. Status of Care Plan -->
+
+      <!-- 3b. Summary: Client information -->
+      <div stickyThing marginTop="30" [spacer]="spacer">
+
+        <div class="card">
+          <div class="card-body">
+            <label class="card-title"><strong>Assigned Admin</strong></label>
+            <p>{{assignedAdmin}}</p>
           </div>
-          <div class="card">
-            <div class="card-body">
-              <label class="card-title"><strong>Current Status</strong></label>
-              <div *ngIf="statusObject">
-                <div *ngIf="!showStatusFormGroup">
-                  <div *ngFor="let item of statusObject['item']">
-                    <div *ngIf="item['answer']">
-                      <div *ngFor="let answer of item['answer']">
-                        <p *ngIf="answer['valueBoolean']">
-                          {{item['text']}}
-                        </p>
-                        <p *ngIf="answer['valueDate']">
-                          Status last updated: {{answer['valueDate']}}
-                        </p>
-                        <p *ngIf="answer['valueString']">
-                          Reason for altered status: {{answer['valueString']}}
-                        </p>
-                      </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <label class="card-title"><strong>Current Status</strong></label>
+            <div *ngIf="statusObject">
+              <div *ngIf="!showStatusFormGroup">
+                <div *ngFor="let item of statusObject['item']">
+                  <div *ngIf="item['answer']">
+                    <div *ngFor="let answer of item['answer']">
+                      <p *ngIf="answer['valueBoolean']">
+                        {{item['text']}}
+                      </p>
+                      <p *ngIf="answer['valueDate']">
+                        Status last updated: {{answer['valueDate']}}
+                      </p>
+                      <p *ngIf="answer['valueString']">
+                        Reason for altered status: {{answer['valueString']}}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <div *ngIf="showStatusFormGroup">
-                  <form [formGroup]="statusFormGroup" novalidate>
-                    <section class="form-section">
-                      <div class="row">
-                        <div class="col">
-                          <label for="statusNote">Reason for change - <strong>Required</strong></label>
-                          <input type="text" name="statusNote" #statusNote id="statusNote" (keyup)="captureStatusReasonInput(statusNote.value)"
-                            formControlName="statusNote" class="form-control" required placeholder="Enter">
-                          <div *ngIf="statusFormGroup.controls['statusNote'].invalid
+              </div>
+              <div *ngIf="showStatusFormGroup">
+                <form [formGroup]="statusFormGroup" novalidate>
+                  <section class="form-section">
+                    <div class="row">
+                      <div class="col">
+                        <label for="statusNote">Reason for change - <strong>Required</strong></label>
+                        <input type="text" name="statusNote" #statusNote id="statusNote"
+                          (keyup)="captureStatusReasonInput(statusNote.value)" formControlName="statusNote"
+                          class="form-control" required placeholder="Enter">
+                        <div
+                          *ngIf="statusFormGroup.controls['statusNote'].invalid
                                 && (statusFormGroup.controls['statusNote'].touched || statusFormGroup.controls['statusNote'].dirty)">
-                            <div class="error-message">
-                              Field cannot be blank
-                            </div>
+                          <div class="error-message">
+                            Field cannot be blank
                           </div>
                         </div>
                       </div>
-                      <div class="row">
-                        <div class="col">
-                          <div>
-                            <label for="status">Select a status</label>
-                            <select formControlName="status" class="form-control" id="status" name="status">
-                              <!-- <option value="null">-</option> -->
-                              <option [disabled]="!statusFormGroup.valid" *ngFor="let item of statusObject['item']"
-                                [value]="item['text']">
-                                {{item['text']}}
-                              </option>
-                            </select>
-                          </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <div>
+                          <label for="status">Select a status</label>
+                          <select formControlName="status" class="form-control" id="status" name="status">
+                            <!-- <option value="null">-</option> -->
+                            <option [disabled]="!statusFormGroup.valid" *ngFor="let item of statusObject['item']"
+                              [value]="item['text']">
+                              {{item['text']}}
+                            </option>
+                          </select>
                         </div>
                       </div>
-  
-                    </section>
-                  </form>
-                </div>
-                <button *ngIf="!showStatusFormGroup" class="btn special-button" (click)="enableStatusFormGroup()">
-                  Change Status</button>
-                <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="changeStatusToSelected()">
-                  Change Status</button>
-                <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="showStatusFormGroup = !showStatusFormGroup">Cancel</button>
-  
+                    </div>
+
+                  </section>
+                </form>
               </div>
-  
+              <button *ngIf="!showStatusFormGroup" class="btn special-button" (click)="enableStatusFormGroup()">
+                Change Status</button>
+              <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="changeStatusToSelected()">
+                Change Status</button>
+              <button *ngIf="showStatusFormGroup" class="btn special-button"
+                (click)="showStatusFormGroup = !showStatusFormGroup">Cancel</button>
+
             </div>
+
           </div>
-  
-          <div class="card">
-            <div class="card-body">
-              <label class="card-title"><strong>Summary</strong></label>
-              <p class="card-text" *ngIf="summary.clientName">
-                <strong>Client Name: </strong> {{summary.clientName}}
-              </p>
-              <p class="card-text" *ngIf="summary.clientDOB">
-                <strong>Client Date of Birth: </strong> {{summary.clientDOB}}
-              </p>
-              <p class="card-text" *ngIf="summary.clientDepartment">
-                <strong>Client Department: </strong> {{summary.clientDepartment}}
-              </p>
-              <p class="card-text" *ngIf="summary.jobTitle">
-                <strong>Job Title: </strong> {{summary.jobTitle}}
-              </p>
-              <p class="card-text" *ngIf="summary.clientBranch">
-                <strong>Client Branch: </strong> {{summary.clientBranch}}
-              </p>
-              <p class="card-text" *ngIf="summary.psohpService">
-                <strong>PSOHP Service: </strong> {{summary.psohpService}}
-              </p>
-              <p class="card-text" *ngIf="summary.submittingDepartment">
-                <strong>Submitting Department: </strong> {{summary.submittingDepartment}}
-              </p>
-              <p class="card-text" *ngIf="summary.receivingDepartment">
-                <strong>Receiving Department: </strong> {{summary.receivingDepartment}}
-              </p>
-              <p class="card-text" *ngIf="summary.ohagOccupation">
-                <strong>OHAG Occupation: </strong> {{summary.ohagOccupation}}
-              </p>
-              <p class="card-text" *ngIf="summary.ohagEnvironmentalModifier">
-                <strong>OHAG Environmental Modifier: </strong> {{summary.ohagEnvironmentalModifier}}
-              </p>
-            </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <label class="card-title"><strong>Summary</strong></label>
+            <p class="card-text" *ngIf="summary.clientName">
+              <strong>Client Name: </strong> {{summary.clientName}}
+            </p>
+            <p class="card-text" *ngIf="summary.clientDOB">
+              <strong>Client Date of Birth: </strong> {{summary.clientDOB}}
+            </p>
+            <p class="card-text" *ngIf="summary.clientDepartment">
+              <strong>Client Department: </strong> {{summary.clientDepartment}}
+            </p>
+            <p class="card-text" *ngIf="summary.jobTitle">
+              <strong>Job Title: </strong> {{summary.jobTitle}}
+            </p>
+            <p class="card-text" *ngIf="summary.clientBranch">
+              <strong>Client Branch: </strong> {{summary.clientBranch}}
+            </p>
+            <p class="card-text" *ngIf="summary.psohpService">
+              <strong>PSOHP Service: </strong> {{summary.psohpService}}
+            </p>
+            <p class="card-text" *ngIf="summary.submittingDepartment">
+              <strong>Submitting Department: </strong> {{summary.submittingDepartment}}
+            </p>
+            <p class="card-text" *ngIf="summary.receivingDepartment">
+              <strong>Receiving Department: </strong> {{summary.receivingDepartment}}
+            </p>
+            <p class="card-text" *ngIf="summary.ohagOccupation">
+              <strong>OHAG Occupation: </strong> {{summary.ohagOccupation}}
+            </p>
+            <p class="card-text" *ngIf="summary.ohagEnvironmentalModifier">
+              <strong>OHAG Environmental Modifier: </strong> {{summary.ohagEnvironmentalModifier}}
+            </p>
           </div>
-  
-          <div class="card" *ngIf="dependentList.length > 0">
-            <div class="card-body">
-              <label class="card-title"><strong>Dependent(s)</strong></label>
-              <div *ngFor="let dependent of dependentList">
-                <p class="card-text" *ngIf="dependent.dep_clientName">
-                  <strong>Client Name: </strong> {{dependent.dep_clientName}}
-                </p>
-                <p class="card-text" *ngIf="dependent.dep_clientDOB">
-                  <strong>Birth Date: </strong> {{dependent.dep_clientDOB}}
-                </p>
-              </div>
+        </div>
+
+        <div class="card" *ngIf="dependentList.length > 0">
+          <div class="card-body">
+            <label class="card-title"><strong>Dependent(s)</strong></label>
+            <div *ngFor="let dependent of dependentList">
+              <p class="card-text" *ngIf="dependent.dep_clientName">
+                <strong>Client Name: </strong> {{dependent.dep_clientName}}
+              </p>
+              <p class="card-text" *ngIf="dependent.dep_clientDOB">
+                <strong>Birth Date: </strong> {{dependent.dep_clientDOB}}
+              </p>
             </div>
           </div>
         </div>
       </div>
-  
-  
     </div>
-  
+
+
   </div>
-  
+
+
 </div>
