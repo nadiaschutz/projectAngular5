@@ -1,16 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StaffService } from '../../../../service/staff.service';
 import { UtilService } from '../../../../service/util.service';
-import { UserService } from '../../../../service/user.service';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../../interface/FHIR';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { formatDate, getLocaleExtraDayPeriodRules } from '@angular/common';
-import { TitleCasePipe } from '@angular/common';
-
+import * as jspdf from 'jspdf';
+import * as html2canvas from 'html2canvas';
 @Component({
   selector: 'app-assessment-function',
   templateUrl: './assessment-function.component.html',
@@ -152,7 +148,8 @@ export class AssessmentFunctionComponent implements OnInit {
             if (questionnaireFound['entry']) {
               for (const currentEntry of questionnaireFound['entry']) {
                 const individualEntry = currentEntry['resource'];
-                temp['id'] = individualEntry['id'];
+                temp['serviceId'] = individualEntry['id'];
+                console.log(individualEntry);
                 this.staffService
                   .getAnyFHIRObjectByCustomQuery(
                     individualEntry['subject']['reference']
@@ -162,6 +159,18 @@ export class AssessmentFunctionComponent implements OnInit {
                       temp['name'] = this.utilService.getNameFromResource(
                         patient
                       );
+                      temp['dob'] = patient['birthDate'];
+                      if (patient['identifier']) {
+                        temp['pri'] = patient['identifier'][0]['value'];
+                      }
+                      for (const extension of patient['extension']) {
+                        if (extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
+                          temp['employeeDept'] = extension['valueString'];
+                        }
+                        if (extension['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
+                          temp['employeeBranch'] = extension['valueString'];
+                        }
+                      }
                       this.serviceRequestSummary = temp;
                     }
                   });
@@ -332,6 +341,23 @@ export class AssessmentFunctionComponent implements OnInit {
     if (this.returnInputValue('assessmentQTwo').toLowerCase() === ('no')) {
       return true;
     }
+  }
+
+  printToPDF() {
+    const data = document.getElementById('print');
+    html2canvas(data).then(canvas => {
+    // Few necessary setting options
+    const imgWidth = 190;
+    const pageHeight = 350;
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    const heightLeft = imgHeight;
+
+    const contentDataURL = canvas.toDataURL('image/png');
+    const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+    const position = 0;
+    pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
+    pdf.save('Assessment Report.pdf'); // Generated PDF
+    });
   }
 
   switchClassesForButtons(name, value) {

@@ -9,7 +9,7 @@
   <div>
     <div class="main-header" *ngIf="serviceRequestSummary">
       <h5>Assessments</h5>
-      <h6>{{serviceRequestSummary['name']}} > SERVICE REQUEST # > {{serviceRequestSummary['id']}}</h6>
+      <h6>{{serviceRequestSummary['name']}} > SERVICE REQUEST # > {{serviceRequestSummary['serviceId']}}</h6>
     </div>
   </div>
   
@@ -17,7 +17,7 @@
       <div class="row" *ngIf="serviceRequestSummary">
         <div class="card assessment-card">
           <div class="card-body">
-            <div class="col-4 float-left">Service Request ID: {{serviceRequestSummary['id']}}</div>
+            <div class="col-4 float-left">Service Request ID: {{serviceRequestSummary['serviceId']}}</div>
             <div class="col-4 float-right">Client Name: {{serviceRequestSummary['name']}}</div>
           </div>
         </div>
@@ -134,5 +134,7 @@
         </div>
 
   </div>
+
+  
     
 </div>

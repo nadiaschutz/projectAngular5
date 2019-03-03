@@ -546,6 +546,7 @@ export class ImmunizationScreenComponent implements OnInit {
     const practitioner = new FHIR.PractitionerForImmunization();
     const identifier = new FHIR.Identifier();
     const note = new FHIR.Annotation();
+    const diluentLotNumber = new FHIR.Extension;
     practitioner.actor = new FHIR.Reference();
     site.coding = [];
     vaccine.coding = [];
@@ -591,6 +592,9 @@ export class ImmunizationScreenComponent implements OnInit {
 
     note.text = this.vaccinationFormGroup.get('productName').value;
 
+    diluentLotNumber.valueString = this.vaccinationFormGroup.get('diluentLotNumber').value;
+
+    immunization.extension = [diluentLotNumber];
     immunization.identifier.push(identifier);
     immunization.note.push(note);
     immunization.practitioner = practitioner;
