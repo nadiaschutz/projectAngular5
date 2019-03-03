@@ -58,6 +58,9 @@ export class AssessmentFunctionComponent implements OnInit {
   buttonClassUnSelectedThree;
   buttonClassUnSelectedFour;
   vaccStatusUnSelected;
+
+  assessmentSavedFlag = false;
+
   ngOnInit() {
     this.datePickerConfig = Object.assign(
       {},
@@ -125,14 +128,14 @@ export class AssessmentFunctionComponent implements OnInit {
 
     this.saveObservation(encounter);
 
-    // this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
-    //   data => {
-    //     this.saveObservation(data);
-    //   },
-    //   error => {
-    //     console.log(error);
-    //   }
-    // );
+    this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
+      data => {
+        this.saveObservation(data);
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   processServiceRequestForSummary() {
@@ -178,8 +181,6 @@ export class AssessmentFunctionComponent implements OnInit {
     const observation = new FHIR.Observation();
     const identifier = new FHIR.Identifier();
     // const basedOn = new FHIR.Reference;
-    const category = new FHIR.CodeableConcept();
-    const categoryCoding = new FHIR.Coding();
     const subject = new FHIR.Reference();
     const context = new FHIR.Reference();
     const performer = new FHIR.Reference();
@@ -289,17 +290,30 @@ export class AssessmentFunctionComponent implements OnInit {
     period.start = this.utilService.getDate(period.start);
     period.end = this.utilService.getDate(period.end);
 
-    identifier.value = 'CLINICAL-OBSERVATION-' + this.episodeOfCare['id'];
-
+    identifier.value = 'CLINICAL-OBSERVATION';
+    context.reference = 'Encounter/' + data['id'];
     observation.effectivePeriod = period;
     observation.status = 'preliminary';
     observation.resourceType = 'Observation';
     observation.identifier = [identifier];
     observation.performer = [performer];
     observation.subject = subject;
+    observation.context = context;
     observation.comment = this.assessmentFormGroup.get('comment').value;
     this.observationForDisplay = JSON.stringify(observation, undefined, 2);
     console.log(observation);
+
+    this.staffService.saveAssessment(JSON.stringify(observation)).subscribe(
+      assessment => {
+        console.log(assessment);
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.assessmentSavedFlag = true;
+      }
+    );
   }
 
   returnInputValue(input) {
@@ -365,5 +379,8 @@ export class AssessmentFunctionComponent implements OnInit {
     }
   }
 
+  viewDetailedContext() {
+    this.router.navigateByUrl('/staff/work-screen');
+  }
 
 }

@@ -1,11 +1,27 @@
 <div class="container">
 
+  <div class="edit-button-row">
+    <button type="button" class="btn regular-dark-button float-right" (click)="viewDetailedContext()">
+      View Detailed Context
+    </button>
+  </div>
+
   <div>
     <div class="main-header">
       <h5>Assessments</h5>
-      <!-- <h6>CHANDLER BING > SERVICE REQUEST # > WORK ORDER-HACAT1</h6> -->
+      <h6>{{serviceRequestSummary['name']}} > SERVICE REQUEST # > {{serviceRequestSummary['id']}}</h6>
     </div>
   </div>
+
+  <div class="row" *ngIf="serviceRequestSummary">
+    <div class="card assessment-card">
+      <div class="card-body">
+        <div class="col-4 float-left">Service Request ID: {{serviceRequestSummary['id']}}</div>
+        <div class="col-4 float-right">Client Name: {{serviceRequestSummary['name']}}</div>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
     <div class="card assessment-card">
       <div class="card-body">
@@ -44,7 +60,7 @@
                 <button class="btn yes-no-button" [ngClass]="buttonClassTwo" (click)="patchFormValueForButton('assessmentQTwo', 'Yes')">Yes</button>
                 <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedTwo" (click)="patchFormValueForButton('assessmentQTwo', 'No')">No</button>
               </div>
-              <div class="float-right" [ngClass]="{'hidden': !checkIfMeetsRequirements()}">
+              <div class="float-right adjust-two-a " [ngClass]="{'hidden': !checkIfMeetsRequirements()}">
                 <input type="radio" value='Temporary' class="radio-button" formControlName="assessmentQTwoA">Temporary
                 <input type="radio" value='Permanent' class="radio-button" formControlName="assessmentQTwoA">Permanent
               </div>
@@ -101,10 +117,14 @@
 </div>
 
 <div class="row">
-  <button class="btn regular-button" (click)="createEncounter()">
-    Show Data
-  </button>
-  <pre>{{observationForDisplay}}</pre>
-  <pre>{{encounterForDisplay}}</pre>
+  <div class="col button-row">
+    <button class="btn regular-dark-button margin-right-20" (click)="createEncounter()">
+      Save Assessment Report
+    </button>
+    <button class="btn regular-dark-button" (click)="createEncounter()">
+        Print Report
+      </button>
+  </div>
 
+    
 </div>

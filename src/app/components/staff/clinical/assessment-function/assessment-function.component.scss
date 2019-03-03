@@ -1,5 +1,6 @@
 .assessment-card {
     min-width: 100%;
+    margin-bottom: 30px;
 }
 
 .yes-no-button {
@@ -29,4 +30,19 @@
 
 .hidden {
     visibility: hidden;
+}
+
+.col {
+    padding-bottom: 5px;
+}
+.button-row {
+    margin-left: -5px;
+}
+
+.margin-right-20 {
+    margin-right: 20px;
+}
+
+.adjust-two-a {
+    margin: -32px 0 0 0;    
 }
