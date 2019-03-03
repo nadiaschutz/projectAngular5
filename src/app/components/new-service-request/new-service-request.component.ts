@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, SkipSelf, AfterViewInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { UserService } from '../../service/user.service';
@@ -28,6 +28,7 @@ import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
 import { CustomValidator } from '../dynamic-forms/custom-validator';
 import { FileDetector } from 'protractor';
 import { ValueAddress } from 'src/app/interface/organization';
+import { element } from '@angular/core/src/render3/instructions';
 
 class TextInput {
   static create(event: FieldConfig) {
@@ -67,6 +68,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   loaded = false;
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   config: FieldConfig[] = [];
+
+  departmentList = [];
 
   formId = 'TEST3';
 
@@ -137,7 +140,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
     // this.activatedRoute.data.subscribe(data => console.log(data));
 
-    // this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
+    this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
 
 
     this.createdsuccessfully = false;
@@ -169,6 +172,15 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     for (let i = 0; i < sections.length; i += 2) {
       sections.slice(i, i + 2).wrapAll('<div class=\'row\'></div>');
     }
+  }
+
+
+  populateDeptNames(data: any) {
+    data.entry.forEach(element => {
+      if (element['resource']['name']) {
+        this.departmentList.push(element['resource']['name']);
+      }
+    });
   }
 
 
@@ -402,8 +414,30 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     return answerArray;
   }
 
-  onNext() {
-    this.disableInputsForReview = true;
+  submit(value: { [name: string]: any }) {
+    console.log(value);
+
+    // check the value arr for empty data
+    // pop empty data
+
+
+    // map to items??
+
+    // this.items.forEach(element => {
+    //   for (const key in value) {
+    //     if (value.hasOwnProperty(key)) {
+    //       if (key === element.text) {
+    //         element.answer = value[key];
+    //       }
+    //     }
+    //   }
+    // });
+
+    // post on fhir
+
+
+
+    // this.disableInputsForReview = true;
     // this.savingData();
 
     // this.questionnaireService
@@ -576,10 +610,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             inputType: 'text',
             placeholder: 'type your text',
             name: el.linkId,
+            flag: el.enableWhen ? false : true,
             enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
             enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
             value: '',
-            validation: [Validators.required, Validators.minLength(4)]
+            // validation: el.enableWhen ? [Validators.required, Validators.minLength(4)] : null,
+            validation: el.enableWhen ? null : [Validators.required, Validators.minLength(4)]
           };
         }
       }
@@ -588,6 +624,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         el.option.forEach(el1 => {
           options.push(el1.valueCoding.code);
         });
+        // FIX ME ASAP
         // if (el.text === 'Department Name') {
         //   const formField = this.selectField(el);
         //   formField['value'] = '';
@@ -601,17 +638,22 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           name: el.linkId,
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
           enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
+          flag: el.enableWhen ? false : true,
           options: options,
           placeholder: 'Select an option',
-          validation: [Validators.required],
+          // validation: el.enableWhen ? [Validators.required] : null,
+          validation: el.enableWhen ? null : [Validators.required],
           value: ''
         };
+
+        // [ctrl => ctrl.value === "Turn me off" ? null: Validators.required(ctrl)]
         // }
 
       } if (el.type === 'open-choice') {
         return {
           type: 'select',
           label: el.text,
+          flag: el.enableWhen ? false : true,
           name: el.linkId,
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
           enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
@@ -628,8 +670,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
           enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
           // placeholder: 'Select an option',
-          // validation: [Validators.required],
-          value: ''
+          // validation: el.enableWhen ? null : [Validators.required],
+          value: false
         };
       }
     });
@@ -724,21 +766,28 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   public checkEnableWhen(value, index) {
-
-    console.log('hey', value, index);
-    this.config.forEach(element => {
-      if (element.enableWhenA && element.enableWhenQ) {
-        // console.log('work you butt off!', element.enableWhenA, element.enableWhenQ);
-        if (value === element.enableWhenA && index === element.enableWhenQ) {
-          console.log('BINGO!!');
-          element.elementClass = 'enable-when-show';
-        } else {
-          element.elementClass = 'enable-when-hide';
+    this.config.forEach(el => {
+      if (el.enableWhenA && el.enableWhenQ) {
+        if (index === el.enableWhenQ) {
+          if (value === el.enableWhenA) {
+            // console.log('BINGO@222!!', el.name);
+            el.elementClass = 'enable-when-show';
+            el.flag = true;
+            // this.form.createControl(el).setValidators(console.log(el));
+            // this.form.createControl([ctrl => ctrl.value === "Turn me off" ? null: Validators.required(ctrl)]);
+            // mobile: new FormControl('', [ctrl => ctrl.value === "Turn me off" ? null: Validators.required(ctrl)]),
+          } else {
+            el.flag = false;
+            el.elementClass = 'enable-when-hide';
+            el.validation = undefined;
+            this.form.setValue(el.name, '');
+          }
         }
       }
-
+      console.log(el.name, el.validation);
     });
-
+    console.log(this.config);
+    // this.config = this.configuration;
   }
 
   handleError(error) {
@@ -879,19 +928,19 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   //  get status for the service request
 
-  checkingEnableWhen(value, index) {
-    if (this.questionsList.length > 0) {
-      this.questionsList[index].forEach(question => {
-        if (question['enableWhen']) {
-          question.enabled = false;
-          question['enableWhen'].forEach(element => {
-            if (element['answerCoding']['code'] === value) {
-              question.enabled = true;
-            }
-          });
-        }
-      });
-    }
-  }
+  // checkingEnableWhen(value, index) {
+  //   if (this.questionsList.length > 0) {
+  //     this.questionsList[index].forEach(question => {
+  //       if (question['enableWhen']) {
+  //         question.enabled = false;
+  //         question['enableWhen'].forEach(element => {
+  //           if (element['answerCoding']['code'] === value) {
+  //             question.enabled = true;
+  //           }
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
 }
 

@@ -35,4 +35,5 @@ export interface FieldConfig {
   selected?: any;
   enableWhenQ?: any;
   enableWhenA?: any;
+  flag?: boolean;
 }

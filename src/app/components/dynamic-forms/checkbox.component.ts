@@ -16,7 +16,7 @@ import { FieldConfig } from './field-config.interface';
                     class="form-check-input"
                     [type]="config.type"
                     (change)="f($event.target.checked)"
-                    [attr.checked]="config.value"
+                    [ngModel]="config.value"
                     [formControlName]="config.name"
                     >
                     <label class="form-check-label">
@@ -36,3 +36,6 @@ export class CheckboxComponent implements Field {
 // <div class="demo-full-width margin-top" [formGroup]="group" >
 // <mat-checkbox [formControlName]="field.name">{{field.label}}</mat-checkbox>
 // </div>
+
+
+// (change) = "f($event.target.checked)"
