@@ -40,15 +40,13 @@
             </div>
             <div class="col">
               <label for="assessmentQTwo">2. Meets Medical Requirements with Limiations</label>
-              <div class="col">
+              <div class="col-7">
                 <button class="btn yes-no-button" [ngClass]="buttonClassTwo" (click)="patchFormValueForButton('assessmentQTwo', 'Yes')">Yes</button>
                 <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedTwo" (click)="patchFormValueForButton('assessmentQTwo', 'No')">No</button>
               </div>
-              <div class="col" [ngClass]="{'hidden': !checkIfMeetsRequirements()}">
-                <div class="col">
-                  <input type="radio" value='Temporary' class="radio-button" formControlName="assessmentQTwoA">Temporary
-                  <input type="radio" value='Permanent' class="radio-button" formControlName="assessmentQTwoA">Permanent
-                </div>
+              <div class="float-right" [ngClass]="{'hidden': !checkIfMeetsRequirements()}">
+                <input type="radio" value='Temporary' class="radio-button" formControlName="assessmentQTwoA">Temporary
+                <input type="radio" value='Permanent' class="radio-button" formControlName="assessmentQTwoA">Permanent
               </div>
             </div>
           </div>
@@ -68,7 +66,33 @@
               </div>
             </div>
           </div>
-          
+          <div class="row">
+            <div class="col-6">
+              <label for="comment">Additional Comments</label>
+              <input type="text" class="form-control" placeholder="Enter" formControlName="comment" id="comment" name="comment">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="expiryDate">Expiry Date</label>
+              <input class="form-control" placeholder="Datepicker" formControlName="expiryDate" id="expiryDate"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate">
+            </div>
+            <div class="col">
+                <label for="nextAssessment">Next Assessment</label>
+                <input class="form-control" placeholder="Datepicker" formControlName="nextAssessment" id="nextAssessment"
+                  bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate">
+              </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="vaccineStatusRequired">Vaccination Status Required</label>
+              <div class="col">
+                <button class="btn yes-no-button" [ngClass]="vaccStatus" (click)="patchFormValueForButton('vaccineStatusRequired', 'Yes')">Yes</button>
+                <button class="btn yes-no-button" [ngClass]="vaccStatusUnSelected" (click)="patchFormValueForButton('vaccineStatusRequired', 'No')">No</button>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
     </div>

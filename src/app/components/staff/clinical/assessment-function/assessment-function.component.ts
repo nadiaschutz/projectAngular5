@@ -51,12 +51,13 @@ export class AssessmentFunctionComponent implements OnInit {
   buttonClassTwo;
   buttonClassThree;
   buttonClassFour;
+  vaccStatus;
 
   buttonClassUnSelectedOne;
   buttonClassUnSelectedTwo;
   buttonClassUnSelectedThree;
   buttonClassUnSelectedFour;
-
+  vaccStatusUnSelected;
   ngOnInit() {
     this.datePickerConfig = Object.assign(
       {},
@@ -79,7 +80,7 @@ export class AssessmentFunctionComponent implements OnInit {
       assessmentQThree: new FormControl(''),
       assessmentQFour: new FormControl(''),
       nextAssessment: new FormControl(''),
-      vaccineStatusReviewed: new FormControl(''),
+      vaccineStatusRequired: new FormControl(''),
       comment: new FormControl('')
     });
     this.staffService
@@ -191,7 +192,7 @@ export class AssessmentFunctionComponent implements OnInit {
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
 
-      componentCoding.value = this.returnInputValue('assessmentQOne');
+      componentCoding.display = this.returnInputValue('assessmentQOne');
       componentCoding.code = 'ASSESS_ONE_MEETS_MED_REQUIREMENTS';
       componentCoding.system = 'assessmentQOne';
 
@@ -206,7 +207,7 @@ export class AssessmentFunctionComponent implements OnInit {
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
 
-      componentCoding.value = this.returnInputValue('assessmentQTwo');
+      componentCoding.display = this.returnInputValue('assessmentQTwo');
       componentCoding.code = 'ASSESS_TWO_MEETS_MED_REQUIREMENTS_LIMIT';
       componentCoding.system = 'assessmentQTwo';
 
@@ -221,7 +222,7 @@ export class AssessmentFunctionComponent implements OnInit {
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
 
-      componentCoding.value = this.returnInputValue('assessmentQTwoA');
+      componentCoding.display = this.returnInputValue('assessmentQTwoA');
       componentCoding.code = 'ASSESS_TWO_MEETS_MED_REQUIREMENTS_LIMIT_TYPE';
       componentCoding.system = 'assessmentQTwoA';
 
@@ -236,7 +237,7 @@ export class AssessmentFunctionComponent implements OnInit {
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
 
-      componentCoding.value = this.returnInputValue('assessmentQThree');
+      componentCoding.display = this.returnInputValue('assessmentQThree');
       componentCoding.code = 'ASSESS_THREE_MISSING_MED_INFO';
       componentCoding.system = 'assessmentQThree';
 
@@ -251,9 +252,24 @@ export class AssessmentFunctionComponent implements OnInit {
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
 
-      componentCoding.value = this.returnInputValue('assessmentQFour');
+      componentCoding.display = this.returnInputValue('assessmentQFour');
       componentCoding.code = 'CANNOT_ASSESS';
       componentCoding.system = 'assessmentQFour';
+
+      componentCode.coding = [];
+      componentCode.coding.push(componentCoding);
+      component.code = componentCode;
+      observation.component.push(component);
+    }
+
+    if (this.returnInputValue('vaccineStatusRequired')) {
+      const component = new FHIR.Component();
+      const componentCode = new FHIR.CodeableConcept();
+      const componentCoding = new FHIR.Coding();
+
+      componentCoding.display = this.returnInputValue('vaccineStatusRequired');
+      componentCoding.code = 'VACCINE_STATUS_REQUIRED';
+      componentCoding.system = 'vaccineStatusRequired';
 
       componentCode.coding = [];
       componentCode.coding.push(componentCoding);
@@ -265,8 +281,15 @@ export class AssessmentFunctionComponent implements OnInit {
       'Practitioner/' + sessionStorage.getItem('userFHIRID');
     subject.reference = this.episodeOfCare['patient']['reference'];
 
+    console.log(this.returnInputValue('examDate'));
+
     period.start = this.returnInputValue('examDate');
     period.end = this.returnInputValue('expiryDate');
+
+    period.start = this.utilService.getDate(period.start);
+    period.end = this.utilService.getDate(period.end);
+
+    identifier.value = 'CLINICAL-OBSERVATION-' + this.episodeOfCare['id'];
 
     observation.effectivePeriod = period;
     observation.status = 'preliminary';
@@ -331,6 +354,14 @@ export class AssessmentFunctionComponent implements OnInit {
     if (name.includes('QFour') && value === 'No') {
       this.buttonClassFour = 'yes-no-button';
       this.buttonClassUnSelectedFour = 'yes-no-button-selected';
+    }
+    if (name.includes('Vaccination Status Required') && value === 'Yes') {
+      this.vaccStatus = 'yes-no-button-selected';
+      this.vaccStatusUnSelected = 'yes-no-button';
+    }
+    if (name.includes('Vaccination Status Required') && value === 'No') {
+      this.vaccStatus = 'yes-no-button';
+      this.vaccStatusUnSelected = 'yes-no-button-selected';
     }
   }
 
