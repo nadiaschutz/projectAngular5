@@ -280,6 +280,18 @@ export class StaffService {
       + episodeOfCareId, {headers: this.getHeaders()});
   }
 
+  saveAssessment(data) {
+    return this.http.post(environment.queryURI + '/Observation/', data, {
+      headers: this.getPostHeaders()
+    });
+  }
+
+  getObservation(episodeOfCareId) {
+    return this.http.get(
+      environment.queryURI + '/Immunization?encounter.identifier=ASSESSMENT-ENCOUNTER&encounter.episodeofcare='
+      + episodeOfCareId, {headers: this.getHeaders()});
+  }
+
   getNoCacheHeaders() {
     const headers = new HttpHeaders({
       'Content-Type' : 'application/json',
