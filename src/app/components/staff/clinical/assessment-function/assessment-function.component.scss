@@ -1,0 +1,25 @@
+.assessment-card {
+    min-width: 100%;
+}
+
+.yes-no-button {
+    width: 100px;
+    height: 40px;
+    border-radius: 2px;
+    border: solid 0.7px #398ef2;
+    background-color: #ffffff;
+    padding-right: 1px;
+    margin-right: 1px;
+
+}
+
+.yes-no-button-selected {
+    width: 100px;
+    height: 40px;
+    border-radius: 2px;
+    background-color: #398ef2;
+    color: white;
+    padding-right: 1px;
+    margin-right: 1px;
+}
+

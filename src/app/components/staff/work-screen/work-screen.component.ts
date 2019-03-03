@@ -1548,7 +1548,7 @@ export class WorkScreenComponent implements OnInit {
   redirectToAssessment() {
     if (sessionStorage.getItem('userRole') === 'clinician') {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
-      this.router.navigateByUrl('/staff/lab-requisition');
+      this.router.navigateByUrl('/staff/clinical/assessment-screen');
     }
   }
 

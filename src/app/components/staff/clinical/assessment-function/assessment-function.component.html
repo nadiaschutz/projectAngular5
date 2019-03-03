@@ -7,6 +7,58 @@
     </div>
   </div>
   <div class="row">
+    <div class="card assessment-card">
+      <div class="card-body">
+        <form [formGroup]="assessmentFormGroup" class="center-align">
+          <div class="row">
+            <div class="col">
+              <label for="performerType">Examination Performed By</label>
+              <select class="form-control" formControlName="performerType" id="performerType">
+                <option *ngFor="let performer of performerList" [ngValue]="performer.value">
+                  {{performer.viewValue}}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="examDate">Exam Date</label>
+              <input class="form-control" placeholder="Datepicker" formControlName="examDate" id="examDate"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+                ASSESSMENT
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="assessmentQOne">1. Meets Medical Requirements</label>
+              <div class="col">
+                <button class="btn yes-no-button" [ngClass]="buttonClassOne" (click)="patchFormValueForButton('assessmentQOne', 'Yes')">Yes</button>
+                <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedOne" (click)="patchFormValueForButton('assessmentQOne', 'No')">No</button>
+              </div>
+            </div>
 
+            <div class="col">
+              <label for="assessmentQTwo">2. Meets Medical Requirements with Limiations</label>
+              <div class="col">
+                <button class="btn yes-no-button" [ngClass]="buttonClassTwo" (click)="patchFormValueForButton('assessmentQTwo', 'Yes')">Yes</button>
+                <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedTwo" (click)="patchFormValueForButton('assessmentQTwo', 'No')">No</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+
+</div>
+
+<div class="row">
+  <button class="btn regular-button" (click)="createEncounter()">
+    Show Data
+  </button>
+  <pre>{{observationForDisplay}}</pre>
+  <pre>{{encounterForDisplay}}</pre>
+
 </div>

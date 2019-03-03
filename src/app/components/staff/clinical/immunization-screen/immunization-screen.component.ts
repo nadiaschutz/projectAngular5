@@ -2,11 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StaffService } from '../../../../service/staff.service';
 import { UtilService } from '../../../../service/util.service';
 import { UserService } from '../../../../service/user.service';
-import {
-  FormBuilder,
-  FormGroup,
-  FormControl
-} from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -62,24 +58,23 @@ export class ImmunizationScreenComponent implements OnInit {
   ];
 
   ngOnInit() {
-
-    this.datePickerConfig = Object.assign({},
+    this.datePickerConfig = Object.assign(
+      {},
       {
         containerClass: 'theme-dark-blue',
         dateInputFormat: 'YYYY-MM-DD',
         showWeekNumbers: false
-      });
+      }
+    );
     let enableClinicalPiece = false;
     this.fetchAllClinicians();
     if (sessionStorage.getItem('userRole')) {
       if (sessionStorage.getItem('userRole') === 'clinician') {
-        this.staffService.getVaccineList().subscribe(
-          data => {
-            data['list'].forEach(element => {
-              this.vaccineList.push(element);
-            });
-          }
-        );
+        this.staffService.getVaccineList().subscribe(data => {
+          data['list'].forEach(element => {
+            this.vaccineList.push(element);
+          });
+        });
 
         this.staffService
           .getAnyFHIRObjectByCustomQuery(
@@ -96,14 +91,16 @@ export class ImmunizationScreenComponent implements OnInit {
             },
             () => {
               this.processServiceRequestForSummary();
-              this.staffService.getAdministerededVaccinesFromServer(this.episodeOfCare['id']).subscribe(
-                data => {
-                  this.processAdministeredVaccines(data);
-                },
-                error => {
-                  console.log(error);
-                }
-              );
+              this.staffService
+                .getAdministerededVaccinesFromServer(this.episodeOfCare['id'])
+                .subscribe(
+                  data => {
+                    this.processAdministeredVaccines(data);
+                  },
+                  error => {
+                    console.log(error);
+                  }
+                );
             }
           );
 
@@ -124,8 +121,14 @@ export class ImmunizationScreenComponent implements OnInit {
 
         const episodeId = sessionStorage.getItem('selectedEpisodeId');
         const queryString = 'IMMUNHIST-' + episodeId;
-        this.staffService.getAnyFHIRObjectByCustomQuery('QuestionnaireResponse?context='
-          + episodeId + '&identifier=' + queryString).subscribe(
+        this.staffService
+          .getAnyFHIRObjectByCustomQuery(
+            'QuestionnaireResponse?context=' +
+              episodeId +
+              '&identifier=' +
+              queryString
+          )
+          .subscribe(
             data => {
               if (data) {
                 console.log(data);
@@ -139,8 +142,7 @@ export class ImmunizationScreenComponent implements OnInit {
             error => {
               console.log(error);
             },
-            () => {
-            }
+            () => {}
           );
         this.staffService
           .getAnyFHIRObjectByCustomQuery(
@@ -163,35 +165,41 @@ export class ImmunizationScreenComponent implements OnInit {
 
   processServiceRequestForSummary() {
     const temp = {};
-    this.staffService.getAnyFHIRObjectByCustomQuery('QuestionnaireResponse?identifier=SERVREQ&context='
-    + this.episodeOfCare['id']).subscribe(
-      questionnaireFound => {
-        if (questionnaireFound) {
-          if (questionnaireFound['entry']) {
-            for (const currentEntry of questionnaireFound['entry']) {
-              const individualEntry = currentEntry['resource'];
-              temp['id'] = individualEntry['id'];
-              this.staffService.getAnyFHIRObjectByCustomQuery(individualEntry['subject']['reference']).subscribe(
-                patient => {
-                  if (patient) {
-                    temp['name'] = this.utilService.getNameFromResource(patient);
-                    this.serviceRequestSummary = temp;
-
-                  }
-                }
-              );
+    this.staffService
+      .getAnyFHIRObjectByCustomQuery(
+        'QuestionnaireResponse?identifier=SERVREQ&context=' +
+          this.episodeOfCare['id']
+      )
+      .subscribe(
+        questionnaireFound => {
+          if (questionnaireFound) {
+            if (questionnaireFound['entry']) {
+              for (const currentEntry of questionnaireFound['entry']) {
+                const individualEntry = currentEntry['resource'];
+                temp['id'] = individualEntry['id'];
+                this.staffService
+                  .getAnyFHIRObjectByCustomQuery(
+                    individualEntry['subject']['reference']
+                  )
+                  .subscribe(patient => {
+                    if (patient) {
+                      temp['name'] = this.utilService.getNameFromResource(
+                        patient
+                      );
+                      this.serviceRequestSummary = temp;
+                    }
+                  });
+              }
             }
           }
-
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          console.log('we set them boys');
         }
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        console.log('we set them boys');
-      }
-    );
+      );
   }
 
   processAdministeredVaccines(data) {
@@ -204,30 +212,36 @@ export class ImmunizationScreenComponent implements OnInit {
           temp['dateAdmined'] = individualEntry['date'];
           individualEntry['vaccineCode']['coding'].forEach(codeFound => {
             temp['vaccine'] = {
-              'code': codeFound['code'],
-              'display': codeFound['display']
+              code: codeFound['code'],
+              display: codeFound['display']
             };
           });
 
           individualEntry['site']['coding'].forEach(siteFound => {
             temp['site'] = {
-              'code': siteFound['code'],
-              'display': siteFound['display']
+              code: siteFound['code'],
+              display: siteFound['display']
             };
           });
-          temp['dose'] = individualEntry['doseQuantity']['value'] + ' ' + individualEntry['doseQuantity']['code'];
+          temp['dose'] =
+            individualEntry['doseQuantity']['value'] +
+            ' ' +
+            individualEntry['doseQuantity']['code'];
           temp['name'] = individualEntry['note'][0]['text'];
           temp['lotNumber'] = individualEntry['lotNumber'];
           temp['expirationDate'] = individualEntry['expirationDate'];
 
-          this.staffService.getAnyFHIRObjectByReference('/'
-            + individualEntry['practitioner'][0]['actor']['reference']).subscribe(
-              practitioner => {
-                if (practitioner) {
-                  temp['adminBy'] = this.utilService.getNameFromResource(practitioner);
-                }
+          this.staffService
+            .getAnyFHIRObjectByReference(
+              '/' + individualEntry['practitioner'][0]['actor']['reference']
+            )
+            .subscribe(practitioner => {
+              if (practitioner) {
+                temp['adminBy'] = this.utilService.getNameFromResource(
+                  practitioner
+                );
               }
-            );
+            });
 
           this.administeredVaccines.push(temp);
           console.log(temp);
@@ -298,8 +312,8 @@ export class ImmunizationScreenComponent implements OnInit {
     console.log(this.clinicalQuestionnaireArray);
     this.clinicalQuestionnaireArray.forEach(item => {
       const baseItem = new FHIR.Item();
-      const codingAnswer = new FHIR.Answer;
-      const coding = new FHIR.Coding;
+      const codingAnswer = new FHIR.Answer();
+      const coding = new FHIR.Coding();
       // console.log(item['id']);
       baseItem.linkId = item['id'];
       baseItem.type = item['type'];
@@ -329,8 +343,8 @@ export class ImmunizationScreenComponent implements OnInit {
         item.items.forEach(element => {
           const itemToSave = new FHIR.Item();
           const answer = new FHIR.Answer();
-          const codingElementAnswer = new FHIR.Answer;
-          const elementCoding = new FHIR.Coding;
+          const codingElementAnswer = new FHIR.Answer();
+          const elementCoding = new FHIR.Coding();
 
           itemToSave.answer = [];
 
@@ -356,7 +370,6 @@ export class ImmunizationScreenComponent implements OnInit {
           itemToSave.item = [];
 
           if (element['item']) {
-
             element['item'].forEach(nestedItem => {
               const nestedObj = new FHIR.Item();
               const nestedAnswer = new FHIR.Answer();
@@ -393,21 +406,23 @@ export class ImmunizationScreenComponent implements OnInit {
     questionnaireResponse.status = 'in-progress';
     questionnaireResponse.item = itemArray;
 
-    this.staffService.saveClinicalQuestionnaireResponse(JSON.stringify(questionnaireResponse)).subscribe(
-      data => {
-        if (data) {
-          this.questionnaireResponse = data;
-          console.log(data);
+    this.staffService
+      .saveClinicalQuestionnaireResponse(JSON.stringify(questionnaireResponse))
+      .subscribe(
+        data => {
+          if (data) {
+            this.questionnaireResponse = data;
+            console.log(data);
+          }
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          this.checkboxHistoryFormDisabled = !this.checkboxHistoryFormDisabled;
+          location.reload();
         }
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        this.checkboxHistoryFormDisabled = !this.checkboxHistoryFormDisabled;
-        location.reload();
-      }
-    );
+      );
   }
 
   fetchAllClinicians() {
@@ -474,24 +489,26 @@ export class ImmunizationScreenComponent implements OnInit {
     annotation.text = this.clinicialFormGroup.get('historyNotes').value;
     procedureRequest.note = [annotation];
 
-    this.staffService.saveProcedureRequest(JSON.stringify(procedureRequest)).subscribe(
-      data => {
-        console.log(data);
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        this.saveQuestionnaireResponse();
-      }
-    );
+    this.staffService
+      .saveProcedureRequest(JSON.stringify(procedureRequest))
+      .subscribe(
+        data => {
+          console.log(data);
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          this.saveQuestionnaireResponse();
+        }
+      );
   }
 
   createEncounter() {
-    const encounter = new FHIR.Encounter;
-    const identifier = new FHIR.Identifier;
-    const patient = new FHIR.Reference;
-    const eoc = new FHIR.Reference;
+    const encounter = new FHIR.Encounter();
+    const identifier = new FHIR.Identifier();
+    const patient = new FHIR.Reference();
+    const eoc = new FHIR.Reference();
 
     eoc.reference = 'EpisodeOfCare/' + this.episodeOfCare['id'];
     patient.reference = this.episodeOfCare['patient']['reference'];
@@ -515,22 +532,21 @@ export class ImmunizationScreenComponent implements OnInit {
         console.log(error);
       }
     );
-
   }
 
   addImmunization(data: any) {
-    const immunization = new FHIR.Immunization;
-    const encounterReference = new FHIR.Reference;
-    const patientReference = new FHIR.Reference;
-    const site = new FHIR.CodeableConcept;
-    const siteCoding = new FHIR.Coding;
-    const vaccine = new FHIR.CodeableConcept;
-    const vaccineCoding = new FHIR.Coding;
-    const doseCoding = new FHIR.Coding;
-    const practitioner = new FHIR.PractitionerForImmunization;
-    const identifier = new FHIR.Identifier;
-    const note = new FHIR.Annotation;
-    practitioner.actor = new FHIR.Reference;
+    const immunization = new FHIR.Immunization();
+    const encounterReference = new FHIR.Reference();
+    const patientReference = new FHIR.Reference();
+    const site = new FHIR.CodeableConcept();
+    const siteCoding = new FHIR.Coding();
+    const vaccine = new FHIR.CodeableConcept();
+    const vaccineCoding = new FHIR.Coding();
+    const doseCoding = new FHIR.Coding();
+    const practitioner = new FHIR.PractitionerForImmunization();
+    const identifier = new FHIR.Identifier();
+    const note = new FHIR.Annotation();
+    practitioner.actor = new FHIR.Reference();
     site.coding = [];
     vaccine.coding = [];
     immunization.identifier = [];
@@ -562,8 +578,16 @@ export class ImmunizationScreenComponent implements OnInit {
 
     vaccine.coding.push(vaccineCoding);
     site.coding.push(siteCoding);
-    const dateAdmined = formatDate(this.vaccinationFormGroup.get('dateAdministered').value, 'yyyy-MM-dd', 'en');
-    const expiryDate = formatDate(this.vaccinationFormGroup.get('expirationDate').value, 'yyyy-MM-dd', 'en');
+    const dateAdmined = formatDate(
+      this.vaccinationFormGroup.get('dateAdministered').value,
+      'yyyy-MM-dd',
+      'en'
+    );
+    const expiryDate = formatDate(
+      this.vaccinationFormGroup.get('expirationDate').value,
+      'yyyy-MM-dd',
+      'en'
+    );
 
     note.text = this.vaccinationFormGroup.get('productName').value;
 
@@ -580,32 +604,39 @@ export class ImmunizationScreenComponent implements OnInit {
     immunization.vaccineCode = vaccine;
     immunization.resourceType = 'Immunization';
 
-    this.staffService.createImmunizationInfo(JSON.stringify(immunization)).subscribe(
-      dataImmunization => {
-        if (data) {
-          console.log(dataImmunization);
-        }
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        this.staffService.getAdministerededVaccinesFromServer(this.episodeOfCare['id']).subscribe(
-          results => {
-            this.processAdministeredVaccines(results);
-          },
-          error => {
-            console.log(error);
+    this.staffService
+      .createImmunizationInfo(JSON.stringify(immunization))
+      .subscribe(
+        dataImmunization => {
+          if (data) {
+            console.log(dataImmunization);
           }
-        );
-        this.showVaccineForm = !this.showVaccineForm;
-      }
-    );
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          this.staffService
+            .getAdministerededVaccinesFromServer(this.episodeOfCare['id'])
+            .subscribe(
+              results => {
+                this.processAdministeredVaccines(results);
+              },
+              error => {
+                console.log(error);
+              }
+            );
+          this.showVaccineForm = !this.showVaccineForm;
+        }
+      );
   }
 
   updateQuestionnaireResponse() {
     for (const item of this.questionnaireResponse['item']) {
-      if (item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ4' && this.newNoteValue) {
+      if (
+        item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ4' &&
+        this.newNoteValue
+      ) {
         const temp = {};
         temp['valueString'] = this.newNoteValue;
         item['answer'].push(temp);
@@ -613,20 +644,23 @@ export class ImmunizationScreenComponent implements OnInit {
       }
     }
 
-    this.staffService.updateClinicalQuestionnaireResponse(
-      this.questionnaireResponse['id'], JSON.stringify(this.questionnaireResponse)).subscribe(
-      data => {
-        console.log('SUCESS', data);
-        this.questionnaireResponse = data;
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        this.checkboxHistoryFormDisabled = !this.checkboxHistoryFormDisabled;
-      }
-    );
-
+    this.staffService
+      .updateClinicalQuestionnaireResponse(
+        this.questionnaireResponse['id'],
+        JSON.stringify(this.questionnaireResponse)
+      )
+      .subscribe(
+        data => {
+          console.log('SUCESS', data);
+          this.questionnaireResponse = data;
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          this.checkboxHistoryFormDisabled = !this.checkboxHistoryFormDisabled;
+        }
+      );
   }
 
   viewDetailedContext() {
