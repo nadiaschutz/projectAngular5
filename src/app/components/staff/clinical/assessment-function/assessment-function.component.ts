@@ -47,6 +47,8 @@ export class AssessmentFunctionComponent implements OnInit {
   maxDate: Date;
 
   buttonSelected = false;
+  assessmentSavedFlag = false;
+
   buttonClassOne;
   buttonClassTwo;
   buttonClassThree;
@@ -59,7 +61,6 @@ export class AssessmentFunctionComponent implements OnInit {
   buttonClassUnSelectedFour;
   vaccStatusUnSelected;
 
-  assessmentSavedFlag = false;
 
   ngOnInit() {
     this.datePickerConfig = Object.assign(
