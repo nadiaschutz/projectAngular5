@@ -38,15 +38,37 @@
                 <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedOne" (click)="patchFormValueForButton('assessmentQOne', 'No')">No</button>
               </div>
             </div>
-
             <div class="col">
               <label for="assessmentQTwo">2. Meets Medical Requirements with Limiations</label>
               <div class="col">
                 <button class="btn yes-no-button" [ngClass]="buttonClassTwo" (click)="patchFormValueForButton('assessmentQTwo', 'Yes')">Yes</button>
                 <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedTwo" (click)="patchFormValueForButton('assessmentQTwo', 'No')">No</button>
               </div>
+              <div class="col" [ngClass]="{'hidden': !checkIfMeetsRequirements()}">
+                <div class="col">
+                  <input type="radio" value='Temporary' class="radio-button" formControlName="assessmentQTwoA">Temporary
+                  <input type="radio" value='Permanent' class="radio-button" formControlName="assessmentQTwoA">Permanent
+                </div>
+              </div>
             </div>
           </div>
+          <div class="row">
+            <div class="col">
+              <label for="assessmentQThree">3. Missing Medical Information</label>
+              <div class="col">
+                <button class="btn yes-no-button" [ngClass]="buttonClassThree" (click)="patchFormValueForButton('assessmentQThree', 'Yes')">Yes</button>
+                <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedThree" (click)="patchFormValueForButton('assessmentQThree', 'No')">No</button>
+              </div>
+            </div>
+            <div class="col">
+              <label for="assessmentQFour">4. Unable to assess</label>
+              <div class="col">
+                <button class="btn yes-no-button" [ngClass]="buttonClassFour" (click)="patchFormValueForButton('assessmentQFour', 'Yes')">Yes</button>
+                <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedFour" (click)="patchFormValueForButton('assessmentQFour', 'No')">No</button>
+              </div>
+            </div>
+          </div>
+          
         </form>
       </div>
     </div>

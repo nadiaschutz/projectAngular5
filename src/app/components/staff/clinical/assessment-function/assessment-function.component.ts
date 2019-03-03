@@ -57,8 +57,6 @@ export class AssessmentFunctionComponent implements OnInit {
   buttonClassUnSelectedThree;
   buttonClassUnSelectedFour;
 
-
-
   ngOnInit() {
     this.datePickerConfig = Object.assign(
       {},
@@ -286,14 +284,19 @@ export class AssessmentFunctionComponent implements OnInit {
   }
 
   patchFormValueForButton(name, value) {
-
+    this.checkIfMeetsRequirements();
     this.switchClassesForButtons(name, value);
-    this.assessmentFormGroup.patchValue({[name]: value });
+    this.assessmentFormGroup.patchValue({ [name]: value });
     console.log(this.assessmentFormGroup.get(name).value);
   }
 
-  switchClassesForButtons(name, value) {
+  checkIfMeetsRequirements() {
+    if (this.returnInputValue('assessmentQTwo').toLowerCase() === ('no')) {
+      return true;
+    }
+  }
 
+  switchClassesForButtons(name, value) {
     if (name.includes('QOne') && value === 'Yes') {
       this.buttonClassOne = 'yes-no-button-selected';
       this.buttonClassUnSelectedOne = 'yes-no-button';
@@ -329,6 +332,7 @@ export class AssessmentFunctionComponent implements OnInit {
       this.buttonClassFour = 'yes-no-button';
       this.buttonClassUnSelectedFour = 'yes-no-button-selected';
     }
-
   }
+
+
 }
