@@ -769,6 +769,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.config.forEach(el => {
       if (el.enableWhenA && el.enableWhenQ) {
         if (index === el.enableWhenQ) {
+          // this.config.forEach(elem => {
+
+          // });
           if (value === el.enableWhenA) {
             // console.log('BINGO@222!!', el.name);
             el.elementClass = 'enable-when-show';
@@ -781,6 +784,14 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             el.elementClass = 'enable-when-hide';
             el.validation = undefined;
             this.form.setValue(el.name, '');
+            this.config.forEach(elem => {
+              if (elem.enableWhenA && elem.enableWhenQ) {
+                if (el.name === elem.enableWhenQ && elem.elementClass === 'enable-when-show') {
+                  elem.elementClass = 'enable-when-hide';
+                }
+              }
+
+            });
           }
         }
       }
