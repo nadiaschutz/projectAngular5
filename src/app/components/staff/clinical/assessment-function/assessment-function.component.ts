@@ -14,6 +14,8 @@ import * as html2canvas from 'html2canvas';
 })
 export class AssessmentFunctionComponent implements OnInit {
   assessmentFormGroup: FormGroup;
+  minDate: Date;
+  maxDate: Date;
 
   constructor(
     private staffService: StaffService,
@@ -39,8 +41,7 @@ export class AssessmentFunctionComponent implements OnInit {
 
   observationForDisplay;
   encounterForDisplay;
-  minDate: Date;
-  maxDate: Date;
+
 
   buttonSelected = false;
   assessmentSavedFlag = false;
