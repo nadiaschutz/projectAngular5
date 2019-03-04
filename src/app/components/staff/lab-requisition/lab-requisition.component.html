@@ -1,7 +1,7 @@
 
 
 <div class="container"  style="padding-top: 30px;" >
-  <div class="main-div" id="print2">
+  <div class="main-div">
   <div class="main-header" style="margin-top: 20px;margin-bottom: 50px;">
     <h5>Public Service Occupational / Health program</h5>
   </div>
@@ -55,14 +55,13 @@
 
   <div *ngIf="requisitionType==='Consultation' || requisitionType==='Medical Information'" class="search-box shadow-box">
 
-
     <form [formGroup]="consultationFormGroup">
 
       <div class="row">
         <div class="col-md-6 col-sm-6 col-xs-12">
           <div class="form-group">
             <label for="assignTo">Assign Clinician: </label>
-            <select id="assignTo" class="custom-form-control" required name="assignTo" formControlName="assignTo">
+            <select id="assignTo" class="custom-form-control" required name="assignTo" formControlName="assignTo" [(ngModel)]="printData.assignTo">
               <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
                 <span>{{clinician.name}}</span>
               </option>
@@ -73,7 +72,7 @@
           <div class="form-group">
             <label for="speciality" >Speciality: </label>
             <!-- <input type="text" class="form-control value" name="speciality" formControlName="speciality">-->
-            <select id="speciality" class="custom-form-control" name="speciality" formControlName="speciality">
+            <select id="speciality" class="custom-form-control" name="speciality" formControlName="speciality" [(ngModel)]="printData.speciality">
               <option *ngFor="let speciality of specialities" [value]="speciality"> {{speciality}}</option>
             </select>
           </div>
@@ -83,13 +82,29 @@
         <div class="col-md-6 col-sm-6 col-xs-12">
           <div class="form-group">
             <label for="instructions" >Instructions: </label>
-            <textarea id="instructions" style="height: auto" class="custom-form-control instructions" name="instructions" formControlName="instructions"></textarea>
+            <textarea id="instructions" style="height: auto" class="custom-form-control instructions" name="instructions" formControlName="instructions" [(ngModel)]="printData.instructions"></textarea>
           </div>
         </div>
       </div>
 
 
     </form>
+
+    <div class="consutation-madical-footer">
+      <div class="col-md-12 col-sm-12">
+        <div class="print-footer">
+          <div class="clinician">
+            <label>Clinician: {{clinician_id}} </label>
+          </div>
+          <div class="userName">
+            <label>Name: {{userName}} </label>
+          </div>
+          <div class="todayDate">
+            <label> Date: {{todayDate}} </label>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="consultation-buttons">
       <button class="btn special-button" (click)="saveConsultation()">Submit</button>
@@ -249,5 +264,127 @@
 
   </div>
 
+
+</div>
+
+<div class="container" style="position: fixed; right: -9999px; top: -9999px;">
+
+  <div class="main-div" id="print2">
+    <div class="row-log p-t-30">
+      <div class="logo-left">
+        <img  src="../../../../assets/healthcanada-logo.png" alt="">
+      </div>
+    </div>
+
+    <div class="main-header" style="margin-top: 20px;margin-bottom: 50px;width: 100%;
+    float: left;">
+      <h5>Public Service Occupational / Health program</h5>
+    </div>
+
+    <div class="shadow-box" style=" box-shadow: 1px 2px 6px 0 rgba(123, 123, 123, 0.5);
+    -webkit-box-shadow: 1px 2px 6px 0 rgba(123, 123, 123, 0.5);">
+      <div class="patient-table">
+        <table>
+          <thead class="patient-table-header">
+          <th class="patient-table-data-cells">Name</th>
+          <th class="patient-table-data-cells">Date of Birth</th>
+          <th class="patient-table-data-cells">PRI</th>
+          <th class="patient-table-data-cells">Department</th>
+          <th class="patient-table-data-cells">Branch</th>
+          <th class="patient-table-data-cells">Assessment Type</th>
+          </thead>
+          <tbody class="patient-table-body">
+          <td class="patient-table-data-cells">{{patient.name}}</td>
+          <td class="patient-table-data-cells">{{patient.dob}}</td>
+          <td class="patient-table-data-cells">{{patient.employeeId}}</td>
+          <td class="patient-table-data-cells">{{patient.workplace}}</td>
+          <td class="patient-table-data-cells">{{patient.branch}}</td>
+          <td class="patient-table-data-cells"> {{assessmentType}} </td>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6 col-md-6">
+          <div class="form-group m-b-10">
+            <label >Type of Requisition</label>
+            <select [(ngModel)]="requisitionType" class="custom-form-control" (change)="checkForChangeInRequisitionType()">
+              <option>Diagnostics Test</option>
+              <option>Consultation</option>
+              <option>Medical Information</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    <!-- Consultation & Medical Information -->
+
+    <div class="requisitionType">
+      <h6 class="consultation-header">{{requisitionType}}</h6>
+    </div>
+
+    <div *ngIf="requisitionType==='Consultation' || requisitionType==='Medical Information'" class="search-box shadow-box">
+
+
+
+        <div class="row">
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+              <label for="assignTo">Assign Clinician: </label>
+              <select id="assignTo" class="custom-form-control" required name="assignTo" [ngModelOptions]="{standalone: true}"  [(ngModel)]="printData.assignTo">
+                <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
+                  <span>{{clinician.name}}</span>
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+              <label for="speciality" >Speciality: </label>
+              <!-- <input type="text" class="form-control value" name="speciality" formControlName="speciality">-->
+              <select id="speciality" class="custom-form-control" name="speciality" [ngModelOptions]="{standalone: true}"  [(ngModel)]="printData.speciality">
+                <option *ngFor="let speciality of specialities" [value]="speciality"> {{speciality}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+              <label for="instructions" >Instructions: </label>
+              <textarea id="instructions" style="height: auto" class="custom-form-control instructions" name="instructions" [ngModelOptions]="{standalone: true}"  [(ngModel)]="printData.instructions"></textarea>
+            </div>
+          </div>
+        </div>
+
+
+
+      <div class="consutation-madical-footer">
+        <div class="col-md-12 col-sm-12">
+          <div class="print-footer">
+            <div class="clinician">
+              <label>Clinician: {{clinician_id}} </label>
+            </div>
+            <div class="userName">
+              <label>Name: {{userName}} </label>
+            </div>
+            <div class="todayDate">
+              <label> Date: {{todayDate}} </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+
+  </div>
 
 </div>

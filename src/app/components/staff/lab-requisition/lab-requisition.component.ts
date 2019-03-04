@@ -17,6 +17,11 @@ import {ActivatedRoute} from "@angular/router";
   styleUrls: ['./lab-requisition.component.scss']
 })
 export class LabRequisitionComponent implements OnInit {
+  printData = {
+      assignTo: null,
+      speciality: null,
+      instructions: null
+  }
   id_token_claims_obj = JSON.parse(sessionStorage.getItem('id_token_claims_obj'));
   userName = sessionStorage.getItem('userName');
   todayDate: any;
