@@ -1,3 +1,17 @@
-<p>
-  scheduler works!
-</p>
+  <form [formGroup]="scheduleFormGroup" novalidate>
+    <div class="row">
+      <div class="col" *ngIf="cliniciansList">
+        <label for="clinician">Administered By</label>
+        <select class="form-control" formControlName="clinician" id="clinician">
+          <option *ngFor="let clinician of cliniciansList" [ngValue]="clinician">
+            {{clinician.name}}
+          </option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="appointment">First Appoinment</label>
+        <input class="form-control" type="text" placeholder="Datepicker" formControlName="appointment" id="appointment"
+          bsDatepicker [bsConfig]='datePickerConfig'>
+      </div>
+    </div>
+  </form>

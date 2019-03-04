@@ -17,17 +17,6 @@ export class AssessmentFunctionComponent implements OnInit {
   minDate: Date;
   maxDate: Date;
 
-  constructor(
-    private staffService: StaffService,
-    private utilService: UtilService,
-    private formBuilder: FormBuilder,
-    private router: Router
-  ) {
-    this.minDate = new Date();
-    this.maxDate = new Date();
-    this.minDate.setDate(this.minDate.getDate() - 43800);
-    this.maxDate.setDate(this.maxDate.getDate());
-  }
 
   episodeOfCare;
   serviceRequestSummary;
@@ -45,6 +34,8 @@ export class AssessmentFunctionComponent implements OnInit {
 
   buttonSelected = false;
   assessmentSavedFlag = false;
+  printFlag = false;
+  twoAFlag = false;
 
   buttonClassOne;
   buttonClassTwo;
@@ -58,6 +49,17 @@ export class AssessmentFunctionComponent implements OnInit {
   buttonClassUnSelectedFour;
   vaccStatusUnSelected;
 
+  constructor(
+    private staffService: StaffService,
+    private utilService: UtilService,
+    private formBuilder: FormBuilder,
+    private router: Router
+  ) {
+    this.minDate = new Date();
+    this.maxDate = new Date();
+    this.minDate.setDate(this.minDate.getDate() - 43800);
+    this.maxDate.setDate(this.maxDate.getDate());
+  }
 
   ngOnInit() {
     this.datePickerConfig = Object.assign(
@@ -81,7 +83,7 @@ export class AssessmentFunctionComponent implements OnInit {
       assessmentQThree: new FormControl(''),
       assessmentQFour: new FormControl(''),
       nextAssessment: new FormControl(''),
-      vaccineStatusRequired: new FormControl(''),
+      vaccineStatusReviewed: new FormControl(''),
       comment: new FormControl('')
     });
     this.staffService
@@ -124,7 +126,7 @@ export class AssessmentFunctionComponent implements OnInit {
     this.encounterForDisplay = JSON.stringify(encounter, undefined, 2);
     console.log(encounter);
 
-    this.saveObservation(encounter);
+    // this.saveObservation(encounter);
 
     this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
       data => {
@@ -274,14 +276,14 @@ export class AssessmentFunctionComponent implements OnInit {
       observation.component.push(component);
     }
 
-    if (this.returnInputValue('vaccineStatusRequired')) {
+    if (this.returnInputValue('vaccineStatusReviewed')) {
       const component = new FHIR.Component();
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
 
-      componentCoding.display = this.returnInputValue('vaccineStatusRequired');
-      componentCoding.code = 'VACCINE_STATUS_REQUIRED';
-      componentCoding.system = 'vaccineStatusRequired';
+      componentCoding.display = this.returnInputValue('vaccineStatusReviewed');
+      componentCoding.code = 'VACCINE_STATUS_REVIEWED';
+      componentCoding.system = 'vaccineStatusvaccineStatusReviewedequired';
 
       componentCode.coding = [];
       componentCode.coding.push(componentCoding);
@@ -340,12 +342,14 @@ export class AssessmentFunctionComponent implements OnInit {
 
   checkIfMeetsRequirements() {
     if (this.returnInputValue('assessmentQTwo').toLowerCase() === ('no')) {
-      return true;
+      this.twoAFlag = true;
+    } else {
+      this.twoAFlag = false;
     }
   }
 
   printToPDF() {
-    const data = document.getElementById('print');
+    const data = document.getElementById('print').style.display = 'block';
     html2canvas(data).then(canvas => {
     // Few necessary setting options
     const imgWidth = 190;
@@ -356,9 +360,31 @@ export class AssessmentFunctionComponent implements OnInit {
     const contentDataURL = canvas.toDataURL('image/png');
     const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
     const position = 0;
-    pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
     pdf.save('Assessment Report.pdf'); // Generated PDF
     });
+  }
+
+  generateObjectForPrinting() {
+    const printObj = {};
+    this.printFlag = true;
+
+    printObj['assessmentQOne'] = this.returnInputValue('assessmentQOne');
+    printObj['assessmentQTwo'] = this.returnInputValue('assessmentQTwo');
+    printObj['assessmentQTwoA'] = this.returnInputValue('assessmentQTwoA');
+    printObj['assessmentQThree'] = this.returnInputValue('assessmentQThree');
+    printObj['assessmentQFour'] = this.returnInputValue('assessmentQFour');
+    printObj['performerType'] = this.returnInputValue('performerType');
+    printObj['examDate'] = this.returnInputValue('examDate');
+    printObj['expiryDate'] = this.returnInputValue('expiryDate');
+    printObj['nextAssessment'] = this.returnInputValue('nextAssessment');
+    printObj['vaccineStatusReviewed'] = this.returnInputValue('vaccineStatusReviewed');
+    printObj['comment'] = this.returnInputValue('comment');
+    printObj['pri'] = this.serviceRequestSummary['pri'];
+    printObj['name'] = this.serviceRequestSummary['name'];
+    printObj['dob'] = this.serviceRequestSummary['dob'];
+    printObj['serviceId'] = this.serviceRequestSummary['serviceId'];
+    printObj['date'] = this.utilService.getCurrentDate();
+
   }
 
   switchClassesForButtons(name, value) {
@@ -397,11 +423,11 @@ export class AssessmentFunctionComponent implements OnInit {
       this.buttonClassFour = 'yes-no-button';
       this.buttonClassUnSelectedFour = 'yes-no-button-selected';
     }
-    if (name.includes('Vaccination Status Required') && value === 'Yes') {
+    if (name.includes('vaccineStatusReviewed') && value === 'Yes') {
       this.vaccStatus = 'yes-no-button-selected';
       this.vaccStatusUnSelected = 'yes-no-button';
     }
-    if (name.includes('Vaccination Status Required') && value === 'No') {
+    if (name.includes('vaccineStatusReviewed') && value === 'No') {
       this.vaccStatus = 'yes-no-button';
       this.vaccStatusUnSelected = 'yes-no-button-selected';
     }

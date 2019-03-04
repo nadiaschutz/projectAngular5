@@ -16,9 +16,13 @@ export class SchedulerComponent implements OnInit {
   minDate: Date;
   maxDate: Date;
 
+  datePickerConfig: Partial<BsDatepickerConfig>;
+
   scheduleFormGroup: FormGroup;
   episodeOfCare;
   serviceRequestSummary;
+
+  cliniciansList = [];
 
   constructor(
     private staffService: StaffService,
@@ -32,7 +36,18 @@ export class SchedulerComponent implements OnInit {
     this.maxDate.setDate(this.maxDate.getDate());
   }
 
+  show;
+  noShow;
+
   ngOnInit() {
+    this.datePickerConfig = Object.assign(
+      {},
+      {
+        containerClass: 'theme-dark-blue',
+        dateInputFormat: 'YYYY-MM-DD',
+        showWeekNumbers: false
+      }
+    );
     this.scheduleFormGroup = this.formBuilder.group({
       appointment: new FormControl(''),
       clinician: new FormControl('')
@@ -51,9 +66,24 @@ export class SchedulerComponent implements OnInit {
           console.log(error);
         },
         () => {
+          this.fetchAllClinicians();
           this.processServiceRequestForSummary();
         }
       );
+  }
+
+  fetchAllClinicians() {
+    this.staffService.getAllClinicians().subscribe(data => {
+      if (data['entry']) {
+        data['entry'].forEach(element => {
+          const clinician = element['resource'];
+          this.cliniciansList.push({
+            id: clinician['id'],
+            name: this.utilService.getNameFromResource(clinician)
+          });
+        });
+      }
+    });
   }
 
   processServiceRequestForSummary() {
@@ -108,4 +138,8 @@ export class SchedulerComponent implements OnInit {
       );
   }
 
+
+  saveAppointment() {
+    const appointment = new FHIR.Appointment;
+  }
 }

@@ -67,7 +67,7 @@ import { FormBuilderComponent } from './components/form-builder/form-builder.com
 import { ImmunizationScreenComponent } from './components/staff/clinical/immunization-screen/immunization-screen.component';
 import { AudiogramScreenComponent } from './components/staff/clinical/audiogram-screen/audiogram-screen.component';
 import { AssessmentFunctionComponent } from './components/staff/clinical/assessment-function/assessment-function.component';
-import { ScheulderComponent } from './components/staff/clinical/scheulder/scheulder.component';
+import { SchedulerComponent } from './components/staff/clinical/scheduler/scheduler.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -159,7 +159,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ImmunizationScreenComponent,
     AudiogramScreenComponent,
     AssessmentFunctionComponent,
-    ScheulderComponent
+    SchedulerComponent
 
   ],
   imports: [
