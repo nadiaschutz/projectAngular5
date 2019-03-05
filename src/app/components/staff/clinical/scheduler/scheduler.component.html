@@ -61,17 +61,18 @@
           </div>
         </div>
       </form>
-      <div class="row">
+      
+    </div>
+    <div class="row">
         <div class="col button-row">
-          <button class="btn regular-dark-button margin-right-20" (click)="saveAppointment()" [disabled]="!scheduleFormGroup.valid">
+          <button class="btn regular-dark-button margin-right-20" (click)="saveAppointment()">
             Save Appointment
           </button>
-          <button class="btn regular-dark-button margin-right-20" (click)="saveAppointment()" [disabled]="!scheduleFormGroup.valid">
+          <button class="btn regular-dark-button margin-right-20" (click)="printToPDF()">
             Print Appoinment Sheet
           </button>
         </div>
       </div>
-    </div>
   </div>
 
   <div *ngIf="postCompleteFlag">

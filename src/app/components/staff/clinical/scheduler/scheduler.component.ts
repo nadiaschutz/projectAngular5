@@ -5,7 +5,8 @@ import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import * as FHIR from '../../../../interface/FHIR';
 import { Router } from '@angular/router';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-
+import * as jspdf from 'jspdf';
+import * as html2canvas from 'html2canvas';
 @Component({
   selector: 'app-scheduler',
   templateUrl: './scheduler.component.html',
@@ -214,9 +215,30 @@ export class SchedulerComponent implements OnInit {
       },
       () => {
         this.postCompleteFlag = true;
+        this.printToPDF();
       }
     );
   }
+
+  printToPDF() {
+    this.printFlag = !this.printFlag;
+      const data = document.getElementById('print');
+      html2canvas(data).then(canvas => {
+      // Few necessary setting options
+      const imgWidth = 190;
+      const pageHeight = 350;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const heightLeft = imgHeight;
+
+      const contentDataURL = canvas.toDataURL('image/png');
+      const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+      const position = 0;
+      pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
+      pdf.save('Appointment.pdf'); // Generated PDF
+      });
+
+  }
+
 
   viewDetailedContext() {
     this.router.navigateByUrl('/staff/work-screen');
