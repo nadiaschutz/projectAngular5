@@ -13,7 +13,7 @@
     </div>
   </div>
 
-  <div *ngIf="!assessmentSavedFlag">
+  <div *ngIf="!assessmentSavedFlag && !printFlag">
     <div class="row" *ngIf="serviceRequestSummary">
       <div class="card assessment-card">
         <div class="card-body">
@@ -30,7 +30,7 @@
             <div class="row">
               <div class="col">
                 <label for="performerType">Examination Performed By</label>
-                <select class="form-control" formControlName="performerType" id="performerType">
+                <select class="form-control" formControlName="performerType" id="performerType" required>
                   <option *ngFor="let performer of performerList" [ngValue]="performer.value">
                     {{performer.viewValue}}
                   </option>
@@ -39,7 +39,7 @@
               <div class="col">
                 <label for="examDate">Exam Date</label>
                 <input class="form-control" placeholder="Datepicker" formControlName="examDate" id="examDate"
-                  bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate">
+                  bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" required>
               </div>
             </div>
             <div class="row">
@@ -48,85 +48,53 @@
               </div>
             </div>
             <div class="row">
-              <div class="col">
-                <label for="assessmentQOne">1. Meets Medical Requirements</label>
-                <div class="col">
-                  <button class="btn yes-no-button" [ngClass]="buttonClassOne" (click)="patchFormValueForButton('assessmentQOne', 'Yes')">Yes</button>
-                  <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedOne" (click)="patchFormValueForButton('assessmentQOne', 'No')">No</button>
-                </div>
-              </div>
-              <div class="col">
-                <label for="assessmentQTwo">2. Meets Medical Requirements with Limiations</label>
-                <div class="col-7">
-                  <button class="btn yes-no-button" [ngClass]="buttonClassTwo" (click)="patchFormValueForButton('assessmentQTwo', 'Yes')">Yes</button>
-                  <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedTwo" (click)="patchFormValueForButton('assessmentQTwo', 'No')">No</button>
-                </div>
-                <div class="float-right adjust-two-a " [ngClass]="{'hidden': !twoAFlag}">
-                  <input type="radio" value='Temporary' class="radio-button" formControlName="assessmentQTwoA">Temporary
-                  <input type="radio" value='Permanent' class="radio-button" formControlName="assessmentQTwoA">Permanent
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <label for="assessmentQThree">3. Missing Medical Information</label>
-                <div class="col">
-                  <button class="btn yes-no-button" [ngClass]="buttonClassThree" (click)="patchFormValueForButton('assessmentQThree', 'Yes')">Yes</button>
-                  <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedThree" (click)="patchFormValueForButton('assessmentQThree', 'No')">No</button>
-                </div>
-              </div>
-              <div class="col">
-                <label for="assessmentQFour">4. Unable to assess</label>
-                <div class="col">
-                  <button class="btn yes-no-button" [ngClass]="buttonClassFour" (click)="patchFormValueForButton('assessmentQFour', 'Yes')">Yes</button>
-                  <button class="btn yes-no-button" [ngClass]="buttonClassUnSelectedFour" (click)="patchFormValueForButton('assessmentQFour', 'No')">No</button>
-                </div>
-              </div>
-            </div>
-            <div class="row">
               <div class="col-6">
-                <label for="comment">Additional Comments</label>
-                <input type="text" class="form-control" placeholder="Enter" formControlName="comment" id="comment" name="comment">
+                <div *ngFor="let assessment of assessmentList">
+                  <label>
+                    <input type="radio" [value]='assessment.value' class="radio-button" formControlName="assessment"
+                      required>{{assessment.viewValue}}
+                  </label>
+                </div>
               </div>
-            </div>
-            <div class="row">
               <div class="col">
                 <label for="expiryDate">Expiry Date</label>
                 <input class="form-control" placeholder="Datepicker" formControlName="expiryDate" id="expiryDate"
-                  bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate">
+                  bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" required>
               </div>
               <div class="col">
                 <label for="nextAssessment">Next Assessment</label>
                 <input class="form-control" placeholder="Datepicker" formControlName="nextAssessment" id="nextAssessment"
-                  bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate">
+                  bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" required>
               </div>
+
             </div>
             <div class="row">
               <div class="col">
-                <label for="vaccineStatusReviewed">Vaccination Status Reviewed</label>
-                <div class="col">
-                  <button class="btn yes-no-button" [ngClass]="vaccStatus" (click)="patchFormValueForButton('vaccineStatusReviewed', 'Yes')">Yes</button>
-                  <button class="btn yes-no-button" [ngClass]="vaccStatusUnSelected" (click)="patchFormValueForButton('vaccineStatusReviewed', 'No')">No</button>
+                <label for="comment">Additional Comments</label>
+                <textarea class="form-control" placeholder="Enter" formControlName="comment" id="comment" name="comment"></textarea>
+              </div>
+              <div class="col">
+                <label>Vaccine Status Reviewed</label>
+
+                <div *ngFor="let choice of vaccineReviewChoices">
+                  <label>
+                    <input type="radio" [value]='choice.value' class="radio-button" formControlName="vaccineStatusReviewed"
+                      required>{{choice.viewValue}}
+                  </label>
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col">
-                <app-scheduler></app-scheduler>
 
-              </div>
-
-            </div>
           </form>
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col button-row">
-        <button class="btn regular-dark-button margin-right-20" (click)="createEncounter()">
+        <button class="btn regular-dark-button margin-right-20" (click)="createEncounter()" [disabled]="!assessmentFormGroup.valid">
           Save Assessment Report
         </button>
-        <button class="btn regular-dark-button" (click)="printToPDF()">
+        <button class="btn regular-dark-button" (click)="printToPDF()" [disabled]="!assessmentFormGroup.valid">
           Print Report
         </button>
       </div>
@@ -140,8 +108,144 @@
       </div>
     </div>
 
+
   </div>
 
 
+  <div *ngIf="printFlag && printObjectForDisplay">
+    <div class="row">
+      General Information
+    </div><br />
+    <div class="row summary-row">
+      <div class="col-3">
+        Service Request ID #
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['serviceId']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        PRI
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['pri']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        PSOHP Region
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['region']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Exam Performed By
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['performerType']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Exam Date
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['examDate']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Client Name
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['name']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Date Of Birth
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['dob']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Department
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['employeeDept']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Branch
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['employeeBranch']}}
+      </div>
+    </div><br /><br />
+    <div class="row">
+      Assessment Details
+    </div><br />
+    <div class="row summary-row">
+      <div class="col-3">
+        Assessment Result
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['assessment']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Limitations
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['limitation']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Expiry Date
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['expiryDate']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Vaccine Status Reviewed
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['vaccineStatusReviewed']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+      <div class="col-3">
+        Date Assessed
+      </div>
+      <div class="col">
+        {{printObjectForDisplay['date']}}
+      </div>
+    </div>
+    <div class="row summary-row">
+        <div class="col-3">
+          Next Assessment
+        </div>
+        <div class="col">
+          {{printObjectForDisplay['nextAssessment']}}
+        </div>
+      </div>
+    <div class="row">
+      <div class="col button-row">
+        <button class="btn regular-dark-button margin-right-20" (click)="printFlag = !printFlag">
+          Return to form
+        </button>
+      </div>
+    </div>
+  </div>
 
 </div>

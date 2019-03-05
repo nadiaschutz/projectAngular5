@@ -17,7 +17,6 @@ export class AssessmentFunctionComponent implements OnInit {
   minDate: Date;
   maxDate: Date;
 
-
   episodeOfCare;
   serviceRequestSummary;
   episodeOfCareId;
@@ -26,11 +25,30 @@ export class AssessmentFunctionComponent implements OnInit {
     { value: 'EXTERNAL', viewValue: 'External Health Provider' }
   ];
 
+  assessmentList = [
+    { value: 'MEETSREQ', viewValue: 'Meets Medical Requirements' },
+    {
+      value: 'MEETSREQ-TEMP',
+      viewValue: 'Meets Medical Requirements with Temporary Limiations'
+    },
+    {
+      value: 'MEETSREQ-PERM',
+      viewValue: 'Meets Medical Requirements with Permanent Limiations'
+    },
+    { value: 'MISSING-MED', viewValue: 'Does Not Meet Medical Requirements' },
+    { value: 'MEETSREQ_NO', viewValue: 'Missing Medical Information' },
+    { value: 'NOASSESMENT', viewValue: 'Unable to assess' }
+  ];
+
+  vaccineReviewChoices = [
+    { value: 'YES', viewValue: 'Yes' },
+    { value: 'NO', viewValue: 'No' }
+  ];
   datePickerConfig: Partial<BsDatepickerConfig>;
 
   observationForDisplay;
   encounterForDisplay;
-
+  printObjectForDisplay;
 
   buttonSelected = false;
   assessmentSavedFlag = false;
@@ -77,11 +95,7 @@ export class AssessmentFunctionComponent implements OnInit {
       performerType: new FormControl(''),
       examDate: new FormControl(''),
       expiryDate: new FormControl(''),
-      assessmentQOne: new FormControl(''),
-      assessmentQTwo: new FormControl(''),
-      assessmentQTwoA: new FormControl(''),
-      assessmentQThree: new FormControl(''),
-      assessmentQFour: new FormControl(''),
+      assessment: new FormControl(''),
       nextAssessment: new FormControl(''),
       vaccineStatusReviewed: new FormControl(''),
       comment: new FormControl('')
@@ -152,7 +166,13 @@ export class AssessmentFunctionComponent implements OnInit {
               for (const currentEntry of questionnaireFound['entry']) {
                 const individualEntry = currentEntry['resource'];
                 temp['serviceId'] = individualEntry['id'];
-                console.log(individualEntry);
+                for (const item of individualEntry['item']) {
+                  if (item['text'].toLowerCase().includes('regional office')) {
+                    if (item['answer']) {
+                      temp['region'] = item['answer'][0]['valueString'];
+                    }
+                  }
+                }
                 this.staffService
                   .getAnyFHIRObjectByCustomQuery(
                     individualEntry['subject']['reference']
@@ -167,10 +187,16 @@ export class AssessmentFunctionComponent implements OnInit {
                         temp['pri'] = patient['identifier'][0]['value'];
                       }
                       for (const extension of patient['extension']) {
-                        if (extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
+                        if (
+                          extension['url'] ===
+                          'https://bcip.smilecdr.com/fhir/workplace'
+                        ) {
                           temp['employeeDept'] = extension['valueString'];
                         }
-                        if (extension['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
+                        if (
+                          extension['url'] ===
+                          'https://bcip.smilecdr.com/fhir/branch'
+                        ) {
                           temp['employeeBranch'] = extension['valueString'];
                         }
                       }
@@ -183,9 +209,6 @@ export class AssessmentFunctionComponent implements OnInit {
         },
         error => {
           console.log(error);
-        },
-        () => {
-          console.log('we set them boys');
         }
       );
   }
@@ -201,94 +224,40 @@ export class AssessmentFunctionComponent implements OnInit {
 
     observation.component = [];
 
-    if (this.returnInputValue('assessmentQOne')) {
+    if (this.returnInputValue('assessment')) {
       const component = new FHIR.Component();
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
+      for (const currentObj in this.assessmentList) {
+        if (this.returnInputValue('assessment') === currentObj['value']) {
+          componentCoding.display = currentObj['viewValue'];
+          componentCoding.code = currentObj['value'];
+          componentCoding.system = 'ASSESSMENT';
 
-      componentCoding.display = this.returnInputValue('assessmentQOne');
-      componentCoding.code = 'ASSESS_ONE_MEETS_MED_REQUIREMENTS';
-      componentCoding.system = 'assessmentQOne';
-
-      componentCode.coding = [];
-      componentCode.coding.push(componentCoding);
-      component.code = componentCode;
-      observation.component.push(component);
-    }
-
-    if (this.returnInputValue('assessmentQTwo')) {
-      const component = new FHIR.Component();
-      const componentCode = new FHIR.CodeableConcept();
-      const componentCoding = new FHIR.Coding();
-
-      componentCoding.display = this.returnInputValue('assessmentQTwo');
-      componentCoding.code = 'ASSESS_TWO_MEETS_MED_REQUIREMENTS_LIMIT';
-      componentCoding.system = 'assessmentQTwo';
-
-      componentCode.coding = [];
-      componentCode.coding.push(componentCoding);
-      component.code = componentCode;
-      observation.component.push(component);
-    }
-
-    if (this.returnInputValue('assessmentQTwoA')) {
-      const component = new FHIR.Component();
-      const componentCode = new FHIR.CodeableConcept();
-      const componentCoding = new FHIR.Coding();
-
-      componentCoding.display = this.returnInputValue('assessmentQTwoA');
-      componentCoding.code = 'ASSESS_TWO_MEETS_MED_REQUIREMENTS_LIMIT_TYPE';
-      componentCoding.system = 'assessmentQTwoA';
-
-      componentCode.coding = [];
-      componentCode.coding.push(componentCoding);
-      component.code = componentCode;
-      observation.component.push(component);
-    }
-
-    if (this.returnInputValue('assessmentQThree')) {
-      const component = new FHIR.Component();
-      const componentCode = new FHIR.CodeableConcept();
-      const componentCoding = new FHIR.Coding();
-
-      componentCoding.display = this.returnInputValue('assessmentQThree');
-      componentCoding.code = 'ASSESS_THREE_MISSING_MED_INFO';
-      componentCoding.system = 'assessmentQThree';
-
-      componentCode.coding = [];
-      componentCode.coding.push(componentCoding);
-      component.code = componentCode;
-      observation.component.push(component);
-    }
-
-    if (this.returnInputValue('assessmentQFour')) {
-      const component = new FHIR.Component();
-      const componentCode = new FHIR.CodeableConcept();
-      const componentCoding = new FHIR.Coding();
-
-      componentCoding.display = this.returnInputValue('assessmentQFour');
-      componentCoding.code = 'CANNOT_ASSESS';
-      componentCoding.system = 'assessmentQFour';
-
-      componentCode.coding = [];
-      componentCode.coding.push(componentCoding);
-      component.code = componentCode;
-      observation.component.push(component);
+          componentCode.coding = [];
+          componentCode.coding.push(componentCoding);
+          component.code = componentCode;
+          observation.component.push(component);
+        }
+      }
     }
 
     if (this.returnInputValue('vaccineStatusReviewed')) {
       const component = new FHIR.Component();
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
+      for (const currentObj in this.vaccineReviewChoices) {
+        if (this.returnInputValue('vaccineStatusReviewed') === currentObj['value']) {
+          componentCoding.display = currentObj['viewValue'];
+          componentCoding.code = 'VACCINE_STATUS_REVIEWED';
+          componentCoding.system = 'vaccineStatusReviewed';
 
-      componentCoding.display = this.returnInputValue('vaccineStatusReviewed');
-      componentCoding.code = 'VACCINE_STATUS_REVIEWED';
-      componentCoding.system = 'vaccineStatusvaccineStatusReviewedequired';
-
-      componentCode.coding = [];
-      componentCode.coding.push(componentCoding);
-      component.code = componentCode;
-      observation.component.push(component);
+          componentCode.coding = [];
+          componentCode.coding.push(componentCoding);
+          component.code = componentCode;
+          observation.component.push(component);
+        }
+      }
     }
 
     performer.reference =
@@ -329,100 +298,85 @@ export class AssessmentFunctionComponent implements OnInit {
     );
   }
 
-  returnInputValue(input) {
-    return this.assessmentFormGroup.get(input).value;
-  }
-
   patchFormValueForButton(name, value) {
-    this.checkIfMeetsRequirements();
     this.switchClassesForButtons(name, value);
     this.assessmentFormGroup.patchValue({ [name]: value });
     console.log(this.assessmentFormGroup.get(name).value);
   }
 
-  checkIfMeetsRequirements() {
-    if (this.returnInputValue('assessmentQTwo').toLowerCase() === ('no')) {
-      this.twoAFlag = true;
-    } else {
-      this.twoAFlag = false;
-    }
+  returnInputValue(input) {
+    return this.assessmentFormGroup.get(input).value;
   }
 
-  printToPDF() {
-    const data = document.getElementById('print').style.display = 'block';
-    html2canvas(data).then(canvas => {
-    // Few necessary setting options
-    const imgWidth = 190;
-    const pageHeight = 350;
-    const imgHeight = canvas.height * imgWidth / canvas.width;
-    const heightLeft = imgHeight;
 
-    const contentDataURL = canvas.toDataURL('image/png');
-    const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
-    const position = 0;
-    pdf.save('Assessment Report.pdf'); // Generated PDF
-    });
+  printToPDF() {
+    this.printFlag = true;
+    this.generateObjectForPrinting();
+    // const data = document.getElementById('print').style.display = 'block';
+    // html2canvas(data).then(canvas => {
+    // // Few necessary setting options
+    // const imgWidth = 190;
+    // const pageHeight = 350;
+    // const imgHeight = canvas.height * imgWidth / canvas.width;
+    // const heightLeft = imgHeight;
+
+    // const contentDataURL = canvas.toDataURL('image/png');
+    // const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+    // const position = 0;
+    // pdf.save('Assessment Report.pdf'); // Generated PDF
+    // });
   }
 
   generateObjectForPrinting() {
     const printObj = {};
     this.printFlag = true;
 
-    printObj['assessmentQOne'] = this.returnInputValue('assessmentQOne');
-    printObj['assessmentQTwo'] = this.returnInputValue('assessmentQTwo');
-    printObj['assessmentQTwoA'] = this.returnInputValue('assessmentQTwoA');
-    printObj['assessmentQThree'] = this.returnInputValue('assessmentQThree');
-    printObj['assessmentQFour'] = this.returnInputValue('assessmentQFour');
-    printObj['performerType'] = this.returnInputValue('performerType');
-    printObj['examDate'] = this.returnInputValue('examDate');
-    printObj['expiryDate'] = this.returnInputValue('expiryDate');
+    let examDate = this.returnInputValue('examDate');
+    let expiry = this.returnInputValue('expiryDate');
+
+    examDate = this.utilService.getDate(examDate);
+    expiry = this.utilService.getDate(expiry);
+
+    for (const type of this.assessmentList) {
+      if (type.value === this.returnInputValue('assessment')) {
+        printObj['assessment'] = type.viewValue;
+        if (type.value === 'MEETSREQ-TEMP' ) {
+          printObj['limitation'] = 'Yes - Temporary';
+        } else {
+          printObj['limitation'] = 'No';
+        }
+        if (type.value === 'MEETSREQ-PERM') {
+          printObj['limitation'] = 'Yes - Permanent';
+        } else {
+          printObj['limitation'] = 'No';
+        }
+      }
+    }
+
+    for (const type of this.performerList) {
+      if (type.value === this.returnInputValue('performerType')) {
+        printObj['performerType'] = type.viewValue;
+      }
+    }
+    printObj['examDate'] = examDate;
+    printObj['expiryDate'] = expiry;
     printObj['nextAssessment'] = this.returnInputValue('nextAssessment');
-    printObj['vaccineStatusReviewed'] = this.returnInputValue('vaccineStatusReviewed');
+    printObj['vaccineStatusReviewed'] = this.returnInputValue(
+      'vaccineStatusReviewed'
+    );
     printObj['comment'] = this.returnInputValue('comment');
     printObj['pri'] = this.serviceRequestSummary['pri'];
     printObj['name'] = this.serviceRequestSummary['name'];
     printObj['dob'] = this.serviceRequestSummary['dob'];
     printObj['serviceId'] = this.serviceRequestSummary['serviceId'];
     printObj['date'] = this.utilService.getCurrentDate();
-
+    printObj['region'] = this.serviceRequestSummary['region'];
+    printObj['employeeDept'] = this.serviceRequestSummary['employeeDept'];
+    printObj['employeeBranch'] = this.serviceRequestSummary['employeeBranch'];
+    this.printObjectForDisplay = printObj;
   }
 
   switchClassesForButtons(name, value) {
-    if (name.includes('QOne') && value === 'Yes') {
-      this.buttonClassOne = 'yes-no-button-selected';
-      this.buttonClassUnSelectedOne = 'yes-no-button';
-    }
-    if (name.includes('QOne') && value === 'No') {
-      this.buttonClassOne = 'yes-no-button';
-      this.buttonClassUnSelectedOne = 'yes-no-button-selected';
-    }
-
-    if (name.includes('QTwo') && value === 'Yes') {
-      this.buttonClassTwo = 'yes-no-button-selected';
-      this.buttonClassUnSelectedTwo = 'yes-no-button';
-    }
-    if (name.includes('QTwo') && value === 'No') {
-      this.buttonClassTwo = 'yes-no-button';
-      this.buttonClassUnSelectedTwo = 'yes-no-button-selected';
-    }
-
-    if (name.includes('QThree') && value === 'Yes') {
-      this.buttonClassThree = 'yes-no-button-selected';
-      this.buttonClassUnSelectedThree = 'yes-no-button';
-    }
-    if (name.includes('QThree') && value === 'No') {
-      this.buttonClassThree = 'yes-no-button';
-      this.buttonClassUnSelectedThree = 'yes-no-button-selected';
-    }
-
-    if (name.includes('QFour') && value === 'Yes') {
-      this.buttonClassFour = 'yes-no-button-selected';
-      this.buttonClassUnSelectedFour = 'yes-no-button';
-    }
-    if (name.includes('QFour') && value === 'No') {
-      this.buttonClassFour = 'yes-no-button';
-      this.buttonClassUnSelectedFour = 'yes-no-button-selected';
-    }
     if (name.includes('vaccineStatusReviewed') && value === 'Yes') {
       this.vaccStatus = 'yes-no-button-selected';
       this.vaccStatusUnSelected = 'yes-no-button';
@@ -431,10 +385,9 @@ export class AssessmentFunctionComponent implements OnInit {
       this.vaccStatus = 'yes-no-button';
       this.vaccStatusUnSelected = 'yes-no-button-selected';
     }
-  }
 
+  }
   viewDetailedContext() {
     this.router.navigateByUrl('/staff/work-screen');
   }
-
 }
