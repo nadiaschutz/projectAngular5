@@ -127,7 +127,7 @@ row:after,
 .regular-dark-button {
     @include buttons-global;
     background-color: $blue-special;
-    border: 1px solid $blue-special;
+    border: 2px solid $blue-special;
     color: white;
 }
 

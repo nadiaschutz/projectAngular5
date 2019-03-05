@@ -1,0 +1,86 @@
+<div class="container">
+  <div class="edit-button-row">
+    <button type="button" class="btn regular-dark-button float-right" (click)="viewDetailedContext()">
+      View Detailed Context
+    </button>
+  </div>
+
+  <div>
+    <div class="main-header" *ngIf="serviceRequestSummary">
+      <h5>Scheduler</h5>
+      <h6>{{serviceRequestSummary['name']}} > SERVICE REQUEST # > {{serviceRequestSummary['serviceId']}}</h6>
+    </div>
+  </div>
+
+  <div *ngIf="serviceRequestSummary && !postCompleteFlag">
+    <div id="print">
+      <div class="card assessment-card">
+        <div class="card-body">
+          <div class="col">
+            <div>Service Request ID: {{serviceRequestSummary['serviceId']}}</div>
+            <div>Client Name: {{serviceRequestSummary['name']}}</div>
+          </div>
+          <div class="col-6">Dependent(s):
+            <div *ngFor="let dependent of dependentList">
+              <div *ngIf="dependent.dep_clientName">
+                {{dependent.dep_clientName}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form [formGroup]="scheduleFormGroup" novalidate>
+        <div class="card assessment-card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col" *ngIf="cliniciansList">
+                <label for="clinician">Clinician Assigned</label>
+                <select class="form-control" formControlName="clinician" id="clinician">
+                  <option *ngFor="let clinician of cliniciansList" [value]="clinician['id']">
+                    {{clinician.name}}
+                  </option>
+                </select>
+              </div>
+              <div class="col">
+                <label for="appointment">First Appointment</label>
+                <input class="form-control" type="text" placeholder="Datepicker" formControlName="appointment" id="appointment"
+                  bsDatepicker [bsConfig]='datePickerConfig'>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <label>Attendance</label>
+                <div *ngFor="let attendance of attendanceOptionList">
+                  <label>
+                    <input type="radio" [value]='attendance.value' class="radio-button" formControlName="attendance"
+                      required>{{attendance.viewValue}}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      
+    </div>
+    <div class="row">
+        <div class="col button-row">
+          <button class="btn regular-dark-button margin-right-20" (click)="saveAppointment()">
+            Save Appointment
+          </button>
+          <button class="btn regular-dark-button margin-right-20" (click)="printToPDF()">
+            Print Appoinment Sheet
+          </button>
+        </div>
+      </div>
+  </div>
+
+  <div *ngIf="postCompleteFlag">
+    <div class="row">
+      <div class="alert alert-success" *ngIf="serviceRequestSummary">
+        <strong>Appointment for {{serviceRequestSummary['name']}} created Successfully</strong>
+      </div>
+    </div>
+
+  </div>
+</div>

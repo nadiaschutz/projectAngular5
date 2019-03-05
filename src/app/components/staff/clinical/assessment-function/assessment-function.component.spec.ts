@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AudiogramScreenComponent } from './audiogram-screen.component';
+import { AssessmentFunctionComponent } from './assessment-function.component';
 
-describe('AudiogramScreenComponent', () => {
-  let component: AudiogramScreenComponent;
-  let fixture: ComponentFixture<AudiogramScreenComponent>;
+describe('AssessmentFunctionComponent', () => {
+  let component: AssessmentFunctionComponent;
+  let fixture: ComponentFixture<AssessmentFunctionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AudiogramScreenComponent ]
+      declarations: [ AssessmentFunctionComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AudiogramScreenComponent);
+    fixture = TestBed.createComponent(AssessmentFunctionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

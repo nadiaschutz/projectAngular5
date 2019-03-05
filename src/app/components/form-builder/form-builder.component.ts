@@ -112,7 +112,7 @@ export class FormBuilderComponent implements OnInit {
     // console.log(this.currentItem);
   }
 
-  saveQuestionnaire($event) {
+  saveQuestionnaire() {
     const baseQuestionnaire = new FHIR.Questionnaire();
     const questionnaireIdentifier = new FHIR.Identifier();
 
