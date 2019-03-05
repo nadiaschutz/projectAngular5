@@ -292,6 +292,11 @@ export class StaffService {
       + episodeOfCareId, {headers: this.getHeaders()});
   }
 
+  createAppointment(data) {
+    return this.http.post(environment.queryURI + '/Appointment/', data, {
+      headers: this.getPostHeaders()
+    });
+  }
   getNoCacheHeaders() {
     const headers = new HttpHeaders({
       'Content-Type' : 'application/json',
