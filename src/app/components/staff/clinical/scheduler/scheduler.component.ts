@@ -22,6 +22,8 @@ export class SchedulerComponent implements OnInit {
   episodeOfCare;
   serviceRequestSummary;
 
+  postCompleteFlag = false;
+  dependentList = [];
   cliniciansList = [];
   attendanceOptionList = [
     { value: 'arrived', viewValue: 'Show' },
@@ -123,6 +125,9 @@ export class SchedulerComponent implements OnInit {
                         if (extension['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
                           temp['employeeBranch'] = extension['valueString'];
                         }
+                        if (extension['url'] === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+                          this.processListOfDependents(extension['valueString']);
+                        }
                       }
                       this.serviceRequestSummary = temp;
                     }
@@ -140,6 +145,33 @@ export class SchedulerComponent implements OnInit {
       );
   }
 
+  processListOfDependents(patientLinkId) {
+    this.staffService
+      .getAnyFHIRObjectByReference(
+        '/Patient?dependentlink=' + patientLinkId + '&employeetype=Dependent'
+      )
+      .subscribe(
+        data => {
+          if (data) {
+            if (data['total'] > 0) {
+              data['entry'].forEach(element => {
+                const individualEntry = element['resource'];
+                const temp = {};
+                temp['dep_clientName'] = this.utilService.getNameFromResource(
+                  individualEntry
+                );
+                temp['dep_id'] = individualEntry['id'];
+                temp['dep_clientDOB'] = individualEntry['birthDate'];
+                this.dependentList.push(temp);
+              });
+            }
+          }
+        },
+        error => {
+          console.log(error);
+        }
+      );
+  }
   returnInputValue(input) {
     return this.scheduleFormGroup.get(input).value;
   }
@@ -164,9 +196,28 @@ export class SchedulerComponent implements OnInit {
 
     identifier.value = 'SCHEDULED-APPOINTMENT';
 
-    appointment.status = ''
+    appointment.status = this.returnInputValue('attendance');
     appointment.resourceType = 'Appointment';
     appointment.identifier = [identifier];
+    appointment.start = this.returnInputValue('appointment');
     appointment.participant = [patientParticipant, practitionerParticipant];
+
+    this.staffService.createAppointment(JSON.stringify(appointment)).subscribe(
+      data => {
+        if (data) {
+          console.log (data);
+        }
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.postCompleteFlag = true;
+      }
+    );
+  }
+
+  viewDetailedContext() {
+    this.router.navigateByUrl('/staff/work-screen');
   }
 }
