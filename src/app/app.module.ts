@@ -65,7 +65,6 @@ import { ContactUsFormResolverService } from './service/contact-us-form-resolver
 import { DepartmentListResolverService } from './service/department-list-resolver.service';
 import { FormBuilderComponent } from './components/form-builder/form-builder.component';
 import { ImmunizationScreenComponent } from './components/staff/clinical/immunization-screen/immunization-screen.component';
-import { AudiogramScreenComponent } from './components/staff/clinical/audiogram-screen/audiogram-screen.component';
 import { AssessmentFunctionComponent } from './components/staff/clinical/assessment-function/assessment-function.component';
 import { SchedulerComponent } from './components/staff/clinical/scheduler/scheduler.component';
 
@@ -158,7 +157,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AdminHomeScreenComponent,
     FormBuilderComponent,
     ImmunizationScreenComponent,
-    AudiogramScreenComponent,
     AssessmentFunctionComponent,
     SchedulerComponent
 
