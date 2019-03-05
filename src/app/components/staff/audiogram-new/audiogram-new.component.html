@@ -215,7 +215,7 @@
         </div>
 
         <div class="btn-div m-t-30">
-          <button class="btn special-button"  (click)="saveAudiogram()">Submit</button>
+          <button class="btn special-button" [disabled]="audioGramFormGroup.invalid"  (click)="saveAudiogram()">Submit</button>
         </div>
 
       </div>
