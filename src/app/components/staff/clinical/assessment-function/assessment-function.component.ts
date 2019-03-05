@@ -54,7 +54,7 @@ export class AssessmentFunctionComponent implements OnInit {
   assessmentSavedFlag = false;
   printFlag = false;
   twoAFlag = false;
-
+  hideViewButtonFlag = false;
 
   vaccStatus;
 
@@ -240,7 +240,9 @@ export class AssessmentFunctionComponent implements OnInit {
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
       for (const currentObj in this.vaccineReviewChoices) {
-        if (this.returnInputValue('vaccineStatusReviewed') === currentObj['value']) {
+        if (
+          this.returnInputValue('vaccineStatusReviewed') === currentObj['value']
+        ) {
           componentCoding.display = currentObj['viewValue'];
           componentCoding.code = 'VACCINE_STATUS_REVIEWED';
           componentCoding.system = 'vaccineStatusReviewed';
@@ -265,7 +267,7 @@ export class AssessmentFunctionComponent implements OnInit {
     period.start = this.utilService.getDate(period.start);
     period.end = this.utilService.getDate(period.end);
 
-    identifier.value = 'CLINICAL-OBSERVATION';
+    identifier.value = 'CLINICAL-OBSERVATION-' + this.episodeOfCare['patient']['reference'];
     context.reference = 'Encounter/' + data['id'];
     observation.effectivePeriod = period;
     observation.status = 'preliminary';
@@ -301,44 +303,46 @@ export class AssessmentFunctionComponent implements OnInit {
     return this.assessmentFormGroup.get(input).value;
   }
 
+  generatePageToPrint() {
+    this.changeFlagsForPrinting();
+    this.generateObjectForPrinting();
+  }
 
   printToPDF() {
-    this.printFlag = true;
-    this.generateObjectForPrinting();
-    // const data = document.getElementById('print').style.display = 'block';
-    // html2canvas(data).then(canvas => {
-    // // Few necessary setting options
-    // const imgWidth = 190;
-    // const pageHeight = 350;
-    // const imgHeight = canvas.height * imgWidth / canvas.width;
-    // const heightLeft = imgHeight;
+    if (this.printFlag === true) {
+      const data = document.getElementById('print');
+      html2canvas(data).then(canvas => {
+      // Few necessary setting options
+      const imgWidth = 190;
+      const pageHeight = 350;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const heightLeft = imgHeight;
 
-    // const contentDataURL = canvas.toDataURL('image/png');
-    // const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
-    // const position = 0;
-    // pdf.save('Assessment Report.pdf'); // Generated PDF
-    // });
+      const contentDataURL = canvas.toDataURL('image/png');
+      const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+      const position = 0;
+      pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
+      pdf.save('Diagnostics Test.pdf'); // Generated PDF
+      });
+    }
+
   }
 
   generateObjectForPrinting() {
     const printObj = {};
-    this.printFlag = true;
 
     let examDate = this.returnInputValue('examDate');
     let expiry = this.returnInputValue('expiryDate');
-
+    let nextAssessment = this.returnInputValue('nextAssessment');
     examDate = this.utilService.getDate(examDate);
     expiry = this.utilService.getDate(expiry);
-
+    nextAssessment = this.utilService.getDate(nextAssessment);
     for (const type of this.assessmentList) {
       if (type.value === this.returnInputValue('assessment')) {
         printObj['assessment'] = type.viewValue;
-        if (type.value === 'MEETSREQ-TEMP' ) {
+        if (type.value === 'MEETSREQ-TEMP') {
           printObj['limitation'] = 'Yes - Temporary';
-        } else {
-          printObj['limitation'] = 'No';
-        }
-        if (type.value === 'MEETSREQ-PERM') {
+        } else if (type.value === 'MEETSREQ-PERM') {
           printObj['limitation'] = 'Yes - Permanent';
         } else {
           printObj['limitation'] = 'No';
@@ -351,12 +355,16 @@ export class AssessmentFunctionComponent implements OnInit {
         printObj['performerType'] = type.viewValue;
       }
     }
+
+    for (const type of this.vaccineReviewChoices) {
+      if (type.value === this.returnInputValue('vaccineStatusReviewed')) {
+        printObj['vaccineStatusReviewed'] = type.viewValue;
+      }
+    }
+
     printObj['examDate'] = examDate;
     printObj['expiryDate'] = expiry;
-    printObj['nextAssessment'] = this.returnInputValue('nextAssessment');
-    printObj['vaccineStatusReviewed'] = this.returnInputValue(
-      'vaccineStatusReviewed'
-    );
+    printObj['nextAssessment'] = nextAssessment;
     printObj['comment'] = this.returnInputValue('comment');
     printObj['pri'] = this.serviceRequestSummary['pri'];
     printObj['name'] = this.serviceRequestSummary['name'];
@@ -378,9 +386,17 @@ export class AssessmentFunctionComponent implements OnInit {
       this.vaccStatus = 'yes-no-button';
       this.vaccStatusUnSelected = 'yes-no-button-selected';
     }
-
   }
   viewDetailedContext() {
     this.router.navigateByUrl('/staff/work-screen');
+  }
+
+  goToAppointmentScreen() {
+    this.router.navigateByUrl('/staff/clincal/scheduler');
+  }
+
+  changeFlagsForPrinting() {
+    this.printFlag = !this.printFlag;
+    this.hideViewButtonFlag = !this.hideViewButtonFlag;
   }
 }

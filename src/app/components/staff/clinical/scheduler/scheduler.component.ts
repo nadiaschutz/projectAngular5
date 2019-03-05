@@ -23,6 +23,7 @@ export class SchedulerComponent implements OnInit {
   serviceRequestSummary;
 
   postCompleteFlag = false;
+  printFlag = false;
   dependentList = [];
   cliniciansList = [];
   attendanceOptionList = [
