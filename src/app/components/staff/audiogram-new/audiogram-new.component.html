@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <form class="form" #audiogramFror="ngForm">
+    <form class="form" [formGroup]="audioGramFormGroup" #audiogramFror="ngForm">
       <div class="audio-gram-form-main">
         <div class="shadow-box">
 
@@ -39,15 +39,15 @@
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="form-group">
                 <label for="dot">Date of Test </label>
-                <input type="text" placeholder="Date of Test" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.dateOfTest" class="custom-form-control" bsDatepicker  id="dot" [bsConfig]='datePickerConfig'>
+                <input type="text" placeholder="Date of Test" name="issued" formControlName="issued"   class="custom-form-control" bsDatepicker  id="dot" [bsConfig]='datePickerConfig'>
               </div>
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="form-group">
                 <label for="lot" >Location of Test </label>
-                <select id="lot" class="custom-form-control" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.locationOfTest" name="lot" >
-                  <option value="location1">location 1</option>
-                  <option value="location2">location 2</option>
+                <select id="lot" class="custom-form-control" formControlName="locationOfTest"  name="lot" >
+                  <option *ngFor="let location of locations" [value]="location.resource.id" >{{location.resource.name}}</option>
+
                 </select>
               </div>
             </div>
@@ -57,13 +57,13 @@
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="form-group">
                 <label for="devSerial">Dev Serial # </label>
-                <input type="text" placeholder="Dev Serial #" id="devSerial" name="devSerial" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.devSerial" class="custom-form-control">
+                <input type="text" placeholder="Dev Serial #" required id="devSerial" name="devSerial"  formControlName="devSerial" class="custom-form-control">
               </div>
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="form-group">
                 <label for="lot" >Dev Model </label>
-                <input type="text" placeholder="Dev Model" id="devModel" name="devModel" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.devModel" class="custom-form-control">
+                <input type="text" placeholder="Dev Model" required id="devModel" name="devModel" formControlName="devModel" class="custom-form-control">
               </div>
             </div>
           </div>
@@ -72,13 +72,13 @@
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="form-group">
                 <label for="devCelibrationDate">Dev Calibration Date </label>
-                <input type="text" placeholder="Dev Calibration Date" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.devCelibrationDate" class="custom-form-control" bsDatepicker  id="devCelibrationDate" [bsConfig]='datePickerConfig'>
+                <input type="text" required placeholder="Dev Calibration Date"  class="custom-form-control" formControlName="devCelibrationDate"  bsDatepicker  id="devCelibrationDate" [bsConfig]='datePickerConfig'>
               </div>
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="form-group">
                 <label for="examineID" >Examine ID </label>
-                <input type="text" placeholder="Examine ID" id="examineID" name="examineID" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.examineID" class="custom-form-control">
+                <input type="text" placeholder="Examine ID" id="examineID" name="examineID" formControlName="examineID"  class="custom-form-control">
               </div>
             </div>
           </div>
@@ -121,43 +121,43 @@
             <div class="col">
               <div class="form-group">
                 <label for="leftk_5">0.5K </label>
-                <input type="text" placeholder="Enter" id="leftk_5" name="leftk_5" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.leftEar.k0_5" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="leftk_5" name="leftk_5" formControlName="leftk_5"   class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="leftk1">1K </label>
-                <input type="text" placeholder="Enter" id="leftk1" name="leftk1" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.leftEar.k1" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="leftk1" name="leftk1" formControlName="leftk1"  class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="leftk2">2K </label>
-                <input type="text" placeholder="Enter" id="leftk2" name="Enter" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.leftEar.k2" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="leftk2" name="Enter" formControlName="leftk2"  class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="left3k">3K </label>
-                <input type="text" placeholder="Enter" id="left3k" name="left3k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.leftEar.k3" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="left3k" name="left3k" formControlName="left3k"  class="custom-form-control">
               </div>
             </div>
             <div class="col">
             <div class="form-group">
               <label for="left4k">4K </label>
-              <input type="text" placeholder="Enter" id="left4k" name="left4k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.leftEar.k4" class="custom-form-control">
+              <input type="text" placeholder="Enter" required id="left4k" name="left4k" formControlName="left4k"  class="custom-form-control">
             </div>
           </div>
             <div class="col">
               <div class="form-group">
                 <label for="left6k">6K </label>
-                <input type="text" placeholder="Enter" id="left6k" name="left6k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.leftEar.k6" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="left6k" name="left6k" formControlName="left6k"  class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="left_8k">8K </label>
-                <input type="text" placeholder="Enter" id="left_8k" name="left8k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.leftEar.k8" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="left_8k" name="left8k" formControlName="left8k"  class="custom-form-control">
               </div>
             </div>
           </div>
@@ -172,50 +172,50 @@
             <div class="col">
               <div class="form-group">
                 <label for="right_0_5">0.5K </label>
-                <input type="text" placeholder="Enter" id="right_0_5" name="right_0_5" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.rightEar.k0_5" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="right_0_5" name="right_0_5" formControlName="right_0_5" class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="right_1k">1K </label>
-                <input type="text" placeholder="Enter" id="right_1k" name="right_1k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.rightEar.k1" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="right_1k" name="right_1k" formControlName="right_1k" class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="right_2k">2K </label>
-                <input type="text" placeholder="Enter" id="right_2k" name="right_2k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.rightEar.k2" class="custom-form-control">
+                <input type="text" placeholder="Enter"required id="right_2k" name="right_2k" formControlName="right_2k"  class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="right_3k">3K </label>
-                <input type="text" placeholder="Enter" id="right_3k" name="right_3k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.rightEar.k3" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="right_3k" name="right_3k"  formControlName="right_3k" class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="right_4k">4K </label>
-                <input type="text" placeholder="Enter" id="right_4k" name="right_4k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.rightEar.k4" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="right_4k" name="right_4k" formControlName="right_4k"  class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="right_6k">6K </label>
-                <input type="text" placeholder="Enter" id="right_6k" name="right_6k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.rightEar.k6" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="right_6k" name="right_6k" formControlName="right_6k"  class="custom-form-control">
               </div>
             </div>
             <div class="col">
               <div class="form-group">
                 <label for="right_8k">8K </label>
-                <input type="text" placeholder="Enter" id="right_8k" name="right_8k" [ngModelOptions]="{standalone: true}" [(ngModel)]="formValue.rightEar.k8" class="custom-form-control">
+                <input type="text" placeholder="Enter" required id="right_8k" name="right_8k" formControlName="right_8k"   class="custom-form-control">
               </div>
             </div>
           </div>
         </div>
 
         <div class="btn-div m-t-30">
-          <button class="btn special-button" (click)="saveAudiogram()">Submit</button>
+          <button class="btn special-button"  (click)="saveAudiogram()">Submit</button>
         </div>
 
       </div>
