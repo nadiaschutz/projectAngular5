@@ -55,16 +55,9 @@ export class AssessmentFunctionComponent implements OnInit {
   printFlag = false;
   twoAFlag = false;
 
-  buttonClassOne;
-  buttonClassTwo;
-  buttonClassThree;
-  buttonClassFour;
+
   vaccStatus;
 
-  buttonClassUnSelectedOne;
-  buttonClassUnSelectedTwo;
-  buttonClassUnSelectedThree;
-  buttonClassUnSelectedFour;
   vaccStatusUnSelected;
 
   constructor(

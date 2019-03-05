@@ -23,7 +23,10 @@ export class SchedulerComponent implements OnInit {
   serviceRequestSummary;
 
   cliniciansList = [];
-
+  attendanceOptionList = [
+    { value: 'arrived', viewValue: 'Show' },
+    { value: 'noshow', viewValue: 'No Show' }
+  ];
   constructor(
     private staffService: StaffService,
     private utilService: UtilService,
@@ -36,9 +39,6 @@ export class SchedulerComponent implements OnInit {
     this.maxDate.setDate(this.maxDate.getDate());
   }
 
-  show;
-  noShow;
-
   ngOnInit() {
     this.datePickerConfig = Object.assign(
       {},
@@ -50,7 +50,8 @@ export class SchedulerComponent implements OnInit {
     );
     this.scheduleFormGroup = this.formBuilder.group({
       appointment: new FormControl(''),
-      clinician: new FormControl('')
+      clinician: new FormControl(''),
+      attendance: new FormControl('')
     });
     this.staffService
       .getAnyFHIRObjectByCustomQuery(
@@ -107,6 +108,7 @@ export class SchedulerComponent implements OnInit {
                   )
                   .subscribe(patient => {
                     if (patient) {
+                      temp['patientId'] = patient['id'];
                       temp['name'] = this.utilService.getNameFromResource(
                         patient
                       );
@@ -138,8 +140,33 @@ export class SchedulerComponent implements OnInit {
       );
   }
 
+  returnInputValue(input) {
+    return this.scheduleFormGroup.get(input).value;
+  }
 
   saveAppointment() {
     const appointment = new FHIR.Appointment;
+    const identifier = new FHIR.Identifier;
+    const patientType = new FHIR.CodeableConcept;
+    const practitionerType = new FHIR.CodeableConcept;
+    const patientParticipant = new FHIR.Participant;
+    const practitionerParticipant = new FHIR.Participant;
+
+    patientType.text = 'Patient';
+    patientParticipant.type = [patientType];
+    patientParticipant.actor = new FHIR.Reference;
+    patientParticipant.actor.reference = 'Patient/' + this.serviceRequestSummary['patientId'];
+
+    practitionerType.text = 'Practitioner';
+    practitionerParticipant.type = [practitionerType];
+    practitionerParticipant.actor = new FHIR.Reference;
+    practitionerParticipant.actor.reference = 'Practitioner/' + this.returnInputValue('clinician');
+
+    identifier.value = 'SCHEDULED-APPOINTMENT';
+
+    appointment.status = ''
+    appointment.resourceType = 'Appointment';
+    appointment.identifier = [identifier];
+    appointment.participant = [patientParticipant, practitionerParticipant];
   }
 }

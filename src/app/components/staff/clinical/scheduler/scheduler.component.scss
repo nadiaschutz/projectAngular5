@@ -1,4 +1,55 @@
 .assessment-card {
-    // min-width: 100%;
-    // margin-bottom: 30px;
+    min-width: 100%;
+    margin-bottom: 30px;
 }
+
+.yes-no-button {
+    width: 100px;
+    height: 40px;
+    border-radius: 2px;
+    border: solid 0.7px #398ef2;
+    background-color: #ffffff;
+    padding-right: 1px;
+    margin-right: 1px;
+}
+
+.yes-no-button-selected {
+    width: 100px;
+    height: 40px;
+    border-radius: 2px;
+    background-color: #398ef2;
+    color: white;
+    padding-right: 1px;
+    margin-right: 1px;
+}
+
+.radio-button {
+    width: 20px;
+
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.col {
+    padding-bottom: 5px;
+}
+// .button-row {
+//     margin-left: -15px;
+// }
+
+.margin-right-20 {
+    margin-right: 20px;
+}
+
+.adjust-two-a {
+    margin: -32px 0 0 0;    
+}
+
+.summary-row {
+    padding-bottom: 15px;
+    margin-left: 14px
+}
+
+
