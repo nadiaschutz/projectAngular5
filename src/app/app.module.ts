@@ -103,6 +103,7 @@ const routes: Routes = [
   { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
   { path: 'staff/clinical/immunization-screen', component: ImmunizationScreenComponent, canActivate: [AuthGuardService]},
   { path: 'staff/clinical/assessment-screen', component: AssessmentFunctionComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/clinical/scheduler', component: SchedulerComponent, canActivate: [AuthGuardService]},
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
