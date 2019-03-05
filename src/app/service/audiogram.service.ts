@@ -37,7 +37,7 @@ export class AudiogramService {
   }
 
   getBundleFromOrganizationName(workplace) {
-    return this.http.get(environment.queryURI + '/Organization?name=' /*+ workplace*/ + 'Canadian Coast Guard (CCG)'  , { headers: this.getHeaders() });
+    return this.http.get(environment.queryURI + '/Organization?name=' + workplace /*+ 'Canadian Coast Guard (CCG)'*/  , { headers: this.getHeaders() });
   }
 
     getLocations(resourceType , id) {
