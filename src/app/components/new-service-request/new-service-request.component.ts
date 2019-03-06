@@ -41,6 +41,18 @@ class TextInput {
   }
 }
 
+
+class CommentInput {
+  static create(event: FieldConfig) {
+    return {
+      type: event.type,
+      label: event.label,
+      inputType: event.inputType,
+      name: event.name
+    };
+  }
+}
+
 class SelectField {
   static create(event: FieldConfig) {
     return {
@@ -567,7 +579,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.configuration = this.qrequest.map(el => {
       // text
       if (el.type === 'text') {
-        if (el.text === 'Travel Contact Phone no' || el.text === 'Supervisor’s Phone No') {
+        if (el.code[1].code === 'PHONE') {
 
 
           const formField = this.textInput(el);
@@ -595,10 +607,23 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           //   )]
           // };
 
-        } else if (el.text === 'Travel Contact Email') {
+        } else if (el.code[1].code === 'EMAIL') {
 
           const formField = this.textInput(el);
           formField['placeholder'] = 'type your email';
+          formField['validation'] = [Validators.email];
+          formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
+
+          formField['flag'] = el.enableWhen ? false : true;
+          // flag: el.enableWhen ? false : true,
+          return formField;
+
+
+        } else if (el.code[1].code === 'COMMENT') {
+
+          const formField = this.commentInput(el);
+          formField['placeholder'] = 'type your text';
           formField['validation'] = [Validators.email];
           formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
           formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
@@ -744,6 +769,16 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       type: 'input',
       label: data.text,
       inputType: 'text',
+      name: data.linkId,
+      // enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
+      // enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.code : false,
+    });
+  }
+
+  commentInput(data) {
+    return CommentInput.create({
+      type: 'comment',
+      label: data.text,
       name: data.linkId,
       // enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
       // enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.code : false,

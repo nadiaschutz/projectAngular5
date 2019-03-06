@@ -46,6 +46,7 @@ import { CreateTaskComponent } from './components/staff/create-task/create-task.
 import { DistrictOfficeAddComponent } from './components/district-office-add/district-office-add.component';
 
 import { InputComponent } from './components/dynamic-forms/input.component';
+import { CommentComponent } from './components/dynamic-forms/comment.component';
 import { ButtonComponent } from './components/dynamic-forms/button.component';
 import { SelectComponent } from './components/dynamic-forms/select.component';
 import { LineComponent } from './components/dynamic-forms/line.component';
@@ -135,6 +136,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     NewAccountComponent,
     WorkScreenComponent,
     InputComponent,
+    CommentComponent,
     ButtonComponent,
     SelectComponent,
     LineComponent,
@@ -183,6 +185,7 @@ export function HttpLoaderFactory(http: HttpClient) {
   bootstrap: [AppComponent],
   entryComponents: [
     InputComponent,
+    CommentComponent,
     ButtonComponent,
     SelectComponent,
     LineComponent,

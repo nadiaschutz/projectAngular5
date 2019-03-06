@@ -12,10 +12,12 @@ import { CheckboxComponent } from './checkbox.component';
 import { LineComponent } from './line.component';
 import { HeaderComponent } from './header.component';
 import { DocComponent } from './doc.components';
+import { CommentComponent } from './comment.component';
 
 
 const components = {
   input: InputComponent,
+  comment: CommentComponent,
   button: ButtonComponent,
   select: SelectComponent,
   date: DateComponent,
@@ -40,7 +42,7 @@ export class DynamicFieldDirective implements Field, OnChanges, OnInit {
   constructor(
     private resolver: ComponentFactoryResolver,
     private container: ViewContainerRef
-  ) {}
+  ) { }
 
   ngOnChanges() {
     if (this.component) {
