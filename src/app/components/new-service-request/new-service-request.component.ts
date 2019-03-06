@@ -70,6 +70,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   config: FieldConfig[] = [];
 
   departmentList = [];
+  currentUserDepartment;
 
   formId = 'TEST3';
 
@@ -141,6 +142,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // this.activatedRoute.data.subscribe(data => console.log(data));
 
     this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
+
+    this.userName = sessionStorage.getItem('userName');
+    this.currentUserDepartment = sessionStorage.getItem('userDept');
 
 
     this.createdsuccessfully = false;
@@ -563,45 +567,61 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.configuration = this.qrequest.map(el => {
       // text
       if (el.type === 'text') {
-        if (el.text === 'Contact Phone No') {
+        if (el.text === 'Travel Contact Phone no' || el.text === 'Supervisor’s Phone No') {
 
-          // const formField = this.textInput(el);
-          // formField['placeholder'] = 'type your phone';
-          // formField['validation'] = [
-          //   Validators.required,
-          //   Validators.pattern(
-          //     '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-          //   )
-          // ];
-          // return formField;
-          return {
-            type: 'input',
-            label: el.text,
-            inputType: 'text',
-            placeholder: 'type your phone',
-            name: el.linkId,
-            value: '',
-            validation: [Validators.required, Validators.pattern(
+
+          const formField = this.textInput(el);
+          formField['placeholder'] = 'type your phone';
+          formField['validation'] = [
+            Validators.pattern(
               '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-            )]
-          };
+            )
+          ];
+          formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
+          return formField;
 
-        } else if (el.text === 'Contact Email') {
+          // return {
+          //   type: 'input',
+          //   label: el.text,
+          //   inputType: 'text',
+          //   placeholder: 'type your phone',
+          //   name: el.linkId,
+          //   enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+          //   enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
+          //   value: '',
+          //   validation: [Validators.required, Validators.pattern(
+          //     '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
+          //   )]
+          // };
+
+        } else if (el.text === 'Travel Contact Email') {
 
           const formField = this.textInput(el);
           formField['placeholder'] = 'type your email';
-          formField['validation'] = [Validators.required, Validators.email];
+          formField['validation'] = [Validators.email];
+          formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
+
+          formField['flag'] = el.enableWhen ? false : true;
+          // flag: el.enableWhen ? false : true,
           return formField;
 
-        } else if (el.text === 'Name of the Requester') {
+        } else if (el.text === 'Created By') {
 
           const formField = this.textInput(el);
-          formField['value'] = 'null';
           formField['placeholder'] = 'type your text';
-          formField['validation'] = [
-            Validators.required,
-            Validators.minLength(4)
-          ];
+          // formField['validation'] = el.enableWhen ? null : [
+          //   Validators.required
+          // ];
+          return formField;
+        } else if (el.text === 'User Account Department') {
+
+          const formField = this.textInput(el);
+          formField['placeholder'] = 'type your text';
+          // formField['validation'] = el.enableWhen ? null : [
+          //   Validators.required
+          // ];
           return formField;
         } else {
           return {
@@ -638,8 +658,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           name: el.linkId,
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
           enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
-          flag: el.enableWhen ? false : true,
           options: options,
+          flag: el.enableWhen ? false : true,
           placeholder: 'Select an option',
           // validation: el.enableWhen ? [Validators.required] : null,
           validation: el.enableWhen ? null : [Validators.required],
@@ -725,6 +745,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       label: data.text,
       inputType: 'text',
       name: data.linkId,
+      // enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
+      // enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.code : false,
     });
   }
 
@@ -739,7 +761,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       inputType: 'text',
       placeholder: 'Select an option',
       name: data.linkId,
-      validation: [Validators.required]
+      validation: [Validators.required],
+      enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
+      enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.code : false,
     });
   }
   /************************************************/
@@ -755,8 +779,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
 
       this.form.setDisabled('submit', true);
-      // this.form.setValue('1', this.userName);
-      // this.form.setValue('2', this.currentUserDepartment);
+      this.form.setDisabled('1', true);
+      this.form.setDisabled('14', true);
+      this.form.setValue('1', this.userName);
+      this.form.setValue('14', this.currentUserDepartment);
 
     });
 
