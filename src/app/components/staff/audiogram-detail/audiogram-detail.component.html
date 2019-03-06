@@ -59,12 +59,18 @@
               <div class="form-group">
                 <label >Dev Serial # </label>
 
+                <div>
+                  <span *ngIf="device"> {{device.id}} </span>
+                </div>
+
               </div>
             </div>
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="form-group">
                 <label  >Dev Model </label>
-
+                <div>
+                  <span *ngIf="device"> {{device.model}} </span>
+                </div>
               </div>
             </div>
           </div>
@@ -73,6 +79,10 @@
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="form-group">
                 <label >Dev Calibration Date </label>
+                <div *ngIf="device">
+                  <span *ngIf="device.note && device.note.length > 0"> {{  getDateMMMDDYYYY(device.note[0].time)}} </span>
+                </div>
+
 
               </div>
             </div>

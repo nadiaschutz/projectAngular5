@@ -18,6 +18,7 @@ export class AudiogramDetailComponent implements OnInit {
     selectedHearingLoss: any;
     observationId: any;
     observation: any;
+    device: any;
   constructor(private route: ActivatedRoute,
               private router: Router,
               private formBuilder: FormBuilder,
@@ -61,6 +62,16 @@ export class AudiogramDetailComponent implements OnInit {
                });
                if(this.observation && this.observation.length > 0){
                  this.observation = this.observation[0];
+
+                 let deviceRef = (this.observation && this.observation.resource.device) ? this.observation.resource.device.reference : null
+                  console.log(deviceRef)
+
+                   this.audiogramService.getDeviceById(deviceRef).subscribe(deviceData => {
+                       this.device = deviceData;
+                   });
+
+
+
                  this.selectedBaseLine =  this.getBaseLineFound(this.observation.resource.category);
                  this.selectedHearingLoss =  this.getHearingLossFound(this.observation.resource.category);
                }

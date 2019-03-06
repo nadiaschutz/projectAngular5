@@ -44,6 +44,10 @@ export class AudiogramService {
       return this.http.post(environment.queryURI + '/Device', deviceRequestData, {headers: this.getPostHeaders()});
   }
 
+  getDeviceById(ref){
+      return this.http.get(environment.queryURI + '/' + ref   , { headers: this.getHeaders() });
+  }
+
   getBundleFromOrganizationName(workplace) {
     return this.http.get(environment.queryURI + '/Organization?name=' + workplace /*+ 'Canadian Coast Guard (CCG)'*/  , { headers: this.getHeaders() });
   }
