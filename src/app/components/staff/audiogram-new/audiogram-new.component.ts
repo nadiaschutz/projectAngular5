@@ -489,13 +489,8 @@ export class AudiogramNewComponent implements OnInit {
 
 
 
-          console.log(JSON.stringify(audiogramRequest));
 
           this.audiogramService.saveAudiogramRequest(JSON.stringify(audiogramRequest)).subscribe(data => {
-
-
-             console.log("Audiogram Response", data)
-
 
               this.router.navigateByUrl('/staff/audiogram/' + this.eocId);
           });

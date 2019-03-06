@@ -17,6 +17,7 @@ export class AudiogramComponent implements OnInit {
   private patient: any;
   private serviceRequest: any;
     observations: any = [];
+    questionnaireResponse: any = [];
 
     // qr where identifer === 'servreq'
 
@@ -39,9 +40,13 @@ export class AudiogramComponent implements OnInit {
                     if (resource.resourceType === 'Observation') {
                        this.observations.push(resource);
                     }
+                    if (resource.resourceType === 'QuestionnaireResponse') {
+                        this.questionnaireResponse.push(resource);
+                    }
 
                 });
-                console.log("this.observations",this.observations)
+                console.log("this.observations",this.observations);
+                console.log("this.questionnaireResponse",this.questionnaireResponse);
             }
         });
 
@@ -98,5 +103,21 @@ export class AudiogramComponent implements OnInit {
 
     navigateToAudiogramDetail(observationId: any){
         this.router.navigate(['/staff/audiogram/detail/' + this.eocId , { observationId : observationId }]);
+    }
+
+    getSERVREQ(observation){
+      let filterdQuestionnaireResponse;
+      if(this.questionnaireResponse && this.questionnaireResponse.length > 0){
+         filterdQuestionnaireResponse = this.questionnaireResponse.filter(data =>{
+           if((data.identifier.value === 'SERVREQ') &&  (data.context.reference === observation.context.reference)){
+                return data;
+           }
+         });
+       }
+       let serverq: any;
+       if(filterdQuestionnaireResponse && filterdQuestionnaireResponse.length > 0){
+        serverq = filterdQuestionnaireResponse[0].id;
+       }
+       return serverq;
     }
 }
