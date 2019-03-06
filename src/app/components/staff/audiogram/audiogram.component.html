@@ -53,15 +53,15 @@
               <th class="historical-table-data-cells"> </th>
             </thead>
             <tbody class="historical-table-body">
-              <tr>
-                <td class="historical-table-data-cells">Yes</td>
+              <tr *ngFor="let observation of observations;let i = index">
+                <td class="historical-table-data-cells">{{getDateMMMDDYYYY(observation.issued)}}</td>
                 <td class="historical-table-data-cells">XYZABC</td>
-                <td class="historical-table-data-cells">000000</td>
+                <td class="historical-table-data-cells">{{getBaseLineFound(observation.category)}}</td>
                 <td class="historical-table-data-cells">
-                  <a class="view-link" >View</a>
+                  <a class="view-link" (click)="navigateToAudiogramDetail(observation.id)" >View</a>
                 </td>
                 </tr>
-              <tr>
+            <!--  <tr>
                 <td class="historical-table-data-cells">Yes</td>
                 <td class="historical-table-data-cells">XYZABC</td>
                 <td class="historical-table-data-cells">000000</td>
@@ -76,7 +76,7 @@
                 <td class="historical-table-data-cells">
                   <a class="view-link" >View</a>
                 </td>
-              </tr>
+              </tr>-->
             </tbody>
           </table>
         </div>

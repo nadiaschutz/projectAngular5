@@ -1,0 +1,224 @@
+<div class="container"  style="padding-top: 30px;" >
+  <div class="main-audio-gram" >
+
+    <div class="main-header" style="margin-top: 20px;margin-bottom: 50px;">
+      <span class="float-left">
+        <h5>Audiogram Function</h5>
+      </span>
+      <span class="float-right">
+        <button  class="btn regular-dark-button float-right" type="button" (click)="redirectToAudiogram()"> View Detailed Context </button>
+      </span>
+    </div>
+
+    <div class="shadow-box">
+      <div class="audiogram-table">
+        <table>
+          <thead class="audiogram-table-header">
+          <th class="audiogram-table-data-cells">Service Request Id</th>
+          <th class="audiogram-table-data-cells">Client Name</th>
+          <th class="audiogram-table-data-cells">Age</th>
+          <th class="audiogram-table-data-cells">Department</th>
+          <th class="audiogram-table-data-cells">Location</th>
+          </thead>
+          <tbody class="audiogram-table-body" *ngIf="patient">
+          <td class="audiogram-table-data-cells">{{serviceRequest.id}}</td>
+          <td class="audiogram-table-data-cells">{{patient.name}}</td>
+          <td class="audiogram-table-data-cells">{{calculateAge(patient.dob)}}</td>
+          <td class="audiogram-table-data-cells">{{patient.workplace}}</td>
+          <td class="audiogram-table-data-cells">{{patient.branch}}</td>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+      <div class="audio-gram-form-main" *ngIf="observation">
+        <div class="shadow-box">
+
+          <div class="row form-row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label>Date of Test </label>
+                <div>
+                  {{getDateMMMDDYYYY(observation.resource.issued)}}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label  >Location of Test </label>
+                <div>
+                  {{getLocationOfTest(observation.resource.extension)}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label >Dev Serial # </label>
+
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label  >Dev Model </label>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label >Dev Calibration Date </label>
+
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label  >Examine ID </label>
+                <div>{{getExaminId(observation.resource.extension)}}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label>Baseline</label>
+
+                <div class="btn-group-main">
+                  <div class="btn-group custom-btn-group" role="group" >
+                    <button type="button" class="btn" [ngClass]="{'btn-primary active-btn-group' : selectedBaseLine === 'yes'}" >Yes</button>
+                    <button type="button" class="btn" [ngClass]="{'btn-primary active-btn-group' : selectedBaseLine === 'no'}" >No</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label  >If not baseline, hearing loss </label>
+                <div class="btn-group-main">
+                  <div class="btn-group custom-btn-group" role="group" >
+                    <button type="button" class="btn" [ngClass]="{'btn-primary active-btn-group' : selectedHearingLoss === 'left'}" >Left</button>
+                    <button type="button" class="btn " [ngClass]="{'btn-primary active-btn-group' : selectedHearingLoss === 'right'}" >Right</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="shadow-box m-t-30">
+          <div class="row form-row">
+            <div class="col w-100">
+              <h6 class="heading-hearing"> LEFT EAR </h6>
+            </div>
+          </div>
+          <div class="row form-row">
+            <div class="col">
+              <div class="form-group">
+                <label >0.5K </label>
+                <div>{{getComponentValue('89024-4')}}</div>
+
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >1K </label>
+                <div>{{getComponentValue('89016-0')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >2K </label>
+                <div>{{getComponentValue('89018-6')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >3K </label>
+                <div>{{getComponentValue('89020-2')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >4K </label>
+                <div>{{getComponentValue('89022-8')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >6K </label>
+                <div>{{getComponentValue('89026-9')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >8K </label>
+                <div>{{getComponentValue('89028-5')}}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col w-100">
+              <h6 class="heading-hearing"> RIGHT EAR </h6>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col">
+              <div class="form-group">
+                <label >0.5K </label>
+                <div>{{getComponentValue('89025-1')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >1K </label>
+                <div>{{getComponentValue('89017-8')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >2K </label>
+                <div>{{getComponentValue('89019-4')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >3K </label>
+                <div>{{getComponentValue('89021-0')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >4K </label>
+                <div>{{getComponentValue('89023-6')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >6K </label>
+                <div>{{getComponentValue('89027-7')}}</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label >8K </label>
+                <div>{{getComponentValue('89029-3')}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+
+  </div>
+</div>

@@ -48,10 +48,10 @@ export class AudiogramNewComponent implements OnInit {
       k8: null,
     }
   };
-  private eocId: any;
-  private eoc: any;
-  private patient: any;
-  private serviceRequest: any;
+   eocId: any;
+   eoc: any;
+   patient: any;
+   serviceRequest: any;
   locations: any;
 
   constructor(private route: ActivatedRoute,

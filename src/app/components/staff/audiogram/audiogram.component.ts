@@ -15,7 +15,10 @@ export class AudiogramComponent implements OnInit {
   private eocId: any;
   private eoc: any;
   private patient: any;
-  private serviceRequest: any;  // qr where identifer === 'servreq'
+  private serviceRequest: any;
+    observations: any = [];
+
+    // qr where identifer === 'servreq'
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -26,6 +29,24 @@ export class AudiogramComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.eocId = params['eocId'];
       // console.log("this.episodeOfCareId", this.eocId);
+        //get all EOC
+
+        this.audiogramService.getAllEOC(this.eocId).subscribe(bundle => {
+            // console.log(bundle);
+            if (bundle && bundle['entry'] && Array.isArray(bundle['entry']) && bundle['entry'].length > 0) {
+                bundle['entry'].map(item => {
+                    const resource = item.resource;
+                    if (resource.resourceType === 'Observation') {
+                       this.observations.push(resource);
+                    }
+
+                });
+                console.log("this.observations",this.observations)
+            }
+        });
+
+
+
 
       this.audiogramService.getEOCById(this.eocId).subscribe(bundle => {
         // console.log(bundle);
@@ -61,4 +82,21 @@ export class AudiogramComponent implements OnInit {
     // todo: set eoc id in local storage just in case
     this.router.navigateByUrl('/staff/work-screen');
   }
+
+  getDateMMMDDYYYY(date){
+    return  moment(date).format('MMM DD YYYY');
+  }
+
+  getBaseLineFound(category){
+    const found = category.some(data => {return data.text === 'Baseline'})
+      if(found){
+      return 'Yes'
+      }else {
+        return 'No'
+      }
+  }
+
+    navigateToAudiogramDetail(observationId: any){
+        this.router.navigate(['/staff/audiogram/detail/' + this.eocId , { observationId : observationId }]);
+    }
 }

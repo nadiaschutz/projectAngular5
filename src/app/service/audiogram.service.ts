@@ -17,6 +17,14 @@ export class AudiogramService {
     return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*&_id=' + eocId, { headers: this.getHeaders() });
   }
 
+    getAllEOC(eocId) {
+        return this.http.get(environment.queryURI + '/EpisodeOfCare?_id=' + eocId + '&_revinclude=*', { headers: this.getHeaders() });
+    }
+
+    getObservationById(observationId: any) {
+        return this.http.get(environment.queryURI + '/Observation?_id=' + observationId + '&_include=*', { headers: this.getHeaders() });
+    }
+
   getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       Authorization: 'Bearer ' + this.oauthService.getAccessToken()
