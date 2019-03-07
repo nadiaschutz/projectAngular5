@@ -409,6 +409,12 @@ export class ReferenceRange extends BackboneElement {
     text: string [];
 }
 
+export class Participant extends BackboneElement {
+    type: CodeableConcept[];
+    actor: Reference;
+    required: string;
+    status: string;
+}
 export class Activity extends BackboneElement {
     outcomeCodeableConcept: CodeableConcept[];
     outcomeReference: Reference[];
@@ -595,7 +601,7 @@ export class Questionnaire extends Resource implements Serializable<Questionnair
     publisher: string;
     description: string;
     purpose: string;
-    approvalDate: string;
+     rovalDate: string;
     lastReviewedDate: string;
     effectivePeriod: Period;
     useContext: UsageContext[];
@@ -663,6 +669,41 @@ export class DocumentReference extends Resource implements Serializable<Document
     context: Context;
     // TODO - add rest of the fields from the spec
     deserialize(jsonObject: any): DocumentReference {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+export class Appointment extends Resource implements Serializable<Appointment> {
+
+    identifier: Identifier[];
+    status: string;
+    serviceCategory: CodeableConcept;
+    serviceType: CodeableConcept[];
+    specialty: CodeableConcept[];
+    appointmentType: CodeableConcept;
+    indication: Reference[];
+    priority: number;
+    description: string;
+    supportingInformation: Reference[];
+    start: Date;
+    end: Date;
+    minutesDuration: number;
+    slot: Reference[];
+    created: Date;
+    comment: string;
+    incomingReferral: Reference[];
+    participant: Participant[];
+    requestPeriod: Period[];
+
+    deserialize(jsonObject: any): Appointment {
         const that = this;
         Object.entries(jsonObject).forEach(function (value) {
             if (!(typeof value[1] === 'object')) {

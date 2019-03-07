@@ -8,10 +8,11 @@
     </div>
 
     <div class="row">
-        <h5 class="col-3">Filter</h5>
+        <h5 class="col-3">Search</h5>
     </div>
 
-    <form [formGroup]="adminHomeFormGroup" novalidate class="center-align" (ngSubmit)="onSubmit(adminHomeFormGroup)" autocomplete="off">
+    <form [formGroup]="adminHomeFormGroup" novalidate class="center-align" (ngSubmit)="onSubmit(adminHomeFormGroup)"
+        autocomplete="off">
         <div class="form-group">
             <div class="row">
                 <div class="col">
@@ -29,7 +30,8 @@
                     <label for="dob">Date of Birth</label>
                     <!-- <input class="form-control" type="text" placeholder="Select Date" formControlName="dob" id="dob"
                         bsDatepicker [bsConfig]='datePickerConfig' red /> -->
-                    <input type="text" placeholder="Date of Birth" class="form-control" bsDatepicker formControlName="dob" id="dob" [bsConfig]='datePickerConfig'>    
+                    <input type="text" placeholder="Date of Birth" class="form-control" bsDatepicker
+                        formControlName="dob" id="dob" [bsConfig]='datePickerConfig'>
                 </div>
                 <div class="col">
                     <label for="pri">PRI</label>
@@ -96,8 +98,9 @@
                 </div> -->
                 <div class="row">
                     <div class="col-6">
-                        <label for="dateRange">Date Range From</label>                        
-                        <input type="text" placeholder="Select Date Range" class="form-control" bsDaterangepicker formControlName="dateRange" id="dateRange" [bsConfig]='datePickerConfig' red>    
+                        <label for="dateRange">Date Range From</label>
+                        <input type="text" placeholder="Select Date Range" class="form-control" bsDaterangepicker
+                            formControlName="dateRange" id="dateRange" [bsConfig]='datePickerConfig' red>
                     </div>
                     <!-- <div class="col-3">
                         <div class="form-group">
@@ -149,7 +152,7 @@
 
         <button type="submit" class="btn regular-dark-button" [disabled]="validateForm()">Apply</button>
         <button type="button" class="btn regular-button" (click)="clear()">Clear</button>
-        
+
         <a class="float-right" href="javascript:;" *ngIf="!showAdvanceSearch" (click)="toggleAdvanceSearch()">
             Show advance filter</a>
         <a class="float-right" href="javascript:;" *ngIf="showAdvanceSearch" (click)="toggleAdvanceSearch()">
@@ -196,7 +199,7 @@
             </div>
 
             <div *ngFor="let item of serviceRequestList;">
-                
+
                 <div class="card" *ngIf="renderItemsBasedOnTab(item)">
                     <div class="card-body">
                         <div class="card-title">
@@ -216,11 +219,12 @@
                             <strong>Total Days in Queue: </strong>{{item.daysInQueue}}
                         </p>
                         <p class="card-text">
-                        
+
                             {{item.dateToday}}
-                            <button type="button" class="btn regular-button float-right" (click)="setEOCID(item.eocId)">Work Screen</button>
+                            <button type="button" class="btn regular-button float-right"
+                                (click)="setEOCID(item.eocId)">Work Screen</button>
                         </p>
-    
+
                     </div>
                 </div>
             </div>
@@ -233,7 +237,7 @@
                 <div class="card" *ngIf="renderTaskItemsBasedOnTab(item)">
                     <div class="card-body">
                         <div class="card-title">
-                        {{item.title}}
+                            {{item.title}}
                             <font class="task-status first-letter-uppercase">{{item.status}}</font>
                         </div>
                         <p class="card-text">
@@ -246,7 +250,8 @@
                             {{item.authoredOn}}
                         </p>
                         <p class="card-text" *ngIf="item.status !='completed'">
-                            <span (click)="taskCompleted(item.id)" style="color: #398ef2; cursor: pointer;">Mark as done</span>
+                            <span (click)="taskCompleted(item.id)" style="color: #398ef2; cursor: pointer;">Mark as
+                                done</span>
                         </p>
                     </div>
                 </div>

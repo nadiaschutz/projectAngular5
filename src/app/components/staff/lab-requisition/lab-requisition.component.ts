@@ -272,8 +272,8 @@ export class LabRequisitionComponent implements OnInit {
     const data = document.getElementById('print');
     html2canvas(data).then(canvas => {
     // Few necessary setting options
-    const imgWidth = 190;
-    const pageHeight = 350;
+    const imgWidth = 400;
+    const pageHeight = 800;
     const imgHeight = canvas.height * imgWidth / canvas.width;
     const heightLeft = imgHeight;
 

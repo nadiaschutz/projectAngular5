@@ -65,6 +65,7 @@ export class WorkScreenComponent implements OnInit {
   clinicians = [];
   cliniciansWithId = [];
   showClinicianButtons = false;
+  showClinicalFunctions = false;
   clinicalAssignmentTask = {};
   showSpinner = false;
   fileTypeList = [
@@ -75,7 +76,7 @@ export class WorkScreenComponent implements OnInit {
     { value: 'OTHER', viewValue: 'OTHER' }
   ];
 
-  assessmentType  = [
+  assessmentType = [
     { value: 'IMMUNIZATION', viewValue: 'Immunization' },
     { value: 'AUDIOGRAM', viewValue: 'Audiogram' },
     { value: 'TURBTEST', viewValue: 'Turberculosis' },
@@ -88,12 +89,15 @@ export class WorkScreenComponent implements OnInit {
     private oAuthService: OAuthService,
     private userService: UserService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.currentPractitionerFHIRIDInSession = sessionStorage.getItem(
       'userFHIRID'
     );
+    if (sessionStorage.getItem('userRole') === 'clinician') {
+      this.showClinicalFunctions = true;
+    }
     this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
     this.userService.fetchCurrentRole();
     this.staffService.getAllPractitioners().subscribe(
@@ -268,9 +272,11 @@ export class WorkScreenComponent implements OnInit {
           this.processTaskForHistory(element.resource);
         } else if (element.resource.resourceType === 'Communication') {
           const communication = element.resource;
-          communication.note.forEach(note => {
-            this.processNoteForHistory(note);
-          });
+          if (communication.note) {
+            communication.note.forEach(note => {
+              this.processNoteForHistory(note);
+            });
+          }
         }
       });
     }
@@ -305,7 +311,7 @@ export class WorkScreenComponent implements OnInit {
   }
 
   sortHistory() {
-    this.historyToDisplay.sort(function(a, b) {
+    this.historyToDisplay.sort(function (a, b) {
       if (a['lastUpdated'] && b['lastUpdated']) {
         return (
           new Date(b['lastUpdated']).getTime() -
@@ -1177,7 +1183,7 @@ export class WorkScreenComponent implements OnInit {
       reader.readAsDataURL(fileList[0]);
     }
     const that = this;
-    reader.onloadend = function() {
+    reader.onloadend = function () {
       file = reader.result;
       trimmedFile = file.split(',').pop();
       documentReference.resourceType = 'DocumentReference';
@@ -1197,7 +1203,7 @@ export class WorkScreenComponent implements OnInit {
       return reader.result;
     };
 
-    reader.onerror = function(error) {
+    reader.onerror = function (error) {
       console.log('ERROR: ', error);
     };
   }
@@ -1370,11 +1376,11 @@ export class WorkScreenComponent implements OnInit {
                         'DocumentReference/' + docFound['resource']['id'];
                       temp['dateCreated'] =
                         docFound['resource']['content'][0]['attachment'][
-                          'creation'
+                        'creation'
                         ];
                       temp['fileFullName'] =
                         docFound['resource']['content'][0]['attachment'][
-                          'title'
+                        'title'
                         ] +
                         '.' +
                         docFound['resource']['content'][0]['attachment'][
@@ -1389,7 +1395,7 @@ export class WorkScreenComponent implements OnInit {
                         .pop();
                       temp['title'] =
                         docFound['resource']['content'][0]['attachment'][
-                          'title'
+                        'title'
                         ];
                       temp['docCategory'] =
                         docFound['resource']['type']['text'];
@@ -1539,10 +1545,17 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
+  redirectToAssessment() {
+    if (sessionStorage.getItem('userRole') === 'clinician') {
+      this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
+      this.router.navigateByUrl('/staff/clinical/assessment-screen');
+    }
+  }
+
+  
   redirectToAssessmentSelected(event) {
     if (sessionStorage.getItem('userRole') === 'clinician') {
       console.log(event);
-      
       if (event === ('IMMUNIZATION')) {
         this.router.navigateByUrl('/staff/clinical/immunization-screen');
       }
