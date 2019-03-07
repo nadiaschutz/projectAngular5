@@ -239,6 +239,7 @@
               <th scope="col">Product Name</th>
               <th scope="col">Lot #</th>
               <th scope="col">Expiration Date</th>
+              <th scope="col">Diluent Lot #</th>
               <th scope="col">Administered By</th>
             </tr>
           </thead>
@@ -251,6 +252,7 @@
               <td>{{vaccine['name']}}</td>
               <td>{{vaccine['lotNumber']}}</td>
               <td>{{vaccine['expirationDate']}}</td>
+              <td>{{vaccine['diluentLotNumber']}}</td>
               <td>{{vaccine['adminBy']}}</td>
             </tr>
           </tbody>
@@ -305,6 +307,10 @@
               <label for="expirationDate">Expiration Date</label>
               <input class="form-control" type="text" placeholder="Datepicker" formControlName="expirationDate" id="expirationDate"
                 bsDatepicker [bsConfig]='datePickerConfig'>
+            </div>
+            <div class="col">
+              <label for="diluentLotNumber">Diluent Lot #</label>
+              <input type="text" class="form-control" placeholder="Enter" formControlName="diluentLotNumber" id="diluentLotNumber">
             </div>
             <div class="col" *ngIf="cliniciansList">
               <label for="adminBy">Administered By</label>

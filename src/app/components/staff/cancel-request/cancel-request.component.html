@@ -1,0 +1,59 @@
+<div class="container">
+
+  <div class="edit-button-row">
+    <button type="button" class="btn regular-dark-button float-right" (click)="viewDetailedContext()">
+      View Detailed Context
+    </button>
+  </div>
+
+  <div>
+    <div class="main-header" *ngIf="serviceRequestSummary">
+      <h5>Cancel Request</h5>
+      <h6>{{serviceRequestSummary['name']}} > SERVICE REQUEST # > {{serviceRequestSummary['serviceId']}}</h6>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="serviceRequestSummary">
+    <div class="card full-card">
+      <div class="card-body">
+        <div class="col-4 float-left">Service Request ID: {{serviceRequestSummary['id']}}</div>
+        <div class="col-4 float-right">Client Name: {{serviceRequestSummary['name']}}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="!onSuccess">
+    <div class="card full-card">
+      <div class="card-body">
+        <form [formGroup]="cancelFormGroup" novalidate class="center-align">
+          <div class="col">
+            <label for="cancelReason">Select reason for Cancelation</label>
+            <select class="form-control" formControlName="cancelReason" id="cancelReason" required>
+              <option value=""></option>
+              <option *ngFor="let reason of cancelReasonList" [value]="reason.value">
+                {{reason.viewValue}}
+              </option>
+            </select>
+          </div>
+          <div class="col">
+            <label for="comment">Add details for this cancelation</label>
+            <textarea class="form-control" placeholder="Enter" formControlName="comment" id="comment" name="comment"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="!onSuccess">
+    <div class="col button-row">
+      <button class="btn regular-dark-button margin-right-20" (click)="createCommunication()">
+        Save Request
+      </button>
+    </div>
+  </div>
+  <div class="row" *ngIf="onSuccess">
+    <div class="alert alert-success" *ngIf="serviceRequestSummary">
+      <strong>Assessment for {{serviceRequestSummary['name']}} created Successfully</strong>
+    </div>
+  </div>
+
+</div>

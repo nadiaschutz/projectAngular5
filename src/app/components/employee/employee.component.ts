@@ -41,86 +41,28 @@ export class EmployeeComponent implements OnInit {
 
   employeeFormGroup: FormGroup;
 
-  // Declarations for objects related Patients and Extensions
 
   // Employee base object
 
   employee;
-
-  // Employee name object
-
   employee_name;
-
-  // Employee address object
-
   employee_address;
-
-  // Employee Contact (Phone)
-
   employee_telecom_phone;
-
-  // Employee Contact (Email)
-
   employee_telecom_email;
-
-  // Employee Extension object (Dependent Link)
-
   employee_extension_dependentlink;
-
-  // Employee Extension object (Job Title)
-
   employee_extension_jobtitle;
-
-  // Employee Extension object (Workplace)
-
   employee_extension_workplace;
-
-  // Employee Extension object (Branch)
-
   employee_extension_branch;
-
-  // Employee Extension object (Type)
-
   employee_extension_type;
-
-  // Employee Extension object (Cross Reference One)
-
   employee_extension_crossreferenceone;
-
-  // Employee Extension object (Cross Reference Two)
-
   employee_extension_crossreferencetwo;
-
-  // Employe Language Object
-
   employee_language;
-
-  // Employee Language Coding Object
-
   employee_language_coding;
-
-  // Employee Communication Object
-
   employee_communication;
-
-  // Employee Identifier object
-
   employee_identifier;
-
-  // Employee Identifier Type subobject
-
   employee_identifier_type;
-
-  // Array for Dependent Objects
-
   dependentsArray: any[];
-
-  // Store list of Departments
-
   department: any = [];
-
-  // Store list of Branches
-
   branches: any;
 
   // Store a UUID to link Employee and Dependent objects
@@ -132,7 +74,10 @@ export class EmployeeComponent implements OnInit {
 
   // list of Provinces and territories in alphabetical order
   // tslint:disable-next-line:max-line-length
-  provinces = ['Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador', 'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
+  provinces = ['Alberta', 'British Columbia',
+  'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
+  'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario',
+  'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
 
 
   // list of countries

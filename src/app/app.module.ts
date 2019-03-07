@@ -67,6 +67,7 @@ import { FormBuilderComponent } from './components/form-builder/form-builder.com
 import { ImmunizationScreenComponent } from './components/staff/clinical/immunization-screen/immunization-screen.component';
 import { AssessmentFunctionComponent } from './components/staff/clinical/assessment-function/assessment-function.component';
 import { SchedulerComponent } from './components/staff/clinical/scheduler/scheduler.component';
+import { CancelRequestComponent } from './components/staff/cancel-request/cancel-request.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -100,6 +101,7 @@ const routes: Routes = [
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService]},
   { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/cancel-request', component: CancelRequestComponent, canActivate: [AuthGuardService]},
   { path: 'staff/clinical/immunization-screen', component: ImmunizationScreenComponent, canActivate: [AuthGuardService]},
   { path: 'staff/clinical/assessment-screen', component: AssessmentFunctionComponent, canActivate: [AuthGuardService]},
   { path: 'staff/clinical/scheduler', component: SchedulerComponent, canActivate: [AuthGuardService]},
@@ -158,7 +160,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     FormBuilderComponent,
     ImmunizationScreenComponent,
     AssessmentFunctionComponent,
-    SchedulerComponent
+    SchedulerComponent,
+    CancelRequestComponent
 
   ],
   imports: [
