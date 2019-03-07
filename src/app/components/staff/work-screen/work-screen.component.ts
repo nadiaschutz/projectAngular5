@@ -50,6 +50,7 @@ export class WorkScreenComponent implements OnInit {
   showOnlyTasks = false;
   showOnlyNotes = false;
   showOnlyDocs = false;
+  collapseFlag = false;
   encounterd;
   currentPractitionerFHIRIDInSession;
 
@@ -1574,6 +1575,12 @@ export class WorkScreenComponent implements OnInit {
 
       }
     }
+  }
+
+  collapseCard() {
+    this.collapseFlag = !this.collapseFlag;
+    console.log(this.collapseFlag);
+    // return collapse;
   }
 
 }
