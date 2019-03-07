@@ -24,13 +24,11 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col" *ngIf="showClinicalFunctions">
-        <button (click)="redirectToLabRequisition()" class="btn special-button">Create Lab Requisition</button>
-      </div>
-      <div class="col" *ngIf="showClinicalFunctions">
-        <button (click)="redirectToAssessment()" class="btn special-button">Assessments</button>
-      </div>
+    <div class="col" *ngIf="showClinicalFunctions">
+      <button (click)="redirectToLabRequisition()" class="btn special-button">Create Lab Requisition</button>
+    </div>
+    <div class="col" *ngIf="showClinicalFunctions">
+      <button (click)="redirectToAssessment()" class="btn special-button">Assessments</button>
     </div>
 
 
@@ -47,8 +45,8 @@
 
     <!-- Tool Bar -->
 
-    <div class="dropdown">
-      <button class="btn special-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" (click)="showNewTool = !showNewTool">
+    <!-- <div class="dropdown">
+      <button class="btn regular-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" (click)="showNewTool = !showNewTool">
         New
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -57,10 +55,10 @@
         <a class="dropdown-item" (click)="openDocForm()">Document</a>
         <a class="dropdown-item" *ngIf="showClinicalFunctions" (click)="redirectToAssessmentSelected('IMMUNIZATION')">Immunization</a>
         <a class="dropdown-item" *ngIf="showClinicalFunctions" (click)="redirectToAssessmentSelected('AUDIOGRAM')">Audiogram</a>
-        <!-- <a class="dropdown-item" *ngIf="showClinicalFunctions"
-          (click)="redirectToAssessmentSelected('TURBTEST')">Tuberculosis</a> -->
+        <a class="dropdown-item" *ngIf="showClinicalFunctions"
+          (click)="redirectToAssessmentSelected('TURBTEST')">Tuberculosis</a>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <div class="tabs-card">
@@ -78,7 +76,25 @@
         <li class="nav-item">
           <a class="nav-link" [ngClass]="{ 'active':activeTab==='documents'}" data-toggle="tab" (click)="displayOnlyDocs()">Docs</a>
         </li>
+        <li>
+          <div class="dropdown">
+            <button class="btn new-function-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+              (click)="showNewTool = !showNewTool">
+              New
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" (click)="openTaskForm()">Task</a>
+              <a class="dropdown-item" (click)="openNoteForm()">Note</a>
+              <a class="dropdown-item" (click)="openDocForm()">Document</a>
+              <a class="dropdown-item" *ngIf="showClinicalFunctions" (click)="redirectToAssessmentSelected('IMMUNIZATION')">Immunization</a>
+              <a class="dropdown-item" *ngIf="showClinicalFunctions" (click)="redirectToAssessmentSelected('AUDIOGRAM')">Audiogram</a>
+              <!-- <a class="dropdown-item" *ngIf="showClinicalFunctions"
+                    (click)="redirectToAssessmentSelected('TURBTEST')">Tuberculosis</a> -->
+            </div>
+          </div>
+        </li>
       </ul>
+
     </div>
   </div>
 
@@ -342,14 +358,14 @@
 
       <!-- Showing History -->
       <div id="accordian">
-        <div class="card" (click)="collapseCard()" *ngFor="let item of historyToDisplay;let i = index;">
+        <div class="card"  *ngFor="let item of historyToDisplay;let i = index;">
           <div class="card-body ">
             <div class="card-title">
-              {{item.title}}
+              <a href="#itemId{{i}}" data-toggle="collapse" >{{item.title}}</a> 
               <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
             </div>
 
-            <div class="collapse" [ngClass]="{'show': collapseFlag}">
+            <div class="collapse" id="itemId{{i}}" >
               <p class="card-text" *ngIf="item.note && item.type!=='task' && item.type !=='doc'">
                 {{item.note}}
               </p>
