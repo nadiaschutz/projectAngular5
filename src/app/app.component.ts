@@ -1,13 +1,9 @@
 import { Component } from '@angular/core';
-import { OAuthService, AuthConfig, JwksValidationHandler } from 'angular-oauth2-oidc';
+import {
+  OAuthService,
+} from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
-import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
-import { PatientService } from './service/patient.service';
-import { UserService } from './service/user.service';
-
-import * as Dependent from './interface/patient';
-import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-root',
@@ -15,16 +11,11 @@ import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
-  title = 'nohis';
+  title = 'NOHIS';
   sessionObject;
   showNavBars = false;
 
-  constructor(
-    private oauthService: OAuthService,
-    private router: Router
-  ) {
-
+  constructor(private oauthService: OAuthService, private router: Router) {
     this.configureWithNewConfigApi();
     this.router.events.subscribe(() => {
       if (this.oauthService.hasValidAccessToken()) {

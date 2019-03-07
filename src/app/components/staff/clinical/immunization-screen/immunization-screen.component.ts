@@ -230,7 +230,15 @@ export class ImmunizationScreenComponent implements OnInit {
           temp['name'] = individualEntry['note'][0]['text'];
           temp['lotNumber'] = individualEntry['lotNumber'];
           temp['expirationDate'] = individualEntry['expirationDate'];
-
+          if (individualEntry['extension']) {
+            for (const extension of individualEntry['extension']) {
+              if (extension['url'].includes('diluentlotnumber')) {
+                temp['diluentLotNumber'] = extension['valueString'];
+              }
+            }
+          } else {
+            temp['diluentLotNumber'] = '-';
+          }
           this.staffService
             .getAnyFHIRObjectByReference(
               '/' + individualEntry['practitioner'][0]['actor']['reference']
@@ -553,7 +561,7 @@ export class ImmunizationScreenComponent implements OnInit {
     immunization.identifier = [];
     immunization.note = [];
 
-    identifier.value = 'VACCINATION';
+    identifier.value = 'VACCINATION-' + data['id'];
 
     const practitionerObject = this.vaccinationFormGroup.get('adminBy').value;
     practitioner.actor.reference = 'Practitioner/' + practitionerObject['id'];
@@ -593,6 +601,7 @@ export class ImmunizationScreenComponent implements OnInit {
     note.text = this.vaccinationFormGroup.get('productName').value;
 
     diluentLotNumber.valueString = this.vaccinationFormGroup.get('diluentLotNumber').value;
+    diluentLotNumber.url = 'https://bcip.smilecdr.com/fhir/diluentlotnumber';
 
     immunization.extension = [diluentLotNumber];
     immunization.identifier.push(identifier);

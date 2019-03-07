@@ -71,6 +71,7 @@ import { AudiogramNewComponent } from './components/staff/audiogram-new/audiogra
 import { AudiogramDetailComponent } from './components/staff/audiogram-detail/audiogram-detail.component'
 import { AssessmentFunctionComponent } from './components/staff/clinical/assessment-function/assessment-function.component';
 import { SchedulerComponent } from './components/staff/clinical/scheduler/scheduler.component';
+import { CancelRequestComponent } from './components/staff/cancel-request/cancel-request.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -104,6 +105,7 @@ const routes: Routes = [
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
   { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService]},
   { path: 'staff/lab-requisition/:eocId', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
+  { path: 'staff/cancel-request', component: CancelRequestComponent, canActivate: [AuthGuardService]},
   { path: 'staff/clinical/immunization-screen', component: ImmunizationScreenComponent, canActivate: [AuthGuardService]},
   { path: 'staff/audiogram/:eocId', component: AudiogramComponent, canActivate: [AuthGuardService]},
   { path: 'staff/audiogram/new/:eocId', component: AudiogramNewComponent, canActivate: [AuthGuardService]},
@@ -168,7 +170,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     AudiogramNewComponent,
     AudiogramDetailComponent,
     AssessmentFunctionComponent,
-    SchedulerComponent
+    SchedulerComponent,
+    CancelRequestComponent
 
   ],
   imports: [

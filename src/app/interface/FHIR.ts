@@ -314,7 +314,11 @@ export class Identifier extends FHIRElement {
     assigner: Reference;
 }
 
-
+export class Payload extends BackboneElement {
+    contentString: string;
+    contentAttachment: Attachment;
+    contentReference: Reference;
+}
 
 export class EnableWhen extends BackboneElement {
     question: string;
@@ -925,8 +929,20 @@ export class Communication extends Resource implements Serializable<Communicatio
     basedOn: Reference[];
     partOf: Reference[];
     status: string;
+    notDone: boolean;
+    notDoneReason: CodeableConcept;
+    category: CodeableConcept[];
+    medium: CodeableConcept[];
     subject: Reference;
     context: Reference;
+    recipient: Reference[];
+    topic: Reference[];
+    sent: Date;
+    received: Date;
+    sender: Reference;
+    reasonCode: CodeableConcept[];
+    reasonReference: Reference[];
+    payload: Payload[];
     note: Annotation[];
 
     deserialize(jsonObject: any): Communication {
