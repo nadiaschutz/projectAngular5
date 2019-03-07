@@ -36,13 +36,13 @@ export class AudiogramComponent implements OnInit {
             // console.log(bundle);
             if (bundle && bundle['entry'] && Array.isArray(bundle['entry']) && bundle['entry'].length > 0) {
                 bundle['entry'].map(item => {
-                    const resource = item.resource;
-                    if (resource.resourceType === 'Observation') {
-                       this.observations.push(resource);
-                    }
-                    if (resource.resourceType === 'QuestionnaireResponse') {
-                        this.questionnaireResponse.push(resource);
-                    }
+                  const resource = item.resource;
+                  if (resource.resourceType === 'Observation') {
+                    this.observations.push(resource);
+                  }
+                  if (resource.resourceType === 'QuestionnaireResponse') {
+                    this.questionnaireResponse.push(resource);
+                  }
 
                 });
                 console.log("this.observations",this.observations);
@@ -89,28 +89,28 @@ export class AudiogramComponent implements OnInit {
   }
 
   getDateMMMDDYYYY(date){
-    return  moment(date).format('MMM DD YYYY');
+    return moment(date).format('MMM DD YYYY');
   }
 
   getBaseLineFound(category){
     const found = category.some(data => {return data.text === 'Baseline'})
-      if(found){
-      return 'Yes'
-      }else {
-        return 'No'
-      }
+    if (found) {
+     return 'Yes'
+    } else {
+      return 'No'
+    }
   }
 
     navigateToAudiogramDetail(observationId: any){
-        this.router.navigate(['/staff/audiogram/detail/' + this.eocId , { observationId : observationId }]);
+      this.router.navigate(['/staff/audiogram/detail/' + this.eocId , { observationId : observationId }]);
     }
 
     getSERVREQ(observation){
       let filterdQuestionnaireResponse;
-      if(this.questionnaireResponse && this.questionnaireResponse.length > 0){
-         filterdQuestionnaireResponse = this.questionnaireResponse.filter(data =>{
-           if((data.identifier.value === 'SERVREQ') &&  (data.context.reference === observation.context.reference)){
-                return data;
+      if (this.questionnaireResponse && this.questionnaireResponse.length > 0) {
+         filterdQuestionnaireResponse = this.questionnaireResponse.filter(data => {
+           if ((data.identifier.value === 'SERVREQ') &&  (data.context.reference === observation.context.reference)) {
+              return data;
            }
          });
        }
