@@ -212,16 +212,19 @@ export class AudiogramNewComponent implements OnInit {
 
         audiogramRequest.extension = [
           {
-            url: "examiner",
+            url: "http://nohis.gc.ca/examiner",
             valueString: this.audioGramFormGroup.get('examineID').value
           },
-          {
-            "url": "test-location",
+        ];
+
+        if (this.audioGramFormGroup.get('locationOfTest').value && this.audioGramFormGroup.get('locationOfTest').value != '') {
+          audiogramRequest.extension.push({
+            "url": "http://nohis.gc.ca/test-location",
             "valueReference": {
               "reference": "Location/"+ this.audioGramFormGroup.get('locationOfTest').value
             }
-          }
-        ];
+          });
+        }
         
         audiogramRequest.status = 'final';
         
