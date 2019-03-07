@@ -272,11 +272,16 @@ export class WorkScreenComponent implements OnInit {
           this.processTaskForHistory(element.resource);
         } else if (element.resource.resourceType === 'Communication') {
           const communication = element.resource;
-          if (communication.note) {
-            communication.note.forEach(note => {
-              this.processNoteForHistory(note);
-            });
+          if (communication['identifier']) {
+            if (communication['identifier'][0]['value'] !== 'CANCEL-REQUEST-' + this.episodeOfCareId) {
+              if (communication.note) {
+                communication.note.forEach(note => {
+                  this.processNoteForHistory(note);
+                });
+              }
+            }
           }
+
         }
       });
     }
@@ -793,12 +798,15 @@ export class WorkScreenComponent implements OnInit {
 
   createCommunicationObject() {
     const communication = new FHIR.Communication();
+    const identifier = new FHIR.Identifier;
+
+    identifier.value = 'NOTE-' + this.episodeOfCareId;
     communication.resourceType = 'Communication';
 
     const episodeReference = new FHIR.Reference();
     episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     communication.context = episodeReference;
-
+    communication.identifier = [identifier];
     const annotation = new FHIR.Annotation();
     annotation.time = new Date();
     // Fetch from html
@@ -1552,7 +1560,7 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
-  
+
   redirectToAssessmentSelected(event) {
     if (sessionStorage.getItem('userRole') === 'clinician') {
       console.log(event);

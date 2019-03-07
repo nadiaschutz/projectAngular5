@@ -37,7 +37,7 @@ export class AdminHomeScreenComponent implements OnInit {
   adminHomeFormGroup: FormGroup;
   // activateSubmitButton = null;
   datePickerConfig: Partial<BsDatepickerConfig>;
-  showAdvanceSearch: boolean = false;
+  showAdvanceSearch = false;
   // minDate: Date;
   // maxDate: Date;
 
@@ -47,7 +47,7 @@ export class AdminHomeScreenComponent implements OnInit {
   employeeDepartmentList: NameValueLookup[] = [];
   psohpList: NameValueLookup[] = [];
   assesmentTypeList: NameValueLookup[] = [];
-  assesmentCatList: NameValueLookup[] = []; 
+  assesmentCatList: NameValueLookup[] = [];
 
   // original data store for resources
   qrList = [];
@@ -55,16 +55,16 @@ export class AdminHomeScreenComponent implements OnInit {
   practList = [];
   patList = [];
 
-  //Tasks List
+  // Tasks List
   tasksList = [];
   taskPractList = [];
 
 
-  // final obj to render for component 
+  // final obj to render for component
   serviceRequestList = [];
   serviceTaskRequestList = [];
 
-  activeTab = 'all'; //all, todo, waiting
+  activeTab = 'all'; // all, todo, waiting
 
   constructor(
     private fb: FormBuilder,
@@ -86,7 +86,7 @@ export class AdminHomeScreenComponent implements OnInit {
     // get questionare responses
     this.getQRs();
 
-    //Get Task Response
+    // Get Task Response
     this.getTasksForQRs();
 
     // get and set the departments dropdown
@@ -95,7 +95,7 @@ export class AdminHomeScreenComponent implements OnInit {
     // get and set the psoph service dropdown
     this.getAndSetLocations();
 
-      
+
 
     this.adminHomeFormGroup = this.fb.group({
       firstName: new FormControl(''),
@@ -133,8 +133,8 @@ export class AdminHomeScreenComponent implements OnInit {
     // listen to one aprticular field for form change
     this.adminHomeFormGroup.get('employeeDepartment')
       .valueChanges
-      .pipe(distinctUntilChanged((a, b) => {   
-        return JSON.stringify(a) === JSON.stringify(b);   
+      .pipe(distinctUntilChanged((a, b) => {
+        return JSON.stringify(a) === JSON.stringify(b);
       }))
       .subscribe(val => {
         if (val !== '') {
@@ -176,27 +176,37 @@ export class AdminHomeScreenComponent implements OnInit {
     queryObj['_include:recurse'] = '*';
     queryObj['identifier'] = 'SERVREQ';
 
-    if (form.value.lastName && form.value.lastName != '') queryObj['patient:Patient.family'] = form.value.lastName;
-    if (form.value.firstName && form.value.firstName != '') queryObj['patient:Patient.given'] = form.value.firstName;
-    if (form.value.dob && form.value.dob != '' && moment(form.value.dob).isValid()) {
+    if (form.value.lastName && form.value.lastName !== '') {
+      queryObj['patient:Patient.family'] = form.value.lastName;
+    }
+    if (form.value.firstName && form.value.firstName !== '') {
+      queryObj['patient:Patient.given'] = form.value.firstName;
+    }
+    if (form.value.dob && form.value.dob !== '' && moment(form.value.dob).isValid()) {
       queryObj['patient:Patient.birthdate'] = moment(form.value.dob).format(this.DATE_FORMAT);
     }
-    if (form.value.pri && form.value.pri != '') queryObj['patient:Patient.identifier'] = 'https://bcip.smilecdr.com/fhir/employeeid|' + form.value.pri;
-    if (form.value.employeeDepartment && form.value.employeeDepartment != '') {
+    if (form.value.pri && form.value.pri !== '') {
+      queryObj['patient:Patient.identifier'] = 'https://bcip.smilecdr.com/fhir/employeeid|' + form.value.pri;
+    }
+    if (form.value.employeeDepartment && form.value.employeeDepartment !== '') {
       const obj = this.employeeDepartmentList.find(item => item.value === form.value.employeeDepartment);
       if (obj && obj.text) {
         queryObj['patient:Patient.workplace'] = obj.text;
       }
     }
-    if (form.value.jobLocation && form.value.jobLocation != '') {
+    if (form.value.jobLocation && form.value.jobLocation !== '') {
       const obj = this.jobLocationList.find(item => item.value === form.value.jobLocation);
 
       if (obj && obj.text) {
         queryObj['patient:Patient.branch'] = obj.text;
       }
     }
-    if (form.value.psohp && form.value.psohp != '') queryObj['psohpAnswer'] = form.value.psohp;
-    if (form.value.serviceRequest && form.value.serviceRequest != '') queryObj['_id'] = form.value.serviceRequest;
+    if (form.value.psohp && form.value.psohp !== '') {
+      queryObj['psohpAnswer'] = form.value.psohp;
+    }
+    if (form.value.serviceRequest && form.value.serviceRequest !== '') {
+      queryObj['_id'] = form.value.serviceRequest;
+    }
     if (form.value.dateRange && Array.isArray(form.value.dateRange) && form.value.dateRange.length === 2 &&
         moment(form.value.dateRange[0]).isValid() && moment(form.value.dateRange[1]).isValid()) {
       queryObj['1dup-context.date'] = 'ge' + moment(form.value.dateRange[0]).format(this.DATE_FORMAT); // form
@@ -225,27 +235,27 @@ export class AdminHomeScreenComponent implements OnInit {
                 this.practList.push(resource);
             }
           });
-  
+
           // create our service request obj to render for UI comp
           this.mapRenderingList();
         }
-      }, 
+      },
       (err) => console.log(err),
       () => {
         // now get tasks data based on EpisodeOfCares in internal db
 
         // first we get all the id's for EpisodeOfCares
         const eocIds = this.eocList.map(item => item.id);
-        
+
         if (eocIds && Array.isArray(eocIds) && eocIds.length > 0) {
-          const queryObj = {
+          const queryObject = {
             '_has:QuestionnaireResponse:context:identifier': 'SERVREQ',
             '_revinclude': 'Task:context',
             '_include': '*',
             '_id': eocIds.join(',')
           };
 
-          this.adminHomeScreenService.searchEOC(queryObj)
+          this.adminHomeScreenService.searchEOC(queryObject)
             .subscribe((bundle) => {
               console.log('Search bundle EOC =>', bundle);
 
@@ -260,7 +270,7 @@ export class AdminHomeScreenComponent implements OnInit {
                     this.taskPractList.push(resource);
                   }
                 });
-  
+
                 // create our service request obj to render for UI comp
                 this.mapTaskRenderingList();
               }
@@ -270,7 +280,6 @@ export class AdminHomeScreenComponent implements OnInit {
               console.log('completed search Eoc');
             });
         }
-        // https://bcip.smilecdr.com/fhir-request/EpisodeOfCare?_has:QuestionnaireResponse:context:identifier=SERVREQ&_revinclude=Task:context&_id=13123,13124
       });
   }
 
@@ -289,13 +298,13 @@ export class AdminHomeScreenComponent implements OnInit {
     this.eocList = [];
     this.practList = [];
     this.patList = [];
-  
-    //Tasks List
+
+    // Tasks List
     this.tasksList = [];
     this.taskPractList = [];
 
 
-    // final obj to render for component 
+    // final obj to render for component
     this.serviceRequestList = [];
     this.serviceTaskRequestList = [];
   }
@@ -318,7 +327,7 @@ export class AdminHomeScreenComponent implements OnInit {
                 this.practList.push(resource);
             }
           });
-  
+
           // create our service request obj to render for UI comp
           this.mapRenderingList();
         }
@@ -329,12 +338,12 @@ export class AdminHomeScreenComponent implements OnInit {
   }
 
   getTasksForQRs() {
-    //get Tasks
+    // get Tasks
     this.adminHomeScreenService.getAllQRTaskIncludeRefs()
       .subscribe(list => {
         // console.log(list);
         // we loop through all the entries
-        
+
         if (list && list['entry']) {
           // for each entry, check what resource it is. and add it to the internal arr of tems
           list['entry'].forEach(element => {
@@ -345,7 +354,7 @@ export class AdminHomeScreenComponent implements OnInit {
               this.taskPractList.push(resource);
             }
           });
-          
+
           // create our service request obj to render for UI comp
           this.mapTaskRenderingList();
         }
@@ -361,7 +370,7 @@ export class AdminHomeScreenComponent implements OnInit {
         console.log('employee department => ', bundle);
         this.employeeDepartmentList = this.extractKeyValuePairsFromBundle(bundle);
       },
-      (err) => console.log('Employee Department list error', err))
+      (err) => console.log('Employee Department list error', err));
   }
 
   getAndSetLocations() {
@@ -370,7 +379,7 @@ export class AdminHomeScreenComponent implements OnInit {
         console.log('questionnaire resource => ', questionnaire);
         this.psohpList = this.extractPsophListFromQuestionnaire(questionnaire);
       },
-      (err) => console.log('Employee Department list error', err))
+      (err) => console.log('Employee Department list error', err));
 
     this.datePickerConfig = Object.assign(
       {},
@@ -388,16 +397,17 @@ export class AdminHomeScreenComponent implements OnInit {
     // status = qr's status prop
     // daytoday === calc based on days in quue and today
     // caremanager == eoc's practitioner name
-    
-    console.log('qr list', this.qrList)
-    
+
+    console.log('qr list', this.qrList);
+
     this.qrList.forEach(item => {
       // console.log(item);
-      let temp = {};
-      
-      let eoc = this.eocList.find(i => (i.resourceType + '/' + i.id) === item.context.reference);
-      let patient = this.patList.find(i => eoc && eoc.patient && eoc.patient.reference && eoc.patient.reference === i.resourceType + '/' + i.id);
-      
+      const temp = {};
+
+      const eoc = this.eocList.find(i => (i.resourceType + '/' + i.id) === item.context.reference);
+      const patient = this.patList.find(i => eoc && eoc.patient
+        && eoc.patient.reference && eoc.patient.reference === i.resourceType + '/' + i.id);
+
       if (eoc && eoc['careManager']) {
         temp['careManager'] = this.getPractitioner(eoc['careManager']['reference'], false);
       } else {
@@ -407,11 +417,11 @@ export class AdminHomeScreenComponent implements OnInit {
       temp['header'] = this.getHeader(item, 'PSOHP Service');
       temp['clientDepartment'] = this.getClientDepartment(patient);
       temp['clientName'] = this.getClientName(patient);
-      temp['daysInQueue'] = this.getDaysInQueue(eoc["period"]["start"]);
+      temp['daysInQueue'] = this.getDaysInQueue(eoc['period']['start']);
       temp['status'] = item['displayStatus'] ? item['displayStatus'] : 'On-Hold';
-      temp['dateToday'] = moment(eoc.period.start).format('MMM DD YYYY'); //formatDate(new Date(), 'MMM dd yyyy', 'en');
+      temp['dateToday'] = moment(eoc.period.start).format('MMM DD YYYY'); // formatDate(new Date(), 'MMM dd yyyy', 'en');
       temp['eocId'] = eoc && eoc.id ? eoc.id : null;
-      
+
       this.serviceRequestList.push(temp);
     });
 
@@ -427,7 +437,7 @@ export class AdminHomeScreenComponent implements OnInit {
     // authoredon === task's authoredon
 
     this.tasksList.forEach(item => {
-      let temp = {};
+      const temp = {};
       // console.log(item)
       if (item['owner']) {
         temp['careManager'] = this.getPractitioner(item['owner']['reference'], true);
@@ -437,8 +447,8 @@ export class AdminHomeScreenComponent implements OnInit {
       temp['id'] = item['id'];
       temp['title'] = item['description'];
       temp['instructions'] = item['note'] != null ? item['note'][0].text : '';
-      temp['status'] = item["status"];
-      temp['authoredOn'] = item["authoredOn"] != null ? moment(item["authoredOn"]).format('MMM DD YYYY') : null;
+      temp['status'] = item['status'];
+      temp['authoredOn'] = item['authoredOn'] != null ? moment(item['authoredOn']).format('MMM DD YYYY') : null;
       temp['eocId'] = item.context.reference.replace('EpisodeOfCare/', '');
 
       this.serviceTaskRequestList.push(temp);
@@ -446,10 +456,11 @@ export class AdminHomeScreenComponent implements OnInit {
   }
 
   toggleAdvanceSearch() {
-    if (this.showAdvanceSearch)
+    if (this.showAdvanceSearch) {
       this.showAdvanceSearch = false;
-    else
+    } else {
       this.showAdvanceSearch = true;
+    }
   }
 
   validateForm() {
@@ -464,9 +475,9 @@ export class AdminHomeScreenComponent implements OnInit {
     let valueFilled = false;
     const form = this.adminHomeFormGroup.value;
 
-    if (form.dateRange != '' || form.dob != '' || form.employeeDepartment != '' ||
-        form.firstName != '' || form.lastName != '' || form.pri != '' ||
-        form.psohp != '' || form.serviceRequest !='') {
+    if (form.dateRange !== '' || form.dob !== '' || form.employeeDepartment !== '' ||
+        form.firstName !== '' || form.lastName !== '' || form.pri !== '' ||
+        form.psohp !== '' || form.serviceRequest !== '') {
       valueFilled = true;
     }
 
@@ -477,10 +488,10 @@ export class AdminHomeScreenComponent implements OnInit {
     if (startDateString.length > 0) {
       return moment().diff(moment(startDateString), 'days');
     }
-    
+
     return null;
   }
-  
+
   setEOCID(data) {
     sessionStorage.setItem('selectedEpisodeId', data);
     this.router.navigateByUrl('/staff/work-screen');
@@ -494,7 +505,7 @@ export class AdminHomeScreenComponent implements OnInit {
         lastName = patientName['family'];
         firstName = patientName['given'][0];
       });
-      
+
       return firstName + ' ' + lastName;
     }
   }
@@ -506,7 +517,7 @@ export class AdminHomeScreenComponent implements OnInit {
         dept = extension.valueString;
       }
     });
-    
+
     return dept;
   }
 
@@ -514,7 +525,7 @@ export class AdminHomeScreenComponent implements OnInit {
     return reference.substring(reference.indexOf('/') + 1, reference.length);
   }
 
-  getHeader(qr, itemText){
+  getHeader(qr, itemText) {
     let answer = '';
     if (qr && qr.item && Array.isArray(qr.item) && qr.item.length > 0) {
       qr.item.forEach(item => {
@@ -522,22 +533,22 @@ export class AdminHomeScreenComponent implements OnInit {
           answer = item['answer'][0]['valueString'];
         }
       });
-      
+
       return answer;
     }
   }
-     
+
   getPractitioner(pracId, isTaskRequest) {
     let resource;
 
     if (isTaskRequest) {
       resource = this.taskPractList.find(item => item.resourceType + '/' + item.id === pracId);
-      //this.taskPractList[this.getIdFromReference(pracId)];
+      // this.taskPractList[this.getIdFromReference(pracId)];
     } else {
       resource = this.practList.find(item => item.resourceType + '/' + item.id === pracId);
-      //this.practList[this.getIdFromReference(pracId)];
+      // this.practList[this.getIdFromReference(pracId)];
     }
-    
+
     let lastName = '';
     let firstName = '';
     if (resource && resource['name']) {
@@ -547,7 +558,7 @@ export class AdminHomeScreenComponent implements OnInit {
           firstName += givenName;
         });
       });
- 
+
       return firstName + ' ' + lastName;
     }
   }
@@ -555,39 +566,39 @@ export class AdminHomeScreenComponent implements OnInit {
   extractKeyValuePairsFromBundle(bundle) {
     if (bundle && bundle['entry']) {
       const bundleEntries = bundle['entry'];
-      
+
       const list = bundleEntries.map(item => {
         if (item && item.resource) {
           const temp = {
             value: item.resource.resourceType + '/' + item.resource.id,
             text: item.resource.name
-          }
-          
+          };
+
           return temp;
         }
-        return { value: null, text: null }
+        return { value: null, text: null };
       });
 
       return list;
     }
-    
+
     return [];
   }
 
   extractPsophListFromQuestionnaire(resource) {
     if (resource && resource.item && Array.isArray(resource.item) && resource.item.length > 0) {
-      const psophItem = resource.item.find(item => item && item.text && item.text == 'PSOHP Service');
+      const psophItem = resource.item.find(item => item && item.text && item.text === 'PSOHP Service');
 
       if (psophItem && psophItem.option && Array.isArray(psophItem.option) && psophItem.option.length > 0) {
         const list = psophItem.option.map(item => {
           const temp = {
             value: item.valueCoding.code,
             text: item.valueCoding.code
-          }
+          };
 
           return temp;
         });
-        
+
         return list;
       }
     }
@@ -595,10 +606,10 @@ export class AdminHomeScreenComponent implements OnInit {
   }
 
   renderItemsBasedOnTab(item) {
-    if (this.activeTab.toLowerCase() == 'all') {
+    if (this.activeTab.toLowerCase() === 'all') {
       return true;
     } else {
-      return item && item.status && item.status.toLowerCase() == this.activeTab.toLowerCase();
+      return item && item.status && item.status.toLowerCase() === this.activeTab.toLowerCase();
     }
   }
 
@@ -606,13 +617,13 @@ export class AdminHomeScreenComponent implements OnInit {
     // console.log(task);
     const activeTab = this.activeTab.toLowerCase();
 
-    if (activeTab == 'all') {
+    if (activeTab === 'all') {
       return true;
     } else {
       const qr = this.serviceRequestList.find(item => item.eocId === task.eocId);
-  
-      if (qr && qr.status && qr.status.toLowerCase() === activeTab) return true;
-      
+
+      if (qr && qr.status && qr.status.toLowerCase() === activeTab) { return true; }
+
       return false;
     }
   }
@@ -627,7 +638,7 @@ export class AdminHomeScreenComponent implements OnInit {
         .subscribe(updatedTask => {
           // console.log(updatedTask);
           const taskIndex = this.tasksList.findIndex(item => item.id === taskId);
-        
+
           this.tasksList[taskIndex] = updatedTask;
 
           this.serviceTaskRequestList = [];

@@ -30,6 +30,10 @@ export class AuthComponent implements OnInit {
       this.router.navigateByUrl('/dashboard');
     }
 
+    if (!this.oauthService.hasValidAccessToken()) {
+      sessionStorage.clear();
+    }
+
     this.logInForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [ Validators.required, Validators.minLength(6)]]
