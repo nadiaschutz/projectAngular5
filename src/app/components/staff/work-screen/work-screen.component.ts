@@ -467,6 +467,8 @@ export class WorkScreenComponent implements OnInit {
   }
 
   onChecklistChange(index) {
+    const indexArray = [];
+    indexArray.push(index);
     if (this.carePlan) {
       const annotation = new FHIR.Annotation();
       annotation.time = new Date();
@@ -1561,6 +1563,12 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
+  redirectToScheduler() {
+    if (sessionStorage.getItem('userRole') === 'clinician') {
+      this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
+      this.router.navigateByUrl('/staff/clinical/scheduler');
+    }
+  }
 
   redirectToAssessmentSelected(event) {
     if (sessionStorage.getItem('userRole') === 'clinician') {
