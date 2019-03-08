@@ -525,7 +525,7 @@
             </div>
             <button *ngIf="!showStatusFormGroup" class="btn special-button" (click)="enableStatusFormGroup()">
               Change Status</button>
-            <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="changeStatusToSelected()">
+            <button *ngIf="showStatusFormGroup" [disabled]="!statusFormGroup.valid" class="btn special-button" (click)="changeStatusToSelected()">
               Change Status</button>
             <button *ngIf="showStatusFormGroup" class="btn special-button" (click)="showStatusFormGroup = !showStatusFormGroup">Cancel</button>
 
