@@ -1,0 +1,225 @@
+<div class="container"  style="padding-top: 30px;" >
+  <div class="main-audio-gram" >
+
+    <div class="main-header" style="margin-top: 20px;margin-bottom: 50px;">
+      <span class="float-left">
+        <h5>Audiogram Function</h5>
+      </span>
+      <!-- <span class="float-right">
+        <button  class="btn regular-dark-button float-right" type="button" (click)="redirectToAudiogram()"> View Detailed Context </button>
+      </span> -->
+    </div>
+
+    <div class="shadow-box">
+      <div class="audiogram-table">
+        <table>
+          <thead class="audiogram-table-header">
+            <th class="audiogram-table-data-cells">Service Request Id</th>
+            <th class="audiogram-table-data-cells">Client Name</th>
+            <th class="audiogram-table-data-cells">Age</th>
+            <th class="audiogram-table-data-cells">Department</th>
+            <th class="audiogram-table-data-cells">Location</th>
+          </thead>
+          <tbody class="audiogram-table-body" *ngIf="patient">
+            <td class="audiogram-table-data-cells">{{serviceRequest.id}}</td>
+            <td class="audiogram-table-data-cells">{{patient.name}}</td>
+            <td class="audiogram-table-data-cells">{{calculateAge(patient.dob)}}</td>
+            <td class="audiogram-table-data-cells">{{patient.workplace}}</td>
+            <td class="audiogram-table-data-cells">{{patient.branch}}</td>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <form class="form" [formGroup]="audioGramFormGroup" #audiogramFror="ngForm">
+      <div class="audio-gram-form-main">
+        <div class="shadow-box">
+
+          <div class="row form-row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label for="dot">Date of Test </label>
+                <input type="text" placeholder="Date of Test" name="issued" formControlName="issued"   class="custom-form-control" bsDatepicker  id="dot" [bsConfig]='datePickerConfig'>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label for="lot" >Location of Test </label>
+                <select id="lot" class="custom-form-control" formControlName="locationOfTest"  name="lot" >
+                  <option *ngFor="let location of locations" [value]="location.resource.id" >{{location.resource.name}}</option>
+
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label for="devSerial">Dev Serial # </label>
+                <input type="text" placeholder="Dev Serial #" required id="devSerial" name="devSerial"  formControlName="devSerial" class="custom-form-control">
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label for="lot" >Dev Model </label>
+                <input type="text" placeholder="Dev Model" required id="devModel" name="devModel" formControlName="devModel" class="custom-form-control">
+              </div>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label for="devCelibrationDate">Dev Calibration Date </label>
+                <input type="text" required placeholder="Dev Calibration Date"  class="custom-form-control" formControlName="devCelibrationDate"  bsDatepicker  id="devCelibrationDate" [bsConfig]='datePickerConfig'>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label for="examineID" >Examine ID </label>
+                <input type="text" placeholder="Examine ID" id="examineID" name="examineID" formControlName="examineID"  class="custom-form-control">
+              </div>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label>Baseline</label>
+
+                <div class="btn-group-main">
+                  <div class="btn-group custom-btn-group" role="group" >
+                    <button type="button" class="btn" [ngClass]="{'btn-primary active-btn-group' : selectedBaseLine === 'yes'}" (click)="selectBaseLine('yes')">Yes</button>
+                    <button type="button" class="btn" [ngClass]="{'btn-primary active-btn-group' : selectedBaseLine === 'no'}" (click)="selectBaseLine('no')">No</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="form-group">
+                <label  >If not baseline, hearing loss </label>
+                <div class="btn-group-main">
+                  <div class="btn-group custom-btn-group" role="group" >
+                    <button type="button" class="btn" [ngClass]="{'btn-primary active-btn-group' : selectedHearingLoss === 'left'}" (click)="selectHearingLoss('left')">Left</button>
+                    <button type="button" class="btn " [ngClass]="{'btn-primary active-btn-group' : selectedHearingLoss === 'right'}" (click)="selectHearingLoss('right')">Right</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="shadow-box m-t-30">
+          <div class="row form-row">
+            <div class="col w-100">
+              <h6 class="heading-hearing"> LEFT EAR </h6>
+            </div>
+          </div>
+          <div class="row form-row">
+            <div class="col">
+              <div class="form-group">
+                <label for="leftk_5">0.5K </label>
+                <input type="text" placeholder="Enter" required id="leftk_5" name="leftk_5" formControlName="leftk_5"   class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="leftk1">1K </label>
+                <input type="text" placeholder="Enter" required id="leftk1" name="leftk1" formControlName="leftk1"  class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="leftk2">2K </label>
+                <input type="text" placeholder="Enter" required id="leftk2" name="Enter" formControlName="leftk2"  class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="left3k">3K </label>
+                <input type="text" placeholder="Enter" required id="left3k" name="left3k" formControlName="left3k"  class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+            <div class="form-group">
+              <label for="left4k">4K </label>
+              <input type="text" placeholder="Enter" required id="left4k" name="left4k" formControlName="left4k"  class="custom-form-control">
+            </div>
+          </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="left6k">6K </label>
+                <input type="text" placeholder="Enter" required id="left6k" name="left6k" formControlName="left6k"  class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="left_8k">8K </label>
+                <input type="text" placeholder="Enter" required id="left_8k" name="left8k" formControlName="left8k"  class="custom-form-control">
+              </div>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col w-100">
+              <h6 class="heading-hearing"> RIGHT EAR </h6>
+            </div>
+          </div>
+
+          <div class="row form-row">
+            <div class="col">
+              <div class="form-group">
+                <label for="right_0_5">0.5K </label>
+                <input type="text" placeholder="Enter" required id="right_0_5" name="right_0_5" formControlName="right_0_5" class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="right_1k">1K </label>
+                <input type="text" placeholder="Enter" required id="right_1k" name="right_1k" formControlName="right_1k" class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="right_2k">2K </label>
+                <input type="text" placeholder="Enter"required id="right_2k" name="right_2k" formControlName="right_2k"  class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="right_3k">3K </label>
+                <input type="text" placeholder="Enter" required id="right_3k" name="right_3k"  formControlName="right_3k" class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="right_4k">4K </label>
+                <input type="text" placeholder="Enter" required id="right_4k" name="right_4k" formControlName="right_4k"  class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="right_6k">6K </label>
+                <input type="text" placeholder="Enter" required id="right_6k" name="right_6k" formControlName="right_6k"  class="custom-form-control">
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="right_8k">8K </label>
+                <input type="text" placeholder="Enter" required id="right_8k" name="right_8k" formControlName="right_8k"   class="custom-form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-div m-t-30">
+          <button class="btn special-button" [disabled]="audioGramFormGroup.invalid"  (click)="saveAudiogram()">Submit</button>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+</div>

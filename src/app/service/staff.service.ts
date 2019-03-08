@@ -180,6 +180,12 @@ export class StaffService {
     });
   }
 
+    getDocumentsChecklistLab(context) {
+        return this.http.get(environment.queryURI + '/QuestionnaireResponse?context=' + context + '&identifier=RDCL', {
+            headers: this.getHeaders()
+        });
+    }
+
   updateDocumentFile(id, doc) {
     return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id , doc, {
       headers: this.getHeaders()

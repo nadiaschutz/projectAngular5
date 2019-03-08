@@ -1,63 +1,124 @@
-<div class="main-header">
-  <h5>Lab Requisition</h5>
-</div>
-<div class="container">
 
-  <div class="row patient-table">
-    <table>
-      <thead class="patient-table-header">
+
+<div class="container"  style="padding-top: 30px;" >
+  <div class="main-div">
+  <div class="main-header" style="margin-top: 20px;margin-bottom: 50px;">
+    <h5>Requisition</h5>
+  </div>
+
+
+  <div class="shadow-box">
+    <div class="patient-table">
+      <table>
+        <thead class="patient-table-header">
         <th class="patient-table-data-cells">Name</th>
         <th class="patient-table-data-cells">Date of Birth</th>
-        <th class="patient-table-data-cells">Employee ID</th>
+        <th class="patient-table-data-cells">PRI</th>
         <th class="patient-table-data-cells">Department</th>
         <th class="patient-table-data-cells">Branch</th>
-      </thead>
-      <tbody class="patient-table-body">
+        <th class="patient-table-data-cells">Assessment Type</th>
+        </thead>
+        <tbody class="patient-table-body">
         <td class="patient-table-data-cells">{{patient.name}}</td>
         <td class="patient-table-data-cells">{{patient.dob}}</td>
         <td class="patient-table-data-cells">{{patient.employeeId}}</td>
         <td class="patient-table-data-cells">{{patient.workplace}}</td>
         <td class="patient-table-data-cells">{{patient.branch}}</td>
-      </tbody>
-    </table>
+        <td class="patient-table-data-cells"> {{assessmentType}} </td>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6 col-md-6">
+        <div class="form-group m-b-10">
+          <label >Type of Requisition</label>
+          <select [(ngModel)]="requisitionType" class="custom-form-control" (change)="checkForChangeInRequisitionType()">
+            <option>Diagnostics Test</option>
+            <option>Consultation</option>
+            <option>Medical Information</option>
+          </select>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="form-inline">
-    <label class="title">Type of Requisition</label>
-    <select [(ngModel)]="requisitionType" class="form-control value" (change)="checkForChangeInRequisitionType()">
-      <option>Diagnostics Test</option>
-      <option>Consultation</option>
-      <option>Medical Information</option>
-    </select>
-  </div>
+
+
+
 
   <!-- Consultation & Medical Information -->
 
-  <div *ngIf="requisitionType==='Consultation' || requisitionType==='Medical Information'" class="search-box">
+  <div class="requisitionType">
     <h6 class="consultation-header">{{requisitionType}}</h6>
+  </div>
+
+  <div *ngIf="requisitionType==='Consultation' || requisitionType==='Medical Information'" class="search-box shadow-box">
 
     <form [formGroup]="consultationFormGroup">
-      <div class="field form-inline">
-        <label for="assignTo" class="title">Assign Clinician: </label>
-        <select class="form-control value" required name="assignTo" formControlName="assignTo">
-          <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
-            <span>{{clinician.name}}</span>
-          </option>
-        </select>
+
+      <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="form-group">
+            <label >Clinician Name </label>
+            <input type="text" name="consultationClinicianName" formControlName="consultationClinicianName" [(ngModel)]="consultationClinicianName" class="custom-form-control">
+
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="form-group">
+            <label >Clinician Email </label>
+            <input type="text" name="consultationClinicianEmail" formControlName="consultationClinicianEmail"  [(ngModel)]="consultationClinicianEmail" class="custom-form-control">
+          </div>
+        </div>
+
       </div>
-      <div class="field form-inline">
-        <label for="speciality" class="title">Speciality: </label>
-        <input type="text" class="form-control value" name="speciality" formControlName="speciality">
+
+      <div class="row">
+
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="form-group">
+            <label for="speciality" >Speciality: </label>
+            <!-- <input type="text" class="form-control value" name="speciality" formControlName="speciality">-->
+            <select id="speciality" class="custom-form-control" name="speciality" formControlName="speciality" [(ngModel)]="printData.speciality">
+              <option *ngFor="let speciality of specialities" [value]="speciality"> {{speciality}}</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <div class="field form-inline">
-        <label for="instructions" class="title">Instructions: </label>
-        <textarea class="form-control instructions" name="instructions" formControlName="instructions"></textarea>
+      <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="form-group">
+            <label for="instructions" >Instructions: </label>
+            <textarea id="instructions" style="height: auto" class="custom-form-control instructions" name="instructions" formControlName="instructions" [(ngModel)]="printData.instructions"></textarea>
+          </div>
+        </div>
       </div>
+
+
     </form>
+
+    <div class="consutation-madical-footer">
+      <div class="col-md-12 col-sm-12">
+        <div class="print-footer">
+          <div class="clinician">
+            <label>Clinician: {{clinician_id}} </label>
+          </div>
+          <div class="userName">
+            <label>Name: {{userName}} </label>
+          </div>
+          <div class="todayDate">
+            <label> Date: {{todayDate}} </label>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="consultation-buttons">
       <button class="btn special-button" (click)="saveConsultation()">Submit</button>
-      <button class="btn special-button" (click)="requisitionType=''">Cancel</button>
+      <button class="btn cancel-btn" (click)="requisitionType=''">Cancel</button>
+      <button class="btn special-button" *ngIf="requisitionType === 'Consultation'" (click)="printConsutationMadicalInfo(requisitionType)">Print</button>
+      <button class="btn special-button" *ngIf="requisitionType === 'Medical Information'" (click)="printConsutationMadicalInfo(requisitionType)">Print</button>
     </div>
 
 
@@ -65,32 +126,64 @@
 
   <!-- Lab Test -->
 
-  <div *ngIf="requisitionType=='Diagnostics Test'">
+  <div *ngIf="requisitionType=='Diagnostics Test'" class="shadow-box diagnostic-box">
 
-    <div class="field form-inline">
-      <label class="title">Service Delivery: </label>
-      <select [(ngModel)]="serviceDeliveryType" class="form-control value">
-        <option>Point of Care</option>
-        <option>Referral</option>
-      </select>
+
+    <div class="row">
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <label >Clinician Name </label>
+          <input type="text" name="diagnosticsClinicianName" [(ngModel)]="diagnosticsClinicianName" class="custom-form-control">
+        </div>
+      </div>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <label >Clinician Email </label>
+          <input type="text" name="diagnosticsClinicianEmail" [(ngModel)]="diagnosticsClinicianEmail" class="custom-form-control">
+        </div>
+      </div>
+
     </div>
 
-    <div class="field form-inline">
-      <label class="title">Instructions: </label>
-      <textarea [(ngModel)]="instructions" class="form-control instructions"></textarea>
+
+    <div class="row">
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <label >Service Delivery: </label>
+          <select [(ngModel)]="serviceDeliveryType" class="custom-form-control">
+            <option>Point of Care</option>
+            <option>Referral</option>
+          </select>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Items -->
-    <!-- <div *ngIf="serviceDeliveryType.length>0"> -->
-    <div id="print">
+    <div class="row">
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+          <label class="title">Instructions: </label>
+          <textarea style="height: auto" [(ngModel)]="instructions" class="custom-form-control instructions"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+
+
+    <div class="list-labtest"> <!--id="print"-->
       <ul>
         <li *ngFor="let item of labTestArray">
           <label class="item-header">{{item.text | uppercase}}</label>
           <section *ngIf="item.items">
             <div *ngFor="let element of item.items">
-              <label class="item">
+              <!--<label class="item">
                 <input type="checkbox" [(ngModel)]="element.checked">
                 <span class="checklist-item">{{element.text}}</span>
+              </label>-->
+              <label class="custom-checkbox">{{element.text}}
+                <input type="checkbox" [(ngModel)]="element.checked">
+                <span class="checkmark"></span>
               </label>
             </div>
           </section>
@@ -100,9 +193,271 @@
 
       <button class="btn special-button" (click)="saveProcedureRequest()">Submit</button>
       <button class="btn special-button" (click)="printToPDF()">Print</button>
+
+    </div>
+
+
+    <div class="row footer" *ngIf="requisitionType=='Diagnostics Test'">
+      <div class="col-md-12 col-sm-12">
+        <div class="print-footer">
+          <div class="clinician">
+            <label>Clinician: {{clinician_id}} </label>
+          </div>
+          <div class="userName">
+            <label>Name: {{userName}} </label>
+          </div>
+          <div class="todayDate">
+            <label> Date: {{todayDate}} </label>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
 
+
+
+
+</div>
+</div>
+<div class="container" style="position: absolute; left: -9999px; top: -9999px;background: #ffffff;">
+  <div class="print-main-section" id="print" style="width: 100%;height: 1250px;" >
+    <div class="row-log">
+      <div class="logo-left">
+        <img  src="../../../../assets/healthcanada-logo.png" alt="">
+      </div>
+    </div>
+    <div class="print-main-header">
+      <h5>Public Service Occupational / Health program</h5>
+    </div>
+    <div class="print-patient-table">
+      <table>
+        <thead class="patient-table-header">
+        <th class="patient-table-data-cells">Name</th>
+        <th class="patient-table-data-cells">Date of Birth</th>
+        <th class="patient-table-data-cells">PRI</th>
+        <th class="patient-table-data-cells">Department</th>
+        <th class="patient-table-data-cells">Branch</th>
+        <th class="patient-table-data-cells">Assessment Type</th>
+        </thead>
+        <tbody class="patient-table-body">
+        <td class="patient-table-data-cells">{{patient.name}}</td>
+        <td class="patient-table-data-cells">{{patient.dob}}</td>
+        <td class="patient-table-data-cells">{{patient.employeeId}}</td>
+        <td class="patient-table-data-cells">{{patient.workplace}}</td>
+        <td class="patient-table-data-cells">{{patient.branch}}</td>
+        <td class="patient-table-data-cells"> {{assessmentType}} </td>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-input-section">
+        <div class="row">
+       <div class="col-md-6 col-sm-6 col-xs-12">
+         <div class="form-group">
+           <label >Clinician Name </label>
+           <input type="text" name="diagnosticsClinicianName" [(ngModel)]="diagnosticsClinicianName" class="custom-form-control">
+         </div>
+       </div>
+       <div class="col-md-6 col-sm-6 col-xs-12">
+         <div class="form-group">
+           <label >Clinician Email </label>
+           <input type="text" name="diagnosticsClinicianEmail" [(ngModel)]="diagnosticsClinicianEmail" class="custom-form-control">
+         </div>
+       </div>
+
+     </div>
+
+
+     <div class="row">
+       <div class="col-md-6 col-sm-6 col-xs-12">
+         <div class="form-group">
+           <label >Service Delivery: </label>
+           <select [(ngModel)]="serviceDeliveryType" class="custom-form-control">
+             <option>Point of Care</option>
+             <option>Referral</option>
+           </select>
+         </div>
+       </div>
+
+     </div>
+
+     <div class="row">
+       <div class="col-md-6 col-sm-6 col-xs-12">
+         <div class="form-group">
+           <label class="title">Instructions: </label>
+           <textarea style="height: auto" [(ngModel)]="instructions" class="custom-form-control instructions"></textarea>
+         </div>
+       </div>
+
+     </div>
+    </div>
+
+
+
+
+    <div class="lable-test-main">
+      <ul>
+        <li *ngFor="let item of labTestArray">
+          <label class="item-header">{{item.text | uppercase}}</label>
+          <section *ngIf="item.items">
+            <div *ngFor="let element of item.items">
+              <!--<label class="item">
+                <input type="checkbox" [(ngModel)]="element.checked">
+                <span class="checklist-item">{{element.text}}</span>
+              </label>-->
+              <label class="custom-checkbox">{{element.text}}
+                <input type="checkbox" [(ngModel)]="element.checked">
+                <span class="checkmark"></span>
+              </label>
+            </div>
+          </section>
+        </li>
+      </ul>
+    </div>
+    <div class="print-footer" style="margin-top: 20px;">
+      <div class="clinician">
+        <label>  Clinician ID: {{clinician_id}} </label>
+      </div>
+      <div class="userName">
+        <label>  Name: {{userName}} </label>
+      </div>
+      <div class="todayDate">
+        <label> Date: {{todayDate}} </label>
+      </div>
+    </div>
+
+  </div>
+
+
+</div>
+
+<div class="container" style="position: fixed; right: -9999px; top: -9999px;">
+
+  <div class="main-div" id="print2">
+    <div class="row-log p-t-30">
+      <div class="logo-left">
+        <img  src="../../../../assets/healthcanada-logo.png" alt="">
+      </div>
+    </div>
+
+    <div class="main-header" style="margin-top: 20px;margin-bottom: 50px;width: 100%;
+    float: left;">
+      <h5>Public Service Occupational / Health program</h5>
+    </div>
+
+    <div class="shadow-box" style=" box-shadow: 1px 2px 6px 0 rgba(123, 123, 123, 0.5);
+    -webkit-box-shadow: 1px 2px 6px 0 rgba(123, 123, 123, 0.5);">
+      <div class="patient-table">
+        <table>
+          <thead class="patient-table-header">
+          <th class="patient-table-data-cells">Name</th>
+          <th class="patient-table-data-cells">Date of Birth</th>
+          <th class="patient-table-data-cells">PRI</th>
+          <th class="patient-table-data-cells">Department</th>
+          <th class="patient-table-data-cells">Branch</th>
+          <th class="patient-table-data-cells">Assessment Type</th>
+          </thead>
+          <tbody class="patient-table-body">
+          <td class="patient-table-data-cells">{{patient.name}}</td>
+          <td class="patient-table-data-cells">{{patient.dob}}</td>
+          <td class="patient-table-data-cells">{{patient.employeeId}}</td>
+          <td class="patient-table-data-cells">{{patient.workplace}}</td>
+          <td class="patient-table-data-cells">{{patient.branch}}</td>
+          <td class="patient-table-data-cells"> {{assessmentType}} </td>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6 col-md-6">
+          <div class="form-group m-b-10">
+            <label >Type of Requisition</label>
+            <select [(ngModel)]="requisitionType" class="custom-form-control" (change)="checkForChangeInRequisitionType()">
+              <option>Diagnostics Test</option>
+              <option>Consultation</option>
+              <option>Medical Information</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    <!-- Consultation & Medical Information -->
+
+    <div class="requisitionType">
+      <h6 class="consultation-header">{{requisitionType}}</h6>
+    </div>
+
+    <div *ngIf="requisitionType==='Consultation' || requisitionType==='Medical Information'" class="search-box shadow-box">
+
+      <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="form-group">
+            <label >Clinician Name </label>
+            <input type="text" name="consultationClinicianName"  [(ngModel)]="consultationClinicianName" class="custom-form-control">
+
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="form-group">
+            <label >Clinician Email </label>
+            <input type="text" name="consultationClinicianEmail"  [(ngModel)]="consultationClinicianEmail" class="custom-form-control">
+          </div>
+        </div>
+
+      </div>
+
+
+
+        <div class="row">
+
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+              <label for="speciality" >Speciality: </label>
+              <!-- <input type="text" class="form-control value" name="speciality" formControlName="speciality">-->
+              <select id="speciality" class="custom-form-control" name="speciality" [ngModelOptions]="{standalone: true}"  [(ngModel)]="printData.speciality">
+                <option *ngFor="let speciality of specialities" [value]="speciality"> {{speciality}}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="form-group">
+              <label for="instructions" >Instructions: </label>
+              <textarea id="instructions" style="height: auto" class="custom-form-control instructions" name="instructions" [ngModelOptions]="{standalone: true}"  [(ngModel)]="printData.instructions"></textarea>
+            </div>
+          </div>
+        </div>
+
+
+
+      <div class="consutation-madical-footer">
+        <div class="col-md-12 col-sm-12">
+          <div class="print-footer">
+            <div class="clinician">
+              <label>Clinician: {{clinician_id}} </label>
+            </div>
+            <div class="userName">
+              <label>Name: {{userName}} </label>
+            </div>
+            <div class="todayDate">
+              <label> Date: {{todayDate}} </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+
+  </div>
 
 </div>
