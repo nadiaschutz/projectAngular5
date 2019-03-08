@@ -17,6 +17,10 @@ import {ActivatedRoute} from "@angular/router";
   styleUrls: ['./lab-requisition.component.scss']
 })
 export class LabRequisitionComponent implements OnInit {
+    consultationClinicianName: any;
+    consultationClinicianEmail: any;
+    diagnosticsClinicianEmail: any;
+    diagnosticsClinicianName: any;
   printData = {
       assignTo: null,
       speciality: null,
@@ -157,7 +161,9 @@ export class LabRequisitionComponent implements OnInit {
   checkForChangeInRequisitionType() {
     if (this.requisitionType === 'Medical Information' || 'Consultation') {
       this.consultationFormGroup = this.formBuilder.group({
-        assignTo: new FormControl(''),
+
+          consultationClinicianEmail: new FormControl(''),
+          consultationClinicianName: new FormControl(''),
         speciality: new FormControl(''),
         instructions: new FormControl('')
       });
@@ -180,9 +186,9 @@ export class LabRequisitionComponent implements OnInit {
     episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     procedureRequest.context = episodeOfCareReference;
 
-    const performerReference = new FHIR.Reference();
+   /* const performerReference = new FHIR.Reference();
     performerReference.reference = 'Practitioner/' + this.consultationFormGroup.get('assignTo').value.id;
-    procedureRequest.performer = performerReference;
+    procedureRequest.performer = performerReference;*/
 
     const annotation = new FHIR.Annotation;
     annotation.text = this.consultationFormGroup.get('instructions').value;
@@ -197,8 +203,94 @@ export class LabRequisitionComponent implements OnInit {
     identifier.value = this.requisitionType;
     procedureRequest.identifier = [identifier];
 
-    this.staffService.saveProcedureRequest(JSON.stringify(procedureRequest)).subscribe(data => {
-      this.requisitionType = '';
+
+      let extension = [];
+
+
+      if(this.consultationClinicianName){
+          let consultationClinicianName = {
+              "url": "http://nohis.gc.ca/external-clinician-name",
+              "valueString": this.consultationClinicianName
+          }
+          extension.push(consultationClinicianName)
+      }
+      if(this.consultationClinicianEmail){
+          let email = {
+              "url": "http://nohis.gc.ca/ external-clinician-email",
+              "valueReference": {
+                  "valueString": this.consultationClinicianEmail
+              }
+          }
+          extension.push(email);
+      }
+
+
+
+
+      let cloanProcedureRequest =  JSON.parse(JSON.stringify(procedureRequest))
+
+      cloanProcedureRequest['extension'] = extension;
+
+
+
+    this.staffService.saveProcedureRequest(JSON.stringify(cloanProcedureRequest)).subscribe(data => {
+
+        if(data){
+            const context = data['context'].reference;
+
+
+            this.staffService.getDocumentsChecklistLab(context).subscribe( dataItem => {
+
+                let resource: any;
+                if(dataItem && dataItem['entry'] && dataItem['entry'][0]) {
+                    resource = dataItem['entry'][0].resource;
+
+                    if(resource && resource['item']){
+                        let req = {
+                            "linkId": resource['item'].length + 1,
+                            "text":  this.requisitionType,
+                            "answer": [
+                                {
+                                    "valueBoolean": false
+                                }
+                            ]
+                        } ;
+
+                        resource['item'].push(req)
+
+                    } else {
+                        resource['item'] = [{
+                            "linkId": "1",
+                            "text":  this.requisitionType,
+                            "answer": [
+                                {
+                                    "valueBoolean": false
+                                }
+                            ]
+                        }]
+                    }
+
+                    const udateDocId = resource['id'];
+
+                    this.staffService.updateDocumentFile(udateDocId , resource).subscribe( dataItem => {
+
+                        this.requisitionType = '';
+                        this.consultationClinicianEmail = null;
+                        this.consultationClinicianName  = null;
+                        this.labTestArray = [];
+                        this.printData.instructions = null;
+                        this.printData.speciality = null;
+
+                    });
+
+                }
+
+
+
+            });
+
+
+        }
     });
   }
 
@@ -258,13 +350,86 @@ export class LabRequisitionComponent implements OnInit {
     identifier.value = 'Diagnostics Test';
     procedureRequest.identifier = [identifier];
 
+    let extension = [];
+
+      if(this.diagnosticsClinicianName){
+          let diagnosticsClinicianName = {
+              "url": "http://nohis.gc.ca/external-clinician-name",
+              "valueString": this.diagnosticsClinicianName
+          }
+          extension.push(diagnosticsClinicianName)
+      }
+      if(this.diagnosticsClinicianEmail){
+          let email = {
+              "url": "http://nohis.gc.ca/ external-clinician-email",
+              "valueReference": {
+                  "valueString": this.diagnosticsClinicianEmail
+              }
+          }
+          extension.push(email)
+      }
 
 
-    // console.log('serviceDeliveryType', this.serviceDeliveryType);
-    // console.log('procedurerequest', procedureRequest);
+      let cloanProcedureRequest =  JSON.parse(JSON.stringify(procedureRequest))
 
-    this.staffService.saveProcedureRequest(JSON.stringify(procedureRequest)).subscribe(data => {
-      this.requisitionType = '';
+      cloanProcedureRequest['extension'] = extension;
+
+
+    this.staffService.saveProcedureRequest(JSON.stringify(cloanProcedureRequest)).subscribe(data => {
+
+
+        if(data){
+            const context = data['context'].reference;
+
+            this.staffService.getDocumentsChecklistLab(context).subscribe( dataItem => {
+
+                let resource: any;
+                if(dataItem && dataItem['entry'] && dataItem['entry'][0]) {
+                    resource = dataItem['entry'][0].resource;
+
+                    if(resource && resource['item']){
+                        let req = {
+                            "linkId": resource['item'].length + 1,
+                            "text":  this.requisitionType,
+                            "answer": [
+                                {
+                                    "valueBoolean": false
+                                }
+                            ]
+                        } ;
+
+                        resource['item'].push(req)
+
+                    } else {
+                        resource['item'] = [{
+                            "linkId": "1",
+                            "text":  this.requisitionType,
+                            "answer": [
+                                {
+                                    "valueBoolean": false
+                                }
+                            ]
+                        }]
+                    }
+
+                    const udateDocId = resource['id'];
+
+                    this.staffService.updateDocumentFile(udateDocId , resource).subscribe( dataItem => {
+                        this.requisitionType = '';
+                        this.diagnosticsClinicianEmail = null;
+                        this.diagnosticsClinicianName  = null;
+                        this.labTestArray = [];
+                        this.printData.instructions = null;
+                        this.printData.speciality = null;
+
+                    });
+                }
+
+            });
+
+
+        }
+
     });
   }
 
@@ -285,19 +450,6 @@ export class LabRequisitionComponent implements OnInit {
     });
   }
 
-   /* getPatientByDepartment() {
-     const userDept = sessionStorage.getItem('userDept');
-        this.patientService.getPatientByWorkplace(userDept).subscribe(
-            data => {
-               this.patients = data;
-               if (this.patients && this.patients.entry) {
-                this.listOfPatient = this.patients.entry;
-               }
-            },
-            error => this.handleError(error)
-        );
-
-    }*/
 
     handleError(error) {
         console.log(error);

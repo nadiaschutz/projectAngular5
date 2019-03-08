@@ -60,7 +60,7 @@
                 <label >Dev Serial # </label>
 
                 <div>
-                  <span *ngIf="device"> {{device.id}} </span>
+                  <span *ngIf="device && device.udi"> {{device.udi.deviceIdentifier}} </span>
                 </div>
 
               </div>

@@ -48,35 +48,20 @@
           <table>
             <thead class="historical-table-header">
               <th class="historical-table-data-cells">Date of Test</th>
-              <th class="historical-table-data-cells">Service Request #</th>
+              <th class="historical-table-data-cells">Audiogram Request #</th>
               <th class="historical-table-data-cells">Baseline</th>
               <th class="historical-table-data-cells"> </th>
             </thead>
             <tbody class="historical-table-body">
               <tr *ngFor="let observation of observations;let i = index">
                 <td class="historical-table-data-cells">{{getDateMMMDDYYYY(observation.issued)}}</td>
-                <td class="historical-table-data-cells">{{getSERVREQ(observation)}}</td>
+                <td class="historical-table-data-cells">{{observation.id}}</td>
                 <td class="historical-table-data-cells">{{getBaseLineFound(observation.category)}}</td>
                 <td class="historical-table-data-cells">
                   <a class="view-link" (click)="navigateToAudiogramDetail(observation.id)" >View</a>
                 </td>
                 </tr>
-            <!--  <tr>
-                <td class="historical-table-data-cells">Yes</td>
-                <td class="historical-table-data-cells">XYZABC</td>
-                <td class="historical-table-data-cells">000000</td>
-                <td class="historical-table-data-cells">
-                  <a class="view-link" >View</a>
-                </td>
-              </tr>
-              <tr>
-                <td class="historical-table-data-cells">Yes</td>
-                <td class="historical-table-data-cells">XYZABC</td>
-                <td class="historical-table-data-cells">000000</td>
-                <td class="historical-table-data-cells">
-                  <a class="view-link" >View</a>
-                </td>
-              </tr>-->
+
             </tbody>
           </table>
         </div>
