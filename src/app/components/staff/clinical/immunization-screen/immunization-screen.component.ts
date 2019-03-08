@@ -34,7 +34,84 @@ export class ImmunizationScreenComponent implements OnInit {
   maxDate: Date;
 
   administeredVaccines = [];
-  vaccineList = [];
+  vaccineList = [
+    {
+      code: '24',
+      display: 'Anthrax'
+    },
+    {
+      code: '27',
+      display: 'Botulinum Antitoxin'
+    },
+    {
+      code: 'GNFLU',
+      display: 'Influenza'
+    },
+    {
+      code: 'GNHEP',
+      display: 'Hepatitis B'
+    },
+    {
+      code: 'GNHPA',
+      display: 'Hepatitis A'
+    },
+    {
+      code: 'GNJEN',
+      display: 'Japanese Encephalitis'
+    },
+    {
+      code: '67',
+      display: 'Malaria'
+    },
+    {
+      code: 'GNMEA',
+      display: 'Measles'
+    },
+    {
+      code: 'GNMUM',
+      display: 'Mumps'
+    },
+    {
+      code: 'GNMEN',
+      display: 'Meningococcal C'
+    },
+    {
+      code: 'GNRUB',
+      display: 'Rubella'
+    },
+    {
+      code: 'GNTET',
+      display: 'Tetanus'
+    },
+    {
+      code: 'GNVAR',
+      display: 'Varicella'
+    },
+    {
+      code: 'GNPOL',
+      display: 'Polio'
+    },
+    {
+      code: 'GNTET',
+      display: 'Tetanus'
+    },
+    {
+      code: '90',
+      display: 'Rabies'
+    },
+    {
+      code: '105',
+      display: 'Vaccinia (smallpox) diluted'
+    },
+    {
+      code: '75',
+      display: 'Vaccinia (smallpox)'
+    },
+    {
+      code: 'GNTET',
+      display: 'Yellow Fever'
+    }
+  ];
   cliniciansList = [];
   selectedVaccine;
   checkboxHistoryFormDisabled = true;
@@ -70,12 +147,6 @@ export class ImmunizationScreenComponent implements OnInit {
     this.fetchAllClinicians();
     if (sessionStorage.getItem('userRole')) {
       if (sessionStorage.getItem('userRole') === 'clinician') {
-        this.staffService.getVaccineList().subscribe(data => {
-          data['list'].forEach(element => {
-            this.vaccineList.push(element);
-          });
-        });
-
         this.staffService
           .getAnyFHIRObjectByCustomQuery(
             'EpisodeOfCare/' + sessionStorage.getItem('selectedEpisodeId')
@@ -554,7 +625,7 @@ export class ImmunizationScreenComponent implements OnInit {
     const practitioner = new FHIR.PractitionerForImmunization();
     const identifier = new FHIR.Identifier();
     const note = new FHIR.Annotation();
-    const diluentLotNumber = new FHIR.Extension;
+    const diluentLotNumber = new FHIR.Extension();
     practitioner.actor = new FHIR.Reference();
     site.coding = [];
     vaccine.coding = [];
@@ -600,7 +671,9 @@ export class ImmunizationScreenComponent implements OnInit {
 
     note.text = this.vaccinationFormGroup.get('productName').value;
 
-    diluentLotNumber.valueString = this.vaccinationFormGroup.get('diluentLotNumber').value;
+    diluentLotNumber.valueString = this.vaccinationFormGroup.get(
+      'diluentLotNumber'
+    ).value;
     diluentLotNumber.url = 'https://bcip.smilecdr.com/fhir/diluentlotnumber';
 
     immunization.extension = [diluentLotNumber];
