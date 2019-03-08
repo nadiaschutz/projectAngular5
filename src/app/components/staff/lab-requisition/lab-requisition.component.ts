@@ -10,6 +10,7 @@ import * as html2canvas from 'html2canvas';
 import {PatientService} from '../../../service/patient.service';
 import { formatDate } from '@angular/common';
 import {ActivatedRoute} from "@angular/router";
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-lab-requisition',
@@ -246,7 +247,7 @@ export class LabRequisitionComponent implements OnInit {
                     if(resource && resource['item']){
                         let req = {
                             "linkId": resource['item'].length + 1,
-                            "text":  this.requisitionType,
+                            "text":  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
                             "answer": [
                                 {
                                     "valueBoolean": false
@@ -259,7 +260,7 @@ export class LabRequisitionComponent implements OnInit {
                     } else {
                         resource['item'] = [{
                             "linkId": "1",
-                            "text":  this.requisitionType,
+                            "text":  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
                             "answer": [
                                 {
                                     "valueBoolean": false
@@ -386,7 +387,7 @@ export class LabRequisitionComponent implements OnInit {
                     if(resource && resource['item']){
                         let req = {
                             "linkId": resource['item'].length + 1,
-                            "text":  this.requisitionType,
+                            "text":  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
                             "answer": [
                                 {
                                     "valueBoolean": false
@@ -399,7 +400,7 @@ export class LabRequisitionComponent implements OnInit {
                     } else {
                         resource['item'] = [{
                             "linkId": "1",
-                            "text":  this.requisitionType,
+                            "text":  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
                             "answer": [
                                 {
                                     "valueBoolean": false
