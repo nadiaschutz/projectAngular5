@@ -1549,7 +1549,7 @@ export class WorkScreenComponent implements OnInit {
   redirectToLabRequisition() {
     if (sessionStorage.getItem('userRole') === 'clinician') {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
-      this.router.navigateByUrl('/staff/lab-requisition');
+      this.router.navigateByUrl('/staff/lab-requisition/' + this.episodeOfCareId);
     }
   }
 
@@ -1568,12 +1568,11 @@ export class WorkScreenComponent implements OnInit {
         this.router.navigateByUrl('/staff/clinical/immunization-screen');
       }
       if (event === ('AUDIOGRAM')) {
-        // this.router.navigateByUrl('/staff/clinical/audogram')
+          this.router.navigateByUrl('/staff/audiogram/' + this.episodeOfCareId);
       }
       if (event === ('TURBTEST')) {
 
       }
     }
   }
-
 }
