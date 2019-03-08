@@ -30,6 +30,7 @@ import { FileDetector } from 'protractor';
 import { ValueAddress } from 'src/app/interface/organization';
 import { element } from '@angular/core/src/render3/instructions';
 import { e } from '@angular/core/src/render3';
+import { runInThisContext } from 'vm';
 
 class TextInput {
   static create(event: FieldConfig) {
@@ -113,8 +114,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   msec: any;
 
   dependents = false;
+  dependentsList = [];
   dependentBoolean = false;
-  dependentNumber = 0;
+  dependentNumber = null;
   qrequest: any;
 
   questionsList = [];
@@ -161,8 +163,44 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit() {
+    // remove submit button if there any
+
+
+    // ADDING DEPENDANTS ON FHIR RESPONCE OBJECT
+    // V get dependents
+    // V build the div / form items with dependents
+    // add dependentsList into the form data
+
+    // add flag on/off
+    // if item.dependents === true {
+    // add class = 'enable-when-show'
+    // } else {
+    //   add class = 'enable-when-hide'
+    // }
+    // grab data
+    // figure out how to store in the object on FHIR
+    // add data to this.itemsToSend
+
+
+    // change SR for employee , instead of dependent BOOLEAN add actuall dependents references
+
+    // CREATING NEW SR FOR DEPENDANTS
+    // basically make a copy of the current SR
+    // remove dependents item
+    // change subject to current patient + ID
+    // POST them
+
+
+    // ADDING DEPENDANTS STRAIGHT FROM THE CREATE SR PAGE
+    // save current data in session storage
+    // add a button 'add dependent'
+    // route to the add dependent page
+    // go back on submit
+    // load the page
+    // assign the data from session storage
 
     // this.activatedRoute.data.subscribe(data => this.processQuestionnaire(data.fields));
+    this.dependentsList.push('NADIA TEST');
     this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
     // this.activatedRoute.data.subscribe(data => console.log(data));
 
@@ -678,14 +716,53 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   getClientData(data) {
+    let dependentLink;
     console.log(data);
     this.clientBoD = data.birthDate;
     this.clientGivenName = data.name[0].given[0];
     this.clientFamilyName = data.name[0].family;
+    // search for the dependent link
+    if (data['extension']) {
+      data['extension'].forEach(extension => {
+        // console.log('TRUE', extension['url']);
+        if (extension['url'].indexOf('dependentlink') !== -1) {
+          dependentLink = extension['valueString'];
+          console.log(dependentLink);
+        }
+      });
+    }
+
+    // calling data to get dependents
+
+    if (dependentLink) {
+      this.patientService
+        .getPatientByLinkID('ac96074d-4c5f-47f1-8fae-8d7dc71eff55' + '&employeetype=Dependent')
+        .subscribe(
+          dependentData => this.getDependentsData(dependentData),
+          error => this.handleErrorClientError(error)
+        );
+    }
+
+
   }
 
   handleErrorClientError(error) {
     console.log(error);
+  }
+
+
+  getDependentsData(data) {
+    if (data.total > 0) {
+      console.log('DEPENDENTS', data);
+      data.entry.forEach(dependent => {
+        let name;
+        console.log(dependent.resource.name);
+        name = dependent.resource.name[0].given[0] + ' ' + dependent.resource.name[0].family;
+        // name.push(dependent.resource.name[0].family);
+        console.log(name);
+        this.dependentsList.push(name);
+      });
+    }
   }
 
 
@@ -882,6 +959,33 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       }
     });
 
+
+
+    console.log('BEFORE ADDING DEPENDENT', this.configuration);
+    if (this.dependentsList !== []) {
+
+
+      this.dependentsList.forEach((dependent) => {
+        console.log(this.dependentsList);
+        this.configuration.push(
+          {
+            type: 'depend',
+            name: '24-3',
+            label: dependent,
+            // enableWhenQ: '24',
+            // enableWhenA: true,
+            elementClass: 'enable-when-show',
+
+            // placeholder: 'Select an option',
+            // validation: el.enableWhen ? null : [Validators.required],
+            value: false,
+
+          }
+        );
+      });
+
+    }
+
     this.configuration.push(
       {
         type: 'doc',
@@ -902,7 +1006,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.config = this.configuration;
 
 
-    console.log(this.configuration);
+    console.log('AFTER ADDING DEPENDENT', this.configuration);
     console.log(this.config);
     // this.config.forEach(element => {
     //   if (element.enableWhenA && element.enableWhenQ) {

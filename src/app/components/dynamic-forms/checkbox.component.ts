@@ -20,7 +20,7 @@ import { FieldConfig } from './field-config.interface';
                     [formControlName]="config.name"
                     >
                     <label class="form-check-label">
-                    {{ config.label }}
+                    {{ config.label }}{{ config.name}}
                     </label>
                 </div>
   `,

@@ -25,7 +25,6 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { NewServiceRequestComponent } from './components/new-service-request/new-service-request.component';
 import { NewServiceRequestNoClientComponent } from './components/new-service-request-no-client/new-service-request-no-client.component';
-import { DependentComponent } from './components/dependent/dependent.component';
 import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
 import { ClientDepartmentComponent } from './components/client-department/client-department.component';
 import { LabRequisitionComponent } from './components/staff/lab-requisition/lab-requisition.component';
@@ -48,6 +47,7 @@ import { DistrictOfficeAddComponent } from './components/district-office-add/dis
 import { InputComponent } from './components/dynamic-forms/input.component';
 import { CommentComponent } from './components/dynamic-forms/comment.component';
 import { ButtonComponent } from './components/dynamic-forms/button.component';
+import { DependFormComponent } from './components/dynamic-forms/dependForm.component';
 import { SelectComponent } from './components/dynamic-forms/select.component';
 import { LineComponent } from './components/dynamic-forms/line.component';
 import { HeaderComponent } from './components/dynamic-forms/header.component';
@@ -62,6 +62,7 @@ import { ContactUsFormResolverService } from './service/contact-us-form-resolver
 
 import { DepartmentListResolverService } from './service/department-list-resolver.service'
 import { NewServReqService } from './service/new-serv-req.service';
+import { DependentComponent } from './components/dependent/dependent.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -138,6 +139,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     InputComponent,
     CommentComponent,
     ButtonComponent,
+    DependFormComponent,
     SelectComponent,
     LineComponent,
     HeaderComponent,
@@ -187,6 +189,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     InputComponent,
     CommentComponent,
     ButtonComponent,
+    DependFormComponent,
     SelectComponent,
     LineComponent,
     HeaderComponent,
