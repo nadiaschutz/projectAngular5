@@ -15,7 +15,7 @@ import date = fhir.date;
 export class AudiogramComponent implements OnInit {
     private eocId: any;
     private eoc: any;
-    private patient: any;
+    patient: any;
     private serviceRequest: any;
     observations: any = [];
     questionnaireResponse: any = [];
