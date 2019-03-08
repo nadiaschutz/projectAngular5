@@ -102,6 +102,7 @@
 
 .checklist-label {
     margin-left: 10px;
+    text-align: justify;
 }
 
 .nav-pills {
@@ -190,10 +191,49 @@ button {
 }
 
 .tabs-card {
-    width: 348px;
+    width: 100%;
+    padding-bottom: 7px;
+}
+
+.new-function-button {
+    border-radius: 2px;
+    background-color: #ffffff;
+    color: #398ef2;
+    font-size: 13px;
+    border: 1px solid #398ef2;
+    margin: 5px 0px 0px 8px;
+}
+
+.hidden {
+    display: none;
+}
+
+.remove-link-colour {
+    color: black;
+}
+
+.conatiner {
+    min-width: 90% !important;
+}
+
+.main-header {
+    width: 100%;
 }
 
 
+.clinical-button-list {
+    width: 184px;
+    height: 45px;
+    margin-left: 26px;
+    border-radius: 22.5px;
+    color: white;
+    background-color: #398ef2
+}
+
+.dependentDOB {
+    padding: 0 0 21px 0;
+    margin: -14px 0 0 0;
+}
 // li
 // {
 //    display:block;
