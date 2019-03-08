@@ -216,10 +216,8 @@ export class LabRequisitionComponent implements OnInit {
       }
       if(this.consultationClinicianEmail){
           let email = {
-              "url": "http://nohis.gc.ca/ external-clinician-email",
-              "valueReference": {
-                  "valueString": this.consultationClinicianEmail
-              }
+              "url": "http://nohis.gc.ca/external-clinician-email",
+              "valueString": this.consultationClinicianEmail
           }
           extension.push(email);
       }
@@ -361,10 +359,8 @@ export class LabRequisitionComponent implements OnInit {
       }
       if(this.diagnosticsClinicianEmail){
           let email = {
-              "url": "http://nohis.gc.ca/ external-clinician-email",
-              "valueReference": {
-                  "valueString": this.diagnosticsClinicianEmail
-              }
+              "url": "http://nohis.gc.ca/external-clinician-email",
+              "valueString": this.diagnosticsClinicianEmail
           }
           extension.push(email)
       }
