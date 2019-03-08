@@ -14,6 +14,7 @@ import { FieldConfig } from './field-config.interface';
   <input
   class="form-control field-box-name"
   [type]="config.type"
+  disable="true"
   [attr.placeholder]="config.placeholder"
   [formControlName]="config.name">
   

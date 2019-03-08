@@ -29,6 +29,7 @@ import { CustomValidator } from '../dynamic-forms/custom-validator';
 import { FileDetector } from 'protractor';
 import { ValueAddress } from 'src/app/interface/organization';
 import { element } from '@angular/core/src/render3/instructions';
+import { e } from '@angular/core/src/render3';
 
 class TextInput {
   static create(event: FieldConfig) {
@@ -123,15 +124,27 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     itemToSend: any;
   };
 
-  itemToSend: FHIR.QuestionnaireResponse;
+  // itemToSend: FHIR.QuestionnaireResponse;
+  itemReference;
+
+  itemToSend: ItemToSend = {
+    resourceType: '',
+    questionnaire: null,
+    status: null,
+    subject: null,
+    authored: null,
+    item: []
+  };
 
   items: Item[];
 
   item: Item = {
     linkId: '',
     text: '',
-    answer: null
+    answer: null,
+    code: null
   };
+
 
   trackByEl(index: number, el: any): string {
     return el.linkId;
@@ -431,39 +444,32 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   submit(value: { [name: string]: any }) {
-    console.log(value);
 
-    // check the value arr for empty data
-    // pop empty data
+    this.items.forEach(indivElem => {
+      // tslint:disable-next-line:forin
+      for (const key in value) {
+        if (value.hasOwnProperty(key)) {
+          if (key === indivElem.linkId) {
+            indivElem.answer = value[key];
+          }
+        }
+      }
+    });
 
-
-    // map to items??
-
-    // this.items.forEach(element => {
-    //   for (const key in value) {
-    //     if (value.hasOwnProperty(key)) {
-    //       if (key === element.text) {
-    //         element.answer = value[key];
-    //       }
-    //     }
-    //   }
-    // });
-
-    // post on fhir
-
-
+    console.log(this.items);
+    // console.log(this.userName, this.currentUserDepartment);
 
     // this.disableInputsForReview = true;
-    // this.savingData();
+    this.savingData();
 
-    // this.questionnaireService
-    //   .saveRequest(this.itemToSend)
-    //   .subscribe(
-    //     data => this.handleSuccessOnSave(data),
-    //     error => this.handleErrorOnSave(error)
-    //   );
+    this.questionnaireService
+      .saveRequest(this.itemToSend)
+      .subscribe(
+        data => this.handleSuccessOnSave(data),
+        error => this.handleErrorOnSave(error)
+      );
 
-    // console.log(this.itemToSend);
+    console.log(this.itemToSend);
 
     // this.submitingFormData.itemToSend = this.itemToSend;
     // this.submitingFormData.formId = this.formId;
@@ -483,52 +489,192 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   savingData() {
     console.log('iam saved');
+    this.getDate();
 
-    const questionnaireResponse = new FHIR.QuestionnaireResponse;
-    const questionnaireIdentifier = new FHIR.Identifier;
+    // const questionnaireResponse = new FHIR.QuestionnaireResponse;
+    // const questionnaireIdentifier = new FHIR.Identifier;
 
-    questionnaireIdentifier.value = 'SERVREQ';
+    // questionnaireIdentifier.value = 'SERVREQ';
 
-    questionnaireResponse.resourceType = 'QuestionnaireResponse';
+    // questionnaireResponse.resourceType = 'QuestionnaireResponse';
 
-    const questionnaireReference = new FHIR.Reference;
-    questionnaireReference.reference = 'Questionnaire/' + this.formId;
+    // const questionnaireReference = new FHIR.Reference;
+    // questionnaireReference.reference = 'Questionnaire/' + this.formId;
 
-    questionnaireResponse.status = 'in-progress';
+    // questionnaireResponse.status = 'in-progress';
 
-    questionnaireResponse.authored = new Date;
+    // questionnaireResponse.authored = new Date;
 
-    const subjectReference = new FHIR.Reference;
-    subjectReference.reference = 'Patient/' + this.clientId;
-    subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
+    // const subjectReference = new FHIR.Reference;
+    // subjectReference.reference = 'Patient/' + this.clientId;
+    // subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
 
-    questionnaireResponse.identifier = questionnaireIdentifier;
-    questionnaireResponse.subject = subjectReference;
+    // questionnaireResponse.identifier = questionnaireIdentifier;
+    // questionnaireResponse.subject = subjectReference;
 
     const items = [];
 
-    for (const questions of this.questionsList) {
-      for (const question of questions) {
-        const item = new FHIR.QuestionnaireResponseItem;
-        if (!question['enableWhen']) {
-          item.linkId = question['linkId'];
-          item.text = question['text'];
-          item.answer = question['answer'];
-          items.push(item);
-        } else if (question['enableWhen'] && question['enabled']) {
-          item.linkId = question['linkId'];
-          item.text = question['text'];
-          item.answer = question['answer'];
-          items.push(item);
-        }
-      }
+    // for (const questions of this.questionsList) {
+    //   for (const question of questions) {
+    //     const item = new FHIR.QuestionnaireResponseItem;
+    //     if (!question['enableWhen']) {
+    //       item.linkId = question['linkId'];
+    //       item.text = question['text'];
+    //       item.answer = question['answer'];
+    //       items.push(item);
+    //     } else if (question['enableWhen'] && question['enabled']) {
+    //       item.linkId = question['linkId'];
+    //       item.text = question['text'];
+    //       item.answer = question['answer'];
+    //       items.push(item);
+    //     }
+    //   }
+    // }
+
+    // if (this.documentReference !== {}) {
+    //   items.push(this.documentReference);
+    // }
+    // getting itemReference
+    this.questionnaireService.newDocumentSubject.subscribe(
+      data => this.getDocument(data),
+      error => this.handleError(error)
+    );
+
+    // pushing document into items arr
+    if (this.itemReference) {
+      this.items.push(this.itemReference);
     }
-    if (this.documentReference !== {}) {
-      items.push(this.documentReference);
-    }
-    questionnaireResponse.item = items;
-    this.itemToSend = questionnaireResponse;
+
+    // creating itemToSend
+    this.createItemToSend();
+
+    // adding extra items to itemToSend.item[]
+    this.mapItemToItems();
+    // questionnaireResponse.item = items;
+    // this.itemToSend = questionnaireResponse;
     console.log(this.itemToSend);
+  }
+
+
+  createItemToSend() {
+
+    this.itemToSend = {
+      resourceType: 'QuestionnaireResponse',
+      questionnaire: {
+        reference: 'Questionnaire/' + this.formId
+      },
+      status: 'in-progress',
+      authored: new Date,
+      identifier: {
+        value: 'SERVREQ'
+      },
+      subject: {
+        reference: 'Patient/' + this.clientId,
+        display: this.clientGivenName + ' ' + this.clientFamilyName
+      },
+      item: []
+    };
+
+  }
+
+  mapItemToItems() {
+    // this.items.forEach(i => {
+    //   if (!i.answer) {
+    //     console.log(i);
+
+    //   }
+    // });
+
+    const itemsFiltered = this.items.filter(itemToStay => itemToStay.answer !== null);
+    console.log("DON'T CRY", itemsFiltered);
+    this.itemToSend.item = itemsFiltered.map(el => {
+
+      console.log(el.linkId, typeof (el.answer));
+      if (el.linkId !== '') {
+        // console.log(el.linkId, el.answer);
+        // if (el.text === 'Document') {
+        //   return {
+        //     linkId: el.linkId,
+        //     text: el.text,
+        //     answer: [
+        //       {
+        //         valueReference: {
+        //           reference: el.answer
+        //         }
+        //       }
+        //     ]
+        //   };
+        // }
+
+
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer:
+            el.text === 'Document' ? [
+              {
+                valueReference: {
+                  reference: el.answer
+                }
+              }
+            ] :
+              typeof (el.answer) === 'boolean' ? [
+                {
+                  valueCoding: {
+                    code: el.code
+                  }
+                },
+                {
+                  valueBoolean: el.answer
+                }
+              ] :
+                typeof (el.answer) === 'string' ? [
+                  {
+                    valueCoding: {
+                      code: el.code
+                    }
+                  },
+                  {
+                    valueString: el.answer
+                  }
+                ] :
+                  null
+        };
+
+
+        // if (
+        //   el.text === 'Dependent Involved' ||
+        //   el.text === 'Health Exam Done Externally'
+        // ) {
+        //   return {
+        //     linkId: el.linkId,
+        //     text: el.text,
+        //     answer: [
+        //       {
+        //         valueBoolean: el.answer
+        //       }
+        //     ]
+        //   };
+        // } else {
+        //   return {
+        //     linkId: el.linkId,
+        //     text: el.text,
+        //     answer: [
+        //       {
+        //         valueString: el.answer
+        //       }
+        //     ]
+        //   };
+        // }
+
+      }
+
+
+    });
+  }
+
+  getDocument(data) {
+    this.itemReference = data;
   }
 
   getClientData(data) {
@@ -584,13 +730,16 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
           const formField = this.textInput(el);
           formField['placeholder'] = 'type your phone';
-          formField['validation'] = [
+          formField['validation'] = el.enableWhen ? undefined : [
+            Validators.required,
             Validators.pattern(
               '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
             )
           ];
           formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
           formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
+          formField['value'] = null;
+          formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
           return formField;
 
           // return {
@@ -611,11 +760,13 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
           const formField = this.textInput(el);
           formField['placeholder'] = 'type your email';
-          formField['validation'] = [Validators.email];
+          formField['validation'] = el.enableWhen ? undefined : [Validators.required, Validators.email];
           formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
           formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
+          formField['value'] = null;
 
           formField['flag'] = el.enableWhen ? false : true;
+          formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
           // flag: el.enableWhen ? false : true,
           return formField;
 
@@ -624,11 +775,15 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
           const formField = this.commentInput(el);
           formField['placeholder'] = 'type your text';
-          formField['validation'] = [Validators.email];
+          formField['validation'] = undefined;
           formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
           formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
+          formField['value'] = null;
 
           formField['flag'] = el.enableWhen ? false : true;
+
+          formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
+
           // flag: el.enableWhen ? false : true,
           return formField;
 
@@ -658,9 +813,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             flag: el.enableWhen ? false : true,
             enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
             enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
-            value: '',
-            // validation: el.enableWhen ? [Validators.required, Validators.minLength(4)] : null,
-            validation: el.enableWhen ? null : [Validators.required, Validators.minLength(4)]
+            value: null,
+            validation: el.enableWhen ? undefined : [Validators.required, Validators.minLength(4)],
+            // validation: [Validators.required, Validators.minLength(4)],
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           };
         }
       }
@@ -687,8 +843,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           flag: el.enableWhen ? false : true,
           placeholder: 'Select an option',
           // validation: el.enableWhen ? [Validators.required] : null,
-          validation: el.enableWhen ? null : [Validators.required],
-          value: ''
+          validation: el.enableWhen ? undefined : [Validators.required],
+          // validation: [Validators.required],
+          value: null,
+          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
         };
 
         // [ctrl => ctrl.value === "Turn me off" ? null: Validators.required(ctrl)]
@@ -704,7 +862,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
           class: 'checkEnableWhen($event.target.value, i)',
           placeholder: 'Select an option',
-          value: ''
+          value: null,
+          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
         };
 
       } if (el.type === 'boolean') {
@@ -714,9 +873,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           name: el.linkId,
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
           enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
+          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+
           // placeholder: 'Select an option',
           // validation: el.enableWhen ? null : [Validators.required],
-          value: false
+          value: el.enableWhen ? null : false,
         };
       }
     });
@@ -743,22 +904,25 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     console.log(this.configuration);
     console.log(this.config);
-    this.config.forEach(element => {
-      if (element.enableWhenA && element.enableWhenQ) {
-        console.log('HEY BABY!', element.enableWhenA, element.enableWhenQ);
-        element.elementClass = 'enable-when-hide';
-      } else {
-        element.elementClass = 'enable-when-show';
-      }
+    // this.config.forEach(element => {
+    //   if (element.enableWhenA && element.enableWhenQ) {
+    //     console.log('HEY BABY!', element.enableWhenA, element.enableWhenQ);
+    //     element.elementClass = 'enable-when-hide';
+    //     // this.form.setDisabled(element.name, true);
+    //   } else {
+    //     element.elementClass = 'enable-when-show';
+    //     // this.form.setDisabled(element.name, false);
+    //   }
 
-    });
+    // });
 
 
     // maping part of the data from the server to item
     this.items = this.qrequest.map(el => ({
       ...this.item,
       linkId: el.linkId,
-      text: el.text
+      text: el.text,
+      code: el.code[0].code
     }));
   }
 
@@ -814,10 +978,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
 
       this.form.setDisabled('submit', true);
-      this.form.setDisabled('1', true);
-      this.form.setDisabled('14', true);
+      // this.form.setDisabled('1', true);
+      // this.form.setDisabled('14', true);
       this.form.setValue('1', this.userName);
       this.form.setValue('14', this.currentUserDepartment);
+      console.log(this.form);
 
     });
 
@@ -837,18 +1002,22 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             // console.log('BINGO@222!!', el.name);
             el.elementClass = 'enable-when-show';
             el.flag = true;
+            // this.form.setDisabled(el.name, false);
+
             // this.form.createControl(el).setValidators(console.log(el));
             // this.form.createControl([ctrl => ctrl.value === "Turn me off" ? null: Validators.required(ctrl)]);
             // mobile: new FormControl('', [ctrl => ctrl.value === "Turn me off" ? null: Validators.required(ctrl)]),
           } else {
             el.flag = false;
             el.elementClass = 'enable-when-hide';
-            el.validation = undefined;
-            this.form.setValue(el.name, '');
+            // this.form.setDisabled(el.name, true);
+            // el.validation = undefined;
+            this.form.setValue(el.name, null);
             this.config.forEach(elem => {
               if (elem.enableWhenA && elem.enableWhenQ) {
                 if (el.name === elem.enableWhenQ && elem.elementClass === 'enable-when-show') {
                   elem.elementClass = 'enable-when-hide';
+                  // this.form.setDisabled(elem.name, true);
                 }
               }
 
