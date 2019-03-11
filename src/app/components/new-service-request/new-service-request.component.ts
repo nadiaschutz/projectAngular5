@@ -929,7 +929,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         // [ctrl => ctrl.value === "Turn me off" ? null: Validators.required(ctrl)]
         // }
 
-      } if (el.type === 'open-choice') {
+      }
+      if (el.type === 'open-choice') {
         return {
           type: 'select',
           label: el.text,
@@ -943,7 +944,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
         };
 
-      } if (el.type === 'boolean') {
+      }
+      if (el.type === 'boolean') {
         // if ((el['text'].indexOf('Dependent Involved') !== -1)) {
         // return {
         //   type: 'checkbox',
@@ -976,7 +978,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         };
         // }
         // }
-      });
+      }
+    });
 
 
 
