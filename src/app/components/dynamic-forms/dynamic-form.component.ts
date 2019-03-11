@@ -33,20 +33,20 @@ import { FieldConfig, Validator } from './field-config.interface';
     </form>
   `
 })
-export class DynamicFormComponent implements  OnInit, OnChanges {
+export class DynamicFormComponent implements OnInit, OnChanges {
   @Input() config: FieldConfig[] = [];
 
   @Output() submit: EventEmitter<any> = new EventEmitter<any>();
 
   form: FormGroup;
 
-  get controls() { return this.config.filter(({type}) => type !== 'button'); }
+  get controls() { return this.config.filter(({ type }) => type !== 'button'); }
   get changes() { return this.form.valueChanges; }
   get valid() { return this.form.valid; }
 
   get value() { return this.form.value; }
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
     this.form = this.createGroup();
@@ -95,6 +95,13 @@ export class DynamicFormComponent implements  OnInit, OnChanges {
       return;
     }
 
+
+    // form = new FormGroup({
+    //   first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
+    //   last: new FormControl('Drew', Validators.required)
+    // });
+
+
     this.config = this.config.map((item) => {
       if (item.name === name) {
         item.disabled = disable;
@@ -104,7 +111,7 @@ export class DynamicFormComponent implements  OnInit, OnChanges {
   }
 
   setValue(name: string, value: any) {
-    this.form.controls[name].setValue(value, {emitEvent: true});
+    this.form.controls[name].setValue(value, { emitEvent: true });
   }
 }
 

@@ -1,22 +1,22 @@
-import { Component, OnInit } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { Component, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
 
 @Component({
-  selector: 'form-input',
-  template: `
+    selector: 'form-comment',
+    template: `
  
   <div
   [formGroup]="group" [class]='config.elementClass'>
 
   <label class="label-name">{{ config.label }}{{ config.name }}</label>
-  <input
+  <textarea
   class="form-control field-box-name"
-  [type]="config.type"
-  disable="true"
   [attr.placeholder]="config.placeholder"
+  rows="4" cols="50"
   [formControlName]="config.name">
+  </textarea>
   
   
         <div *ngIf="group.get(config.name).errors && (group.get(config.name).touched && group.get(config.name).dirty)" class="invalid-feedback">
@@ -32,14 +32,13 @@ import { FieldConfig } from './field-config.interface';
         
         `
 })
-export class InputComponent implements Field {
-  config: FieldConfig;
-  group: FormGroup;
+export class CommentComponent implements Field {
+    config: FieldConfig;
+    group: FormGroup;
 }
 
       // <div  [hidden]="!group.get(config.name).errors.required">{{config.label | titlecase}} is required.</div>
       //  <div *ngIf="group.get(config.name) = 'phone'">
-      //             
       //           </div>
       // <div *ngIf="config.name==='phone'">
       //     <div [hidden]="!group.get(config.name).errors.patternInvalid">{{config.label | titlecase}} is invalid.</div>

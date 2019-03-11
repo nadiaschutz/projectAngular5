@@ -28,9 +28,9 @@ import { CustomValidator } from '../dynamic-forms/custom-validator';
 import { FileDetector } from 'protractor';
 import { ValueAddress } from 'src/app/interface/organization';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
+// const httpOptions = {
+//   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+// };
 
 class TextInput {
   static create(event: FieldConfig) {
