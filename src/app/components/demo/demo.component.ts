@@ -11,10 +11,10 @@ import { CustomValidator } from '../dynamic-forms/custom-validator';
   styleUrls: ['./demo.component.scss']
 })
 // export class DashboardComponent implements AfterContentInit, AfterViewInit{
-  export class DemoComponent implements AfterViewInit {
+export class DemoComponent implements AfterViewInit {
 
-    // var for styling each form field
-    style = 'col-5';
+  // var for styling each form field
+  style = 'col-5';
 
 
 
@@ -96,20 +96,20 @@ import { CustomValidator } from '../dynamic-forms/custom-validator';
       validation: [Validators.required]
     },
 
-  {
-    type: 'select',
-    label: 'Favourite Food',
-    name: 'food',
-    options: ['Pizza', 'Hot Dogs', 'Knakworstje', 'Coffee'],
-    placeholder: 'Select an option',
-    validation: [Validators.required]
-  },
-  {
-    type: 'line'
-  },
-  {
-    type: 'doc'
-  },
+    {
+      type: 'select',
+      label: 'Favourite Food',
+      name: 'food',
+      options: ['Pizza', 'Hot Dogs', 'Knakworstje', 'Coffee'],
+      placeholder: 'Select an option',
+      validation: [Validators.required]
+    },
+    {
+      type: 'line'
+    },
+    {
+      type: 'doc'
+    },
     {
       type: 'button',
       name: 'submit',
@@ -122,48 +122,49 @@ import { CustomValidator } from '../dynamic-forms/custom-validator';
   ngAfterViewInit() {
     setTimeout(() => {
 
-    let previousValid = this.form.valid;
-    this.form.changes.subscribe(() => {
-      if (this.form.valid !== previousValid) {
-        previousValid = this.form.valid;
-        this.form.setDisabled('submit', !previousValid);
-      }
+      let previousValid = this.form.valid;
+      this.form.changes.subscribe(() => {
+        if (this.form.valid !== previousValid) {
+          previousValid = this.form.valid;
+          this.form.setDisabled('submit', !previousValid);
+        }
 
+
+      });
+
+      this.form.setDisabled('submit', true);
+      this.form.setDisabled('name', true);
+      this.form.setValue('name', 'Nadia');
 
     });
 
-    this.form.setDisabled('submit', true);
-    this.form.setValue('name', 'Nadia');
 
-  });
-
-
-  // if you want to style 2 form fields per a row do these :
-  this.wrap();
-  this.addDiv();
-  // the end
+    // if you want to style 2 form fields per a row do these :
+    this.wrap();
+    this.addDiv();
+    // the end
 
   }
 
-  submit(value: {[name: string]: any}) {
+  submit(value: { [name: string]: any }) {
     console.log(value);
   }
 
 
-wrap() {
-  const x = $('.field-holder-2 form-input');
-  for (let i = 0; i < x.length; i ++) {
-    console.log(x[i]);
-    $(x[i]).wrap("<div class='" + this.style +"'></div>");
+  wrap() {
+    const x = $('.field-holder-2 form-input');
+    for (let i = 0; i < x.length; i++) {
+      console.log(x[i]);
+      $(x[i]).wrap("<div class='" + this.style + "'></div>");
+    }
   }
-}
 
 
 
   addDiv() {
     const sections = $('.dynamic-form .' + this.style);
     for (let i = 0; i < sections.length; i += 2) {
-    sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
+      sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
+    }
   }
-}
 }

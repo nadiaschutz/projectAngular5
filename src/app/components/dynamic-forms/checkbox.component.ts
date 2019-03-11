@@ -1,38 +1,50 @@
-import { Component, OnInit } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { Component, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
+import { NewServiceRequestComponent } from '../new-service-request/new-service-request.component';
 
 
 @Component({
-  selector: "form-checkbox",
+  selector: 'form-checkbox',
   template: `
-  
+
   <div
-  [formGroup]="group">
-  
+  [formGroup]="group" [class]='config.elementClass'>
+
                 <div class="form-check">
-                    <input 
-                    class="form-check-input" 
-                    [type]="config.type" 
-                    (change)="f($event.target.checked)"
-                    [attr.checked]="config.value"
+                    <input
+                    class="form-check-input"
+                    [type]="config.type"
+                    (change) = "f($event.target.checked)"
+                    (change)='callMe($event.target.value, config.name)'
+                    [ngModel]="config.value"
                     [formControlName]="config.name"
                     >
                     <label class="form-check-label">
-                    {{ config.label }}
+                    {{ config.label }}{{ config.name}}
                     </label>
                 </div>
   `,
   styles: []
 })
 export class CheckboxComponent implements Field {
-    config: FieldConfig;
-    group: FormGroup;
-    f(event){
-        this.group.get(this.config.name).patchValue(event);
-      }
+  config: FieldConfig;
+  group: FormGroup;
+
+  constructor(private comp: NewServiceRequestComponent) { }
+  f(event) {
+    this.group.get(this.config.name).patchValue(event);
   }
+
+  public callMe(value, index): void {
+    this.comp.checkDependentsEnableWhen(value, index);
+  }
+}
 // <div class="demo-full-width margin-top" [formGroup]="group" >
 // <mat-checkbox [formControlName]="field.name">{{field.label}}</mat-checkbox>
 // </div>
+
+
+// (change) = "f($event.target.checked)"
+

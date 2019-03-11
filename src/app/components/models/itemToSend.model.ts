@@ -1,14 +1,14 @@
 export interface ItemToSend {
-        resourceType: string;
-        status: string;
-        subject?: {
-          reference: string;
-          display: string;
-        };
-        questionnaire: {
-          reference: string;
-        };
-
-        authored: string;
-        item: any [];
-      }
+  resourceType: string;
+  status: string;
+  subject?: {
+    reference: string;
+    display: string;
+  };
+  questionnaire: {
+    reference: string;
+  };
+  identifier?: any;
+  authored: any;
+  item: any[];
+}
