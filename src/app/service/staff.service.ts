@@ -70,7 +70,7 @@ export class StaffService {
 
    getEpisodeOfCareEagerLoading(episodeOfCareId) {
     return  this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_id='
-        + episodeOfCareId, { headers: this.getHeaders() })
+        + episodeOfCareId, { headers: this.getHeaders() });
    }
 
   getAllPractitioners() {

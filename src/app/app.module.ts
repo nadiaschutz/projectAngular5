@@ -68,10 +68,11 @@ import { FormBuilderComponent } from './components/form-builder/form-builder.com
 import { ImmunizationScreenComponent } from './components/staff/clinical/immunization-screen/immunization-screen.component';
 import { AudiogramComponent } from './components/staff/audiogram/audiogram.component';
 import { AudiogramNewComponent } from './components/staff/audiogram-new/audiogram-new.component';
-import { AudiogramDetailComponent } from './components/staff/audiogram-detail/audiogram-detail.component'
+import { AudiogramDetailComponent } from './components/staff/audiogram-detail/audiogram-detail.component';
 import { AssessmentFunctionComponent } from './components/staff/clinical/assessment-function/assessment-function.component';
 import { SchedulerComponent } from './components/staff/clinical/scheduler/scheduler.component';
 import { CancelRequestComponent } from './components/staff/cancel-request/cancel-request.component';
+import { ReportingComponent } from './components/reporting/reporting.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -117,7 +118,8 @@ const routes: Routes = [
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
   { path: 'adminhome', component: AdminHomeScreenComponent, canActivate: [AuthGuardService] },
   { path: 'form-builder', component: FormBuilderComponent, canActivate: [AuthGuardService]},
-  { path: '', component: AuthComponent }
+  { path: '', component: AuthComponent },
+  { path: 'reporting', component: ReportingComponent, canActivate: [AuthGuardService]}
 ];
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -171,7 +173,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     AudiogramDetailComponent,
     AssessmentFunctionComponent,
     SchedulerComponent,
-    CancelRequestComponent
+    CancelRequestComponent,
+    ReportingComponent
 
   ],
   imports: [

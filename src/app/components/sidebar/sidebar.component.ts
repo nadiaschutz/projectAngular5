@@ -54,4 +54,8 @@ export class SidebarComponent implements OnInit {
   labRequisition() {
     this.router.navigateByUrl('/staff/lab-requisition');
   }
+
+  reporting() {
+    this.router.navigateByUrl('/reporting');
+  }
 }
