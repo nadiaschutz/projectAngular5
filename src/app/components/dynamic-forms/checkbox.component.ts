@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
+import { NewServiceRequestComponent } from '../new-service-request/new-service-request.component';
 
 
 @Component({
@@ -15,7 +16,8 @@ import { FieldConfig } from './field-config.interface';
                     <input
                     class="form-check-input"
                     [type]="config.type"
-                    (change)="f($event.target.checked)"
+                    (change) = "f($event.target.checked)"
+                    (change)='callMe($event.target.value, config.name)'
                     [ngModel]="config.value"
                     [formControlName]="config.name"
                     >
@@ -29,8 +31,14 @@ import { FieldConfig } from './field-config.interface';
 export class CheckboxComponent implements Field {
   config: FieldConfig;
   group: FormGroup;
+
+  constructor(private comp: NewServiceRequestComponent) { }
   f(event) {
     this.group.get(this.config.name).patchValue(event);
+  }
+
+  public callMe(value, index): void {
+    this.comp.checkDependentsEnableWhen(value, index);
   }
 }
 // <div class="demo-full-width margin-top" [formGroup]="group" >
@@ -39,3 +47,4 @@ export class CheckboxComponent implements Field {
 
 
 // (change) = "f($event.target.checked)"
+

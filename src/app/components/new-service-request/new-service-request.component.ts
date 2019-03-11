@@ -201,6 +201,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     // this.activatedRoute.data.subscribe(data => this.processQuestionnaire(data.fields));
     this.dependentsList.push('NADIA TEST');
+    this.dependentsList.push('NADIA2 TEST2');
     this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
     // this.activatedRoute.data.subscribe(data => console.log(data));
 
@@ -624,7 +625,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // });
 
     const itemsFiltered = this.items.filter(itemToStay => itemToStay.answer !== null);
-    console.log("DON'T CRY", itemsFiltered);
+    console.log('itemsFiltered', itemsFiltered);
     this.itemToSend.item = itemsFiltered.map(el => {
 
       console.log(el.linkId, typeof (el.answer));
@@ -804,7 +805,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       if (el.type === 'text') {
         if (el.code[1].code === 'PHONE') {
 
-
           const formField = this.textInput(el);
           formField['placeholder'] = 'type your phone';
           formField['validation'] = el.enableWhen ? undefined : [
@@ -902,7 +902,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         el.option.forEach(el1 => {
           options.push(el1.valueCoding.code);
         });
-        // FIX ME ASAP
+
         // if (el.text === 'Department Name') {
         //   const formField = this.selectField(el);
         //   formField['value'] = '';
@@ -944,6 +944,24 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         };
 
       } if (el.type === 'boolean') {
+        // if ((el['text'].indexOf('Dependent Involved') !== -1)) {
+        // return {
+        //   type: 'checkbox',
+        //   label: el.text,
+        //   name: el.linkId,
+        //   enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+        //   enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
+        //   elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+
+        //   // placeholder: 'Select an option',
+        //   // validation: el.enableWhen ? null : [Validators.required],
+        //   value: el.enableWhen ? null : false,
+
+        // }
+
+        // } else {
+
+
         return {
           type: 'checkbox',
           label: el.text,
@@ -956,8 +974,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           // validation: el.enableWhen ? null : [Validators.required],
           value: el.enableWhen ? null : false,
         };
-      }
-    });
+        // }
+        // }
+      });
 
 
 
@@ -965,16 +984,16 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     if (this.dependentsList !== []) {
 
 
-      this.dependentsList.forEach((dependent) => {
+      this.dependentsList.forEach((dependent, index) => {
         console.log(this.dependentsList);
         this.configuration.push(
           {
             type: 'depend',
-            name: '24-3',
+            name: 'dependent' + '-' + index,
             label: dependent,
-            // enableWhenQ: '24',
-            // enableWhenA: true,
-            elementClass: 'enable-when-show',
+            enableWhenQ: '24',
+            enableWhenA: true,
+            elementClass: 'enable-when-hide',
 
             // placeholder: 'Select an option',
             // validation: el.enableWhen ? null : [Validators.required],
@@ -1135,6 +1154,18 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // this.config = this.configuration;
   }
 
+
+
+  public checkDependentsEnableWhen(value, index) {
+    this.config.forEach(el => {
+      console.log(value, index);
+      console.log(el.name, el.validation);
+
+    });
+    console.log(this.config);
+    // this.config = this.configuration;
+  }
+
   handleError(error) {
     console.log(error);
   }
@@ -1263,8 +1294,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   checkDependentItem(itemsServer) {
-    itemsServer.forEach(element => {
-      if (element.text === 'Dependent Involved') {
+    itemsServer.forEach(eachElement => {
+      if (eachElement.text === 'Dependent Involved') {
         this.dependents = true;
         console.log(this.dependents);
       }

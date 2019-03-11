@@ -1,5 +1,5 @@
-import { Component, OnInit } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { Component, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
 import { NewServiceRequestComponent } from '../new-service-request/new-service-request.component';
@@ -15,7 +15,7 @@ import { NewServiceRequestComponent } from '../new-service-request/new-service-r
                       <input
                       class="form-check-input"
                       type='checkbox'
-                      (change)="f($event.target.checked)"
+                      
                       [ngModel]="config.value"
                       [formControlName]="config.name"
                       >
@@ -32,10 +32,13 @@ export class DependFormComponent implements Field {
 
     constructor(private comp: NewServiceRequestComponent) { }
 
-    public callMe(value, index): void {
-        this.comp.checkEnableWhen(value, index);
+    f(event) {
+        this.group.get(this.config.name).patchValue(event);
     }
     //   if(config.elementClass === 'enable-when-hide') {
 
     // }
+
+
+    // (change)="f($event.target.checked)"
 }
