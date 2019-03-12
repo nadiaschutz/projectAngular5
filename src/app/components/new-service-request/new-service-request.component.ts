@@ -823,7 +823,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             )
           ];
           formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
+          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
           formField['value'] = null;
           formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
           return formField;
@@ -848,7 +848,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           formField['placeholder'] = 'type your email';
           formField['validation'] = el.enableWhen ? undefined : [Validators.required, Validators.email];
           formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
+          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
           formField['value'] = null;
 
           formField['flag'] = el.enableWhen ? false : true;
@@ -863,7 +863,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           formField['placeholder'] = 'type your text';
           formField['validation'] = undefined;
           formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.code : false;
+          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
           formField['value'] = null;
 
           formField['flag'] = el.enableWhen ? false : true;
@@ -909,7 +909,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       if (el.type === 'choice') {
         const options = [];
         el.option.forEach(el1 => {
-          options.push(el1.valueCoding.code);
+          options.push(el1.valueCoding.display);
         });
 
         // if (el.text === 'Department Name') {
@@ -920,11 +920,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
         // } else {
         return {
-          type: 'select',
+          type: 'selectSr',
           label: el.text,
           name: el.linkId,
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
+          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           options: options,
           flag: el.enableWhen ? false : true,
           placeholder: 'Select an option',
@@ -946,7 +946,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           flag: el.enableWhen ? false : true,
           name: el.linkId,
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
+          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           class: 'checkEnableWhen($event.target.value, i)',
           placeholder: 'Select an option',
           value: null,
@@ -978,7 +978,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           label: el.text,
           name: el.linkId,
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
+          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
 
           // placeholder: 'Select an option',
@@ -1003,7 +1003,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             type: 'depend',
             name: 'dependent' + '-' + index,
             label: dependent,
-            enableWhenQ: '24',
+            enableWhenQ: 'DEPENDINV',
             enableWhenA: 'true',
             elementClass: 'enable-when-hide',
 
@@ -1090,14 +1090,14 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   selectField(data) {
     return SelectField.create({
-      type: 'select',
+      type: 'selectSr',
       label: data.text,
       inputType: 'text',
       placeholder: 'Select an option',
       name: data.linkId,
       validation: [Validators.required],
       enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
-      enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.code : false,
+      enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.display : false,
     });
   }
   /************************************************/
@@ -1115,8 +1115,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       this.form.setDisabled('submit', true);
       // this.form.setDisabled('1', true);
       // this.form.setDisabled('14', true);
-      this.form.setValue('1', this.userName);
-      this.form.setValue('14', this.currentUserDepartment);
+      this.form.setValue('AUTHOR', this.userName);
+      this.form.setValue('USERDEPT', this.currentUserDepartment);
       console.log(this.form);
 
     });
@@ -1130,6 +1130,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.config.forEach(el => {
       if (el.enableWhenA && el.enableWhenQ) {
         if (index === el.enableWhenQ) {
+          console.log(el.enableWhenQ, el.enableWhenA, value, index);
           // this.config.forEach(elem => {
 
           // });
