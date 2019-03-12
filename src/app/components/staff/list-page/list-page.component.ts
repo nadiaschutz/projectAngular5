@@ -422,52 +422,19 @@ export class ListPageComponent implements OnInit {
   }
 
   getServiceTypeFromQuestionnaireResponse(questionnaireResponse) {
-    const query = 'ASSESCAT';
-    const queryTwo = 'ASSESTYPE';
-    const ftw = 'FTWORK';
-    const imrev = 'IMREVW';
-    let found = '';
-    let increment = 0;
-    if (questionnaireResponse['identifier']) {
-      if (questionnaireResponse['identifier']['value'] === 'SERVREQ') {
-        if (questionnaireResponse && questionnaireResponse.item) {
-          questionnaireResponse.item.forEach(item => {
-            if (item['text'].includes('PSOHP Service')) {
-              if (item['answer']) {
-                if (item['answer'][0]['valueCoding']['code'] === 'PSOHPSERV' ) {
-                  increment++;
-                  if (item['answer'][increment]['valueString'].match(/\(([^)]+)\)/)[1] === imrev ||
-                  item['answer'][increment]['valueString'].match(/\(([^)]+)\)/)[1] === ftw) {
-                    found = item['answer'][increment]['valueString'];
-                  } else {
-                    item.answer.forEach(answer => {
-                      if (answer['valueCoding']) {
-                        if (answer['valueCoding']['code'] === query) {
-                          increment++;
-                          found = answer[increment]['valueString'].match(
-                            /\(([^)]+)\)/
-                          )[1];
-                        }
-                      }
-                      if (answer['valueCoding']) {
-                        if (answer['valueCoding'] === queryTwo) {
-                          increment++;
-                          found = answer[increment]['valueString'].match(
-                            /\(([^)]+)\)/
-                          )[1];
-                        }
-                      }
-                    });
-                  }
-                }
-              }
-            }
-          });
-          increment = 0;
-          return found.match(/\(([^)]+)\)/)[1];
+
+    let serviceType = '';
+    questionnaireResponse.item.forEach(item => {
+      if (item.text === 'PSOHP Service' || item.text === 'Assessment Type' || item.text === 'Assessment Category') {
+        const value = item.answer[1].valueString;
+        if (value.indexOf('(') >= 0) {
+          serviceType = value.substring(value.indexOf('(') + 1, value.indexOf(')'));
         }
       }
-    }
+    });
+    console.log(serviceType);
+    return serviceType;
+    
   }
 
   associateCarePlanToEpisodeOfCare(
@@ -477,42 +444,43 @@ export class ListPageComponent implements OnInit {
     const psohpServiceType = this.getServiceTypeFromQuestionnaireResponse(
       questionnaireResponse
     );
-    this.staffService
-      .fetchAllCarePlanTemplates()
-      .subscribe(carePlanTemplates => {
-        carePlanTemplates['entry'].forEach(element => {
-          const carePlanTemplate = element.resource;
+    if (psohpServiceType.length > 0) {
+      this.staffService
+        .fetchAllCarePlanTemplates()
+        .subscribe(carePlanTemplates => {
+          carePlanTemplates['entry'].forEach(element => {
+            const carePlanTemplate = element.resource;
 
+            if (psohpServiceType === carePlanTemplate['identifier'][0]['value']) {
+              console.log(psohpServiceType);
+              const carePlan = new FHIR.CarePlan();
+              carePlan.resourceType = 'CarePlan';
+              carePlan.status = 'active';
+              carePlan.intent = 'plan';
+              carePlan.subject = episodeOfCare.patient;
 
-          if (psohpServiceType === carePlanTemplate['identifier'][0]['value']) {
-            console.log(psohpServiceType);
-            const carePlan = new FHIR.CarePlan();
-            carePlan.resourceType = 'CarePlan';
-            carePlan.status = 'active';
-            carePlan.intent = 'plan';
-            carePlan.subject = episodeOfCare.patient;
+              const episodeOfCareReference = new FHIR.Reference();
+              episodeOfCareReference.reference =
+                'EpisodeOfCare/' + episodeOfCare.id;
+              carePlan.context = episodeOfCareReference;
 
-            const episodeOfCareReference = new FHIR.Reference();
-            episodeOfCareReference.reference =
-              'EpisodeOfCare/' + episodeOfCare.id;
-            carePlan.context = episodeOfCareReference;
+              carePlan.activity = carePlanTemplate['activity'];
+              carePlan.description = carePlanTemplate['description'];
+              carePlan.identifier = carePlanTemplate['identifier'];
 
-            carePlan.activity = carePlanTemplate['activity'];
-            carePlan.description = carePlanTemplate['description'];
-            carePlan.identifier = carePlanTemplate['identifier'];
+              console.log(carePlan);
+              this.staffService
+                .saveCarePlan(JSON.stringify(carePlan))
+                .subscribe(data => {
+                  console.log(data);
+                },
+                error => {
+                  console.log(error);
+                });
+            }
 
-            console.log(carePlan);
-            this.staffService
-              .saveCarePlan(JSON.stringify(carePlan))
-              .subscribe(data => {
-                console.log(data);
-              },
-              error => {
-                console.log(error);
-              });
-          }
-
+          });
         });
-      });
+    }
   }
 }
