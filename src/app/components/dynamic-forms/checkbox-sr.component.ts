@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
+import { NewServiceRequestComponent } from '../new-service-request/new-service-request.component';
 
 
 @Component({
-  selector: 'form-checkbox',
-  template: `
+    selector: 'form-checkbox',
+    template: `
 
   <div
   [formGroup]="group" [class]='config.elementClass'>
@@ -16,6 +17,7 @@ import { FieldConfig } from './field-config.interface';
                     class="form-check-input"
                     [type]="config.type"
                     (change) = "f($event.target.checked)"
+                    (change)='callMe($event.target.value, config.name)'
                     [ngModel]="config.value"
                     [formControlName]="config.name"
                     >
@@ -24,16 +26,20 @@ import { FieldConfig } from './field-config.interface';
                     </label>
                 </div>
   `,
-  styles: []
+    styles: []
 })
-export class CheckboxComponent implements Field {
-  config: FieldConfig;
-  group: FormGroup;
+export class CheckboxSrComponent implements Field {
+    config: FieldConfig;
+    group: FormGroup;
 
-  f(event) {
-    this.group.get(this.config.name).patchValue(event);
-  }
+    constructor(private comp: NewServiceRequestComponent) { }
+    f(event) {
+        this.group.get(this.config.name).patchValue(event);
+    }
 
+    public callMe(value, index): void {
+        this.comp.checkEnableWhen(value, index);
+    }
 }
 // <div class="demo-full-width margin-top" [formGroup]="group" >
 // <mat-checkbox [formControlName]="field.name">{{field.label}}</mat-checkbox>
