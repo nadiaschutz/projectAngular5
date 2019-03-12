@@ -16,7 +16,6 @@ import * as moment from 'moment';
   styleUrls: ['./list-page.component.scss']
 })
 export class ListPageComponent implements OnInit {
-
   episodesOfCareList = [];
   patientList = [];
   questionnaireResponseList = [];
@@ -33,20 +32,28 @@ export class ListPageComponent implements OnInit {
   selectAllEpisodesCheck = false;
   selectAllTasksCheck = false;
 
-  constructor(private questionnaireService: QuestionnaireService,
-  private staffService: StaffService, private utilService: UtilService,
-  private router: Router) { }
+  constructor(
+    private questionnaireService: QuestionnaireService,
+    private staffService: StaffService,
+    private utilService: UtilService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.getAllAdmins();
-    this.staffService.getAllUnassignedQuestionnaireResponses().subscribe(data => {
-      this.mapToEpisodeOfCare(data);
-      this.staffService.getAllEpisodeOfCare().subscribe(episodes => {
-        this.buildEpisodeResponseObject(episodes);
+    this.staffService
+      .getAllUnassignedQuestionnaireResponses()
+      .subscribe(data => {
+        this.mapToEpisodeOfCare(data);
+        // this.getServiceTypeFromQuestionnaireResponse(data);
+        this.staffService.getAllEpisodeOfCare().subscribe(episodes => {
+          this.buildEpisodeResponseObject(episodes);
+        });
       });
-    });
     this.staffService.getAllTasks().subscribe(tasks => {
-      this.buildTaskResponseObject(tasks);
+      if (tasks['entry']) {
+        this.buildTaskResponseObject(tasks);
+      }
     });
   }
 
@@ -56,60 +63,80 @@ export class ListPageComponent implements OnInit {
       // mapped to Episode of Care
       const questionnaireResponse = entry.resource;
       if (questionnaireResponse.subject && !questionnaireResponse.context) {
-
         if (questionnaireResponse['identifier']) {
           if (questionnaireResponse['identifier']['value'] === 'SERVREQ') {
-            const episodeOfCare = new FHIR.EpisodeOfCare;
+            const episodeOfCare = new FHIR.EpisodeOfCare();
             episodeOfCare.resourceType = 'EpisodeOfCare';
             episodeOfCare.status = 'planned';
 
-            const type = new FHIR.CodeableConcept;
+            const type = new FHIR.CodeableConcept();
             type.text = 'Episode of Care';
             episodeOfCare.type = [type];
 
-            const managingOrganization = new FHIR.Reference;
+            const managingOrganization = new FHIR.Reference();
             managingOrganization.reference = 'Organization/NOHIS';
 
-            const patient = new FHIR.Reference;
+            const patient = new FHIR.Reference();
             patient.reference = questionnaireResponse.subject.reference;
             episodeOfCare.patient = patient;
 
-            const period = new FHIR.Period;
-            period.start = formatDate(new Date, 'yyyy-MM-dd', 'en');
+            const period = new FHIR.Period();
+            period.start = formatDate(new Date(), 'yyyy-MM-dd', 'en');
             episodeOfCare.period = period;
 
-            this.staffService.saveEpisodeOfCare(JSON.stringify(episodeOfCare)).subscribe(createdEpisodeOfCare => {
-              const reference = new FHIR.Reference;
-              reference.reference = '/EpisodeOfCare/' + createdEpisodeOfCare['id'];
-              this.associateCarePlanToEpisodeOfCare(createdEpisodeOfCare, questionnaireResponse);
-              // Questionnaire Response needs to be updated
-              // to refer to the created episode of care
-              questionnaireResponse['context'] = reference;
-              this.questionnaireService.changeRequest(questionnaireResponse).subscribe(data => {
-                console.log(data);
-              }, error => console.error(error));
-            }, error => {
-              console.error(error);
-            });
+            this.staffService
+              .saveEpisodeOfCare(JSON.stringify(episodeOfCare))
+              .subscribe(
+                createdEpisodeOfCare => {
+                  const reference = new FHIR.Reference();
+                  reference.reference =
+                    '/EpisodeOfCare/' + createdEpisodeOfCare['id'];
+                  this.associateCarePlanToEpisodeOfCare(
+                    createdEpisodeOfCare,
+                    questionnaireResponse
+                  );
+                  // Questionnaire Response needs to be updated
+                  // to refer to the created episode of care
+                  questionnaireResponse['context'] = reference;
+                  this.questionnaireService
+                    .changeRequest(questionnaireResponse)
+                    .subscribe(
+                      data => {
+                        console.log(data);
+                      },
+                      error => console.error(error)
+                    );
+                },
+                error => {
+                  console.error(error);
+                }
+              );
           }
         }
       } else {
         // Check if all Questionnaire Responses have Care Plans associated to them
         if (questionnaireResponse.context) {
-          const associatedEpisodeOfCareId = this.utilService.getIdFromReference(questionnaireResponse['context'].reference);
-          this.staffService.getCarePlanForEpisodeOfCareId(associatedEpisodeOfCareId).
-          subscribe(data => {
-            if (!data['entry']) {
-              this.staffService.getEpisodeOfCareFromId(associatedEpisodeOfCareId).subscribe(episodeOfCare => {
-                this.associateCarePlanToEpisodeOfCare(episodeOfCare, questionnaireResponse);
-              });
-            }
-          });
+          const associatedEpisodeOfCareId = this.utilService.getIdFromReference(
+            questionnaireResponse['context'].reference
+          );
+          this.staffService
+            .getCarePlanForEpisodeOfCareId(associatedEpisodeOfCareId)
+            .subscribe(data => {
+              if (!data['entry']) {
+                this.staffService
+                  .getEpisodeOfCareFromId(associatedEpisodeOfCareId)
+                  .subscribe(episodeOfCare => {
+                    this.associateCarePlanToEpisodeOfCare(
+                      episodeOfCare,
+                      questionnaireResponse
+                    );
+                  });
+              }
+            });
         }
       }
     });
   }
-
 
   resetData() {
     this.episodesOfCareList = [];
@@ -130,12 +157,14 @@ export class ListPageComponent implements OnInit {
       } else if (resource.resourceType === 'QuestionnaireResponse') {
         // if (resource['identifier']) {
         //   if (resource['identifier']['value'] === 'SERVREQ') {
-            if (resource.context) {
-              const associatedEpisodeOfCareId = this.getIdFromReference(resource.context.reference);
-              // Creating a Questionnaire Response List that can refer individual Questionnaire Response
-              // item from an episode of Care id
-              this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
-            }
+        if (resource.context) {
+          const associatedEpisodeOfCareId = this.getIdFromReference(
+            resource.context.reference
+          );
+          // Creating a Questionnaire Response List that can refer individual Questionnaire Response
+          // item from an episode of Care id
+          this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
+        }
         //   }
         // }
       } else if (resource.resourceType === 'Patient') {
@@ -146,12 +175,14 @@ export class ListPageComponent implements OnInit {
       const temp = {};
       temp['episodeOfCareId'] = episode['id'];
       temp['clientName'] = this.getClientName(episode['patient']['reference']);
-      temp['serviceAssessmentType'] = this.getServiceAssessmentType(episode['id']);
+      temp['serviceAssessmentType'] = 'asd';
       temp['clientDepartment'] = this.getClientDepartment(episode['id']);
       temp['daysInQueue'] = this.getDaysInQueue(episode['period']['start']);
       temp['status'] = episode['status'];
       if (episode['careManager']) {
-        temp['careManager'] = this.getAdminNameFromReference(episode['careManager']['reference']);
+        temp['careManager'] = this.getAdminNameFromReference(
+          episode['careManager']['reference']
+        );
       } else {
         temp['careManager'] = 'Unassigned';
       }
@@ -168,7 +199,6 @@ export class ListPageComponent implements OnInit {
   }
 
   getClientName(patientReference: string) {
-  
     let lastName = '';
     let firstName = '';
     if (patientReference) {
@@ -187,30 +217,32 @@ export class ListPageComponent implements OnInit {
   }
 
   getClientDepartment(episodeOfCareId) {
-    return this.getQuestionnaireReponseItem(episodeOfCareId, 'Submitting Department');
+    return this.getQuestionnaireReponseItem(
+      episodeOfCareId,
+      'Submitting Department'
+    );
   }
 
   getQuestionnaireReponseItem(episodeOfCareId, itemText) {
     let answer = '';
-    const questionnaireResponse = this.questionnaireResponseList[episodeOfCareId];
+    const questionnaireResponse = this.questionnaireResponseList[
+      episodeOfCareId
+    ];
     // console.log(this.questionnaireResponseList[episodeOfCareId]);
 
     if (questionnaireResponse) {
       if (questionnaireResponse['identifier']) {
-
-          if (questionnaireResponse && questionnaireResponse.item ) {
-            questionnaireResponse.item.forEach(item => {
-              if (item.text === (itemText)) {
-                // console.log('here we go!',  item['answer'][0]['valueString']);
-                answer = item['answer'][0]['valueString'];
-              }
-            });
-            return answer;
-
+        if (questionnaireResponse && questionnaireResponse.item) {
+          questionnaireResponse.item.forEach(item => {
+            if (item.text === itemText) {
+              // console.log('here we go!',  item['answer'][0]['valueString']);
+              answer = item['answer'][0]['valueString'];
+            }
+          });
+          return answer;
         }
       }
     }
-
   }
 
   getDaysInQueue(startDateString) {
@@ -234,12 +266,15 @@ export class ListPageComponent implements OnInit {
   assignEpisodeOfCare() {
     for (let i = 0; i < this.selectedEpisodes.length; i++) {
       if (this.selectedEpisodes[i]) {
-        const selectedEpisodeOfCareId = this.episodeResultList[i]['episodeOfCareId'];
+        const selectedEpisodeOfCareId = this.episodeResultList[i][
+          'episodeOfCareId'
+        ];
         const episode = this.episodesOfCareList[selectedEpisodeOfCareId];
         console.log(this.selectedEpisodeAdmin);
         if (this.selectedEpisodeAdmin !== 'none') {
-          const careManagerReference = new FHIR.Reference;
-          careManagerReference.reference = 'Practitioner/' + this.selectedEpisodeAdmin;
+          const careManagerReference = new FHIR.Reference();
+          careManagerReference.reference =
+            'Practitioner/' + this.selectedEpisodeAdmin;
           episode.careManager = careManagerReference;
         } else {
           delete episode.careManager;
@@ -251,18 +286,23 @@ export class ListPageComponent implements OnInit {
 
   updateEpisodeOfCare(episode) {
     const episodeString = JSON.stringify(episode);
-    this.staffService.updateEpisodeOfCare(episode.id, episodeString).subscribe(data => {
-      this.staffService.getAllEpisodeOfCare().subscribe(episodes => {
-        this.buildEpisodeResponseObject(episodes);
+    this.staffService
+      .updateEpisodeOfCare(episode.id, episodeString)
+      .subscribe(data => {
+        this.staffService.getAllEpisodeOfCare().subscribe(episodes => {
+          this.buildEpisodeResponseObject(episodes);
+        });
       });
-    });
   }
 
   getAllAdmins() {
     this.staffService.getAllPractitioners().subscribe(data => {
       data['entry'].forEach(element => {
         const admin = element.resource;
-        this.admins.push({id: admin.id, value: this.utilService.getNameFromResource(admin)});
+        this.admins.push({
+          id: admin.id,
+          value: this.utilService.getNameFromResource(admin)
+        });
         this.adminListWithIds[admin.id] = admin;
       });
     });
@@ -303,12 +343,20 @@ export class ListPageComponent implements OnInit {
       temp['id'] = task.id;
       temp['priority'] = task['priority'];
       temp['description'] = task['description'];
-      temp['serviceRequestId'] = this.getIdFromReference(task['context']['reference']);
-      temp['from'] = formatDate(new Date(task['meta']['lastUpdated']), 'yyyy-MM-dd', 'en');
+      temp['serviceRequestId'] = this.getIdFromReference(
+        task['context']['reference']
+      );
+      temp['from'] = formatDate(
+        new Date(task['meta']['lastUpdated']),
+        'yyyy-MM-dd',
+        'en'
+      );
       temp['dateCreated'] = this.getDaysInQueue(task['meta']['lastUpdated']);
       temp['status'] = task.status;
       if (task.owner) {
-        temp['owner'] = this.getAdminNameFromReference(task['owner']['reference']);
+        temp['owner'] = this.getAdminNameFromReference(
+          task['owner']['reference']
+        );
       } else {
         temp['owner'] = 'Unassigned';
       }
@@ -320,7 +368,7 @@ export class ListPageComponent implements OnInit {
   assignTaskToAdmin() {
     for (let i = 0; i < this.selectedTasks.length; i++) {
       if (this.selectedTasks[i]) {
-        const ownerReference = new FHIR.Reference;
+        const ownerReference = new FHIR.Reference();
         ownerReference.reference = 'Practitioner/' + this.selectedTaskAdmin;
         const selectedTaskId = this.taskResultList[i]['id'];
         const task = this.taskList[selectedTaskId];
@@ -336,11 +384,13 @@ export class ListPageComponent implements OnInit {
 
   updateTask(taskData) {
     const taskDataString = JSON.stringify(taskData);
-    this.staffService.updateTask(taskData.id, taskDataString).subscribe(data => {
-      this.staffService.getAllTasks().subscribe(tasks => {
-        this.buildTaskResponseObject(tasks);
+    this.staffService
+      .updateTask(taskData.id, taskDataString)
+      .subscribe(data => {
+        this.staffService.getAllTasks().subscribe(tasks => {
+          this.buildTaskResponseObject(tasks);
+        });
       });
-    });
   }
 
   serviceRequest(activeTab) {
@@ -372,57 +422,102 @@ export class ListPageComponent implements OnInit {
   }
 
   getServiceTypeFromQuestionnaireResponse(questionnaireResponse) {
-    let answer = '';
-    if (questionnaireResponse && questionnaireResponse.item) {
-      questionnaireResponse.item.forEach(item => {
-        if (item.text === 'PSOHP Service') {
-          answer = item['answer'][0]['valueString'];
+    const query = 'ASSESCAT';
+    const queryTwo = 'ASSESTYPE';
+    const ftw = 'FTWORK';
+    const imrev = 'IMREVW';
+    let found = '';
+    let increment = 0;
+    if (questionnaireResponse['identifier']) {
+      if (questionnaireResponse['identifier']['value'] === 'SERVREQ') {
+        if (questionnaireResponse && questionnaireResponse.item) {
+          questionnaireResponse.item.forEach(item => {
+            if (item['text'].includes('PSOHP Service')) {
+              if (item['answer']) {
+                if (item['answer'][0]['valueCoding']['code'] === 'PSOHPSERV' ) {
+                  increment++;
+                  if (item['answer'][increment]['valueString'].match(/\(([^)]+)\)/)[1] === imrev ||
+                  item['answer'][increment]['valueString'].match(/\(([^)]+)\)/)[1] === ftw) {
+                    found = item['answer'][increment]['valueString'];
+                  } else {
+                    item.answer.forEach(answer => {
+                      if (answer['valueCoding']) {
+                        if (answer['valueCoding']['code'] === query) {
+                          increment++;
+                          found = answer[increment]['valueString'].match(
+                            /\(([^)]+)\)/
+                          )[1];
+                        }
+                      }
+                      if (answer['valueCoding']) {
+                        if (answer['valueCoding'] === queryTwo) {
+                          increment++;
+                          found = answer[increment]['valueString'].match(
+                            /\(([^)]+)\)/
+                          )[1];
+                        }
+                      }
+                    });
+                  }
+                }
+              }
+            }
+          });
+          increment = 0;
+          return found.match(/\(([^)]+)\)/)[1];
         }
-      });
-      return answer;
+      }
     }
   }
 
-  associateCarePlanToEpisodeOfCare(episodeOfCare: FHIR.EpisodeOfCare, questionnaireResponse: FHIR.QuestionnaireResponse) {
-    const psohpServiceType = this.getServiceTypeFromQuestionnaireResponse(questionnaireResponse);
-    const searchParams = '_';
-    this.staffService.fetchAllCarePlanTemplates().subscribe(carePlanTemplates => {
-      carePlanTemplates['entry'].forEach(element => {
-        const carePlanTemplate = element.resource;
-        const regExp = /\(([^)]+)\)/;
-        const pshopCode = regExp.exec(psohpServiceType);
+  associateCarePlanToEpisodeOfCare(
+    episodeOfCare: FHIR.EpisodeOfCare,
+    questionnaireResponse: FHIR.QuestionnaireResponse
+  ) {
+    const psohpServiceType = this.getServiceTypeFromQuestionnaireResponse(
+      questionnaireResponse
+    );
+    this.staffService
+      .fetchAllCarePlanTemplates()
+      .subscribe(carePlanTemplates => {
+        carePlanTemplates['entry'].forEach(element => {
+          const carePlanTemplate = element.resource;
 
-        if  (pshopCode) {
-          if (pshopCode[1]) {
-            if (pshopCode[1] === carePlanTemplate['identifier'][0]['value']) {
-              console.log('testing regex', pshopCode[1], carePlanTemplate['identifier'][0]['value'] );
 
-              const carePlan = new FHIR.CarePlan;
-              carePlan.resourceType = 'CarePlan';
-              carePlan.status = 'active';
-              carePlan.intent = 'plan';
-              carePlan.subject = episodeOfCare.patient;
+          if (psohpServiceType === carePlanTemplate['identifier'][0]['value']) {
+            console.log(psohpServiceType);
+            const carePlan = new FHIR.CarePlan();
+            carePlan.resourceType = 'CarePlan';
+            carePlan.status = 'active';
+            carePlan.intent = 'plan';
+            carePlan.subject = episodeOfCare.patient;
 
-              const episodeOfCareReference = new FHIR.Reference;
-              episodeOfCareReference.reference = 'EpisodeOfCare/' + episodeOfCare.id;
-              carePlan.context = episodeOfCareReference;
+            const episodeOfCareReference = new FHIR.Reference();
+            episodeOfCareReference.reference =
+              'EpisodeOfCare/' + episodeOfCare.id;
+            carePlan.context = episodeOfCareReference;
 
-              carePlan.activity = carePlanTemplate['activity'];
-              carePlan.description = carePlanTemplate['description'];
-              carePlan.identifier = carePlanTemplate['identifier'];
+            carePlan.activity = carePlanTemplate['activity'];
+            carePlan.description = carePlanTemplate['description'];
+            carePlan.identifier = carePlanTemplate['identifier'];
 
-              console.log(carePlan);
-              this.staffService.saveCarePlan(JSON.stringify(carePlan)).subscribe(data => {
+            console.log(carePlan);
+            this.staffService
+              .saveCarePlan(JSON.stringify(carePlan))
+              .subscribe(data => {
                 console.log(data);
+              },
+              error => {
+                console.log(error);
+              },
+              () => {
+                this.staffService.getAllEpisodeOfCare().subscribe(episodes => {
+                  this.buildEpisodeResponseObject(episodes);
+                });
               });
-            }
           }
 
-        }
-
+        });
       });
-
-    });
   }
-
 }
