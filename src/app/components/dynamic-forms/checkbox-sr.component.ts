@@ -6,7 +6,7 @@ import { NewServiceRequestComponent } from '../new-service-request/new-service-r
 
 
 @Component({
-    selector: 'form-checkbox',
+    selector: 'form-checkboxSr',
     template: `
 
   <div
@@ -15,8 +15,8 @@ import { NewServiceRequestComponent } from '../new-service-request/new-service-r
                 <div class="form-check">
                     <input
                     class="form-check-input"
-                    [type]="config.type"
-                    (change) = "f($event.target.checked)"
+                    type="checkbox"
+                    
                     (change)='callMe($event.target.value, config.name)'
                     [ngModel]="config.value"
                     [formControlName]="config.name"
@@ -33,9 +33,9 @@ export class CheckboxSrComponent implements Field {
     group: FormGroup;
 
     constructor(private comp: NewServiceRequestComponent) { }
-    f(event) {
-        this.group.get(this.config.name).patchValue(event);
-    }
+    // f(event) {
+    //     this.group.get(this.config.name).patchValue(event);
+    // }
 
     public callMe(value, index): void {
         this.comp.checkEnableWhen(value, index);
@@ -47,4 +47,4 @@ export class CheckboxSrComponent implements Field {
 
 
 // (change) = "f($event.target.checked)"
-
+// (change) = "f($event.target.checked)"
