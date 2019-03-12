@@ -53,11 +53,13 @@ import { CommentComponent } from './components/dynamic-forms/comment.component';
 import { ButtonComponent } from './components/dynamic-forms/button.component';
 import { DependFormComponent } from './components/dynamic-forms/dependForm.component';
 import { SelectComponent } from './components/dynamic-forms/select.component';
+import { SelectSrComponent } from './components/dynamic-forms/select-sr.component';
 import { LineComponent } from './components/dynamic-forms/line.component';
 import { HeaderComponent } from './components/dynamic-forms/header.component';
 import { DateComponent } from './components/dynamic-forms/date.component';
 import { DocComponent } from './components/dynamic-forms/doc.components';
 import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
+import { CheckboxSrComponent } from './components/dynamic-forms/checkbox-sr.component';
 import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
 import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
 import { DemoComponent } from './components/demo/demo.component';
@@ -169,12 +171,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     ButtonComponent,
     DependFormComponent,
     SelectComponent,
+    SelectSrComponent,
     LineComponent,
     HeaderComponent,
     DateComponent,
     DocComponent,
     // RadiobuttonComponent,
     CheckboxComponent,
+    CheckboxSrComponent,
     DynamicFieldDirective,
     DynamicFormComponent,
     DemoComponent,
@@ -230,12 +234,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     ButtonComponent,
     DependFormComponent,
     SelectComponent,
+    SelectSrComponent,
     LineComponent,
     HeaderComponent,
     DateComponent,
     DocComponent,
     // RadiobuttonComponent,
-    CheckboxComponent
+    CheckboxComponent,
+    CheckboxSrComponent,
   ]
 })
 export class AppModule { }

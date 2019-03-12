@@ -86,7 +86,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   departmentList = [];
   currentUserDepartment;
 
-  formId = 'TEST3';
+  formId = 'TEST4';
 
   responseId = null;
   clientId = null;
@@ -165,39 +165,32 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     // remove submit button if there any
 
+    // TODO: change code => display
+
 
     // ADDING DEPENDANTS ON FHIR RESPONCE OBJECT
-    // V get dependents
-    // V build the div / form items with dependents
-    // add dependentsList into the form data
 
-    // add flag on/off
-    // if item.dependents === true {
-    // add class = 'enable-when-show'
-    // } else {
-    //   add class = 'enable-when-hide'
-    // }
-    // grab data
-    // figure out how to store in the object on FHIR
-    // add data to this.itemsToSend
+    // X grab data
+    // X figure out how to store in the object on FHIR
+    // X add data to this.itemsToSend
 
 
-    // change SR for employee , instead of dependent BOOLEAN add actuall dependents references
+    // X change SR for employee , instead of dependent BOOLEAN add actuall dependents references
 
     // CREATING NEW SR FOR DEPENDANTS
-    // basically make a copy of the current SR
-    // remove dependents item
-    // change subject to current patient + ID
-    // POST them
+    // X basically make a copy of the current SR
+    // X remove dependents item
+    // X change subject to current patient + ID
+    // X POST them
 
 
     // ADDING DEPENDANTS STRAIGHT FROM THE CREATE SR PAGE
-    // save current data in session storage
-    // add a button 'add dependent'
-    // route to the add dependent page
-    // go back on submit
-    // load the page
-    // assign the data from session storage
+    // X save current data in session storage
+    // X add a button 'add dependent'
+    // X route to the add dependent page
+    // X go back on submit
+    // X load the page
+    // X assign the data from session storage
 
     // this.activatedRoute.data.subscribe(data => this.processQuestionnaire(data.fields));
     this.dependentsList.push('NADIA TEST');
@@ -483,6 +476,22 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   submit(value: { [name: string]: any }) {
+    console.log(value);
+    // value.forEach(eachElem => {
+    //   if (eachElem.name.indexOf('dependent') !== -1) {
+    //     console.log('I AM DEPENDENT!');
+    //   }
+    // });
+
+    // tslint:disable-next-line:forin
+    for (const key in value) {
+      if (key.indexOf('dependent') !== - 1) {
+        if (value[key] === true) {
+          console.log(key, value[key]);
+          // this.createDependentSR();
+        }
+      }
+    }
 
     this.items.forEach(indivElem => {
       // tslint:disable-next-line:forin
@@ -501,12 +510,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // this.disableInputsForReview = true;
     this.savingData();
 
-    this.questionnaireService
-      .saveRequest(this.itemToSend)
-      .subscribe(
-        data => this.handleSuccessOnSave(data),
-        error => this.handleErrorOnSave(error)
-      );
+    // this.questionnaireService
+    //   .saveRequest(this.itemToSend)
+    //   .subscribe(
+    //     data => this.handleSuccessOnSave(data),
+    //     error => this.handleErrorOnSave(error)
+    //   );
 
     console.log(this.itemToSend);
 
@@ -528,7 +537,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   savingData() {
     console.log('iam saved');
-    this.getDate();
+    // this.getDate();
 
     // const questionnaireResponse = new FHIR.QuestionnaireResponse;
     // const questionnaireIdentifier = new FHIR.Identifier;
@@ -551,7 +560,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // questionnaireResponse.identifier = questionnaireIdentifier;
     // questionnaireResponse.subject = subjectReference;
 
-    const items = [];
+    // const items = [];
 
     // for (const questions of this.questionsList) {
     //   for (const question of questions) {
@@ -628,7 +637,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     console.log('itemsFiltered', itemsFiltered);
     this.itemToSend.item = itemsFiltered.map(el => {
 
-      console.log(el.linkId, typeof (el.answer));
+      // console.log(el.linkId, typeof (el.answer));
       if (el.linkId !== '') {
         // console.log(el.linkId, el.answer);
         // if (el.text === 'Document') {
@@ -995,7 +1004,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             name: 'dependent' + '-' + index,
             label: dependent,
             enableWhenQ: '24',
-            enableWhenA: true,
+            enableWhenA: 'true',
             elementClass: 'enable-when-hide',
 
             // placeholder: 'Select an option',
@@ -1128,6 +1137,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             // console.log('BINGO@222!!', el.name);
             el.elementClass = 'enable-when-show';
             el.flag = true;
+            // el.placeholder = 'Select an option';
             // this.form.setDisabled(el.name, false);
 
             // this.form.createControl(el).setValidators(console.log(el));
@@ -1143,6 +1153,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               if (elem.enableWhenA && elem.enableWhenQ) {
                 if (el.name === elem.enableWhenQ && elem.elementClass === 'enable-when-show') {
                   elem.elementClass = 'enable-when-hide';
+                  this.form.setValue(elem.name, null);
                   // this.form.setDisabled(elem.name, true);
                 }
               }
@@ -1151,7 +1162,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           }
         }
       }
-      console.log(el.name, el.validation);
+      // console.log(el.name, el.validation);
     });
     console.log(this.config);
     // this.config = this.configuration;
@@ -1159,15 +1170,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
 
 
-  public checkDependentsEnableWhen(value, index) {
-    this.config.forEach(el => {
-      console.log(value, index);
-      console.log(el.name, el.validation);
-
-    });
-    console.log(this.config);
-    // this.config = this.configuration;
-  }
 
   handleError(error) {
     console.log(error);
@@ -1188,122 +1190,122 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     console.log(error);
   }
 
-  getResponseId() {
-    this.questionnaireService.newResponseIdSubject.subscribe(
-      data => this.handleSuccessResponseId(data),
-      error => this.handleErrorResponseId(error)
-    );
-  }
+  // getResponseId() {
+  //   this.questionnaireService.newResponseIdSubject.subscribe(
+  //     data => this.handleSuccessResponseId(data),
+  //     error => this.handleErrorResponseId(error)
+  //   );
+  // }
 
-  handleSuccessResponseId(data) {
-    console.log(data);
-    this.responseId = data;
-    console.log(this.responseId);
-    // get data from the server
+  // handleSuccessResponseId(data) {
+  //   console.log(data);
+  //   this.responseId = data;
+  //   console.log(this.responseId);
+  //   // get data from the server
 
-    if (this.responseId !== null) {
-      this.getResponse();
-    }
-  }
+  //   if (this.responseId !== null) {
+  //     this.getResponse();
+  //   }
+  // }
 
-  handleErrorResponseId(error) {
-    console.log(error);
-  }
+  // handleErrorResponseId(error) {
+  //   console.log(error);
+  // }
 
-  getResponse() {
-    this.questionnaireService
-      .getResponse(this.responseId)
-      .subscribe(
-        data => this.handleSuccessResponse(data),
-        error => this.handleErrorResponse(error)
-      );
-  }
+  // getResponse() {
+  //   this.questionnaireService
+  //     .getResponse(this.responseId)
+  //     .subscribe(
+  //       data => this.handleSuccessResponse(data),
+  //       error => this.handleErrorResponse(error)
+  //     );
+  // }
 
-  handleSuccessResponse(data) {
-    console.log(data);
-    this.itemToSend = data;
-    console.log(this.itemToSend);
-    console.log(this.items);
+  // handleSuccessResponse(data) {
+  //   console.log(data);
+  //   this.itemToSend = data;
+  //   console.log(this.itemToSend);
+  //   console.log(this.items);
 
-    this.items = this.itemToSend.item.map(el => {
-      if (el.text === 'Document') {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueReference.reference
-        };
-      }
-      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved') {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueBoolean
-        };
-      } else {
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer: el.answer[0].valueString
-        };
-      }
-    });
+  //   this.items = this.itemToSend.item.map(el => {
+  //     if (el.text === 'Document') {
+  //       return {
+  //         linkId: el.linkId,
+  //         text: el.text,
+  //         answer: el.answer[0].valueReference.reference
+  //       };
+  //     }
+  //     if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved') {
+  //       return {
+  //         linkId: el.linkId,
+  //         text: el.text,
+  //         answer: el.answer[0].valueBoolean
+  //       };
+  //     } else {
+  //       return {
+  //         linkId: el.linkId,
+  //         text: el.text,
+  //         answer: el.answer[0].valueString
+  //       };
+  //     }
+  //   });
 
-    console.log(this.items);
-  }
+  //   console.log(this.items);
+  // }
 
-  handleErrorResponse(error) {
-    console.log(error);
-  }
+  // handleErrorResponse(error) {
+  //   console.log(error);
+  // }
 
   // get date for authored: '2018-11-08T15:41:00.581+00:00'
 
-  getDate() {
-    this.dd = this.addZero(this.today.getDate());
-    this.mm = this.addZero(this.today.getMonth() + 1);
-    this.yyyy = this.today.getFullYear();
-    this.time = this.today.getTime();
-    this.hr = this.addZero(this.today.getHours());
-    this.min = this.addZero(this.today.getMinutes());
-    this.sec = this.addZero(this.today.getSeconds());
-    this.msec = this.today.getMilliseconds();
+  // getDate() {
+  //   this.dd = this.addZero(this.today.getDate());
+  //   this.mm = this.addZero(this.today.getMonth() + 1);
+  //   this.yyyy = this.today.getFullYear();
+  //   this.time = this.today.getTime();
+  //   this.hr = this.addZero(this.today.getHours());
+  //   this.min = this.addZero(this.today.getMinutes());
+  //   this.sec = this.addZero(this.today.getSeconds());
+  //   this.msec = this.today.getMilliseconds();
 
-    this.myDate();
+  //   this.myDate();
 
-    // to-do: fix mlseconds and timeZone
+  //   // to-do: fix mlseconds and timeZone
 
-    // console.log(msec);
-  }
-  myDate() {
-    return (this.myDay =
-      this.yyyy +
-      '-' +
-      this.mm +
-      '-' +
-      this.dd +
-      'T' +
-      this.hr +
-      ':' +
-      this.min +
-      ':' +
-      this.sec +
-      '.581+00:00');
-  }
+  //   // console.log(msec);
+  // }
+  // myDate() {
+  //   return (this.myDay =
+  //     this.yyyy +
+  //     '-' +
+  //     this.mm +
+  //     '-' +
+  //     this.dd +
+  //     'T' +
+  //     this.hr +
+  //     ':' +
+  //     this.min +
+  //     ':' +
+  //     this.sec +
+  //     '.581+00:00');
+  // }
 
-  addZero(i) {
-    if (i < 10) {
-      i = '0' + i;
-    }
-    return i;
-  }
+  // addZero(i) {
+  //   if (i < 10) {
+  //     i = '0' + i;
+  //   }
+  //   return i;
+  // }
 
-  checkDependentItem(itemsServer) {
-    itemsServer.forEach(eachElement => {
-      if (eachElement.text === 'Dependent Involved') {
-        this.dependents = true;
-        console.log(this.dependents);
-      }
-    });
-  }
+  // checkDependentItem(itemsServer) {
+  //   itemsServer.forEach(eachElement => {
+  //     if (eachElement.text === 'Dependent Involved') {
+  //       this.dependents = true;
+  //       console.log(this.dependents);
+  //     }
+  //   });
+  // }
 
   //  get status for the service request
 
