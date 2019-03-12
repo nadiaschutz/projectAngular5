@@ -1,9 +1,6 @@
 <div class="container">
-    <div [ngStyle]="{'width': value + '%'}" class="bar">-</div>
 
   <div class="main-header">
-    <!-- <div class="row"> -->
-    <!-- </div> -->
 
     <div class="row">
       <div class="col-4">
@@ -58,6 +55,11 @@
 
 
   </div>
+
+  <svg viewBox="0, 0, 100, 10">
+    <rect [attr.width]="value" height="1" fill="#398ef2"></rect><rect [attr.width]="otherValue" height="1" fill="#f8f8f8"></rect>
+  </svg>
+
   <div class="row">
     <h6 class="col-4">History</h6>
     <h6 class="col-5">Work List</h6>

@@ -434,7 +434,7 @@ export class ListPageComponent implements OnInit {
     });
     console.log(serviceType);
     return serviceType;
-    
+
   }
 
   associateCarePlanToEpisodeOfCare(
