@@ -20,6 +20,7 @@ import { Router } from '@angular/router';
 export class WorkScreenComponent implements OnInit {
 
   @Input() value = 50;
+  @Input() otherValue = 100;
 
   documentChecklistItemsList = [];
 
