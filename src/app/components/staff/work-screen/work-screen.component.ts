@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
 import { UserService } from '../../../service/user.service';
@@ -18,6 +18,9 @@ import { Router } from '@angular/router';
   styleUrls: ['./work-screen.component.scss']
 })
 export class WorkScreenComponent implements OnInit {
+
+  @Input() value = 50;
+
   documentChecklistItemsList = [];
 
   carePlanActivities = [];
