@@ -1,7 +1,43 @@
 <div class="container">
   <h5>Reporting</h5>
 
-  <div>
-    <button (click)="export()">Export</button>
-  </div>
+  <form [formGroup]="noteFormGroup" novalidate>
+    <div>
+  
+      <!-- Date Range selection -->
+      <div>
+        <h6>SELECT DATE RANGE</h6>
+      </div>
+  
+      <!-- Select Sample -->
+      <div>
+        <h6>SELECT SAMPLE</h6>
+  
+        <div>
+          <label for="all">All</label>
+          <input type="text" name="all" id="all" formControlName="all" class="form-control">
+
+          <label for="psohp">PSOHP</label>
+          <input type="text" name="psohp" id="psohp" formControlName="psohp" class="form-control">
+
+          <!-- <label for="assignTo">Assign To</label>
+          <select name="assignTo" id="assignTo" formControlName="assignTo" class="form-control" required>
+            <option *ngFor="let practitioner of practitioners" [value]="practitioner.id">
+              <span *ngFor="let name of practitioner.name">{{name.given}} {{name.family}} </span>
+            </option>
+          </select> -->
+
+        </div>
+  
+      </div>
+  
+      <!-- Select Data Set -->
+      <div>
+        <h6>SELECT DATA SET</h6>
+      </div>
+      <button (click)="export()">Export</button>
+    </div>
+
+  </form>
+
 </div>

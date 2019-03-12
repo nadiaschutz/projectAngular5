@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StaffService } from '../../service/staff.service';
+import { ExportToCsv } from 'export-to-csv';
 
 @Component({
   selector: 'app-reporting',
@@ -32,5 +33,20 @@ export class ReportingComponent implements OnInit {
   // 12.Validated Date 13.Assigned Date 14.Scheduled Date 15.Work completed date
   // 16.Closed date 17. Assessment code and 18. Exam by code
   buildServiceRequestData() {}
+
+  exportToCSV(data) {
+    const options = {
+      fieldSeparator: ',',
+      quoteStrings: '"',
+      decimalSeparator: '.',
+      showLabels: true,
+      useTextFile: false,
+      useBom: true,
+      useKeysAsHeaders: true
+    };
+
+    const csvExporter = new ExportToCsv(options);
+    csvExporter.generateCsv(data);
+  }
 
 }
