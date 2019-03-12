@@ -1111,16 +1111,15 @@ export class WorkScreenComponent implements OnInit {
       .getDocumentsChecklist(this.episodeOfCareId)
       .subscribe(data => {
         if (data) {
-          if (data['total'] === 0) {
-            console.log('nothing here, creating checklist skeleton');
-            this.newDocChecklist();
-          } else {
+          if (data['entry']) {
             data['entry'].forEach(element => {
               this.checkListDocObject = element['resource'];
               if (!this.checkListDocObject['item']) {
                 this.checkListDocObject['item'] = [];
               }
             });
+          } else {
+            this.newDocChecklist();
           }
         }
       });
