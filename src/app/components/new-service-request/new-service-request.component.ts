@@ -31,6 +31,7 @@ import { ValueAddress } from 'src/app/interface/organization';
 import { element } from '@angular/core/src/render3/instructions';
 import { e } from '@angular/core/src/render3';
 import { runInThisContext } from 'vm';
+import { IfStmt } from '@angular/compiler';
 
 class TextInput {
   static create(event: FieldConfig) {
@@ -510,12 +511,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // this.disableInputsForReview = true;
     this.savingData();
 
-    // this.questionnaireService
-    //   .saveRequest(this.itemToSend)
-    //   .subscribe(
-    //     data => this.handleSuccessOnSave(data),
-    //     error => this.handleErrorOnSave(error)
-    //   );
+    this.questionnaireService
+      .saveRequest(this.itemToSend)
+      .subscribe(
+        data => this.handleSuccessOnSave(data),
+        error => this.handleErrorOnSave(error)
+      );
 
     console.log(this.itemToSend);
 
@@ -811,114 +812,119 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     this.configuration = this.qrequest.map(el => {
       // text
-      if (el.type === 'text') {
-        if (el.code[1].code === 'PHONE') {
+      // if (el.type === 'text') {
+      if (el.code[1].code === 'PHONE') {
+        console.log(el.name);
 
-          const formField = this.textInput(el);
-          formField['placeholder'] = 'type your phone';
-          formField['validation'] = el.enableWhen ? undefined : [
+        const formField = this.textInput(el);
+        formField['placeholder'] = 'type your phone';
+        formField['validation'] = el.enableWhen ? [
+          Validators.pattern(
+            '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
+          )
+        ] : [
             Validators.required,
             Validators.pattern(
               '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
             )
           ];
-          formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
-          formField['value'] = null;
-          formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
-          return formField;
-
-          // return {
-          //   type: 'input',
-          //   label: el.text,
-          //   inputType: 'text',
-          //   placeholder: 'type your phone',
-          //   name: el.linkId,
-          //   enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          //   enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
-          //   value: '',
-          //   validation: [Validators.required, Validators.pattern(
-          //     '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-          //   )]
-          // };
-
-        } else if (el.code[1].code === 'EMAIL') {
-
-          const formField = this.textInput(el);
-          formField['placeholder'] = 'type your email';
-          formField['validation'] = el.enableWhen ? undefined : [Validators.required, Validators.email];
-          formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
-          formField['value'] = null;
-
-          formField['flag'] = el.enableWhen ? false : true;
-          formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
-          // flag: el.enableWhen ? false : true,
-          return formField;
+        formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+        formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+        formField['value'] = null;
+        formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
+        return formField;
 
 
-        } else if (el.code[1].code === 'COMMENT') {
+      } else if (el.code[1].code === 'DATE') {
+        return {
+          type: 'date',
+          label: el.text,
+          inputType: 'text',
+          placeholder: 'datepicker',
+          name: el.linkId,
 
-          const formField = this.commentInput(el);
-          formField['placeholder'] = 'type your text';
-          formField['validation'] = undefined;
-          formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
-          formField['value'] = null;
+          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
+          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          value: ''
+        };
 
-          formField['flag'] = el.enableWhen ? false : true;
+      } else if (el.code[1].code === 'TEXT') {
 
-          formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
-
-          // flag: el.enableWhen ? false : true,
-          return formField;
-
-        } else if (el.text === 'Created By') {
+        if (el.code[0].code === 'AUTHOR') {
 
           const formField = this.textInput(el);
-          formField['placeholder'] = 'type your text';
+          // formField['placeholder'] = 'type your text';
+          formField['readonly'] = true;
           // formField['validation'] = el.enableWhen ? null : [
           //   Validators.required
           // ];
           return formField;
-        } else if (el.text === 'User Account Department') {
+        } else if (el.code[0].code === 'USERDEPT') {
 
           const formField = this.textInput(el);
-          formField['placeholder'] = 'type your text';
+          formField['readonly'] = true;
+          // formField['placeholder'] = 'type your text';
           // formField['validation'] = el.enableWhen ? null : [
           //   Validators.required
           // ];
           return formField;
         } else {
-          return {
-            type: 'input',
-            label: el.text,
-            inputType: 'text',
-            placeholder: 'type your text',
-            name: el.linkId,
-            flag: el.enableWhen ? false : true,
-            enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-            enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
-            value: null,
-            validation: el.enableWhen ? undefined : [Validators.required, Validators.minLength(4)],
-            // validation: [Validators.required, Validators.minLength(4)],
-            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-          };
+
+
+          console.log(el.name);
+
+          const formField = this.textInput(el);
+          formField['placeholder'] = 'type your text';
+          formField['validation'] = el.enableWhen ? undefined : [Validators.required];
+          formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+          formField['value'] = null;
+
+          formField['flag'] = el.enableWhen ? false : true;
+          formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
+          // flag: el.enableWhen ? false : true,
+          return formField;
         }
-      }
-      if (el.type === 'choice') {
+
+      } else if (el.code[1].code === 'EMAIL') {
+        console.log(el.name);
+
+        const formField = this.textInput(el);
+        formField['placeholder'] = 'type your email';
+        formField['validation'] = el.enableWhen ? [Validators.email] : [Validators.required, Validators.email];
+        formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+        formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+        formField['value'] = null;
+
+        formField['flag'] = el.enableWhen ? false : true;
+        formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
+        // flag: el.enableWhen ? false : true,
+        return formField;
+
+
+      } else if (el.code[1].code === 'COMMENT') {
+
+
+        const formField = this.commentInput(el);
+        formField['placeholder'] = 'type your text';
+        formField['validation'] = undefined;
+        formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+        formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+        formField['value'] = null;
+
+        formField['flag'] = el.enableWhen ? false : true;
+
+        formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
+
+        // flag: el.enableWhen ? false : true,
+        return formField;
+
+      } else if (el.code[1].code === 'SELECT') {
         const options = [];
         el.option.forEach(el1 => {
           options.push(el1.valueCoding.display);
         });
-
-        // if (el.text === 'Department Name') {
-        //   const formField = this.selectField(el);
-        //   formField['value'] = '';
-        //   formField['options'] = this.departmentList;
-        //   return formField;
-
-        // } else {
         return {
           type: 'selectSr',
           label: el.text,
@@ -934,49 +940,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           value: null,
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
         };
-
-        // [ctrl => ctrl.value === "Turn me off" ? null: Validators.required(ctrl)]
-        // }
-
-      }
-      if (el.type === 'open-choice') {
-        return {
-          type: 'select',
-          label: el.text,
-          flag: el.enableWhen ? false : true,
-          name: el.linkId,
-          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
-          class: 'checkEnableWhen($event.target.value, i)',
-          placeholder: 'Select an option',
-          value: null,
-          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-        };
-
-      }
-      if (el.type === 'boolean') {
-        // if ((el['text'].indexOf('Dependent Involved') !== -1)) {
-        // return {
-        //   type: 'checkbox',
-        //   label: el.text,
-        //   name: el.linkId,
-        //   enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-        //   enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
-        //   elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-
-        //   // placeholder: 'Select an option',
-        //   // validation: el.enableWhen ? null : [Validators.required],
-        //   value: el.enableWhen ? null : false,
-
-        // }
-
-        // } else {
-
-
+      } else if (el.code[1].code === 'BOOL') {
         return {
           type: 'checkbox',
           label: el.text,
           name: el.linkId,
+          typeElem: 'checkbox',
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
           enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
@@ -985,9 +954,72 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           // validation: el.enableWhen ? null : [Validators.required],
           value: el.enableWhen ? null : false,
         };
-        // }
-        // }
+
       }
+      // } else {
+
+      //   return {
+      //     type: 'input',
+      //     label: el.text,
+      //     inputType: 'text',
+      //     readonly: true,
+      //     placeholder: 'type your text',
+      //     name: el.linkId,
+      //     flag: el.enableWhen ? false : true,
+      //     enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+      //     enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
+      //     value: null,
+      //     validation: el.enableWhen ? undefined : [Validators.required, Validators.minLength(4)],
+      //     // validation: [Validators.required, Validators.minLength(4)],
+      //     elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+      //   };
+      // }
+      // }
+      // if (el.type === 'choice') {
+
+
+      // [ctrl => ctrl.value === "Turn me off" ? null: Validators.required(ctrl)]
+      // }
+
+      // }
+      // if (el.type === 'open-choice') {
+      //   return {
+      //     type: 'select',
+      //     label: el.text,
+      //     flag: el.enableWhen ? false : true,
+      //     name: el.linkId,
+      //     enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+      //     enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
+      //     class: 'checkEnableWhen($event.target.value, i)',
+      //     placeholder: 'Select an option',
+      //     value: null,
+      //     elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+      //   };
+
+      // }
+      // if (el.type === 'boolean') {
+      // if ((el['text'].indexOf('Dependent Involved') !== -1)) {
+      // return {
+      //   type: 'checkbox',
+      //   label: el.text,
+      //   name: el.linkId,
+      //   enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+      //   enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.code : false,
+      //   elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+
+      //   // placeholder: 'Select an option',
+      //   // validation: el.enableWhen ? null : [Validators.required],
+      //   value: el.enableWhen ? null : false,
+
+      // }
+
+      // } else {
+
+
+
+      // }
+      // }
+      // }
     });
 
 
@@ -1069,6 +1101,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       label: data.text,
       inputType: 'text',
       name: data.linkId,
+      readonly: false
       // enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
       // enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.code : false,
     });
@@ -1115,6 +1148,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       this.form.setDisabled('submit', true);
       // this.form.setDisabled('1', true);
       // this.form.setDisabled('14', true);
+      // this.form.setReadOnly('AUTHOR', true);
       this.form.setValue('AUTHOR', this.userName);
       this.form.setValue('USERDEPT', this.currentUserDepartment);
       console.log(this.form);
@@ -1127,10 +1161,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   public checkEnableWhen(value, index) {
+    // console.log('VALUE< INDEX', value, index);
     this.config.forEach(el => {
+      // console.log(el.name, el.elementClass, el.enableWhenA, el.enableWhenQ);
       if (el.enableWhenA && el.enableWhenQ) {
         if (index === el.enableWhenQ) {
-          console.log(el.enableWhenQ, el.enableWhenA, value, index);
+          // console.log(el.name, el.enableWhenQ, el.enableWhenA, index, value);
           // this.config.forEach(elem => {
 
           // });

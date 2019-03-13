@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
 import { NewServiceRequestComponent } from '../new-service-request/new-service-request.component';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -15,8 +16,8 @@ import { NewServiceRequestComponent } from '../new-service-request/new-service-r
                 <div class="form-check">
                     <input
                     class="form-check-input"
-                    type="checkbox"
-                    
+                    [type]="config.typeElem"
+                    (change) = "f($event.target.checked)"
                     (change)='callMe($event.target.value, config.name)'
                     [ngModel]="config.value"
                     [formControlName]="config.name"
@@ -32,13 +33,16 @@ export class CheckboxComponent implements Field {
   config: FieldConfig;
   group: FormGroup;
 
-  constructor(private comp: NewServiceRequestComponent) { }
-  // f(event) {
-  //     this.group.get(this.config.name).patchValue(event);
-  // }
+  constructor(private comp: NewServiceRequestComponent, private router: Router) { }
+  f(event) {
+    this.group.get(this.config.name).patchValue(event);
+  }
 
   public callMe(value, index): void {
-    this.comp.checkEnableWhen(value, index);
+    // console.log(this.router);
+    if (this.router.url.indexOf('/newservicerequest') > -1) {
+      this.comp.checkEnableWhen(value, index);
+    }
   }
 }
 // <div class="demo-full-width margin-top" [formGroup]="group" >

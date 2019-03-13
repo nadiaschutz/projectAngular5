@@ -110,6 +110,29 @@ export class DynamicFormComponent implements OnInit, OnChanges {
     });
   }
 
+
+  setReadOnly(name: string, readonly: boolean) {
+    if (this.form.controls[name]) {
+      const method = readonly ? 'readonly' : 'null';
+      this.form.controls[name][method]();
+      return;
+    }
+
+
+    // form = new FormGroup({
+    //   first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
+    //   last: new FormControl('Drew', Validators.required)
+    // });
+
+
+    this.config = this.config.map((item) => {
+      if (item.name === name) {
+        item.readonly = readonly;
+      }
+      return item;
+    });
+  }
+
   setValue(name: string, value: any) {
     this.form.controls[name].setValue(value, { emitEvent: true });
   }

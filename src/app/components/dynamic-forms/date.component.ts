@@ -8,9 +8,9 @@ import { FieldConfig } from './field-config.interface';
   selector: "form-date",
   template: `
  
-    <div [formGroup]="group">
+    <div [formGroup]="group" [class]='config.elementClass'>
 
-        <label class="label-name">{{ config.label }}</label>
+        <label class="label-name">{{ config.label }}{{ config.name }}</label>
         
 
        
@@ -31,8 +31,8 @@ import { FieldConfig } from './field-config.interface';
 
         
         `
-      })
-      export class DateComponent implements Field {
-        config: FieldConfig;
-        group: FormGroup;
-      }
+})
+export class DateComponent implements Field {
+  config: FieldConfig;
+  group: FormGroup;
+}

@@ -33,9 +33,9 @@ export class CheckboxSrComponent implements Field {
     group: FormGroup;
 
     constructor(private comp: NewServiceRequestComponent) { }
-    // f(event) {
-    //     this.group.get(this.config.name).patchValue(event);
-    // }
+    f(event) {
+        this.group.get(this.config.name).patchValue(event);
+    }
 
     public callMe(value, index): void {
         this.comp.checkEnableWhen(value, index);
