@@ -511,12 +511,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // this.disableInputsForReview = true;
     this.savingData();
 
-    // this.questionnaireService
-    //   .saveRequest(this.itemToSend)
-    //   .subscribe(
-    //     data => this.handleSuccessOnSave(data),
-    //     error => this.handleErrorOnSave(error)
-    //   );
+    this.questionnaireService
+      .saveRequest(this.itemToSend)
+      .subscribe(
+        data => this.handleSuccessOnSave(data),
+        error => this.handleErrorOnSave(error)
+      );
 
     console.log(this.itemToSend);
 
