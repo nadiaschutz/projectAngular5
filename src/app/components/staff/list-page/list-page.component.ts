@@ -476,11 +476,6 @@ export class ListPageComponent implements OnInit {
                 },
                 error => {
                   console.log(error);
-                },
-                () => {
-                  this.staffService.getAllEpisodeOfCare().subscribe(episodes => {
-                    this.buildEpisodeResponseObject(episodes);
-                  });
                 });
             }
 
