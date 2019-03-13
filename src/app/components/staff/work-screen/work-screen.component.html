@@ -11,7 +11,7 @@
         <div *ngIf="clinicians.length>0" class="col clinician">
           <div class="assign-clinician">
             <section class="form-inline">
-              <label><strong>Clinician Assigned</strong></label>
+              <label class="clinician-box-label"><strong>Clinician Assigned</strong></label>
               <select class="form-control select-clinician" required (change)="showClinicianButtons=!showClinicianButtons"
                 [(ngModel)]="selectedClinician" [compareWith]="compareClinicians">
                 <option *ngFor="let clinician of clinicians" [ngValue]="clinician">
@@ -57,7 +57,7 @@
   </div>
 
   <svg viewBox="0, 0, 100, 10">
-    <rect [attr.width]="value" height="1" fill="#398ef2"></rect><rect [attr.width]="otherValue" height="1" fill="#f8f8f8"></rect>
+    <rect [attr.width]="value" height="1" fill="#398ef2"></rect>
   </svg>
 
   <div class="row">

@@ -422,10 +422,7 @@ export class ListPageComponent implements OnInit {
   }
 
   getServiceTypeFromQuestionnaireResponse(questionnaireResponse) {
-    // const query = 'ASSESCAT';
-    // const queryTwo = 'ASSESTYPE';
-    // const ftw = 'FTWORK';
-    // const imrev = 'IMREVW';
+
     let serviceType = '';
     questionnaireResponse.item.forEach(item => {
       if (item.text === 'PSOHP Service' || item.text === 'Assessment Type' || item.text === 'Assessment Category') {
@@ -437,48 +434,7 @@ export class ListPageComponent implements OnInit {
     });
     console.log(serviceType);
     return serviceType;
-    // let found = '';
-    // let increment = 0;
-    // if (questionnaireResponse['identifier']) {
-    //   if (questionnaireResponse['identifier']['value'] === 'SERVREQ') {
-    //     if (questionnaireResponse && questionnaireResponse.item) {
-    //       questionnaireResponse.item.forEach(item => {
-    //         if (item['text'].includes('PSOHP Service')) {
-    //           if (item['answer']) {
-    //             if (item['answer'][0]['valueCoding']['code'] === 'PSOHPSERV' ) {
-    //               increment++;
-    //               if (item['answer'][increment]['valueString'].match(/\(([^)]+)\)/)[1] === imrev ||
-    //               item['answer'][increment]['valueString'].match(/\(([^)]+)\)/)[1] === ftw) {
-    //                 found = item['answer'][increment]['valueString'];
-    //               } else {
-    //                 item.answer.forEach(answer => {
-    //                   if (answer['valueCoding']) {
-    //                     if (answer['valueCoding']['code'] === query) {
-    //                       increment++;
-    //                       found = answer[increment]['valueString'].match(
-    //                         /\(([^)]+)\)/
-    //                       )[1];
-    //                     }
-    //                   }
-    //                   if (answer['valueCoding']) {
-    //                     if (answer['valueCoding'] === queryTwo) {
-    //                       increment++;
-    //                       found = answer[increment]['valueString'].match(
-    //                         /\(([^)]+)\)/
-    //                       )[1];
-    //                     }
-    //                   }
-    //                 });
-    //               }
-    //             }
-    //           }
-    //         }
-    //       });
-    //       increment = 0;
-    //       return found.match(/\(([^)]+)\)/)[1];
-    //     }
-    //   }
-    // }
+
   }
 
   associateCarePlanToEpisodeOfCare(

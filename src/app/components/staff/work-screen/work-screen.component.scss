@@ -234,12 +234,6 @@ button {
     padding: 0 0 21px 0;
     margin: -14px 0 0 0;
 }
-// li
-// {
-//    display:block;
-//    float:left;
-
-// }
 
 .bar{
     background-color: blueviolet;
@@ -250,4 +244,8 @@ button {
 :host{
     display: block;
     height: 100%;
+}
+
+.clinician-box-label {
+    margin-left: 11px;
 }

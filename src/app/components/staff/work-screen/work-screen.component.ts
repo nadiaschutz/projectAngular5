@@ -2,15 +2,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
 import { UserService } from '../../../service/user.service';
-import {
-  FormBuilder,
-  FormGroup,
-  FormControl
-} from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-work-screen',
@@ -18,7 +13,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./work-screen.component.scss']
 })
 export class WorkScreenComponent implements OnInit {
-
   @Input() value = 50;
   @Input() otherValue = 100;
 
@@ -84,7 +78,7 @@ export class WorkScreenComponent implements OnInit {
   assessmentType = [
     { value: 'IMMUNIZATION', viewValue: 'Immunization' },
     { value: 'AUDIOGRAM', viewValue: 'Audiogram' },
-    { value: 'TURBTEST', viewValue: 'Turberculosis' },
+    { value: 'TURBTEST', viewValue: 'Turberculosis' }
   ];
 
   constructor(
@@ -94,7 +88,7 @@ export class WorkScreenComponent implements OnInit {
     private oAuthService: OAuthService,
     private userService: UserService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.currentPractitionerFHIRIDInSession = sessionStorage.getItem(
@@ -116,8 +110,6 @@ export class WorkScreenComponent implements OnInit {
     );
     this.checkIfAssociatedDocCheckListExists();
     this.checkIfAssociatedStatusListExists();
-
-
   }
 
   // ngOnDestroy() {
@@ -278,7 +270,10 @@ export class WorkScreenComponent implements OnInit {
         } else if (element.resource.resourceType === 'Communication') {
           const communication = element.resource;
           if (communication['identifier']) {
-            if (communication['identifier'][0]['value'] !== 'CANCEL-REQUEST-' + this.episodeOfCareId) {
+            if (
+              communication['identifier'][0]['value'] !==
+              'CANCEL-REQUEST-' + this.episodeOfCareId
+            ) {
               if (communication.note) {
                 communication.note.forEach(note => {
                   this.processNoteForHistory(note);
@@ -286,7 +281,6 @@ export class WorkScreenComponent implements OnInit {
               }
             }
           }
-
         }
       });
     }
@@ -321,7 +315,7 @@ export class WorkScreenComponent implements OnInit {
   }
 
   sortHistory() {
-    this.historyToDisplay.sort(function (a, b) {
+    this.historyToDisplay.sort(function(a, b) {
       if (a['lastUpdated'] && b['lastUpdated']) {
         return (
           new Date(b['lastUpdated']).getTime() -
@@ -805,7 +799,7 @@ export class WorkScreenComponent implements OnInit {
 
   createCommunicationObject() {
     const communication = new FHIR.Communication();
-    const identifier = new FHIR.Identifier;
+    const identifier = new FHIR.Identifier();
 
     identifier.value = 'NOTE-' + this.episodeOfCareId;
     communication.resourceType = 'Communication';
@@ -1111,13 +1105,14 @@ export class WorkScreenComponent implements OnInit {
   /* Documents Functions */
 
   checkIfAssociatedDocCheckListExists() {
-    this.staffService
-      .getDocumentsChecklist(this.episodeOfCareId)
-      .subscribe(data => {
+    this.staffService.getDocumentsChecklist(this.episodeOfCareId).subscribe(
+      data => {
         if (data) {
+          console.log(data);
           if (data['entry']) {
             data['entry'].forEach(element => {
               this.checkListDocObject = element['resource'];
+              this.determineWorkOrderStatus(this.checkListDocObject);
               if (!this.checkListDocObject['item']) {
                 this.checkListDocObject['item'] = [];
               }
@@ -1126,7 +1121,11 @@ export class WorkScreenComponent implements OnInit {
             this.newDocChecklist();
           }
         }
-      });
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   newDocChecklist() {
@@ -1197,7 +1196,7 @@ export class WorkScreenComponent implements OnInit {
       reader.readAsDataURL(fileList[0]);
     }
     const that = this;
-    reader.onloadend = function () {
+    reader.onloadend = function() {
       file = reader.result;
       trimmedFile = file.split(',').pop();
       documentReference.resourceType = 'DocumentReference';
@@ -1217,7 +1216,7 @@ export class WorkScreenComponent implements OnInit {
       return reader.result;
     };
 
-    reader.onerror = function (error) {
+    reader.onerror = function(error) {
       console.log('ERROR: ', error);
     };
   }
@@ -1381,6 +1380,9 @@ export class WorkScreenComponent implements OnInit {
                     docs['entry'].forEach(docFound => {
                       const temp = {};
                       temp['type'] = 'doc';
+                      console.log(docFound['type']);
+                      temp['categoryType'] =
+                        docFound['resource']['type']['text'];
                       if (docFound['resource']['description']) {
                         temp['description'] =
                           docFound['resource']['description'];
@@ -1390,11 +1392,11 @@ export class WorkScreenComponent implements OnInit {
                         'DocumentReference/' + docFound['resource']['id'];
                       temp['dateCreated'] =
                         docFound['resource']['content'][0]['attachment'][
-                        'creation'
+                          'creation'
                         ];
                       temp['fileFullName'] =
                         docFound['resource']['content'][0]['attachment'][
-                        'title'
+                          'title'
                         ] +
                         '.' +
                         docFound['resource']['content'][0]['attachment'][
@@ -1409,7 +1411,7 @@ export class WorkScreenComponent implements OnInit {
                         .pop();
                       temp['title'] =
                         docFound['resource']['content'][0]['attachment'][
-                        'title'
+                          'title'
                         ];
                       temp['docCategory'] =
                         docFound['resource']['type']['text'];
@@ -1421,8 +1423,33 @@ export class WorkScreenComponent implements OnInit {
                       }
                       temp['lastUpdated'] =
                         docFound['resource']['meta']['lastUpdated'];
-                      this.history.push(temp);
-                      this.documentsList.push(temp);
+                      if (
+                        temp['categoryType']
+                          .toLowerCase()
+                          .includes('clinical') &&
+                        sessionStorage.getItem('userRole') === 'clinician'
+                      ) {
+                        this.history.push(temp);
+                        this.documentsList.push(temp);
+                      }
+                      if (
+                        !temp['categoryType']
+                          .toLowerCase()
+                          .includes('clinical') &&
+                        sessionStorage.getItem('userRole') !== 'clinician'
+                      ) {
+                        this.history.push(temp);
+                        this.documentsList.push(temp);
+                      }
+                      if (
+                        !temp['categoryType']
+                          .toLowerCase()
+                          .includes('clinical') &&
+                        sessionStorage.getItem('userRole') === 'clinician'
+                      ) {
+                        this.history.push(temp);
+                        this.documentsList.push(temp);
+                      }
                       this.setupAuthorNameForDisplay();
                       console.log(temp);
                     });
@@ -1552,10 +1579,24 @@ export class WorkScreenComponent implements OnInit {
 
   /* Document Functions (end) */
 
+  determineWorkOrderStatus(data) {
+    console.log(data);
+    const itemList = data['item'];
+    itemList.forEach(item => {
+      if (item['answer'].length > 1) {
+        console.log(item);
+      } else {
+        console.log('still needs a doc');
+      }
+    });
+  }
+
   redirectToLabRequisition() {
     if (sessionStorage.getItem('userRole') === 'clinician') {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
-      this.router.navigateByUrl('/staff/lab-requisition/' + this.episodeOfCareId);
+      this.router.navigateByUrl(
+        '/staff/lab-requisition/' + this.episodeOfCareId
+      );
     }
   }
 
@@ -1576,14 +1617,13 @@ export class WorkScreenComponent implements OnInit {
   redirectToAssessmentSelected(event) {
     if (sessionStorage.getItem('userRole') === 'clinician') {
       console.log(event);
-      if (event === ('IMMUNIZATION')) {
+      if (event === 'IMMUNIZATION') {
         this.router.navigateByUrl('/staff/clinical/immunization-screen');
       }
-      if (event === ('AUDIOGRAM')) {
-          this.router.navigateByUrl('/staff/audiogram/' + this.episodeOfCareId);
+      if (event === 'AUDIOGRAM') {
+        this.router.navigateByUrl('/staff/audiogram/' + this.episodeOfCareId);
       }
-      if (event === ('TURBTEST')) {
-
+      if (event === 'TURBTEST') {
       }
     }
   }
@@ -1593,5 +1633,4 @@ export class WorkScreenComponent implements OnInit {
     console.log(this.collapseFlag);
     // return collapse;
   }
-
 }
