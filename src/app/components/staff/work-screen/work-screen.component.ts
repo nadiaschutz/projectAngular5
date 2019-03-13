@@ -13,10 +13,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./work-screen.component.scss']
 })
 export class WorkScreenComponent implements OnInit {
-<<<<<<< HEAD
-=======
-
->>>>>>> 5fcedf952b35428ff771004b62b580b111239b47
   @Input() value = 50;
   @Input() otherValue = 100;
 
