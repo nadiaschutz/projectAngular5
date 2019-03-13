@@ -42,7 +42,9 @@ export class AuthComponent implements OnInit {
   }
 
   login() {
-    this.userService.login(this.logInForm.get('username').value.toString().trim(), this.logInForm.get('password').value.toString().trim());
+    const user = this.logInForm.get('username').value.toString().trim();
+    const pass = this.logInForm.get('password').value.toString().trim();
+    this.userService.login(user, pass);
   }
 
   spinnerStatus() {
