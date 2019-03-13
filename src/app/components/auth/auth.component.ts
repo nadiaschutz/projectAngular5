@@ -42,11 +42,15 @@ export class AuthComponent implements OnInit {
   }
 
   login() {
-    this.userService.login(this.logInForm.get('username').value.toString(), this.logInForm.get('password').value.toString());
+    this.userService.login(this.logInForm.get('username').value.toString().trim(), this.logInForm.get('password').value.toString().trim());
   }
 
   spinnerStatus() {
     return this.userService.returnSpinner();
+  }
+
+  errorFlag() {
+    return this.userService.returnErrorFlag();
   }
 
 }

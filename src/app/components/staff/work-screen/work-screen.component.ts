@@ -81,6 +81,12 @@ export class WorkScreenComponent implements OnInit {
     { value: 'TURBTEST', viewValue: 'Turberculosis' }
   ];
 
+  statusSelectionList = [
+    { value: 'stopped', viewValue: 'WAITING' },
+    { value: 'ACTION-REQUIRED', viewValue: 'ACTION REQUIRED' },
+    { value: 'IN-PROGRESS', viewValue: 'IN PROGRESS' },
+  ];
+
   constructor(
     private staffService: StaffService,
     private utilService: UtilService,

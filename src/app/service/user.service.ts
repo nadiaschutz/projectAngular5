@@ -14,6 +14,7 @@ export class UserService {
   selectedIDForEmployeePostSummary = '';
   userRoleInSession = '';
   showSpinner;
+  showErrorFlag;
   constructor(
     private httpClient: HttpClient,
     private oauthService: OAuthService,
@@ -68,6 +69,7 @@ export class UserService {
     // scopeURL is an environment variable that a user sets, containing scopes that are relevant
     // to the user & use case.
     this.showSpinner = !this.showSpinner;
+    this.showErrorFlag = false;
     this.oauthService
       .fetchTokenUsingPasswordFlow(user, pass, header)
       .then(() => {
@@ -95,6 +97,10 @@ export class UserService {
             }
           }, 500);
         });
+      }).catch((err) => {
+        this.showSpinner = !this.showSpinner;
+        this.showErrorFlag = true;
+        console.log(err);
       });
   }
 
@@ -112,6 +118,10 @@ export class UserService {
 
   returnSpinner() {
     return this.showSpinner;
+  }
+
+  returnErrorFlag() {
+    return this.showErrorFlag;
   }
 
   /**
