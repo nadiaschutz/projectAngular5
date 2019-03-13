@@ -13,8 +13,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./work-screen.component.scss']
 })
 export class WorkScreenComponent implements OnInit {
-  @Input() value = 50;
-  @Input() otherValue = 100;
+  @Input() progressBarValue = 0;
+  // @Input() otherValue = 100;
 
   documentChecklistItemsList = [];
 
@@ -1576,19 +1576,22 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
-  /* Document Functions (end) */
-
   determineWorkOrderStatus(data) {
     console.log(data);
     const itemList = data['item'];
+    const numberOfItems = itemList.length;
     itemList.forEach(item => {
       if (item['answer'].length > 1) {
         console.log(item);
       } else {
         console.log('still needs a doc');
+        this.progressBarValue = 75;
       }
     });
   }
+
+  /* Document Functions (end) */
+
 
   redirectToLabRequisition() {
     if (sessionStorage.getItem('userRole') === 'clinician') {

@@ -57,7 +57,7 @@
   </div>
 
   <svg viewBox="0, 0, 100, 10">
-    <rect [attr.width]="value" height="1" fill="#398ef2"></rect>
+    <rect [attr.width]="progressBarValue" height="1" fill="#398ef2"></rect>
   </svg>
 
   <div class="row">
@@ -368,7 +368,8 @@
         <div class="card" *ngFor="let item of historyToDisplay;let i = index;">
           <div class="card-body ">
             <div class="card-title">
-              <a href="#itemId{{i}}" class="remove-link-colour" data-toggle="collapse">{{item.title}}</a>
+              <a href="#itemId{{i}}" *ngIf="item.type === 'doc'" class="remove-link-colour" data-toggle="collapse">Document: {{item.title}}</a>
+              <a href="#itemId{{i}}" *ngIf="item.type !== 'doc'" class="remove-link-colour" data-toggle="collapse">{{item.title}}</a>
               <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
             </div>
 
