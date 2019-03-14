@@ -17,10 +17,13 @@ export class ReportingComponent implements OnInit {
   // this task has 2 parts: building the screen, and having the data exported to a csv
 
   ngOnInit() {
+    this.staffService.getEpisodeOfCareAndRelatedData('13693').subscribe(data => {
+      console.log(data);
+    });
   }
 
   export() {
-    this.staffService.getEpisodeOfCareAndRelatedData('13546').subscribe(data => {
+    this.staffService.getEpisodeOfCareAndRelatedData('13693').subscribe(data => {
       console.log(data);
     });
   }
@@ -32,7 +35,13 @@ export class ReportingComponent implements OnInit {
   // 8.Charge back 9.Cliet Type 10.OHAG Occupation 11.Received Date
   // 12.Validated Date 13.Assigned Date 14.Scheduled Date 15.Work completed date
   // 16.Closed date 17. Assessment code and 18. Exam by code
-  buildServiceRequestData() {}
+  buildServiceRequestData(data) {
+    const temp = {};
+    if (data.resource.resourceType === 'EpisodeOfCare') {
+    } else if (data.resource.resourceType === 'QuestionnaireResponse') {
+    } else if (data.resource.resourceType === 'Patient') {
+    }
+  }
 
   exportToCSV(data) {
     const options = {
