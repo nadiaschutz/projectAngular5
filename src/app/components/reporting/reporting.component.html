@@ -1,24 +1,81 @@
 <div class="container">
   <h5>Reporting</h5>
 
-  <!-- <form [formGroup]="noteFormGroup" novalidate> -->
+  <form [formGroup]="reportingFormGroup" novalidate>
     <div>
   
       <!-- Date Range selection -->
-      <div>
+      <div class="sample-section">
         <h6>SELECT DATE RANGE</h6>
+
+        <div class="row">
+          <div class="col-6">
+            <button class="btn special-button">Year</button>
+            <button class="btn special-button range">Quarter</button>
+            <button class="btn special-button range">Month</button>
+          </div>
+          <div class="col-6">
+            <input type="text" placeholder="Start Date" class="form-control date-picker" bsDatepicker [bsConfig]="datePickerConfig" formControlName="startDate" id="startDate">
+            <input type="text" placeholder="End Date" class="form-control date-picker end-date" bsDatepicker
+            [bsConfig]="datePickerConfig" formControlName="endDate" id="endDate">
+          </div>
+        </div>
       </div>
   
       <!-- Select Sample -->
-      <div>
+      <div class="sample-section">
         <h6>SELECT SAMPLE</h6>
   
         <div>
-          <!-- <label for="all">All</label>
-          <input type="text" name="all" id="all" formControlName="all" class="form-control">
 
-          <label for="psohp">PSOHP</label>
-          <input type="text" name="psohp" id="psohp" formControlName="psohp" class="form-control"> -->
+          <div class="row">
+            <div class="col">
+              <label for="all">All</label>
+              <input type="text" name="all" id="all" formControlName="all" class="form-control">
+            </div>
+            <div class="col">
+              <label for="psohp">PSOHP</label>
+              <input type="text" name="psohp" id="psohp" formControlName="psohp" class="form-control">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label for="region">Region</label>
+              <select name="region" id="region" formControlName="region" class="form-control">
+              <option *ngFor="let region of regions">
+                <span>{{region}}</span>
+              </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="psohpType">Type</label>
+              <select name="psohpType" id="psohpType" formControlName="psohpType" class="form-control">
+              <option *ngFor="let psohpType of psohpTypes">
+                <span>{{psohpType}}</span>
+              </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label for="department">Department</label>
+              <select name="department" id="department" formControlName="department" class="form-control">
+              <option *ngFor="let department of clientDepartments">
+                <span>{{department}}</span>
+              </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="status">Status</label>
+              <select name="status" id="status" formControlName="status" class="form-control">
+              <option *ngFor="let status of statuses">
+                <span>{{status}}</span>
+              </option>
+              </select>
+            </div>
+          </div>
 
           <!-- <label for="assignTo">Assign To</label>
           <select name="assignTo" id="assignTo" formControlName="assignTo" class="form-control" required>
@@ -32,12 +89,24 @@
       </div>
   
       <!-- Select Data Set -->
-      <div>
+      <div class="sample-section">
         <h6>SELECT DATA SET</h6>
+
+        <div class="row">
+          <div class="col">
+            <label for="serviceRequest">Service Request</label>
+            <input type="text" name="serviceRequest" id="serviceRequest" formControlName="serviceRequest" class="form-control">
+          </div>
+          <div class="col">
+            <label for="vaccines">Labs/Vaccines</label>
+            <input type="text" name="vaccines" id="vaccines" formControlName="vaccines" class="form-control">
+          </div>
+        </div>
+
       </div>
-      <button (click)="export()">Export</button>
+      <button (click)="export()" class="export btn special-button">Export</button>
     </div>
 
-  <!-- </form> -->
+  </form>
 
 </div>
