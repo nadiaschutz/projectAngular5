@@ -670,7 +670,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               typeof (el.answer) === 'boolean' ? [
                 {
                   valueCoding: {
-                    code: el.code
+                    code: el.code,
+                    system: el.system
                   }
                 },
                 {
@@ -680,7 +681,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
                 typeof (el.answer) === 'string' ? [
                   {
                     valueCoding: {
-                      code: el.code
+                      code: el.code,
+                      system: el.system
                     }
                   },
                   {
@@ -846,7 +848,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
           enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-          value: ''
+          value: null
         };
 
       } else if (el.code[1].code === 'TEXT') {
@@ -1089,7 +1091,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       ...this.item,
       linkId: el.linkId,
       text: el.text,
-      code: el.code[0].code
+      code: el.code[0].code,
+      system: el.code[0].system
+
     }));
   }
 

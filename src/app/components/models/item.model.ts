@@ -3,6 +3,7 @@ export interface Item {
     text: string;
     answer: any;
     code?: any;
+    system?: any;
 }
 
 export interface ServRequest {
