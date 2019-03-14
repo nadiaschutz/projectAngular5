@@ -60,17 +60,120 @@
     <rect [attr.width]="progressBarValue" height="1" fill="#398ef2"></rect>
   </svg> -->
 
-  <div class="vefs-milestone-wrapper">
+  <div *ngIf="milestoneForDisplay === 'validated'">
+      <div class="vefs-milestone-wrapper">
+        <div class="milestone-container">
+  
+          <div class="chart-container">
+            <div class="line-container">
+              <div class="line-status"></div>
+              <div class="line-status left" style="width: 0%;"></div>
+            </div>
+  
+            <div class="dot-container">
+              <div class="milestones milestone__0">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__25">
+                <div class="dot"></div>
+              </div>
+              <div class="milestones milestone__50">
+                <div class="dot"></div>
+              </div>
+              <div class="milestones milestone__75">
+                <div class="dot"></div>
+              </div>
+              <div class="milestones milestone__100">
+                <div class="dot"></div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="label-container">
+            <div class="milestones milestone__0">
+              <div class="label colored">Validated</div>
+            </div>
+            <div class="milestones milestone__25">
+              <div class="label">Assigned</div>
+            </div>
+            <div class="milestones milestone__50">
+              <div class="label">Scheduled</div>
+            </div>
+            <div class="milestones milestone__75">
+              <div class="label">Work Completed</div>
+            </div>
+            <div class="milestones milestone__100">
+              <div class="label">Closed</div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+  </div>
+
+  <div *ngIf="milestoneForDisplay === 'assigned'">
+      <div class="vefs-milestone-wrapper">
+        <div class="milestone-container">
+  
+          <div class="chart-container">
+            <div class="line-container">
+              <div class="line-status"></div>
+              <div class="line-status left" style="width: 25%;"></div>
+            </div>
+  
+            <div class="dot-container">
+              <div class="milestones milestone__0">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__25">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__50">
+                <div class="dot"></div>
+              </div>
+              <div class="milestones milestone__75">
+                <div class="dot"></div>
+              </div>
+              <div class="milestones milestone__100">
+                <div class="dot"></div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="label-container">
+            <div class="milestones milestone__0">
+              <div class="label colored">Validated</div>
+            </div>
+            <div class="milestones milestone__25">
+              <div class="label colored">Assigned</div>
+            </div>
+            <div class="milestones milestone__50">
+              <div class="label">Scheduled</div>
+            </div>
+            <div class="milestones milestone__75">
+              <div class="label">Work Completed</div>
+            </div>
+            <div class="milestones milestone__100">
+              <div class="label">Closed</div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+  </div>
+
+  <div *ngIf="milestoneForDisplay === 'scheduled'">
+    <div class="vefs-milestone-wrapper">
       <div class="milestone-container">
-    
+
         <div class="chart-container">
           <div class="line-container">
             <div class="line-status"></div>
-            <div class="line-status left" style="width: 67%;"></div>
+            <div class="line-status left" style="width: 50%;"></div>
           </div>
-    
+
           <div class="dot-container">
-            <div class="milestones milestone__10">
+            <div class="milestones milestone__0">
               <div class="dot completed colored"></div>
             </div>
             <div class="milestones milestone__25">
@@ -79,7 +182,7 @@
             <div class="milestones milestone__50">
               <div class="dot completed colored"></div>
             </div>
-            <div class="milestones milestone__80">
+            <div class="milestones milestone__75">
               <div class="dot"></div>
             </div>
             <div class="milestones milestone__100">
@@ -87,28 +190,131 @@
             </div>
           </div>
         </div>
-    
+
         <div class="label-container">
-          <div class="milestones milestone__10">
-            <div class="label colored">10%</div>
+          <div class="milestones milestone__0">
+            <div class="label colored">Validated</div>
           </div>
           <div class="milestones milestone__25">
-            <div class="label colored">25%</div>
+            <div class="label colored">Assigned</div>
           </div>
           <div class="milestones milestone__50">
-            <div class="label colored">50%</div>
+            <div class="label colored">Scheduled</div>
           </div>
-          <div class="milestones milestone__80">
-            <div class="label">80%</div>
+          <div class="milestones milestone__75">
+            <div class="label">Work Completed</div>
           </div>
           <div class="milestones milestone__100">
-            <div class="label">100%</div>
+            <div class="label">Closed</div>
           </div>
         </div>
-    
+
       </div>
     </div>
-    
+  </div>
+
+  <div *ngIf="milestoneForDisplay === 'work-completed'">
+      <div class="vefs-milestone-wrapper">
+        <div class="milestone-container">
+  
+          <div class="chart-container">
+            <div class="line-container">
+              <div class="line-status"></div>
+              <div class="line-status left" style="width: 75%;"></div>
+            </div>
+  
+            <div class="dot-container">
+              <div class="milestones milestone__0">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__25">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__50">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__75">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__100">
+                <div class="dot"></div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="label-container">
+            <div class="milestones milestone__0">
+              <div class="label colored">Validated</div>
+            </div>
+            <div class="milestones milestone__25">
+              <div class="label colored">Assigned</div>
+            </div>
+            <div class="milestones milestone__50">
+              <div class="label colored">Scheduled</div>
+            </div>
+            <div class="milestones milestone__75">
+              <div class="label colored">Work Completed</div>
+            </div>
+            <div class="milestones milestone__100">
+              <div class="label">Closed</div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+  </div>
+
+  <div *ngIf="milestoneForDisplay === 'closed'">
+      <div class="vefs-milestone-wrapper">
+        <div class="milestone-container">
+  
+          <div class="chart-container">
+            <div class="line-container">
+              <div class="line-status"></div>
+              <div class="line-status left" style="width: 100%;"></div>
+            </div>
+  
+            <div class="dot-container">
+              <div class="milestones milestone__0">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__25">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__50">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__75">
+                <div class="dot completed colored"></div>
+              </div>
+              <div class="milestones milestone__100">
+                <div class="dot completed colored"></div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="label-container">
+            <div class="milestones milestone__0">
+              <div class="label colored">Validated</div>
+            </div>
+            <div class="milestones milestone__25">
+              <div class="label colored">Assigned</div>
+            </div>
+            <div class="milestones milestone__50">
+              <div class="label colored">Scheduled</div>
+            </div>
+            <div class="milestones milestone__75">
+              <div class="label colored">Work Completed</div>
+            </div>
+            <div class="milestones milestone__100">
+              <div class="label colored">Closed</div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+  </div>
+
   
   <div class="row">
     <h6 class="col-4">History</h6>
@@ -364,11 +570,11 @@
                         </div>
                       </div>
                       <div *ngIf="!item['answer']">
-                          <div *ngIf="item['answer'][1]['valueReference']['reference'] === display['docReference']">
-                            <label for="">Document Associated: <strong>Only Available to Clinical Users</strong></label>
-                            <label for=""></label>
-                          </div>
+                        <div *ngIf="item['answer'][1]['valueReference']['reference'] === display['docReference']">
+                          <label for="">Document Associated: <strong>Only Available to Clinical Users</strong></label>
+                          <label for=""></label>
                         </div>
+                      </div>
                     </div>
                     <div>
                       <label for="docSelected{{item['linkId']}}">Select a document</label>
@@ -424,7 +630,8 @@
         <div class="card" *ngFor="let item of historyToDisplay;let i = index;">
           <div class="card-body ">
             <div class="card-title">
-              <a href="#itemId{{i}}" *ngIf="item.type === 'doc'" class="remove-link-colour" data-toggle="collapse">Document: {{item.title}}</a>
+              <a href="#itemId{{i}}" *ngIf="item.type === 'doc'" class="remove-link-colour" data-toggle="collapse">Document:
+                {{item.title}}</a>
               <a href="#itemId{{i}}" *ngIf="item.type !== 'doc'" class="remove-link-colour" data-toggle="collapse">{{item.title}}</a>
               <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
             </div>
@@ -509,8 +716,16 @@
       <div class="search-box">
         <div *ngFor="let item of carePlanActivities; let i = index">
           <label>
-            <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}" id="i">
-            <span class="checklist-label">{{item.description}}</span>
+            <table>
+              <tr>
+                <td> <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" checked="{{item.value}}"
+                    id="i"></td>
+                <td class="checklist-desc"> <span class="checklist-label">{{item.description}}</span></td>
+
+              </tr>
+            </table>
+
+
           </label>
         </div>
       </div>

@@ -51,6 +51,7 @@ export class WorkScreenComponent implements OnInit {
   showOnlyDocs = false;
   collapseFlag = false;
   displayDocStatus = 'WAITING';
+  milestoneForDisplay = 'assigned';
   encounterd;
   currentPractitionerFHIRIDInSession;
 
@@ -1116,7 +1117,7 @@ export class WorkScreenComponent implements OnInit {
     // statusItemFive.answer = [statusItemAnswer];
 
     statusItemSix.linkId = '0';
-    statusItemSix.text = 'On-Hold';
+    statusItemSix.text = 'Received';
     // statusItemSix.answer = [statusItemAnswer];
     statusItemAnswer.valueBoolean = true;
 
