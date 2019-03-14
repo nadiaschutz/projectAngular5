@@ -138,7 +138,7 @@ export class WorkScreenComponent implements OnInit {
             if (answer['valueBoolean'] === true) {
               counter ++;
               if (counter === lengthOfItems) {
-                console.log('they match')
+                console.log('they match', counter)
                 this.checkListDocObject['status'] = 'in-progress';
                 this.staffService.updateDocumentsChecklist(
                   this.checkListDocObject['id'],
@@ -1163,6 +1163,8 @@ export class WorkScreenComponent implements OnInit {
           if (data['entry']) {
             data['entry'].forEach(element => {
               this.checkListDocObject = element['resource'];
+              this.checkDocListStatus();
+
               // this.determineWorkOrderStatus(this.checkListDocObject);
               for (const status of this.statusSelectionList) {
                 if (status['value'] === this.checkListDocObject['status']) {
@@ -1172,7 +1174,6 @@ export class WorkScreenComponent implements OnInit {
               if (!this.checkListDocObject['item']) {
                 this.checkListDocObject['item'] = [];
               }
-              this.checkDocListStatus();
 
             });
           } else {

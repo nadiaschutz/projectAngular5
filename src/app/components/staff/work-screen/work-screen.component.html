@@ -60,6 +60,57 @@
     <rect [attr.width]="progressBarValue" height="1" fill="#398ef2"></rect>
   </svg> -->
 
+  <div *ngIf="!milestoneForDisplay">
+      <div class="vefs-milestone-wrapper">
+        <div class="milestone-container">
+  
+          <div class="chart-container">
+            <div class="line-container">
+              <div class="line-status"></div>
+              <div class="line-status left" style="width: 0%;"></div>
+            </div>
+  
+            <div class="dot-container">
+              <div class="milestones milestone__0">
+                <div class="dot"></div>
+              </div>
+              <div class="milestones milestone__25">
+                <div class="dot"></div>
+              </div>
+              <div class="milestones milestone__50">
+                <div class="dot"></div>
+              </div>
+              <div class="milestones milestone__75">
+                <div class="dot"></div>
+              </div>
+              <div class="milestones milestone__100">
+                <div class="dot"></div>
+              </div>
+            </div>
+          </div>
+  
+          <div class="label-container">
+            <div class="milestones milestone__0">
+              <div class="label">Validated</div>
+            </div>
+            <div class="milestones milestone__25">
+              <div class="label">Assigned</div>
+            </div>
+            <div class="milestones milestone__50">
+              <div class="label">Scheduled</div>
+            </div>
+            <div class="milestones milestone__75">
+              <div class="label">Work Completed</div>
+            </div>
+            <div class="milestones milestone__100">
+              <div class="label">Closed</div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+  </div>
+
   <div *ngIf="milestoneForDisplay === 'validated'">
       <div class="vefs-milestone-wrapper">
         <div class="milestone-container">
@@ -609,6 +660,11 @@
                         Add checklist item
                       </button>
                     </div>
+                    <div class="col">
+                        <button class="btn regular-button btn-file" [disabled]='!checkListItemGroup.valid' (click)='saveItemToQResponse()'>
+                          Add checklist item
+                        </button>
+                      </div>
                   </div>
                 </section>
               </form>
@@ -631,7 +687,7 @@
           <div class="card-body ">
             <div class="card-title">
               <a href="#itemId{{i}}" *ngIf="item.type === 'doc'" class="remove-link-colour" data-toggle="collapse">Document:
-                {{item.title}}</a>
+                {{item['fileFullName']}}</a>
               <a href="#itemId{{i}}" *ngIf="item.type !== 'doc'" class="remove-link-colour" data-toggle="collapse">{{item.title}}</a>
               <font class="task-status" *ngIf="item.type==='task'">{{item.status | titlecase}}</font>
             </div>
@@ -659,8 +715,8 @@
                 <strong>Instructions: </strong>{{item.note}}
               </p>
               <p class="card-text" *ngIf="item.type==='doc'">
-                <strong (click)="downloadFile(item)">Filename: </strong>
-                <span class="cursor">
+                <strong>Filename: </strong>
+                <span class="cursor" (click)="downloadFile(item)">
                   {{item['fileFullName']}} ↓
                 </span>
               </p>
@@ -713,7 +769,12 @@
       <!-- <button class=" btn regular-button col-6">Cancel Work Order</button> -->
       <!-- <div #spacer></div>
       <div #boundary> stickyThing [spacer]="spacer" [boundary]="boundary" -->
+      
       <div class="search-box">
+        <div>
+            <button class=" btn regular-button col-6 ">Update</button>
+
+        </div>
         <div *ngFor="let item of carePlanActivities; let i = index">
           <label>
             <table>
