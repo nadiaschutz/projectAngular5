@@ -771,14 +771,19 @@
       <div #boundary> stickyThing [spacer]="spacer" [boundary]="boundary" -->
 
       <div class="search-box">
-        <div class="text-center" *ngIf="enableWorkListUpdate">
-          <button class=" btn regular-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update Work Progress</button>
+        <div class="text-center update-section">
+          <div *ngIf="enableWorkListUpdate">
+            <button class=" btn special-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update
+              Work Progress</button>
+          </div>
+          <div *ngIf="!enableWorkListUpdate">
+            <button class=" btn regular-button col-5 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Cancel</button>
+            <button class=" btn regular-button col-5 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Save
+              Changes</button>
+          </div>
         </div>
-        <div *ngIf="!enableWorkListUpdate">
-          <button class=" btn regular-button col-5 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Cancel</button>
-          <button class=" btn regular-button col-5 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Save
-            Changes</button>
-        </div>
+
+
         <div *ngFor="let item of carePlanActivities; let i = index">
           <label>
             <table>

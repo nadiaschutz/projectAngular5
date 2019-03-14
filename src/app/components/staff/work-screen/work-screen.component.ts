@@ -1075,6 +1075,16 @@ export class WorkScreenComponent implements OnInit {
         } else {
           data['entry'].forEach(entry => {
             this.statusObject = entry['resource'];
+            if (this.statusObject['item']) {
+              for (const item of this.statusObject['item']) {
+                if (item['answer']) {
+                  if (item['answer'][0]['valueBoolean'] === true) {
+                    console.log(item['text'])
+                    this.milestoneForDisplay = item['text'];
+                  }
+                }
+              }
+            }
           });
         }
       }

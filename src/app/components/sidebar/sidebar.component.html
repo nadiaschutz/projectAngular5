@@ -6,10 +6,10 @@
     </li>
   </div>
   <div [ngClass]="roleInSession" *ngIf="roleInSession === 'manager' || roleInSession === 'superuser' ">
-      <li (click)="staffUI()" class="menu-item">
-        <a (click)="staffUI()">Home</a>
-      </li>
-    </div>
+    <li (click)="staffUI()" class="menu-item">
+      <a (click)="staffUI()">Home</a>
+    </li>
+  </div>
   <div *ngIf="roleInSession !== 'admin' && roleInSession !== 'clinician' && roleInSession !== 'manager' && roleInSession !== 'superuser'">
     <li (click)="clientPage()" class="menu-item">
       <a (click)="clientPage()">Home</a>
@@ -21,7 +21,7 @@
       <a (click)="clientPage()">Clients</a>
     </li>
   </div>
-  
+
 
   <div [ngClass]="roleInSession">
     <li (click)="serviceRequestPage()" class="menu-item">

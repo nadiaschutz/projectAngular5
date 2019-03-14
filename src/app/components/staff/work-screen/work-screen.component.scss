@@ -176,7 +176,7 @@ $milestone-20-color: #73d2de;
 }
 
 .card {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     border-radius: 3px;
     box-shadow: 0 2px 4px 0 rgba(215, 215, 215, 0.5);
     background-color: #ffffff;
@@ -396,4 +396,10 @@ button {
     margin-left: 11px;
 }
 
+.button-padding {
+  margin: 5px;
+}
 
+.update-section {
+  margin-bottom: 20px;
+}
