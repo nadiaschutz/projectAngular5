@@ -773,13 +773,13 @@
       <div class="search-box">
         <div class="text-center update-section">
           <div *ngIf="enableWorkListUpdate">
-            <button class=" btn special-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update
+            <button class="btn special-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update
               Work Progress</button>
           </div>
           <div *ngIf="!enableWorkListUpdate">
-            <button class=" btn regular-button col-5 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Cancel</button>
-            <button class=" btn regular-button col-5 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Save
-              Changes</button>
+            <button class="btn regular-button function-buttons col-4 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Cancel Changes</button>
+            <button class="btn regular-button function-buttons col-4 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Save Changes</button>
+            <button class="btn regular-button function-buttons col-3 button-padding" (click)="redirectToCloseScreen()">Close Order</button>
           </div>
         </div>
 

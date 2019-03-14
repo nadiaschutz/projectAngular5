@@ -15,14 +15,11 @@
       <a (click)="clientPage()">Home</a>
     </li>
   </div>
-
   <div *ngIf="roleInSession === 'admin' || roleInSession === 'clinician' || roleInSession === 'manager' || roleInSession === 'superuser'">
     <li (click)="clientPage()" class="menu-item">
       <a (click)="clientPage()">Clients</a>
     </li>
   </div>
-
-
   <div [ngClass]="roleInSession">
     <li (click)="serviceRequestPage()" class="menu-item">
       <a (click)="serviceRequestPage()">Service Requests</a>
@@ -39,7 +36,6 @@
   <li (click)="adviceRequestPage()" class="menu-item">
     <a (click)="adviceRequestPage()">Contact Us</a>
   </li>
-
   <div [ngClass]="roleInSession">
     <li (click)="acccountCreation()" class="menu-item">
       <a (click)="acccountCreation()">Add New Account</a>
