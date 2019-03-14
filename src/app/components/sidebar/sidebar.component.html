@@ -1,7 +1,27 @@
 <ul class="menu">
-  <li (click)="clientPage()" class="menu-item">
-    <a (click)="clientPage()">Clients</a>
-  </li>
+
+  <div [ngClass]="roleInSession" *ngIf="roleInSession === 'admin' || roleInSession === 'clinician'">
+    <li (click)="adminHomeScreen()" class="menu-item">
+      <a (click)="adminHomeScreen()">Home</a>
+    </li>
+  </div>
+  <div [ngClass]="roleInSession" *ngIf="roleInSession === 'manager' || roleInSession === 'superuser' ">
+      <li (click)="staffUI()" class="menu-item">
+        <a (click)="staffUI()">Home</a>
+      </li>
+    </div>
+  <div *ngIf="roleInSession !== 'admin' && roleInSession !== 'clinician' && roleInSession !== 'manager' && roleInSession !== 'superuser'">
+    <li (click)="clientPage()" class="menu-item">
+      <a (click)="clientPage()">Home</a>
+    </li>
+  </div>
+
+  <div *ngIf="roleInSession === 'admin' || roleInSession === 'clinician' || roleInSession === 'manager' || roleInSession === 'superuser'">
+    <li (click)="clientPage()" class="menu-item">
+      <a (click)="clientPage()">Clients</a>
+    </li>
+  </div>
+  
 
   <div [ngClass]="roleInSession">
     <li (click)="serviceRequestPage()" class="menu-item">
@@ -19,25 +39,15 @@
   <li (click)="adviceRequestPage()" class="menu-item">
     <a (click)="adviceRequestPage()">Contact Us</a>
   </li>
-  <div [ngClass]="roleInSession">
-    <li (click)="staffUI()" class="menu-item">
-      <a (click)="staffUI()">Staff Home</a>
-    </li>
-  </div>
+
   <div [ngClass]="roleInSession">
     <li (click)="acccountCreation()" class="menu-item">
       <a (click)="acccountCreation()">Add New Account</a>
     </li>
   </div>
-  <div [ngClass]="roleInSession">
 
-    <!-- fix me -->
-    <li (click)="adminHomeScreen()" class="menu-item">
-      <a (click)="adminHomeScreen()">Admin Home</a>
-    </li>
-  </div>
   <!-- </div> -->
- 
+
 </ul>
 <!-- <li class="menu-item">
       <a >My Profile</a>

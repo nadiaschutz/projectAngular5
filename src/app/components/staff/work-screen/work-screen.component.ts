@@ -50,6 +50,7 @@ export class WorkScreenComponent implements OnInit {
   showOnlyNotes = false;
   showOnlyDocs = false;
   collapseFlag = false;
+  enableWorkListUpdate = true;
   displayDocStatus = 'WAITING';
   milestoneForDisplay = 'assigned';
   encounterd;
