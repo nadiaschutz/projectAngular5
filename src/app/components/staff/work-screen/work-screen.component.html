@@ -111,7 +111,7 @@
     </div>
   </div>
 
-  <div *ngIf="milestoneForDisplay === 'validated'">
+  <div *ngIf="milestoneForDisplay === 'Validated'">
     <div class="vefs-milestone-wrapper">
       <div class="milestone-container">
 
@@ -162,7 +162,7 @@
     </div>
   </div>
 
-  <div *ngIf="milestoneForDisplay === 'assigned'">
+  <div *ngIf="milestoneForDisplay === 'Assigned'">
     <div class="vefs-milestone-wrapper">
       <div class="milestone-container">
 
@@ -213,7 +213,7 @@
     </div>
   </div>
 
-  <div *ngIf="milestoneForDisplay === 'scheduled'">
+  <div *ngIf="milestoneForDisplay === 'Scheduled'">
     <div class="vefs-milestone-wrapper">
       <div class="milestone-container">
 
@@ -264,7 +264,7 @@
     </div>
   </div>
 
-  <div *ngIf="milestoneForDisplay === 'work-completed'">
+  <div *ngIf="milestoneForDisplay === 'Work-Completed'">
     <div class="vefs-milestone-wrapper">
       <div class="milestone-container">
 
@@ -315,7 +315,7 @@
     </div>
   </div>
 
-  <div *ngIf="milestoneForDisplay === 'closed'">
+  <div *ngIf="milestoneForDisplay === 'Closed'">
     <div class="vefs-milestone-wrapper">
       <div class="milestone-container">
 
@@ -771,8 +771,8 @@
       <div #boundary> stickyThing [spacer]="spacer" [boundary]="boundary" -->
 
       <div class="search-box">
-        <div *ngIf="enableWorkListUpdate">
-          <button class=" btn regular-button col-6 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update</button>
+        <div class="text-center" *ngIf="enableWorkListUpdate">
+          <button class=" btn regular-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update Work Progress</button>
         </div>
         <div *ngIf="!enableWorkListUpdate">
           <button class=" btn regular-button col-5 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Cancel</button>

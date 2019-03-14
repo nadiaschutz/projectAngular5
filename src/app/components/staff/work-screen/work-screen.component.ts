@@ -52,7 +52,7 @@ export class WorkScreenComponent implements OnInit {
   collapseFlag = false;
   enableWorkListUpdate = true;
   displayDocStatus = 'WAITING';
-  milestoneForDisplay = 'assigned';
+  milestoneForDisplay;
   encounterd;
   currentPractitionerFHIRIDInSession;
 
@@ -675,7 +675,7 @@ export class WorkScreenComponent implements OnInit {
     const itemReason = new FHIR.Answer();
 
     const selectedStatus = this.statusFormGroup.get('status').value;
-
+    this.milestoneForDisplay = selectedStatus;
     itemTime.valueDate = this.utilService.getCurrentDate();
     itemReason.valueString = this.statusFormGroup.get('statusNote').value;
     this.statusObject['item'].forEach(element => {
