@@ -17,15 +17,19 @@
 
                                 <input type="password" class="form-control form-field" placeholder="Password"
                                     formControlName="password">
+                                <div class="alert alert-danger" *ngIf="errorFlag() && !spinnerStatus()">
+                                    Username & Password combination is incorrect
+                                </div>
                                 <button *ngIf="!spinnerStatus()" class="btn" id="logbtn" (click)="login()">
                                     Log in
                                 </button>
+
                             </div>
 
                         </div>
                     </div>
                 </form>
-                <div *ngIf="spinnerStatus()">
+                <div *ngIf="spinnerStatus() && !errorFlag()">
                     <div class="lds-spinner">
                         <div></div>
                         <div></div>
@@ -41,6 +45,7 @@
                         <div></div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

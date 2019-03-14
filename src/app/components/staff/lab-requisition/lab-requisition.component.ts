@@ -9,7 +9,7 @@ import * as jspdf from 'jspdf';
 import * as html2canvas from 'html2canvas';
 import {PatientService} from '../../../service/patient.service';
 import { formatDate } from '@angular/common';
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute} from '@angular/router';
 import * as moment from 'moment';
 
 @Component({
@@ -26,7 +26,7 @@ export class LabRequisitionComponent implements OnInit {
       assignTo: null,
       speciality: null,
       instructions: null
-  }
+  };
   id_token_claims_obj = JSON.parse(sessionStorage.getItem('id_token_claims_obj'));
   userName = sessionStorage.getItem('userName');
   todayDate: any;
@@ -125,7 +125,7 @@ export class LabRequisitionComponent implements OnInit {
       if (element.resource.resourceType === 'Patient') {
         this.patient = this.utilService.getPatientJsonObjectFromPatientFhirObject(element.resource);
       }
-      if(element.resource.resourceType === 'EpisodeOfCare'){
+      if (element.resource.resourceType === 'EpisodeOfCare') {
           this.getQuestionnaireResponse(element.resource.resourceType , element.resource.id);
       }
     });
@@ -205,28 +205,28 @@ export class LabRequisitionComponent implements OnInit {
     procedureRequest.identifier = [identifier];
 
 
-      let extension = [];
+      const extension = [];
 
 
-      if(this.consultationClinicianName){
-          let consultationClinicianName = {
-              "url": "http://nohis.gc.ca/external-clinician-name",
-              "valueString": this.consultationClinicianName
-          }
-          extension.push(consultationClinicianName)
+      if (this.consultationClinicianName) {
+          const consultationClinicianName = {
+              'url': 'http://nohis.gc.ca/external-clinician-name',
+              'valueString': this.consultationClinicianName
+          };
+          extension.push(consultationClinicianName);
       }
-      if(this.consultationClinicianEmail){
-          let email = {
-              "url": "http://nohis.gc.ca/external-clinician-email",
-              "valueString": this.consultationClinicianEmail
-          }
+      if (this.consultationClinicianEmail) {
+          const email = {
+              'url': 'http://nohis.gc.ca/external-clinician-email',
+              'valueString': this.consultationClinicianEmail
+          };
           extension.push(email);
       }
 
 
 
 
-      let cloanProcedureRequest =  JSON.parse(JSON.stringify(procedureRequest))
+      const cloanProcedureRequest =  JSON.parse(JSON.stringify(procedureRequest));
 
       cloanProcedureRequest['extension'] = extension;
 
@@ -234,53 +234,59 @@ export class LabRequisitionComponent implements OnInit {
 
     this.staffService.saveProcedureRequest(JSON.stringify(cloanProcedureRequest)).subscribe(data => {
 
-        if(data){
+        if (data) {
             const context = data['context'].reference;
 
 
             this.staffService.getDocumentsChecklistLab(context).subscribe( dataItem => {
 
                 let resource: any;
-                if(dataItem && dataItem['entry'] && dataItem['entry'][0]) {
+                if (dataItem && dataItem['entry'] && dataItem['entry'][0]) {
                     resource = dataItem['entry'][0].resource;
 
-                    if(resource && resource['item']){
-                        let req = {
-                            "linkId": resource['item'].length + 1,
-                            "text":  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            "answer": [
+                    if (resource && resource['item']) {
+                        const req = {
+                            'linkId': resource['item'].length + 1,
+                            'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
+                            'answer': [
                                 {
-                                    "valueBoolean": false
+                                    'valueBoolean': false
                                 }
                             ]
                         } ;
 
-                        resource['item'].push(req)
+                        resource['item'].push(req);
 
                     } else {
                         resource['item'] = [{
-                            "linkId": "1",
-                            "text":  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            "answer": [
+                            'linkId': '1',
+                            'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
+                            'answer': [
                                 {
-                                    "valueBoolean": false
+                                    'valueBoolean': false
                                 }
                             ]
-                        }]
+                        }];
                     }
 
                     const udateDocId = resource['id'];
 
-                    this.staffService.updateDocumentFile(udateDocId , resource).subscribe( dataItem => {
-
+                    this.staffService.updateDocumentFile(udateDocId , resource).subscribe(
+                      updatedDocItem => {
+                        console.log(updatedDocItem);
+                      },
+                      error => {
+                        console.log(error);
+                      },
+                      () => {
                         this.requisitionType = '';
                         this.consultationClinicianEmail = null;
                         this.consultationClinicianName  = null;
                         this.labTestArray = [];
                         this.printData.instructions = null;
                         this.printData.speciality = null;
-
-                    });
+                      }
+                      );
 
                 }
 
@@ -323,15 +329,15 @@ export class LabRequisitionComponent implements OnInit {
     category.coding = categoryCodingArray;
 
     procedureRequest.category = [category];
-    
-    if (this.serviceDeliveryType != '') {
+
+    if (this.serviceDeliveryType !== '') {
       const category2CodingArray = new Array<FHIR.Coding>();
-      
+
       const coding2 = new FHIR.Coding;
       coding2.code = this.serviceDeliveryType === 'Point of Care' ? 'point-of-care' : 'referral';
       coding2.display = this.serviceDeliveryType;
       category2CodingArray.push(coding2);
-  
+
       const category2 = new FHIR.CodeableConcept;
       category2.coding = category2CodingArray;
       category2.text = 'Service Delivery';
@@ -349,25 +355,25 @@ export class LabRequisitionComponent implements OnInit {
     identifier.value = 'Diagnostics Test';
     procedureRequest.identifier = [identifier];
 
-    let extension = [];
+    const extension = [];
 
-      if(this.diagnosticsClinicianName){
-          let diagnosticsClinicianName = {
-              "url": "http://nohis.gc.ca/external-clinician-name",
-              "valueString": this.diagnosticsClinicianName
-          }
-          extension.push(diagnosticsClinicianName)
+      if (this.diagnosticsClinicianName) {
+          const diagnosticsClinicianName = {
+              'url': 'http://nohis.gc.ca/external-clinician-name',
+              'valueString': this.diagnosticsClinicianName
+          };
+          extension.push(diagnosticsClinicianName);
       }
-      if(this.diagnosticsClinicianEmail){
-          let email = {
-              "url": "http://nohis.gc.ca/external-clinician-email",
-              "valueString": this.diagnosticsClinicianEmail
-          }
-          extension.push(email)
+      if (this.diagnosticsClinicianEmail) {
+          const email = {
+              'url': 'http://nohis.gc.ca/external-clinician-email',
+              'valueString': this.diagnosticsClinicianEmail
+          };
+          extension.push(email);
       }
 
 
-      let cloanProcedureRequest =  JSON.parse(JSON.stringify(procedureRequest))
+      const cloanProcedureRequest =  JSON.parse(JSON.stringify(procedureRequest));
 
       cloanProcedureRequest['extension'] = extension;
 
@@ -375,38 +381,38 @@ export class LabRequisitionComponent implements OnInit {
     this.staffService.saveProcedureRequest(JSON.stringify(cloanProcedureRequest)).subscribe(data => {
 
 
-        if(data){
+        if (data) {
             const context = data['context'].reference;
 
             this.staffService.getDocumentsChecklistLab(context).subscribe( dataItem => {
 
                 let resource: any;
-                if(dataItem && dataItem['entry'] && dataItem['entry'][0]) {
+                if (dataItem && dataItem['entry'] && dataItem['entry'][0]) {
                     resource = dataItem['entry'][0].resource;
 
-                    if(resource && resource['item']){
-                        let req = {
-                            "linkId": resource['item'].length + 1,
-                            "text":  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            "answer": [
+                    if (resource && resource['item']) {
+                        const req = {
+                            'linkId': resource['item'].length + 1,
+                            'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
+                            'answer': [
                                 {
-                                    "valueBoolean": false
+                                    'valueBoolean': false
                                 }
                             ]
                         } ;
 
-                        resource['item'].push(req)
+                        resource['item'].push(req);
 
                     } else {
                         resource['item'] = [{
-                            "linkId": "1",
-                            "text":  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            "answer": [
+                            'linkId': '1',
+                            'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
+                            'answer': [
                                 {
-                                    "valueBoolean": false
+                                    'valueBoolean': false
                                 }
                             ]
-                        }]
+                        }];
                     }
 
                     const udateDocId = resource['id'];
@@ -469,11 +475,11 @@ export class LabRequisitionComponent implements OnInit {
 
                 if (this.questionaryData && this.questionaryData.entry && this.questionaryData.entry.length > 0) {
                     this.listQuestionary = this.questionaryData.entry;
-                    if(this.listQuestionary && this.listQuestionary.length > 0){
+                    if (this.listQuestionary && this.listQuestionary.length > 0) {
 
                         this.assessmentType = this.listQuestionary[0].resource.item.filter( data => {
-                            if(data && data.text === 'PSOHP Service'){
-                                return data
+                            if (data && data.text === 'PSOHP Service') {
+                                return data;
                             }
                         })[0].answer[0].valueString;
                     }
