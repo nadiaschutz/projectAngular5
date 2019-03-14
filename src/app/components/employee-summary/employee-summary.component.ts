@@ -480,6 +480,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
             temp['id'] = individualEntry['id'];
             temp['given'] = individualEntry['name'][0]['given'][0];
             temp['family'] = individualEntry['name'][0]['family'];
+            temp['value'] = false;
             this.dependentArray.push(temp);
           }
         }
@@ -494,11 +495,13 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
             temp['id'] = individualEntry['id'];
             temp['given'] = individualEntry['name'][0]['given'][0];
             temp['family'] = individualEntry['name'][0]['family'];
+            temp['value'] = false;
             this.dependentArray.push(temp);
           }
         }
       });
     }
+    sessionStorage.setItem('dependents', JSON.stringify(this.dependentArray));
 
   }
 

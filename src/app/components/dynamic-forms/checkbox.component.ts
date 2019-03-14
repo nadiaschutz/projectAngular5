@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
                 <div class="form-check">
                     <input
                     class="form-check-input"
-                    [type]="config.typeElem"
+                    [type]="config.type"
                     (change) = "f($event.target.checked)"
                     (change)='callMe($event.target.value, config.name)'
                     [ngModel]="config.value"
