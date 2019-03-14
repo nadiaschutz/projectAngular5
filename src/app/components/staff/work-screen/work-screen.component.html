@@ -56,13 +56,63 @@
 
   </div>
 
-  <svg viewBox="0, 0, 100, 10">
+  <!-- <svg viewBox="0, 0, 100, 10">
     <rect [attr.width]="progressBarValue" height="1" fill="#398ef2"></rect>
-  </svg>
+  </svg> -->
 
+  <div class="vefs-milestone-wrapper">
+      <div class="milestone-container">
+    
+        <div class="chart-container">
+          <div class="line-container">
+            <div class="line-status"></div>
+            <div class="line-status left" style="width: 67%;"></div>
+          </div>
+    
+          <div class="dot-container">
+            <div class="milestones milestone__10">
+              <div class="dot completed colored"></div>
+            </div>
+            <div class="milestones milestone__25">
+              <div class="dot completed colored"></div>
+            </div>
+            <div class="milestones milestone__50">
+              <div class="dot completed colored"></div>
+            </div>
+            <div class="milestones milestone__80">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__100">
+              <div class="dot"></div>
+            </div>
+          </div>
+        </div>
+    
+        <div class="label-container">
+          <div class="milestones milestone__10">
+            <div class="label colored">10%</div>
+          </div>
+          <div class="milestones milestone__25">
+            <div class="label colored">25%</div>
+          </div>
+          <div class="milestones milestone__50">
+            <div class="label colored">50%</div>
+          </div>
+          <div class="milestones milestone__80">
+            <div class="label">80%</div>
+          </div>
+          <div class="milestones milestone__100">
+            <div class="label">100%</div>
+          </div>
+        </div>
+    
+      </div>
+    </div>
+    
+  
   <div class="row">
     <h6 class="col-4">History</h6>
-    <h6 class="col-5">Work List</h6>
+    <h6 class="col-5">Work List - Status: {{displayDocStatus}}</h6>
     <h6 class="col-3">Summary</h6>
   </div>
 
@@ -313,6 +363,12 @@
                           <label for=""></label>
                         </div>
                       </div>
+                      <div *ngIf="!item['answer']">
+                          <div *ngIf="item['answer'][1]['valueReference']['reference'] === display['docReference']">
+                            <label for="">Document Associated: <strong>Only Available to Clinical Users</strong></label>
+                            <label for=""></label>
+                          </div>
+                        </div>
                     </div>
                     <div>
                       <label for="docSelected{{item['linkId']}}">Select a document</label>

@@ -35,6 +35,7 @@ export class WorkScreenComponent implements OnInit {
   checkListItemGroup: FormGroup;
   selectionOfDocsGroup: FormGroup;
   statusFormGroup: FormGroup;
+  currentProgressFormGroup: FormGroup;
   checkListDocObject;
   statusObject;
   episodeOfCareId = '';
@@ -49,6 +50,7 @@ export class WorkScreenComponent implements OnInit {
   showOnlyNotes = false;
   showOnlyDocs = false;
   collapseFlag = false;
+  displayDocStatus = 'WAITING';
   encounterd;
   currentPractitionerFHIRIDInSession;
 
@@ -83,8 +85,8 @@ export class WorkScreenComponent implements OnInit {
 
   statusSelectionList = [
     { value: 'stopped', viewValue: 'WAITING' },
-    { value: 'ACTION-REQUIRED', viewValue: 'ACTION REQUIRED' },
-    { value: 'IN-PROGRESS', viewValue: 'IN PROGRESS' },
+    { value: 'amended', viewValue: 'ACTION-REQUIRED' },
+    { value: 'in-progress', viewValue: 'IN-PROGRESS' },
   ];
 
   constructor(
@@ -97,6 +99,11 @@ export class WorkScreenComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+
+
+    this.currentProgressFormGroup = this.formBuilder.group({
+      currentProgress: new FormControl('')
+    });
     this.currentPractitionerFHIRIDInSession = sessionStorage.getItem(
       'userFHIRID'
     );
@@ -116,6 +123,44 @@ export class WorkScreenComponent implements OnInit {
     );
     this.checkIfAssociatedDocCheckListExists();
     this.checkIfAssociatedStatusListExists();
+  }
+
+
+  checkDocListStatus() {
+    let counter = 0;
+    let lengthOfItems = 0;
+    if (this.checkListDocObject) {
+      for (const item in this.checkListDocObject['item']) {
+        if (item['answer']) {
+          lengthOfItems = item.length;
+          for (const answer in item['answer']) {
+            if (answer['valueBoolean'] === true) {
+              counter ++;
+              if (counter === lengthOfItems) {
+                console.log('they match')
+                this.checkListDocObject['status'] = 'in-progress';
+                this.staffService.updateDocumentsChecklist(
+                  this.checkListDocObject['id'],
+                  JSON.stringify(this.checkListDocObject)).subscribe(
+                    data => {
+                      if (data) {
+                        this.checkListDocObject = data;
+                        for (const status of this.statusSelectionList) {
+                          if (status['value'] === this.checkListDocObject['status']) {
+                            this.displayDocStatus = status['viewValue'];
+                          }
+                        }
+                      }
+                    }
+                  );
+              }
+            }
+          }
+        }
+      }
+    }
+
+   
   }
 
   // ngOnDestroy() {
@@ -474,10 +519,10 @@ export class WorkScreenComponent implements OnInit {
     const indexArray = [];
     indexArray.push(index);
     if (this.carePlan) {
+      console.log(this.carePlan);
       const annotation = new FHIR.Annotation();
       annotation.time = new Date();
       if (this.carePlanActivities[index]['value']) {
-        console.log(this.carePlanActivities[index]['statusChanger']);
         annotation.text =
           'COMPLETED: User ' +
           this.fetchCurrentUsername() +
@@ -1117,10 +1162,17 @@ export class WorkScreenComponent implements OnInit {
           if (data['entry']) {
             data['entry'].forEach(element => {
               this.checkListDocObject = element['resource'];
-              this.determineWorkOrderStatus(this.checkListDocObject);
+              // this.determineWorkOrderStatus(this.checkListDocObject);
+              for (const status of this.statusSelectionList) {
+                if (status['value'] === this.checkListDocObject['status']) {
+                  this.displayDocStatus = status['viewValue'];
+                }
+              }
               if (!this.checkListDocObject['item']) {
                 this.checkListDocObject['item'] = [];
               }
+              this.checkDocListStatus();
+
             });
           } else {
             this.newDocChecklist();
@@ -1474,6 +1526,7 @@ export class WorkScreenComponent implements OnInit {
       itemToAdd.text = this.checkListItemGroup.get('document').value;
       itemBoolAnswer.valueBoolean = false;
       itemToAdd.answer = [itemBoolAnswer];
+      this.checkListDocObject['status'] = 'stopped';
       this.checkListDocObject['item'].push(itemToAdd);
       this.staffService
         .updateDocumentsChecklist(
@@ -1484,6 +1537,11 @@ export class WorkScreenComponent implements OnInit {
           if (data) {
             console.log('UPDATED', data);
             this.checkListDocObject = data;
+            for (const status of this.statusSelectionList) {
+              if (status['value'] === this.checkListDocObject['status']) {
+                this.displayDocStatus = status['viewValue'];
+              }
+            }
             this.showChecklistForm = !this.showChecklistForm;
           }
         });
@@ -1510,11 +1568,11 @@ export class WorkScreenComponent implements OnInit {
 
     docReference.reference = event;
     docAnswer.valueReference = docReference;
-
     this.checkListDocObject['item'].forEach(itemFound => {
       if (itemFound['linkId'] === item['linkId']) {
         item['answer'][1] = docAnswer;
         itemFound = item;
+        this.checkListDocObject['status'] = 'amended';
         this.staffService
           .updateDocumentsChecklist(
             this.checkListDocObject['id'],
@@ -1524,7 +1582,15 @@ export class WorkScreenComponent implements OnInit {
             if (data) {
               console.log('UPDATED', data);
               this.checkListDocObject = data;
+              for (const status of this.statusSelectionList) {
+                if (status['value'] === this.checkListDocObject['status']) {
+                  this.displayDocStatus = status['viewValue'];
+                }
+              }
             }
+          },
+          error => {
+            console.log(error);
           });
       }
     });
@@ -1582,19 +1648,24 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
-  determineWorkOrderStatus(data) {
-    console.log(data);
-    const itemList = data['item'];
-    const numberOfItems = itemList.length;
-    itemList.forEach(item => {
-      if (item['answer'].length > 1) {
-        console.log(item);
-      } else {
-        console.log('still needs a doc');
-        this.progressBarValue = 75;
-      }
-    });
-  }
+  // determineWorkOrderStatus(data) {
+  //   console.log(data);
+  //   let counter = 0;
+  //   const itemList = data['item'];
+  //   const numberOfItems = itemList.length;
+  //   itemList.forEach(item => {
+  //     if (item['answer'].length > 1 && item['answer'][0]['valueBoolean'] === true) {
+  //       console.log(item);
+  //     } else {
+  //       counter++;
+  //     }
+  //   });
+  //   if (counter > 1) {
+  //     this.displayDocStatus = 'ACTION-REQURIED';
+  //   } else {
+  //     this.displayDocStatus = 'WAITING';
+  //   }
+  // }
 
   /* Document Functions (end) */
 
