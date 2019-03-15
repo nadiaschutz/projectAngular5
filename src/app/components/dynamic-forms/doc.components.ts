@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
 import * as FHIR from '../../interface/FHIR';
@@ -15,16 +15,29 @@ interface HTMLAnchorElement {
   <section class="form-section last-element">
                 <div class="table-list">
 
-
+ 
 
                   <div class="col-12-custom" *ngIf="documents">
                       <h6>documents</h6>
+                      <div [formGroup]="docFormGroup">
+                          <label for="filetype">Select document category</label>
+                          <select name="filetype" id="filetype" formControlName="filetype" (change)="enableUploadButton($event)" class="form-control" required>
+                            <option *ngFor="let fileSelection of fileTypeList" [value]="fileSelection.value">
+                              <span> {{fileSelection.viewValue}} </span>
+                            </option>
+                          </select>
+                          <div *ngIf="docFormGroup.controls['filetype'].invalid
+                                         && (docFormGroup.controls['filetype'].touched || docFormGroup.controls['filetype'].dirty)">
+                            <div class="error-message">
+                              Please make a selection
+                            </div>
+                          </div>
                       <div class="button-section">
-                          <span class="btn regular-button btn-file" (change)='addDocument($event)'>
-                            Add Documents <input type="file">
+                          <span class="btn regular-button btn-file"  (change)='addDocument($event)'>
+                            Add Documents <input type="file" [disabled]="!enableFlag">
                           </span>
                         </div>
-                        <div>
+                        
                             <table class="table">
                                 <thead class="header-table">
                                   <tr>
@@ -33,9 +46,7 @@ interface HTMLAnchorElement {
                                     <th scope="col">Document Name</th>
                                     <th scope="col">Document Type</th>
                                     <th scope="col">File Type</th>
-                                    <th scope="col">File Size</th>
-                                    <th scope="col"></th>
-                                    <th scope="col"></th>
+                                    <th scope="col">View File</th>
 
                                   </tr>
                                 </thead>
@@ -47,8 +58,8 @@ interface HTMLAnchorElement {
                                 <td class="cursor" (click)="downloadFile(doc)">{{doc['content'][0]['attachment']['title']}}</td>
                                 <td>{{doc['type']['text']}}</td>
                                 <td>{{doc['content'][0]['attachment']['contentType']}}</td>
-                                <td>{{doc['content'][0]['attachment']['size'] }}</td>
-                                <td class="cursor" (click)="previewFile(doc)"> Preview this doc </td>
+                                <td *ngIf="allowPreview(doc)" class="cursor" (click)="previewFile(doc)"> Preview this doc </td>
+                                <td *ngIf="!allowPreview(doc)">No Preview available for this type of file </td>
                               </tr>
 
                                 </tbody>
@@ -66,14 +77,38 @@ interface HTMLAnchorElement {
 export class DocComponent implements Field {
   documents = [];
   itemReference;
-
+  enableFlag = false;
+  allowPreviewFlag = false;
+  docFormGroup: FormGroup;
+  fileTypeList = [
+    { value: 'ADMINISTRATIVE', viewValue: 'ADMINISTRATIVE' },
+    { value: 'CLINICAL', viewValue: 'CLINICAL' },
+    { value: 'INVOICE', viewValue: 'INVOICE' },
+    { value: 'PSOHP-FORM', viewValue: 'PSOHP-FORM' },
+    { value: 'OTHER', viewValue: 'OTHER' }
+  ];
   config: FieldConfig;
   group: FormGroup;
 
   constructor(
     private questionnaireService: QuestionnaireService,
-  ) {}
+    private formBuilder: FormBuilder
+  ) {
+    this.docFormGroup = this.formBuilder.group({
+      filetype: new FormControl(''),
+    });
+  }
 
+  enableUploadButton(event) {
+    if (event) {
+      if (this.docFormGroup.get('filetype').value) {
+        this.enableFlag = true;
+        console.log(this.enableFlag);
+      } else {
+        this.enableFlag = false;
+      }
+    }
+  }
 
   addDocument($event) {
     const documentReference = new FHIR.DocumentReference;
@@ -82,6 +117,10 @@ export class DocComponent implements Field {
     const content = new FHIR.Content;
     const contentAttachment = new FHIR.Attachment;
     const contentCode = new FHIR.Coding;
+    const documentReferenceAuthor = new FHIR.Reference();
+
+    documentReferenceAuthor.reference =
+      'Practitioner/' + sessionStorage.getItem('userFHIRID');
     let file;
     let trimmedFile = '';
     let size: number;
@@ -117,12 +156,10 @@ export class DocComponent implements Field {
       content.format = contentCode;
       content.attachment = contentAttachment;
 
-      documentReferenceCoding.code = '51851-4';
-      documentReferenceCoding.system = 'http://loinc.org';
-      documentReferenceCoding.display = 'Administrative note';
-
       documentReferenceCodeableConcept.coding = [ documentReferenceCoding];
-      documentReferenceCodeableConcept.text = 'Administrative note';
+      documentReferenceCodeableConcept.text = that.docFormGroup.get(
+        'filetype'
+      ).value;
 
       documentReference.instant = date;
       documentReference.type = documentReferenceCodeableConcept;
@@ -190,10 +227,20 @@ export class DocComponent implements Field {
 
   }
 
+  allowPreview(incomingFile) {
+    if (incomingFile['content'][0]['attachment']['contentType'].includes('/pdf')) {
+      this.allowPreviewFlag = true;
+      return this.allowPreviewFlag;
+    } else {
+      this.allowPreviewFlag = false;
+      return this.allowPreviewFlag;
+
+    }
+  }
+
   previewFile(incomingFile) {
-
+    console.log(incomingFile)
     const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
-
     const byteNumbers = new Array(byteCharacters.length);
     for (let index = 0; index < byteCharacters.length; index++) {
         byteNumbers[index] = byteCharacters.charCodeAt(index);
