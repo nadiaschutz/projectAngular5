@@ -50,7 +50,9 @@ export class WorkScreenComponent implements OnInit {
   showOnlyNotes = false;
   showOnlyDocs = false;
   collapseFlag = false;
+  enableWorkListUpdate = true;
   displayDocStatus = 'WAITING';
+  milestoneForDisplay;
   encounterd;
   currentPractitionerFHIRIDInSession;
 
@@ -137,7 +139,7 @@ export class WorkScreenComponent implements OnInit {
             if (answer['valueBoolean'] === true) {
               counter ++;
               if (counter === lengthOfItems) {
-                console.log('they match')
+                console.log('they match', counter);
                 this.checkListDocObject['status'] = 'in-progress';
                 this.staffService.updateDocumentsChecklist(
                   this.checkListDocObject['id'],
@@ -160,7 +162,7 @@ export class WorkScreenComponent implements OnInit {
       }
     }
 
-   
+
   }
 
   // ngOnDestroy() {
@@ -562,6 +564,22 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
+  updateHistoryForDisplay() {
+    this.staffService
+        .updateCarePlan(this.carePlan['id'], JSON.stringify(this.carePlan))
+        .subscribe(data => {
+          // this.processRecentCarePlanActivityForHistory(data['activity'][index]);
+          this.carePlan = data;
+          this.processCarePlanForDisplay();
+          this.displayAll();
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          this.enableWorkListUpdate = !this.enableWorkListUpdate;
+        });
+  }
   // TODO - revisit functionality with updated logic after March 1st
   // onCheckListChangeStatus(cheklistItem) {
 
@@ -673,7 +691,7 @@ export class WorkScreenComponent implements OnInit {
     const itemReason = new FHIR.Answer();
 
     const selectedStatus = this.statusFormGroup.get('status').value;
-
+    this.milestoneForDisplay = selectedStatus;
     itemTime.valueDate = this.utilService.getCurrentDate();
     itemReason.valueString = this.statusFormGroup.get('statusNote').value;
     this.statusObject['item'].forEach(element => {
@@ -1073,6 +1091,16 @@ export class WorkScreenComponent implements OnInit {
         } else {
           data['entry'].forEach(entry => {
             this.statusObject = entry['resource'];
+            if (this.statusObject['item']) {
+              for (const item of this.statusObject['item']) {
+                if (item['answer']) {
+                  if (item['answer'][0]['valueBoolean'] === true) {
+                    console.log(item['text']);
+                    this.milestoneForDisplay = item['text'];
+                  }
+                }
+              }
+            }
           });
         }
       }
@@ -1116,7 +1144,7 @@ export class WorkScreenComponent implements OnInit {
     // statusItemFive.answer = [statusItemAnswer];
 
     statusItemSix.linkId = '0';
-    statusItemSix.text = 'On-Hold';
+    statusItemSix.text = 'Received';
     // statusItemSix.answer = [statusItemAnswer];
     statusItemAnswer.valueBoolean = true;
 
@@ -1162,6 +1190,8 @@ export class WorkScreenComponent implements OnInit {
           if (data['entry']) {
             data['entry'].forEach(element => {
               this.checkListDocObject = element['resource'];
+              this.checkDocListStatus();
+
               // this.determineWorkOrderStatus(this.checkListDocObject);
               for (const status of this.statusSelectionList) {
                 if (status['value'] === this.checkListDocObject['status']) {
@@ -1171,7 +1201,6 @@ export class WorkScreenComponent implements OnInit {
               if (!this.checkListDocObject['item']) {
                 this.checkListDocObject['item'] = [];
               }
-              this.checkDocListStatus();
 
             });
           } else {
@@ -1684,6 +1713,11 @@ export class WorkScreenComponent implements OnInit {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
       this.router.navigateByUrl('/staff/clinical/assessment-screen');
     }
+  }
+
+  redirectToCloseScreen () {
+    this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
+    this.router.navigateByUrl('/staff/cancel-request');
   }
 
   redirectToScheduler() {

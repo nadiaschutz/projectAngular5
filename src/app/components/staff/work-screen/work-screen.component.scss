@@ -7,13 +7,18 @@ $milestone-50-color: #8f2d56;
 $milestone-80-color: #218380;
 $milestone-100-color: #73d2de;
 
+$milestone-20-color: #73d2de;
+
+.card-title {
+  font-size: 15px;
+}
 
 
 .vefs-milestone-wrapper {
   $component-height: 50px;
   $line-height: $component-height / 10;
   $dot-size: $line-height * 3.5;
-
+  padding-left: 75px;
   .milestone-container {
     display: flex;
     flex-direction: column;
@@ -67,7 +72,7 @@ $milestone-100-color: #73d2de;
           transition: all 0.25s ease-out;
 
           &.completed {
-            background-color: $milestone-progress-color;
+            background-color: #398EF2;
           }
         }
       }
@@ -171,7 +176,7 @@ $milestone-100-color: #73d2de;
 }
 
 .card {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     border-radius: 3px;
     box-shadow: 0 2px 4px 0 rgba(215, 215, 215, 0.5);
     background-color: #ffffff;
@@ -238,8 +243,12 @@ $milestone-100-color: #73d2de;
 }
 
 .checklist-label {
-    margin-left: 10px;
+    // margin-left: 10px;
     text-align: justify;
+}
+
+.checklist-desc {
+  padding-left: 7px;
 }
 
 .nav-pills {
@@ -387,4 +396,15 @@ button {
     margin-left: 11px;
 }
 
+.button-padding {
+  margin: 5px;
+}
 
+.update-section {
+  margin-bottom: 20px;
+}
+
+.function-buttons {
+  background-color: #3183f0;
+  color: white;
+}

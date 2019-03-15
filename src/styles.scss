@@ -120,6 +120,11 @@ row:after,
     padding: 6px 60px;
 }
 
+.special-button-two {
+    @include buttons-global;
+    padding: 6px 40px;
+}
+
 .regular-button {
     @include buttons-global;
 }
