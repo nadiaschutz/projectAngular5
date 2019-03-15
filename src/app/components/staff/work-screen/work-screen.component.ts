@@ -401,18 +401,43 @@ export class WorkScreenComponent implements OnInit {
 
   processQuestionnaireResponseForSummary(questionnaireResponse) {
     questionnaireResponse.item.forEach(item => {
-      if (item.text === 'PSOHP Service') {
-        this.summary['psohpService'] = item['answer'][0]['valueString'];
-      } else if (item.text === 'Submitting Department') {
-        this.summary['submittingDepartment'] = item['answer'][0]['valueString'];
-      } else if (item.text === 'Receiving Department') {
-        this.summary['receivingDepartment'] = item['answer'][0]['valueString'];
-      } else if (item.text === 'OHAG Occupation') {
-        this.summary['ohagOccupation'] = item['answer'][0]['valueString'];
-      } else if (item.text === 'OHAG Environmental Modifier') {
-        this.summary['ohagEnvironmentalModifier'] =
-          item['answer'][0]['valueString'];
+
+      if (item['linkId'] === 'PSOHPSERV') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['psohpService'] = answer['valueCoding']['display'];
+          }
+        }
       }
+      if (item['linkId'] === 'OHAGOCC') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['ohagOccupation'] = answer['valueCoding']['display'];
+          }
+        }
+      }
+      if (item['linkId'] === 'ENVMODIF') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['ohagEnvironmentalModifier'] = answer['valueCoding']['display'];
+          }
+        }
+      }
+      if (item['linkId'] === 'USERDEPT') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['submittingDepartment'] = answer['valueCoding']['display'];
+          }
+        }
+      }
+      if (item['linkId'] === 'REGOFFICE') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['regionalOffice'] = answer['valueCoding']['display'];
+          }
+        }
+      }
+
     });
     console.log(this.summary);
   }
@@ -572,6 +597,8 @@ export class WorkScreenComponent implements OnInit {
           this.carePlan = data;
           this.processCarePlanForDisplay();
           this.displayAll();
+          location.reload();
+
         },
         error => {
           console.log(error);
