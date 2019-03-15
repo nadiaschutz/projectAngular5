@@ -120,6 +120,11 @@ row:after,
     padding: 6px 60px;
 }
 
+.special-button-two {
+    @include buttons-global;
+    padding: 6px 40px;
+}
+
 .regular-button {
     @include buttons-global;
 }
@@ -274,6 +279,14 @@ select:-webkit-autofill:focus {
 
 
 /* other */
+
+.enable-when-hide {
+    display: none;
+}
+
+.enable-when-show {
+    display: block;
+}
 
 .height-100 {
     min-height: 86vh;
@@ -493,9 +506,7 @@ select:-webkit-autofill:focus {
     cursor: pointer;
 }
 
-.checklist-footer {
-
-}
+.checklist-footer {}
 
 .checklist-footer:hover {
     color: #f8f8f8;

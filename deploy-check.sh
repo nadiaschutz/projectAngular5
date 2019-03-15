@@ -9,4 +9,4 @@ rm -rf node_modules
 echo "[INSTALLING NODE MODULES]"
 npm i
 echo "[COMPILING APP]"
-ng build --aot
+npm run build

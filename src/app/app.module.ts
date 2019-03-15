@@ -27,7 +27,6 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { NewServiceRequestComponent } from './components/new-service-request/new-service-request.component';
 import { NewServiceRequestNoClientComponent } from './components/new-service-request-no-client/new-service-request-no-client.component';
-import { DependentComponent } from './components/dependent/dependent.component';
 import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
 import { ClientDepartmentComponent } from './components/client-department/client-department.component';
 import { LabRequisitionComponent } from './components/staff/lab-requisition/lab-requisition.component';
@@ -50,13 +49,17 @@ import { AdminHomeScreenComponent } from './components/admin-home-screen/admin-h
 
 
 import { InputComponent } from './components/dynamic-forms/input.component';
+import { CommentComponent } from './components/dynamic-forms/comment.component';
 import { ButtonComponent } from './components/dynamic-forms/button.component';
+import { DependFormComponent } from './components/dynamic-forms/dependForm.component';
 import { SelectComponent } from './components/dynamic-forms/select.component';
+import { SelectSrComponent } from './components/dynamic-forms/select-sr.component';
 import { LineComponent } from './components/dynamic-forms/line.component';
 import { HeaderComponent } from './components/dynamic-forms/header.component';
 import { DateComponent } from './components/dynamic-forms/date.component';
 import { DocComponent } from './components/dynamic-forms/doc.components';
 import { CheckboxComponent } from './components/dynamic-forms/checkbox.component';
+import { CheckboxSrComponent } from './components/dynamic-forms/checkbox-sr.component';
 import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.directive';
 import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
 import { DemoComponent } from './components/demo/demo.component';
@@ -72,6 +75,8 @@ import { AudiogramDetailComponent } from './components/staff/audiogram-detail/au
 import { AssessmentFunctionComponent } from './components/staff/clinical/assessment-function/assessment-function.component';
 import { SchedulerComponent } from './components/staff/clinical/scheduler/scheduler.component';
 import { CancelRequestComponent } from './components/staff/cancel-request/cancel-request.component';
+import { NewServReqService } from './service/new-serv-req.service';
+import { DependentComponent } from './components/dependent/dependent.component';
 import { ReportingComponent } from './components/reporting/reporting.component';
 
 const routes: Routes = [
@@ -82,7 +87,11 @@ const routes: Routes = [
   {
     path: 'newservicerequest',
     component: NewServiceRequestComponent,
-    canActivate: [AuthGuardService]
+    canActivate: [AuthGuardService],
+    resolve: {
+      fields: NewServReqService,
+      departments: DepartmentListResolverService
+    },
   },
   { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
   {
@@ -90,7 +99,8 @@ const routes: Routes = [
     component: NewServiceRequestNoClientComponent,
     resolve: {
       fields: ContactUsFormResolverService,
-      departments: DepartmentListResolverService
+      departments: DepartmentListResolverService,
+      servreq: NewServReqService
     },
     canActivate: [AuthGuardService]
   },
@@ -102,24 +112,31 @@ const routes: Routes = [
   { path: 'clientdepartment', component: ClientDepartmentComponent, canActivate: [AuthGuardService] },
   { path: 'assigntasks', component: TasklistComponent, canActivate: [AuthGuardService] },
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/lab-requisition/:eocId', component: LabRequisitionComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/cancel-request', component: CancelRequestComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/clinical/immunization-screen', component: ImmunizationScreenComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/audiogram/:eocId', component: AudiogramComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/audiogram/new/:eocId', component: AudiogramNewComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/audiogram/detail/:eocId', component: AudiogramDetailComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/clinical/assessment-screen', component: AssessmentFunctionComponent, canActivate: [AuthGuardService]},
-  { path: 'staff/clinical/scheduler', component: SchedulerComponent, canActivate: [AuthGuardService]},
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService]},
-  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService]},
-  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService]},
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/lab-requisition/:eocId', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/cancel-request', component: CancelRequestComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/clinical/immunization-screen', component: ImmunizationScreenComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/audiogram/:eocId', component: AudiogramComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/audiogram/new/:eocId', component: AudiogramNewComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/audiogram/detail/:eocId', component: AudiogramDetailComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/clinical/assessment-screen', component: AssessmentFunctionComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/clinical/scheduler', component: SchedulerComponent, canActivate: [AuthGuardService] },
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
+  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
   { path: 'adminhome', component: AdminHomeScreenComponent, canActivate: [AuthGuardService] },
-  { path: 'form-builder', component: FormBuilderComponent, canActivate: [AuthGuardService]},
-  { path: '', component: AuthComponent },
-  { path: 'reporting', component: ReportingComponent, canActivate: [AuthGuardService]}
+  { path: 'form-builder', component: FormBuilderComponent, canActivate: [AuthGuardService] },
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
+  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
+  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
+  { path: 'reporting', component: ReportingComponent, canActivate: [AuthGuardService]},
+  { path: '', component: AuthComponent }
 ];
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -152,14 +169,18 @@ export function HttpLoaderFactory(http: HttpClient) {
     NewAccountComponent,
     WorkScreenComponent,
     InputComponent,
+    CommentComponent,
     ButtonComponent,
+    DependFormComponent,
     SelectComponent,
+    SelectSrComponent,
     LineComponent,
     HeaderComponent,
     DateComponent,
     DocComponent,
     // RadiobuttonComponent,
     CheckboxComponent,
+    CheckboxSrComponent,
     DynamicFieldDirective,
     DynamicFormComponent,
     DemoComponent,
@@ -212,14 +233,18 @@ export function HttpLoaderFactory(http: HttpClient) {
   bootstrap: [AppComponent],
   entryComponents: [
     InputComponent,
+    CommentComponent,
     ButtonComponent,
+    DependFormComponent,
     SelectComponent,
+    SelectSrComponent,
     LineComponent,
     HeaderComponent,
     DateComponent,
     DocComponent,
     // RadiobuttonComponent,
-    CheckboxComponent
+    CheckboxComponent,
+    CheckboxSrComponent,
   ]
 })
 export class AppModule { }

@@ -46,49 +46,6 @@ export class DependentComponent implements OnInit {
 
   dependent;
 
-
-  // Dependent Extension object (Dependent Link)
-
-  // dependent_extension_dependentlink;
-
-  // Dependent name object
-
-  // dependent_name;
-
-  // Dependent address object
-
-  // dependent_address;
-
-  // Dependent Contact (Phone)
-
-  // dependent_telecom_phone;
-
-  // Dependent Contact (Email)
-
-  // dependent_telecom_email;
-
-  // Employe Language Object
-
-  // dependent_language;
-
-  // Dependent Language Coding Object
-
-  // dependent_language_coding;
-
-  // Dependent Communication Object
-
-  // dependent_communication;
-
-  // Dependent Identifier object
-
-  // dependent_identifier;
-
-  // Dependent Identifier Type subobject
-
-  // dependent_identifier_type;
-
-  // Array for Dependent Objects
-
   dependentsArray: any[];
 
   // Store list of Departments

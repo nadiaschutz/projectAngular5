@@ -480,6 +480,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
             temp['id'] = individualEntry['id'];
             temp['given'] = individualEntry['name'][0]['given'][0];
             temp['family'] = individualEntry['name'][0]['family'];
+            temp['value'] = false;
             this.dependentArray.push(temp);
           }
         }
@@ -494,11 +495,13 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
             temp['id'] = individualEntry['id'];
             temp['given'] = individualEntry['name'][0]['given'][0];
             temp['family'] = individualEntry['name'][0]['family'];
+            temp['value'] = false;
             this.dependentArray.push(temp);
           }
         }
       });
     }
+    sessionStorage.setItem('dependents', JSON.stringify(this.dependentArray));
 
   }
 
@@ -515,7 +518,6 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       );
   }
   getServReqData(data) {
-    console.log(data.entry);
     if (data.entry) {
       this.servceRequestDatas = data.entry;
     }
@@ -526,29 +528,25 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   }
 
   getServiceType(serviceRequestObj): string {
-    let result = '-';
-    // console.log(serviceRequestObj);
-    // console.log(serviceRequestObj.questionnaire.reference);
+    let result: any;
+    result = '-';
     if (serviceRequestObj.resource.item) {
-      // console.log(serviceRequestObj.resource.item);
-      serviceRequestObj.resource.item.forEach(item => {
-        if (item.text === 'PSOHP Service') {
-          if (item['answer']) {
-            result = item.answer[0].valueString.substring(
-              item.answer[0].valueString.indexOf('(') + 1,
-              item.answer[0].valueString.length
-            );
-            result = result.substring(0, result.length - 1);
-            // console.log(result);
-          }
-        }
-      });
+      result = this.getAnswer('PSOHPSERV', serviceRequestObj.resource);
     }
     return result;
   }
 
-  getAssessmentType(serviceRequestObj): string {
-    return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
+  getAssessmentType(serviceRequestObj) {
+    let result: any;
+    result = '-';
+
+    if (serviceRequestObj.resource.item) {
+      // return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
+      result = this.getAnswer('ASSESTYPE', serviceRequestObj.resource);
+    }
+
+
+    return result;
   }
 
   getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
@@ -879,8 +877,9 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     // Employe Name
 
     this.employee_name.family = this.employeeFormGroup.get('familyName').value;
+    sessionStorage.setItem('emplFam', this.employee_name.family);
     this.employee_name.given = [this.employeeFormGroup.get('givenName').value];
-
+    sessionStorage.setItem('emplGiven', this.employee_name.given);
     // Language info
 
     if (
@@ -953,6 +952,17 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       },
       error => this.handleError(error)
     );
+  }
+
+  getAnswer(code, obj) {
+    let result = '-';
+    obj.item.forEach(element => {
+
+      if (element.linkId === code) {
+        result = element.answer[0].valueCoding.display;
+      }
+    });
+    return result;
   }
 
   /**

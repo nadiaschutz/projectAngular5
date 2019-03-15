@@ -3,26 +3,13 @@
 
   <div class="main-header">
     <h5>Service Request Form</h5>
-    <h6>service request > new service request > {{clientGivenName + ' ' +
-      clientFamilyName}}</h6>
-    <h6>service request > {{clientGivenName + ' ' + clientFamilyName}} > review service
-      request before submission</h6>
-  </div>
-
-
-  <!-- <div class="main-header">
-    <h5>Service Request Form</h5>
     <h6 *ngIf="!disableInputsForReview">service request > new service request > {{clientGivenName + ' ' +
       clientFamilyName}}</h6>
     <h6 *ngIf="disableInputsForReview">service request > {{clientGivenName + ' ' + clientFamilyName}} > review service
       request before submission</h6>
-  </div> -->
+  </div>
 
-
-
-
-
-  <!-- <div *ngIf="createdsuccessfully">
+  <div *ngIf="createdsuccessfully">
     <div class="row">
       <div class="alert alert-success">
         <strong>Service Request for {{clientGivenName + ' ' + clientFamilyName}} created Successfully</strong>
@@ -31,26 +18,15 @@
     <div class="row">
       <button class="btn regular-button" type="button" (click)="backToDashboard()">Back to List of Clients</button>
     </div>
-  </div> -->
+  </div>
 
 
   <!-- try [for]="value.text"...
   and value.text has to be the id of the input element or what element you have there -->
-  <!-- <form #serReqForm="ngForm"> -->
-  <!-- <form #serReqForm="ngForm" *ngIf="!createdsuccessfully"> -->
+  <form #serReqForm="ngForm" *ngIf="!createdsuccessfully">
+    <section class="form-section">
 
-
-  <section class="form-section">
-
-
-    <div>
-      <dynamic-form [config]="config" #form="dynamicForm" (submit)="submit($event)">
-      </dynamic-form>
-      <!-- {{ form.valid }}
-      {{ form.value | json }} -->
-    </div>
-
-    <!-- <div *ngFor="let question of questionsList; let i =index" class="col-12-custom">
+      <div *ngFor="let question of questionsList; let i =index" class="col-12-custom">
         <div *ngIf="question.length > 1">
           <div *ngFor="let eachItem of question ; let x = index">
             <div *ngIf="eachItem['type']==='choice'">
@@ -118,11 +94,11 @@
           </div>
 
         </div>
-      </div> -->
+      </div>
 
-  </section>
+    </section>
 
-  <!-- {{questionsList}}
+    {{questionsList}}
 
     <section class="form-section">
       <div class="table-list">
@@ -157,8 +133,8 @@
                   <td>{{documents.content[0].attachment.contentType }}</td>
                   <td>{{documents.content[0].attachment.size }}</td>
                 </tr>
-              </tbody> -->
-  <!-- <tbody *ngIf="documents !==null">
+              </tbody>
+              <!-- <tbody *ngIf="documents !==null">
                               <tr *ngFor="let q of servRequests">
                                 <td>{{q.resource.id}}</td>
                                 <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
@@ -170,20 +146,20 @@
                                 <td>{{q.resource.status}}</td>
                               </tr>
                             </tbody> -->
-  <!-- </table>
+            </table>
           </div>
         </div>
       </div>
-    </section> -->
+    </section>
 
 
-  <!-- <div class="button-section-line line">
+    <div class="button-section-line line">
       <button class="btn regular-button" type="button" (click)="onNext()" *ngIf="!disableInputsForReview">Next</button>
       <button class="btn regular-button" type="button" (click)="onEdit()" *ngIf="disableInputsForReview">Edit</button>
       <button class="btn regular-button" type="button" (click)="onSave()">Submit</button>
       <button class="btn regular-button" type="button" (click)="onCancel()">Cancel</button>
-    </div> -->
-  <!-- </form> -->
+    </div>
+  </form>
 
 
   <!--   
@@ -191,7 +167,7 @@
     <br>
     <br>
     
- Angular/form: {{serReqForm.value | json }}
+    Angular/form: {{serReqForm.value | json }}
     <br>
     <br>
     {{item | json }}
@@ -202,6 +178,7 @@
     
     <br>
     <br>
-    Model/qrequest: {{qrequest | json}} -->
+    Model/qrequest: {{qrequest | json}}
+     -->
   <!-- <button class="button button-primary" (click)="deserializethis(object.valueCoding.code)">Click me!</button> -->
 </div>

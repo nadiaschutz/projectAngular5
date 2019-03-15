@@ -1,16 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
 import { UserService } from '../../../service/user.service';
-import {
-  FormBuilder,
-  FormGroup,
-  FormControl
-} from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-work-screen',
@@ -18,6 +13,9 @@ import { Router } from '@angular/router';
   styleUrls: ['./work-screen.component.scss']
 })
 export class WorkScreenComponent implements OnInit {
+  @Input() progressBarValue = 0;
+  // @Input() otherValue = 100;
+
   documentChecklistItemsList = [];
 
   carePlanActivities = [];
@@ -37,6 +35,7 @@ export class WorkScreenComponent implements OnInit {
   checkListItemGroup: FormGroup;
   selectionOfDocsGroup: FormGroup;
   statusFormGroup: FormGroup;
+  currentProgressFormGroup: FormGroup;
   checkListDocObject;
   statusObject;
   episodeOfCareId = '';
@@ -51,6 +50,9 @@ export class WorkScreenComponent implements OnInit {
   showOnlyNotes = false;
   showOnlyDocs = false;
   collapseFlag = false;
+  enableWorkListUpdate = true;
+  displayDocStatus = 'WAITING';
+  milestoneForDisplay;
   encounterd;
   currentPractitionerFHIRIDInSession;
 
@@ -80,7 +82,13 @@ export class WorkScreenComponent implements OnInit {
   assessmentType = [
     { value: 'IMMUNIZATION', viewValue: 'Immunization' },
     { value: 'AUDIOGRAM', viewValue: 'Audiogram' },
-    { value: 'TURBTEST', viewValue: 'Turberculosis' },
+    { value: 'TURBTEST', viewValue: 'Turberculosis' }
+  ];
+
+  statusSelectionList = [
+    { value: 'stopped', viewValue: 'WAITING' },
+    { value: 'amended', viewValue: 'ACTION-REQUIRED' },
+    { value: 'in-progress', viewValue: 'IN-PROGRESS' },
   ];
 
   constructor(
@@ -90,9 +98,14 @@ export class WorkScreenComponent implements OnInit {
     private oAuthService: OAuthService,
     private userService: UserService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit() {
+
+
+    this.currentProgressFormGroup = this.formBuilder.group({
+      currentProgress: new FormControl('')
+    });
     this.currentPractitionerFHIRIDInSession = sessionStorage.getItem(
       'userFHIRID'
     );
@@ -112,6 +125,42 @@ export class WorkScreenComponent implements OnInit {
     );
     this.checkIfAssociatedDocCheckListExists();
     this.checkIfAssociatedStatusListExists();
+  }
+
+
+  checkDocListStatus() {
+    let counter = 0;
+    let lengthOfItems = 0;
+    if (this.checkListDocObject) {
+      for (const item in this.checkListDocObject['item']) {
+        if (item['answer']) {
+          lengthOfItems = item.length;
+          for (const answer in item['answer']) {
+            if (answer['valueBoolean'] === true) {
+              counter ++;
+              if (counter === lengthOfItems) {
+                console.log('they match', counter);
+                this.checkListDocObject['status'] = 'in-progress';
+                this.staffService.updateDocumentsChecklist(
+                  this.checkListDocObject['id'],
+                  JSON.stringify(this.checkListDocObject)).subscribe(
+                    data => {
+                      if (data) {
+                        this.checkListDocObject = data;
+                        for (const status of this.statusSelectionList) {
+                          if (status['value'] === this.checkListDocObject['status']) {
+                            this.displayDocStatus = status['viewValue'];
+                          }
+                        }
+                      }
+                    }
+                  );
+              }
+            }
+          }
+        }
+      }
+    }
 
 
   }
@@ -274,7 +323,10 @@ export class WorkScreenComponent implements OnInit {
         } else if (element.resource.resourceType === 'Communication') {
           const communication = element.resource;
           if (communication['identifier']) {
-            if (communication['identifier'][0]['value'] !== 'CANCEL-REQUEST-' + this.episodeOfCareId) {
+            if (
+              communication['identifier'][0]['value'] !==
+              'CANCEL-REQUEST-' + this.episodeOfCareId
+            ) {
               if (communication.note) {
                 communication.note.forEach(note => {
                   this.processNoteForHistory(note);
@@ -282,7 +334,6 @@ export class WorkScreenComponent implements OnInit {
               }
             }
           }
-
         }
       });
     }
@@ -317,7 +368,7 @@ export class WorkScreenComponent implements OnInit {
   }
 
   sortHistory() {
-    this.historyToDisplay.sort(function (a, b) {
+    this.historyToDisplay.sort(function(a, b) {
       if (a['lastUpdated'] && b['lastUpdated']) {
         return (
           new Date(b['lastUpdated']).getTime() -
@@ -470,10 +521,10 @@ export class WorkScreenComponent implements OnInit {
     const indexArray = [];
     indexArray.push(index);
     if (this.carePlan) {
+      console.log(this.carePlan);
       const annotation = new FHIR.Annotation();
       annotation.time = new Date();
       if (this.carePlanActivities[index]['value']) {
-        console.log(this.carePlanActivities[index]['statusChanger']);
         annotation.text =
           'COMPLETED: User ' +
           this.fetchCurrentUsername() +
@@ -513,6 +564,22 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
+  updateHistoryForDisplay() {
+    this.staffService
+        .updateCarePlan(this.carePlan['id'], JSON.stringify(this.carePlan))
+        .subscribe(data => {
+          // this.processRecentCarePlanActivityForHistory(data['activity'][index]);
+          this.carePlan = data;
+          this.processCarePlanForDisplay();
+          this.displayAll();
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          this.enableWorkListUpdate = !this.enableWorkListUpdate;
+        });
+  }
   // TODO - revisit functionality with updated logic after March 1st
   // onCheckListChangeStatus(cheklistItem) {
 
@@ -624,7 +691,7 @@ export class WorkScreenComponent implements OnInit {
     const itemReason = new FHIR.Answer();
 
     const selectedStatus = this.statusFormGroup.get('status').value;
-
+    this.milestoneForDisplay = selectedStatus;
     itemTime.valueDate = this.utilService.getCurrentDate();
     itemReason.valueString = this.statusFormGroup.get('statusNote').value;
     this.statusObject['item'].forEach(element => {
@@ -801,7 +868,7 @@ export class WorkScreenComponent implements OnInit {
 
   createCommunicationObject() {
     const communication = new FHIR.Communication();
-    const identifier = new FHIR.Identifier;
+    const identifier = new FHIR.Identifier();
 
     identifier.value = 'NOTE-' + this.episodeOfCareId;
     communication.resourceType = 'Communication';
@@ -1024,6 +1091,16 @@ export class WorkScreenComponent implements OnInit {
         } else {
           data['entry'].forEach(entry => {
             this.statusObject = entry['resource'];
+            if (this.statusObject['item']) {
+              for (const item of this.statusObject['item']) {
+                if (item['answer']) {
+                  if (item['answer'][0]['valueBoolean'] === true) {
+                    console.log(item['text']);
+                    this.milestoneForDisplay = item['text'];
+                  }
+                }
+              }
+            }
           });
         }
       }
@@ -1067,7 +1144,7 @@ export class WorkScreenComponent implements OnInit {
     // statusItemFive.answer = [statusItemAnswer];
 
     statusItemSix.linkId = '0';
-    statusItemSix.text = 'On-Hold';
+    statusItemSix.text = 'Received';
     // statusItemSix.answer = [statusItemAnswer];
     statusItemAnswer.valueBoolean = true;
 
@@ -1107,23 +1184,34 @@ export class WorkScreenComponent implements OnInit {
   /* Documents Functions */
 
   checkIfAssociatedDocCheckListExists() {
-    this.staffService
-      .getDocumentsChecklist(this.episodeOfCareId)
-      .subscribe(data => {
+    this.staffService.getDocumentsChecklist(this.episodeOfCareId).subscribe(
+      data => {
         if (data) {
-          if (data['total'] === 0) {
-            console.log('nothing here, creating checklist skeleton');
-            this.newDocChecklist();
-          } else {
+          if (data['entry']) {
             data['entry'].forEach(element => {
               this.checkListDocObject = element['resource'];
+              this.checkDocListStatus();
+
+              // this.determineWorkOrderStatus(this.checkListDocObject);
+              for (const status of this.statusSelectionList) {
+                if (status['value'] === this.checkListDocObject['status']) {
+                  this.displayDocStatus = status['viewValue'];
+                }
+              }
               if (!this.checkListDocObject['item']) {
                 this.checkListDocObject['item'] = [];
               }
+
             });
+          } else {
+            this.newDocChecklist();
           }
         }
-      });
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   newDocChecklist() {
@@ -1194,7 +1282,7 @@ export class WorkScreenComponent implements OnInit {
       reader.readAsDataURL(fileList[0]);
     }
     const that = this;
-    reader.onloadend = function () {
+    reader.onloadend = function() {
       file = reader.result;
       trimmedFile = file.split(',').pop();
       documentReference.resourceType = 'DocumentReference';
@@ -1214,7 +1302,7 @@ export class WorkScreenComponent implements OnInit {
       return reader.result;
     };
 
-    reader.onerror = function (error) {
+    reader.onerror = function(error) {
       console.log('ERROR: ', error);
     };
   }
@@ -1378,6 +1466,9 @@ export class WorkScreenComponent implements OnInit {
                     docs['entry'].forEach(docFound => {
                       const temp = {};
                       temp['type'] = 'doc';
+                      console.log(docFound['type']);
+                      temp['categoryType'] =
+                        docFound['resource']['type']['text'];
                       if (docFound['resource']['description']) {
                         temp['description'] =
                           docFound['resource']['description'];
@@ -1387,11 +1478,11 @@ export class WorkScreenComponent implements OnInit {
                         'DocumentReference/' + docFound['resource']['id'];
                       temp['dateCreated'] =
                         docFound['resource']['content'][0]['attachment'][
-                        'creation'
+                          'creation'
                         ];
                       temp['fileFullName'] =
                         docFound['resource']['content'][0]['attachment'][
-                        'title'
+                          'title'
                         ] +
                         '.' +
                         docFound['resource']['content'][0]['attachment'][
@@ -1406,7 +1497,7 @@ export class WorkScreenComponent implements OnInit {
                         .pop();
                       temp['title'] =
                         docFound['resource']['content'][0]['attachment'][
-                        'title'
+                          'title'
                         ];
                       temp['docCategory'] =
                         docFound['resource']['type']['text'];
@@ -1418,8 +1509,33 @@ export class WorkScreenComponent implements OnInit {
                       }
                       temp['lastUpdated'] =
                         docFound['resource']['meta']['lastUpdated'];
-                      this.history.push(temp);
-                      this.documentsList.push(temp);
+                      if (
+                        temp['categoryType']
+                          .toLowerCase()
+                          .includes('clinical') &&
+                        sessionStorage.getItem('userRole') === 'clinician'
+                      ) {
+                        this.history.push(temp);
+                        this.documentsList.push(temp);
+                      }
+                      if (
+                        !temp['categoryType']
+                          .toLowerCase()
+                          .includes('clinical') &&
+                        sessionStorage.getItem('userRole') !== 'clinician'
+                      ) {
+                        this.history.push(temp);
+                        this.documentsList.push(temp);
+                      }
+                      if (
+                        !temp['categoryType']
+                          .toLowerCase()
+                          .includes('clinical') &&
+                        sessionStorage.getItem('userRole') === 'clinician'
+                      ) {
+                        this.history.push(temp);
+                        this.documentsList.push(temp);
+                      }
                       this.setupAuthorNameForDisplay();
                       console.log(temp);
                     });
@@ -1439,6 +1555,7 @@ export class WorkScreenComponent implements OnInit {
       itemToAdd.text = this.checkListItemGroup.get('document').value;
       itemBoolAnswer.valueBoolean = false;
       itemToAdd.answer = [itemBoolAnswer];
+      this.checkListDocObject['status'] = 'stopped';
       this.checkListDocObject['item'].push(itemToAdd);
       this.staffService
         .updateDocumentsChecklist(
@@ -1449,6 +1566,11 @@ export class WorkScreenComponent implements OnInit {
           if (data) {
             console.log('UPDATED', data);
             this.checkListDocObject = data;
+            for (const status of this.statusSelectionList) {
+              if (status['value'] === this.checkListDocObject['status']) {
+                this.displayDocStatus = status['viewValue'];
+              }
+            }
             this.showChecklistForm = !this.showChecklistForm;
           }
         });
@@ -1475,11 +1597,11 @@ export class WorkScreenComponent implements OnInit {
 
     docReference.reference = event;
     docAnswer.valueReference = docReference;
-
     this.checkListDocObject['item'].forEach(itemFound => {
       if (itemFound['linkId'] === item['linkId']) {
         item['answer'][1] = docAnswer;
         itemFound = item;
+        this.checkListDocObject['status'] = 'amended';
         this.staffService
           .updateDocumentsChecklist(
             this.checkListDocObject['id'],
@@ -1489,7 +1611,15 @@ export class WorkScreenComponent implements OnInit {
             if (data) {
               console.log('UPDATED', data);
               this.checkListDocObject = data;
+              for (const status of this.statusSelectionList) {
+                if (status['value'] === this.checkListDocObject['status']) {
+                  this.displayDocStatus = status['viewValue'];
+                }
+              }
             }
+          },
+          error => {
+            console.log(error);
           });
       }
     });
@@ -1547,12 +1677,34 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
+  // determineWorkOrderStatus(data) {
+  //   console.log(data);
+  //   let counter = 0;
+  //   const itemList = data['item'];
+  //   const numberOfItems = itemList.length;
+  //   itemList.forEach(item => {
+  //     if (item['answer'].length > 1 && item['answer'][0]['valueBoolean'] === true) {
+  //       console.log(item);
+  //     } else {
+  //       counter++;
+  //     }
+  //   });
+  //   if (counter > 1) {
+  //     this.displayDocStatus = 'ACTION-REQURIED';
+  //   } else {
+  //     this.displayDocStatus = 'WAITING';
+  //   }
+  // }
+
   /* Document Functions (end) */
+
 
   redirectToLabRequisition() {
     if (sessionStorage.getItem('userRole') === 'clinician') {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
-      this.router.navigateByUrl('/staff/lab-requisition/' + this.episodeOfCareId);
+      this.router.navigateByUrl(
+        '/staff/lab-requisition/' + this.episodeOfCareId
+      );
     }
   }
 
@@ -1561,6 +1713,11 @@ export class WorkScreenComponent implements OnInit {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
       this.router.navigateByUrl('/staff/clinical/assessment-screen');
     }
+  }
+
+  redirectToCloseScreen () {
+    this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
+    this.router.navigateByUrl('/staff/cancel-request');
   }
 
   redirectToScheduler() {
@@ -1573,14 +1730,13 @@ export class WorkScreenComponent implements OnInit {
   redirectToAssessmentSelected(event) {
     if (sessionStorage.getItem('userRole') === 'clinician') {
       console.log(event);
-      if (event === ('IMMUNIZATION')) {
+      if (event === 'IMMUNIZATION') {
         this.router.navigateByUrl('/staff/clinical/immunization-screen');
       }
-      if (event === ('AUDIOGRAM')) {
-          this.router.navigateByUrl('/staff/audiogram/' + this.episodeOfCareId);
+      if (event === 'AUDIOGRAM') {
+        this.router.navigateByUrl('/staff/audiogram/' + this.episodeOfCareId);
       }
-      if (event === ('TURBTEST')) {
-
+      if (event === 'TURBTEST') {
       }
     }
   }
@@ -1590,5 +1746,4 @@ export class WorkScreenComponent implements OnInit {
     console.log(this.collapseFlag);
     // return collapse;
   }
-
 }

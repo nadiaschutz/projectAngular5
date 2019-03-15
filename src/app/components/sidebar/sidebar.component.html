@@ -1,15 +1,32 @@
 <ul class="menu">
-  <li (click)="clientPage()" class="menu-item">
-    <a (click)="clientPage()">Clients</a>
-  </li>
 
+  <div [ngClass]="roleInSession" *ngIf="roleInSession === 'admin' || roleInSession === 'clinician'">
+    <li (click)="adminHomeScreen()" class="menu-item">
+      <a (click)="adminHomeScreen()">Home</a>
+    </li>
+  </div>
+  <div [ngClass]="roleInSession" *ngIf="roleInSession === 'manager' || roleInSession === 'superuser' ">
+    <li (click)="staffUI()" class="menu-item">
+      <a (click)="staffUI()">Home</a>
+    </li>
+  </div>
+  <div *ngIf="roleInSession !== 'admin' && roleInSession !== 'clinician' && roleInSession !== 'manager' && roleInSession !== 'superuser'">
+    <li (click)="clientPage()" class="menu-item">
+      <a (click)="clientPage()">Home</a>
+    </li>
+  </div>
+  <div *ngIf="roleInSession === 'admin' || roleInSession === 'clinician' || roleInSession === 'manager' || roleInSession === 'superuser'">
+    <li (click)="clientPage()" class="menu-item">
+      <a (click)="clientPage()">Clients</a>
+    </li>
+  </div>
   <div [ngClass]="roleInSession">
     <li (click)="serviceRequestPage()" class="menu-item">
-      <a (click)="serviceRequestPage()">Search for Service Request</a>
+      <a (click)="serviceRequestPage()">Service Requests</a>
     </li>
   </div>
   <li (click)="districtOfficePage()" class="menu-item">
-    <a (click)="districtOfficePage()">PSOHP Office</a>
+    <a (click)="districtOfficePage()">PSOHP Offices</a>
   </li>
   <!-- <div [ngClass]="roleInSession"> -->
   <li (click)="clientDepartmentPage()" class="menu-item">
@@ -20,26 +37,12 @@
     <a (click)="adviceRequestPage()">Contact Us</a>
   </li>
   <div [ngClass]="roleInSession">
-    <li (click)="staffUI()" class="menu-item">
-      <a (click)="staffUI()">Staff UI</a>
-    </li>
-  </div>
-  <div [ngClass]="roleInSession">
     <li (click)="acccountCreation()" class="menu-item">
       <a (click)="acccountCreation()">Add New Account</a>
     </li>
   </div>
-  <div [ngClass]="roleInSession">
-    <li (click)="adminHomeScreen()" class="menu-item">
-      <a (click)="adminHomeScreen()">Admin Home Screen</a>
-    </li>
-  </div>
+
   <!-- </div> -->
-  <div [ngClass]="roleInSession">
-    <li (click)="labRequisition()" class="menu-item">
-      <a (click)="labRequisition()">Requisition</a>
-    </li>
-  </div>
   <div>
     <li (click)="reporting()" class="menu-item">
       <a (click)="reporting()">Reporting</a>

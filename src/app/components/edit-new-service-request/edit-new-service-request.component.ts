@@ -31,14 +31,14 @@ export class EditNewServiceRequestComponent implements OnInit {
 
   today = new Date();
   myDay;
-    dd: any;
-    mm: any;
-    yyyy: any;
-    time: any;
-    hr: any;
-    min: any;
-    sec: any;
-    msec: any;
+  dd: any;
+  mm: any;
+  yyyy: any;
+  time: any;
+  hr: any;
+  min: any;
+  sec: any;
+  msec: any;
 
   dependents = false;
   dependentNumber = null;
@@ -60,7 +60,7 @@ export class EditNewServiceRequestComponent implements OnInit {
 
 
 
-  items: Item [];
+  items: Item[];
 
   item: Item = {
     linkId: '',
@@ -83,18 +83,18 @@ export class EditNewServiceRequestComponent implements OnInit {
     this.questionnaireService.newResponseIdSubject.subscribe(
       data => this.getQuestionnaireResponseId(data),
       error => this.getQuestionnaireResponseIdError(error)
-      );
+    );
 
-      // call server with the response id to get data
-      this.questionnaireService.getResponse(this.responseId).subscribe(
-        data => this.getResponseData(data),
-        error => this.getResponseDataError(error)
-      );
+    // call server with the response id to get data
+    this.questionnaireService.getResponse(this.responseId).subscribe(
+      data => this.getResponseData(data),
+      error => this.getResponseDataError(error)
+    );
   }
 
   retrieveDocumentReferenceObject(data) {
     this.documents = data;
-    this.documents.item.forEach (element => {
+    this.documents.item.forEach(element => {
       if (element.text === 'Document') {
         this.documentReferenceId = element.answer[0].valueReference.reference;
       }
@@ -106,19 +106,19 @@ export class EditNewServiceRequestComponent implements OnInit {
 
 
 
-/************************************************/
-/******************* BUTTONS ********************/
-/************************************************/
+  /************************************************/
+  /******************* BUTTONS ********************/
+  /************************************************/
 
 
 
   // FIX ON CANCEL
   onCancel() {
-      this.questionnaireService.deleteServiceRequest(this.responseId).subscribe(data => {
-        console.log(data);
-      }, error => {
-        console.error(error);
-      });
+    this.questionnaireService.deleteServiceRequest(this.responseId).subscribe(data => {
+      console.log(data);
+    }, error => {
+      console.error(error);
+    });
 
     this.navigateMain();
   }
@@ -133,133 +133,133 @@ export class EditNewServiceRequestComponent implements OnInit {
   }
 
 
-onNext() {
+  onNext() {
 
-  if (this.itemReference) {
-    this.items.push(this.itemReference);
+    if (this.itemReference) {
+      this.items.push(this.itemReference);
+    }
+
+
+    this.mapItemToItems();
+    console.log(this.items);
+    console.log(this.itemToSend);
+    // pushing document into items arr
+
+
+    // sending itemToSend to server
+    this.questionnaireService
+      .saveRequest(this.itemToSend)
+      .subscribe(
+        data => this.onSaveSuccess(data),
+        error => this.onSaveError(error)
+      );
   }
 
 
-  this.mapItemToItems();
-  console.log(this.items);
-  console.log(this.itemToSend);
-  // pushing document into items arr
-
-
-// sending itemToSend to server
-  this.questionnaireService
-    .saveRequest(this.itemToSend)
-    .subscribe(
-      data => this.onSaveSuccess(data),
-      error => this.onSaveError(error)
-    );
-}
-
-
-/************************************************/
+  /************************************************/
 
 
 
 
-mapItemToItems() {
-  this.itemToSend.item = this.items.map(el => {
+  mapItemToItems() {
+    this.itemToSend.item = this.items.map(el => {
 
-    if (el.text === 'Document') {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: [
-          {
-            valueReference: {
-              reference: el.answer
+      if (el.text === 'Document') {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueReference: {
+                reference: el.answer
+              }
             }
-          }
-        ]
-      };
-    }
-    if (
-      el.text === 'Dependent Involved' ||
-      el.text === 'Health Exam Done Externally'
-    ) {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: [
-          {
-            valueBoolean: el.answer
-          }
-        ]
-      };
-    } else {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: [
-          {
-            valueString: el.answer
-          }
-        ]
-      };
-    }
-  });
-  console.log(this.itemToSend);
-}
-
-
-
-
-
-getQuestionnaireResponseId(data) {
-  if (data) {
-    this.responseId = data;
-    console.log('response id:', this.responseId);
-  } else {
-    this.router.navigateByUrl('/dashboard');
-  }
-}
-
-getQuestionnaireResponseIdError(error) {
-  console.log(error);
-}
-
-
-
-
-
-
-
-
-
-
-
-getResponseData(data) {
-  if (data) {
-    this.itemToSend = data;
-    console.log('this.itemToSend:', this.itemToSend);
-
-    this.itemToSend.item.forEach(element => {
-      if (element.text === 'Document') {
-        this.documentId = element.answer[0].valueReference.reference;
-        this.documentId = this.documentId.substring(this.documentId.indexOf('/') + 1);
-        console.log(this.documentId);
-        this.getDocument(this.documentId);
+          ]
+        };
+      }
+      if (
+        el.text === 'Dependent Involved' ||
+        el.text === 'Health Exam Done Externally'
+      ) {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueBoolean: el.answer
+            }
+          ]
+        };
+      } else {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: [
+            {
+              valueString: el.answer
+            }
+          ]
+        };
       }
     });
+    console.log(this.itemToSend);
+  }
 
-    // mapping items from server to items in angular
 
-    this.formId = data.questionnaire.reference;
-    this.formId = this.formId.substring(this.formId.indexOf('/') + 1);
-    console.log('this.formId:', this.formId);
-    if (this.formId) {
-      this.getForm(this.formId);
+
+
+
+  getQuestionnaireResponseId(data) {
+    if (data) {
+      this.responseId = data;
+      console.log('response id:', this.responseId);
+    } else {
+      this.router.navigateByUrl('/dashboard');
     }
   }
-  if ( this.formId !== '1953') {
-    this.clientName = this.itemToSend.subject.display;
-    console.log('clientName:', this.clientName);
+
+  getQuestionnaireResponseIdError(error) {
+    console.log(error);
+  }
+
+
+
+
+
+
+
+
+
+
+
+  getResponseData(data) {
+    if (data) {
+      this.itemToSend = data;
+      console.log('this.itemToSend:', this.itemToSend);
+
+      this.itemToSend.item.forEach(element => {
+        if (element.text === 'Document') {
+          this.documentId = element.answer[0].valueReference.reference;
+          this.documentId = this.documentId.substring(this.documentId.indexOf('/') + 1);
+          console.log(this.documentId);
+          this.getDocument(this.documentId);
+        }
+      });
+
+      // mapping items from server to items in angular
+
+      this.formId = data.questionnaire.reference;
+      this.formId = this.formId.substring(this.formId.indexOf('/') + 1);
+      console.log('this.formId:', this.formId);
+      if (this.formId) {
+        this.getForm(this.formId);
+      }
     }
-}
+    if (this.formId !== '1953') {
+      this.clientName = this.itemToSend.subject.display;
+      console.log('clientName:', this.clientName);
+    }
+  }
 
 
 
@@ -268,84 +268,84 @@ getResponseData(data) {
 
   // console.log('this.items AFTER assigning them to data from server:', this.items);
 
-getResponseDataError(error) {
-  console.log(error);
-}
+  getResponseDataError(error) {
+    console.log(error);
+  }
 
 
-getForm(formId) {
-  this.questionnaireService
-   .getForm(formId)
-   .subscribe(
-     data => this.getFormData(data),
-     error => this.getFormDataError(error)
-   );
-}
-
-
-
-
-/************************************************/
-/****************** getFormData() ***************/
-/************************************************/
-getFormData(data) {
-  this.qrequest = data.item;
-  console.log(this.qrequest);
-
-  // maping part of the data from the server to item
-  this.items = this.qrequest.map(el => ({
-    ...this.item,
-    linkId: el.linkId,
-    text: el.text
-  }));
-  console.log(this.items);
-  this.mapItems();
-  console.log(this.items);
+  getForm(formId) {
+    this.questionnaireService
+      .getForm(formId)
+      .subscribe(
+        data => this.getFormData(data),
+        error => this.getFormDataError(error)
+      );
+  }
 
 
 
-  // checking dependents
-  this.checkDependentItem(this.items);
-  // console.log(this.dependents);
 
-  // console.log(this.responseId);
-  // if (this.responseId === null) {
-  //   this.getResponseId();
-  // }
-}
+  /************************************************/
+  /****************** getFormData() ***************/
+  /************************************************/
+  getFormData(data) {
+    this.qrequest = data.item;
+    console.log(this.qrequest);
 
-getFormDataError(error) {
-  console.log(error);
-}
+    // maping part of the data from the server to item
+    this.items = this.qrequest.map(el => ({
+      ...this.item,
+      linkId: el.linkId,
+      text: el.text
+    }));
+    console.log(this.items);
+    this.mapItems();
+    console.log(this.items);
 
 
 
-mapItems() {
-  this.items = this.itemToSend.item.map(el => {
-    if (el.text === 'Document') {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: el.answer[0].valueReference.reference
-      };
-    }
-    if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved' ) {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: el.answer[0].valueBoolean
-      };
-    } else {
-      return {
-        linkId: el.linkId,
-        text: el.text,
-        answer: el.answer[0].valueString
-      };
-    }
-  });
+    // checking dependents
+    this.checkDependentItem(this.items);
+    // console.log(this.dependents);
 
-}
-/************************************************/
+    // console.log(this.responseId);
+    // if (this.responseId === null) {
+    //   this.getResponseId();
+    // }
+  }
+
+  getFormDataError(error) {
+    console.log(error);
+  }
+
+
+
+  mapItems() {
+    this.items = this.itemToSend.item.map(el => {
+      if (el.text === 'Document') {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueReference.reference
+        };
+      }
+      if (el.text === 'Health Exam Done Externally' || el.text === 'Dependent Involved') {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueBoolean
+        };
+      } else {
+        return {
+          linkId: el.linkId,
+          text: el.text,
+          answer: el.answer[0].valueString
+        };
+      }
+    });
+
+  }
+  /************************************************/
 
 
 
@@ -358,7 +358,7 @@ mapItems() {
 
     console.log(this.qrequest);
 
-   this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text}));
+    this.items = this.qrequest.map(el => ({ ...this.item, linkId: el.linkId, text: el.text }));
 
     console.log(this.items);
     this.checkDependentItem(this.items);
@@ -378,7 +378,7 @@ mapItems() {
 
 
 
-  handleError (error) {
+  handleError(error) {
     console.log(error);
   }
 
@@ -390,7 +390,7 @@ mapItems() {
 
 
 
-  handleSuccessSubmit (data) {
+  handleSuccessSubmit(data) {
     console.log(data);
   }
   handleErrorSubmit(error) {
@@ -431,9 +431,9 @@ mapItems() {
 
 
 
-/************************************************/
-/*************** onSaveSuccess ******************/
-/************************************************/
+  /************************************************/
+  /*************** onSaveSuccess ******************/
+  /************************************************/
 
   // getting response from thr server on "next"
   onSaveSuccess(data) {
@@ -451,7 +451,7 @@ mapItems() {
   onSaveError(error) {
     console.log(error);
   }
-/************************************************/
+  /************************************************/
 
 
 
@@ -463,9 +463,9 @@ mapItems() {
 
 
 
-/************************************************/
-/**************** addDocument() *****************/
-/************************************************/
+  /************************************************/
+  /**************** addDocument() *****************/
+  /************************************************/
 
   /**
    *
@@ -498,7 +498,7 @@ mapItems() {
       reader.readAsDataURL(fileList[0]);
     }
     const that = this;
-    reader.onloadend = function() {
+    reader.onloadend = function () {
 
       file = reader.result;
       trimmedFile = file.split(',').pop();
@@ -521,7 +521,7 @@ mapItems() {
       documentReferenceCoding.system = 'http://loinc.org';
       documentReferenceCoding.display = 'Administrative note';
 
-      documentReferenceCodeableConcept.coding = [ documentReferenceCoding];
+      documentReferenceCodeableConcept.coding = [documentReferenceCoding];
       documentReferenceCodeableConcept.text = 'Administrative note';
 
       documentReference.instant = date;
@@ -529,9 +529,9 @@ mapItems() {
       documentReference.content = [content];
 
       that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
-        data =>   {
+        data => {
           that.retrieveDocuments(data),
-          that.createItemReferenceObject(data);
+            that.createItemReferenceObject(data);
         }
       );
       // console.log (contentAttachment);
@@ -551,7 +551,7 @@ mapItems() {
       linkId: '30',
       // text: obj.content[0].attachment.title,
       text: 'Document',
-      answer:  'DocumentReference/' + obj
+      answer: 'DocumentReference/' + obj
     };
   }
 

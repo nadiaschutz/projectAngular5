@@ -2,6 +2,8 @@ export interface Item {
     linkId: string;
     text: string;
     answer: any;
+    code?: any;
+    system?: any;
 }
 
 export interface ServRequest {
