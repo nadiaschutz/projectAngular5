@@ -572,6 +572,12 @@ export class WorkScreenComponent implements OnInit {
           this.carePlan = data;
           this.processCarePlanForDisplay();
           this.displayAll();
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+          this.enableWorkListUpdate = !this.enableWorkListUpdate;
         });
   }
   // TODO - revisit functionality with updated logic after March 1st
