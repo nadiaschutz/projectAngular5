@@ -4,13 +4,13 @@ import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
 
 @Component({
-    selector: 'form-comment',
-    template: `
+  selector: 'form-comment',
+  template: `
  
   <div
   [formGroup]="group" [class]='config.elementClass'>
 
-  <label class="label-name">{{ config.label }}{{ config.name }}</label>
+  <label class="label-name">{{ config.label }}</label>
   <textarea
   class="form-control field-box-name"
   [attr.placeholder]="config.placeholder"
@@ -33,8 +33,8 @@ import { FieldConfig } from './field-config.interface';
         `
 })
 export class CommentComponent implements Field {
-    config: FieldConfig;
-    group: FormGroup;
+  config: FieldConfig;
+  group: FormGroup;
 }
 
       // <div  [hidden]="!group.get(config.name).errors.required">{{config.label | titlecase}} is required.</div>

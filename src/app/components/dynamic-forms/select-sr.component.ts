@@ -10,7 +10,7 @@ import { NewServiceRequestComponent } from '../new-service-request/new-service-r
   <div [class]='config.elementClass'>
       <div
         [formGroup]="group">
-        <label class="label-name">{{ config.label }}{{ config.name }}</label>
+        <label class="label-name">{{ config.label }}</label>
         <select [formControlName]="config.name" class="form-control" (change)='callMe($event.target.value, config.name)'>
           <option value="">{{ config.placeholder }}</option>
           <option *ngFor="let option of config.options">
