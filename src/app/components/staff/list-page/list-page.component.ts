@@ -509,7 +509,7 @@ export class ListPageComponent implements OnInit {
           });
         });
     } else {
-      console.log('no assign my dude')
+      console.log('no assignment to careplan was made')
     }
   }
 }
