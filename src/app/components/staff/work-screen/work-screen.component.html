@@ -778,7 +778,7 @@
           </div>
           <div *ngIf="!enableWorkListUpdate">
             <button class="btn regular-button function-buttons col-4 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Cancel Changes</button>
-            <button class="btn regular-button function-buttons col-4 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Save Changes</button>
+            <button class="btn regular-button function-buttons col-4 button-padding" (click)="updateHistoryForDisplay()">Save Changes</button>
             <button class="btn regular-button function-buttons col-3 button-padding" (click)="redirectToCloseScreen()">Close Order</button>
           </div>
         </div>

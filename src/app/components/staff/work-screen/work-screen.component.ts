@@ -139,7 +139,7 @@ export class WorkScreenComponent implements OnInit {
             if (answer['valueBoolean'] === true) {
               counter ++;
               if (counter === lengthOfItems) {
-                console.log('they match', counter)
+                console.log('they match', counter);
                 this.checkListDocObject['status'] = 'in-progress';
                 this.staffService.updateDocumentsChecklist(
                   this.checkListDocObject['id'],
@@ -162,7 +162,7 @@ export class WorkScreenComponent implements OnInit {
       }
     }
 
-   
+
   }
 
   // ngOnDestroy() {
@@ -564,6 +564,16 @@ export class WorkScreenComponent implements OnInit {
     }
   }
 
+  updateHistoryForDisplay() {
+    this.staffService
+        .updateCarePlan(this.carePlan['id'], JSON.stringify(this.carePlan))
+        .subscribe(data => {
+          // this.processRecentCarePlanActivityForHistory(data['activity'][index]);
+          this.carePlan = data;
+          this.processCarePlanForDisplay();
+          this.displayAll();
+        });
+  }
   // TODO - revisit functionality with updated logic after March 1st
   // onCheckListChangeStatus(cheklistItem) {
 
@@ -1079,7 +1089,7 @@ export class WorkScreenComponent implements OnInit {
               for (const item of this.statusObject['item']) {
                 if (item['answer']) {
                   if (item['answer'][0]['valueBoolean'] === true) {
-                    console.log(item['text'])
+                    console.log(item['text']);
                     this.milestoneForDisplay = item['text'];
                   }
                 }
