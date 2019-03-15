@@ -388,7 +388,7 @@ export class ServReqMainComponent implements OnInit {
 
     let matchesBoolean = true;
     // remove anything after 1st dash
-    let matchingString = item.answer[0].valueString.toLowerCase();
+    let matchingString = item.answer[0].valueCoding.display.toLowerCase();
     if (matchingString.indexOf('-') !== -1) {
       matchingString = matchingString.substring(0, matchingString.indexOf('-'));
     }
@@ -536,7 +536,7 @@ export class ServReqMainComponent implements OnInit {
           if (item['answer']) {
             item['answer'].forEach(answer => {
               if (answer) {
-                result = answer['valueString'];
+                result = answer['valueCoding']['display'];
 
               }
             });
@@ -554,7 +554,7 @@ export class ServReqMainComponent implements OnInit {
     obj.item.forEach(element => {
 
       if (element.linkId === code) {
-        result = element.answer[1].valueString;
+        result = element.answer[0].valueCoding.display;
         console.log('getItem', result);
       }
     });

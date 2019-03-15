@@ -958,7 +958,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     obj.item.forEach(element => {
 
       if (element.linkId === code) {
-        result = element.answer[1].valueString;
+        result = element.answer[0].valueCoding.display;
       }
     });
     return result;
