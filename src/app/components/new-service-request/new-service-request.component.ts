@@ -477,9 +477,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
                   if (indivElem.answer.indexOf(code) > -1) {
                     console.log("HELLOOOO", indivElem);
                     indivElem.code = code;
-
                   }
-
                 });
               }
 
