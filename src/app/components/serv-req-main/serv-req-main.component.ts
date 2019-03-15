@@ -388,7 +388,7 @@ export class ServReqMainComponent implements OnInit {
 
     let matchesBoolean = true;
     // remove anything after 1st dash
-    let matchingString = item.answer[0].valueString.toLowerCase();
+    let matchingString = item.answer[0].valueCoding.display.toLowerCase();
     if (matchingString.indexOf('-') !== -1) {
       matchingString = matchingString.substring(0, matchingString.indexOf('-'));
     }
@@ -427,7 +427,6 @@ export class ServReqMainComponent implements OnInit {
         });
       } else {
         result = this.getAnswer('PSOHPSERV', serviceRequestObj);
-        console.log(result);
       }
     }
     return result;
@@ -439,7 +438,7 @@ export class ServReqMainComponent implements OnInit {
     if (serviceRequestObj.item) {
 
       result = this.getAnswer('USERDEPT', serviceRequestObj);
-      console.log(result);
+
 
 
     }
@@ -456,10 +455,7 @@ export class ServReqMainComponent implements OnInit {
       serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST4'
     ) {
       if (serviceRequestObj.item) {
-        // return this.getLinkValueFromObject(serviceRequestObj, 'PSOHP Service', 2);
         result = this.getAnswer('ASSESTYPE', serviceRequestObj);
-        console.log(result);
-
       } else {
         return result;
       }
@@ -496,7 +492,7 @@ export class ServReqMainComponent implements OnInit {
         // });
 
         result = this.getAnswer('REGOFFICE', serviceRequestObj);
-        console.log(result);
+
       } else {
         return result;
       }
@@ -523,7 +519,7 @@ export class ServReqMainComponent implements OnInit {
       //     result = element.answer[1].valueString;
       //   }
       // });
-      console.log(this.getAnswer('AUTHOR', serviceRequestObj));
+
       return this.getAnswer('AUTHOR', serviceRequestObj);
 
     }
@@ -536,7 +532,7 @@ export class ServReqMainComponent implements OnInit {
           if (item['answer']) {
             item['answer'].forEach(answer => {
               if (answer) {
-                result = answer['valueString'];
+                result = answer['valueCoding']['display'];
 
               }
             });
@@ -554,8 +550,7 @@ export class ServReqMainComponent implements OnInit {
     obj.item.forEach(element => {
 
       if (element.linkId === code) {
-        result = element.answer[1].valueString;
-        console.log('getItem', result);
+        result = element.answer[0].valueCoding.display;
       }
     });
     return result;

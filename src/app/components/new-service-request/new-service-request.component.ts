@@ -78,6 +78,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   // serviceRequestResponce: ServiceRequestResponce = {
   // };
 
+  // tslint:disable-next-line:max-line-length
+  listOfCode = ['HACAT1', 'HACAT2', 'HACAT3', 'FTWORK', 'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC3', 'THREC3', 'IMREVW'];
+
   style = 'col-11';
   configuration;
   userName;
@@ -357,65 +360,65 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/servreqmain']);
   }
 
-  onSave() {
-    // this.savingData();
-    const questionnaireResponse = new FHIR.QuestionnaireResponse;
-    const questionnaireIdentifier = new FHIR.Identifier;
+  // onSave() {
+  //   // this.savingData();
+  //   const questionnaireResponse = new FHIR.QuestionnaireResponse;
+  //   const questionnaireIdentifier = new FHIR.Identifier;
 
-    questionnaireIdentifier.value = 'SERVREQ';
-    questionnaireResponse.resourceType = 'QuestionnaireResponse';
-    questionnaireResponse.identifier = questionnaireIdentifier;
+  //   questionnaireIdentifier.value = 'SERVREQ';
+  //   questionnaireResponse.resourceType = 'QuestionnaireResponse';
+  //   questionnaireResponse.identifier = questionnaireIdentifier;
 
-    const questionnaireReference = new FHIR.Reference;
-    questionnaireReference.reference = 'Questionnaire/' + this.formId;
-    questionnaireResponse.questionnaire = questionnaireReference;
+  //   const questionnaireReference = new FHIR.Reference;
+  //   questionnaireReference.reference = 'Questionnaire/' + this.formId;
+  //   questionnaireResponse.questionnaire = questionnaireReference;
 
 
-    questionnaireResponse.status = 'in-progress';
+  //   questionnaireResponse.status = 'in-progress';
 
-    questionnaireResponse.authored = new Date;
+  //   questionnaireResponse.authored = new Date;
 
-    const subjectReference = new FHIR.Reference;
-    subjectReference.reference = 'Patient/' + this.clientId;
-    subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
-    questionnaireResponse.subject = subjectReference;
+  //   const subjectReference = new FHIR.Reference;
+  //   subjectReference.reference = 'Patient/' + this.clientId;
+  //   subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
+  //   questionnaireResponse.subject = subjectReference;
 
-    const items = [];
+  //   const items = [];
 
-    for (const questions of this.questionsList) {
-      for (const question of questions) {
-        if (question['answer'] && question['answer'].length > 0) {
+  //   for (const questions of this.questionsList) {
+  //     for (const question of questions) {
+  //       if (question['answer'] && question['answer'].length > 0) {
 
-          const item = new FHIR.QuestionnaireResponseItem;
-          if (!question['enableWhen']) {
-            item.linkId = question['linkId'];
-            item.text = question['text'];
-            item.answer = this.fetchAnswer(question);
-            items.push(item);
-          } else if (question['enableWhen'] && question['enabled']) {
-            item.linkId = question['linkId'];
-            item.text = question['text'];
-            item.answer = this.fetchAnswer(question);
-            items.push(item);
-          }
-        }
-      }
-    }
+  //         const item = new FHIR.QuestionnaireResponseItem;
+  //         if (!question['enableWhen']) {
+  //           item.linkId = question['linkId'];
+  //           item.text = question['text'];
+  //           item.answer = this.fetchAnswer(question);
+  //           items.push(item);
+  //         } else if (question['enableWhen'] && question['enabled']) {
+  //           item.linkId = question['linkId'];
+  //           item.text = question['text'];
+  //           item.answer = this.fetchAnswer(question);
+  //           items.push(item);
+  //         }
+  //       }
+  //     }
+  //   }
 
-    if (this.documentReference) {
-      const documentItem = new FHIR.QuestionnaireResponseItem;
-      documentItem.linkId = this.documentReference['linkId'];
-      documentItem.text = this.documentReference['text'];
-      documentItem.answer = this.fetchAnswer(this.documentReference);
+  //   if (this.documentReference) {
+  //     const documentItem = new FHIR.QuestionnaireResponseItem;
+  //     documentItem.linkId = this.documentReference['linkId'];
+  //     documentItem.text = this.documentReference['text'];
+  //     documentItem.answer = this.fetchAnswer(this.documentReference);
 
-      items.push(documentItem);
-    }
-    questionnaireResponse.item = items;
-    this.questionnaireService.saveRequest(questionnaireResponse).subscribe(
-      data => this.handleSuccessOnSave(data),
-      error => this.handleErrorOnSave(error)
-    );
-  }
+  //     items.push(documentItem);
+  //   }
+  //   questionnaireResponse.item = items;
+  //   this.questionnaireService.saveRequest(questionnaireResponse).subscribe(
+  //     data => this.handleSuccessOnSave(data),
+  //     error => this.handleErrorOnSave(error)
+  //   );
+  // }
 
   fetchAnswer(question): FHIR.Answer[] {
     const answerArray = new Array<FHIR.Answer>();
@@ -466,6 +469,19 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         if (value.hasOwnProperty(key)) {
           if (key === indivElem.linkId) {
             indivElem.answer = value[key];
+            console.log(indivElem.answer);
+            if (indivElem.answer !== null) {
+              if (typeof indivElem.answer === 'string') {
+
+                this.listOfCode.forEach(code => {
+                  if (indivElem.answer.indexOf(code) > -1) {
+                    console.log("HELLOOOO", indivElem);
+                    indivElem.code = code;
+                  }
+                });
+              }
+
+            }
           }
         }
       }
