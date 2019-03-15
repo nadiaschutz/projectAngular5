@@ -23,7 +23,7 @@ import { Router } from '@angular/router';
                     [formControlName]="config.name"
                     >
                     <label class="form-check-label">
-                    {{ config.label }}{{ config.name}}
+                    {{ config.label }}
                     </label>
                 </div>
   `,
