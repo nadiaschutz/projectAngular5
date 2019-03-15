@@ -99,7 +99,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     ['PTH', 'THPPC3'],
     ['PTH', 'THCRC1'],
     ['PTH', 'THCRC3'],
-    ['PTH', 'THREC3']
+    ['PTH', 'THREC3'],
+
+    ['FTWORK'],
+    ['IMREVW']
+
   ];
   options = [];
 
@@ -460,20 +464,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     return answerArray;
   }
 
+
+
   submit(value: { [name: string]: any }) {
-    // const list = [];
 
-    // tslint:disable-next-line:forin
-    // for (const key in value) {
-    //   if (key.indexOf('dependent') !== - 1) {
-
-    //     list.push({
-    //       key: key,
-    //       value: value[key]
-    //     });
-
-    //   }
-    // }
 
     const list = Object.entries(value)
       .filter(([key]) => key.includes('dependent'))
@@ -491,7 +485,19 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
     }
 
+    // // console.log('ITEMS on submit before change', this.items);
+    // for (const [name, value] of Object.entries(values))
+    //   if (itemsByLinkId.has(name)) {
+    //     const indivElem = itemsByLinkId.get(name)
+    //     indivElem.answer = value
+    //     if (typeof value === "string" && codeByDisplay.has(value))
+    //       indivElem.code = codeByDisplay.get(value)
+    //   }
 
+
+    // const flatCodes = new Set()
+    // for (const code of this.listOfCodes)
+    //   for (const co of code) flatCodes.add(co)
     // console.log('ITEMS on submit before change', this.items);
 
     this.items.forEach(indivElem => {
@@ -501,16 +507,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         if (value.hasOwnProperty(key)) {
           if (key === indivElem.linkId) {
             indivElem.answer = value[key];
-            if (indivElem.answer !== null) {
-              if (typeof indivElem.answer === 'string') {
-
-                this.options.forEach(option => {
-                  if (option.display === indivElem.answer) {
-                    indivElem.code = option.code;
-                  }
-                });
-              }
-
+            if (typeof indivElem.answer === 'string') {
+              this.options.forEach(option => {
+                if (option.display === indivElem.answer) {
+                  indivElem.code = option.code;
+                }
+              });
             }
           }
         }
@@ -538,14 +540,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     // console.log(selectItems);
 
+
     resultItem = {
-      // answer: selectItems.forEach((item, index) => {
-      //   let result;
-      //   result += item.answer;
-      //   return result;
-      // }),
-      // tslint:disable-next-line:max-line-length
-      answer: selectItems.length === 2 ? selectItems[0].answer + '-' + selectItems[1].answer : selectItems[0].answer + '-' + selectItems[1].answer + '-' + selectItems[2].answer,
+      answer: selectItems.map(x => x.answer).join('-'),
       code: selectItems[selectItems.length - 1].code,
       linkId: selectItems[0].linkId,
       system: selectItems[0].system,
@@ -560,6 +557,13 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         }
       });
 
+
+      // if (foundItem) {
+      //   foundItem.answer = resultItem.answer;
+      //   foundItem.code = resultItem.code;
+      //   foundItem.system = resultItem.system;
+      //   foundItem.text = resultItem.text;
+      // }
       if (item.linkId === resultItem.linkId) {
         item.answer = resultItem.answer;
         item.code = resultItem.code;
@@ -572,14 +576,14 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // this.disableInputsForReview = true;
     this.savingData();
 
-    this.itemsToSend.forEach(request => {
+    for (const request of this.itemsToSend) {
       this.questionnaireService
         .saveRequest(request)
         .subscribe(
           data => this.handleSuccessOnSave(data),
           error => this.handleErrorOnSave(error)
         );
-    });
+    }
 
   }
 
