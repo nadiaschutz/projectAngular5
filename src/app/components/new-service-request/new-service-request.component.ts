@@ -32,6 +32,8 @@ import { element } from '@angular/core/src/render3/instructions';
 import { e } from '@angular/core/src/render3';
 import { runInThisContext } from 'vm';
 import { IfStmt } from '@angular/compiler';
+import { DraggableItemService } from 'ngx-bootstrap';
+import { filter } from 'rxjs/operators';
 
 class TextInput {
   static create(event: FieldConfig) {
@@ -80,6 +82,26 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   // tslint:disable-next-line:max-line-length
   listOfCode = ['HACAT1', 'HACAT2', 'HACAT3', 'FTWORK', 'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC3', 'THREC3', 'IMREVW'];
+  listOfCodes = [
+    ['HA', 'PREP', 'HACAT1'],
+    ['HA', 'PREP', 'HACAT2'],
+    ['HA', 'PREP', 'HACAT3'],
+    ['HA', 'PERIOD', 'HACAT1'],
+    ['HA', 'PERIOD', 'HACAT2'],
+    ['HA', 'PERIOD', 'HACAT3'],
+
+    ['SUPER', 'SUBUYB'],
+    ['SUPER', 'SUREMG'],
+    ['SUPER', 'SUSURB'],
+
+    ['PTH', 'THSOTT'],
+    ['PTH', 'THPPC1'],
+    ['PTH', 'THPPC3'],
+    ['PTH', 'THCRC1'],
+    ['PTH', 'THCRC3'],
+    ['PTH', 'THREC3']
+  ];
+  options = [];
 
   style = 'col-11';
   configuration;
@@ -439,44 +461,52 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   submit(value: { [name: string]: any }) {
-    const list = [];
+    // const list = [];
 
     // tslint:disable-next-line:forin
-    for (const key in value) {
-      if (key.indexOf('dependent') !== - 1) {
+    // for (const key in value) {
+    //   if (key.indexOf('dependent') !== - 1) {
 
-        list.push({
-          key: key,
-          value: value[key]
-        });
+    //     list.push({
+    //       key: key,
+    //       value: value[key]
+    //     });
 
-      }
-    }
+    //   }
+    // }
 
-    if (list) {
+    const list = Object.entries(value)
+      .filter(([key]) => key.includes('dependent'))
+      .map(([key, val]) => ({
+        key, val
+      }));
+
+    if (list.length) {
       this.dependentsList.forEach((el, ind) => {
         list.forEach((listItem, index) => {
           if (index === ind) {
-            el.value = listItem.value;
+            el.value = listItem.val;
           }
         });
       });
     }
 
+
+    // console.log('ITEMS on submit before change', this.items);
+
     this.items.forEach(indivElem => {
+
       // tslint:disable-next-line:forin
       for (const key in value) {
         if (value.hasOwnProperty(key)) {
           if (key === indivElem.linkId) {
             indivElem.answer = value[key];
-            console.log(indivElem.answer);
             if (indivElem.answer !== null) {
               if (typeof indivElem.answer === 'string') {
 
-                this.listOfCode.forEach(code => {
-                  if (indivElem.answer.indexOf(code) > -1) {
-                    console.log("HELLOOOO", indivElem);
-                    indivElem.code = code;
+                this.options.forEach(option => {
+                  if (option.display === indivElem.answer) {
+                    indivElem.code = option.code;
                   }
                 });
               }
@@ -487,6 +517,57 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       }
     });
 
+    // console.log('ITEMS on submit after change', this.items);
+
+
+    const selectItems = [];
+    let resultItem;
+    this.items.forEach((indivElem) => {
+      if (typeof indivElem.answer === 'string') {
+        this.listOfCodes.forEach(code => {
+          code.forEach((co) => {
+            if (indivElem.code === co) {
+              if (selectItems.indexOf(indivElem) < 0) {
+                selectItems.push(indivElem);
+              }
+            }
+          });
+        });
+      }
+    });
+
+    // console.log(selectItems);
+
+    resultItem = {
+      // answer: selectItems.forEach((item, index) => {
+      //   let result;
+      //   result += item.answer;
+      //   return result;
+      // }),
+      // tslint:disable-next-line:max-line-length
+      answer: selectItems.length === 2 ? selectItems[0].answer + '-' + selectItems[1].answer : selectItems[0].answer + '-' + selectItems[1].answer + '-' + selectItems[2].answer,
+      code: selectItems[selectItems.length - 1].code,
+      linkId: selectItems[0].linkId,
+      system: selectItems[0].system,
+      text: selectItems[0].text,
+    };
+
+
+    this.items.forEach((item) => {
+      selectItems.forEach((select, index) => {
+        if (index > 0) {
+          this.items = this.items.filter(filtered => filtered.linkId !== select.linkId);
+        }
+      });
+
+      if (item.linkId === resultItem.linkId) {
+        item.answer = resultItem.answer;
+        item.code = resultItem.code;
+        item.system = resultItem.system;
+        item.text = resultItem.text;
+      }
+
+    });
 
     // this.disableInputsForReview = true;
     this.savingData();
@@ -580,13 +661,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     }
     // adding extra items to itemToSend.item[]
     this.mapItemToItems();
-    console.log(this.itemsToSend);
+    // console.log(this.itemsToSend);
   }
-
-  createDependentSR() {
-
-  }
-
 
 
 
@@ -676,6 +752,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   getFormData(data) {
     this.qrequest = data.item;
+    console.log('QREQ', this.qrequest);
 
     this.configuration = this.qrequest.map(el => {
       // text
@@ -782,9 +859,19 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
       } else if (el.code[1].code === 'SELECT') {
         const options = [];
+
+        el.option.forEach(el1 => {
+          this.options.push(
+            {
+              display: el1.valueCoding.display,
+              code: el1.valueCoding.code
+            }
+          );
+        });
         el.option.forEach(el1 => {
           options.push(el1.valueCoding.display);
         });
+
         return {
           type: 'selectSr',
           label: el.text,
@@ -866,6 +953,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       system: el.code[0].system
 
     }));
+    console.log('ITEMS', this.items);
+
+    console.log('THIS.OPTIONS', this.options);
   }
 
 

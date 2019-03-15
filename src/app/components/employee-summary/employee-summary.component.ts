@@ -877,8 +877,9 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     // Employe Name
 
     this.employee_name.family = this.employeeFormGroup.get('familyName').value;
+    sessionStorage.setItem('emplFam', this.employee_name.family);
     this.employee_name.given = [this.employeeFormGroup.get('givenName').value];
-
+    sessionStorage.setItem('emplGiven', this.employee_name.given);
     // Language info
 
     if (
