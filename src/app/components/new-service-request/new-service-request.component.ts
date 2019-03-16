@@ -118,6 +118,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   currentUserDepartment;
 
   formId = 'TEST4';
+  formCreated = false;
 
   responseId = null;
   clientId = null;
@@ -199,6 +200,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    console.log(this.formCreated);
 
     const depList = sessionStorage.getItem('dependents');
     this.dependentsList = JSON.parse(depList);
@@ -942,7 +944,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       {
         type: 'button',
         name: 'submit',
-        label: 'Next'
+        label: 'Submit'
       }
     );
 
@@ -1068,7 +1070,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   // getting response from thr server on "next"
   handleSuccessOnSave(data) {
     console.log(data);
-    this.createdsuccessfully = true;
+
+    this.formCreated = true;
+  }
+
+  onOk() {
+    this.router.navigateByUrl('/dashboard');
   }
 
   handleErrorOnSave(error) {

@@ -43,13 +43,17 @@
   <section class="form-section">
 
 
-    <div>
+    <!-- <div> -->
+    <div *ngIf='!formCreated'>
       <dynamic-form [config]="config" #form="dynamicForm" (submit)="submit($event)">
       </dynamic-form>
       <!-- {{ form.valid }}
       {{ form.value | json }} -->
     </div>
-
+    <div *ngIf='formCreated'>
+      <p>Your Service Request was created Successfully</p>
+      <button class="btn regular-button" type="button" (click)="onOk()">OK</button>
+    </div>
     <!-- <div *ngFor="let question of questionsList; let i =index" class="col-12-custom">
         <div *ngIf="question.length > 1">
           <div *ngFor="let eachItem of question ; let x = index">
