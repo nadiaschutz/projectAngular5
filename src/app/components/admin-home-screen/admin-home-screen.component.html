@@ -30,8 +30,8 @@
                     <label for="dob">Date of Birth</label>
                     <!-- <input class="form-control" type="text" placeholder="Select Date" formControlName="dob" id="dob"
                         bsDatepicker [bsConfig]='datePickerConfig' red /> -->
-                    <input type="text" placeholder="Date of Birth" class="form-control" bsDatepicker
-                        formControlName="dob" id="dob" [bsConfig]='datePickerConfig'>
+                    <input type="text" placeholder="Date of Birth" class="form-control" bsDatepicker formControlName="dob"
+                        id="dob" [bsConfig]='datePickerConfig'>
                 </div>
                 <div class="col">
                     <label for="pri">PRI</label>
@@ -62,8 +62,8 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <label for="psohp">PSOHP Service</label>
-                        <select class="form-control" formControlName="psohp" id="psohp">
+                        <label for="psohpService">PSOHP Service</label>
+                        <select class="form-control" formControlName="psohpService" id="psohpService" (change)="psohpChanged()">
                             <option value="">(Select)</option>
                             <option *ngFor="let item of psohpList" [value]="item.value">
                                 {{item.text}}
@@ -71,9 +71,22 @@
                         </select>
                     </div>
                     <div class="col">
-                        <label for="serviceRequest">Service Request ID#</label>
-                        <input type="text" class="form-control value" name="serviceRequest"
-                            formControlName="serviceRequest" />
+                        <label for="assesmentType">Assesment Type</label>
+                        <select class="form-control" formControlName="assesmentType" id="assesmentType" (change)="assessTypeChanged()">
+                            <option value="">(Select)</option>
+                            <option *ngFor="let item of assesmentTypeList" [value]="item.value">
+                                {{item.text}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="assesmentCat">Assesment CAT</label>
+                        <select class="form-control" formControlName="assesmentCat" id="assesmentCat" (change)="assessCATChanged()">
+                            <option value="">(Select)</option>
+                            <option *ngFor="let item of assesmentCatList" [value]="item.value">
+                                {{item.text}}
+                            </option>
+                        </select>
                     </div>
                 </div>
                 <!-- <div class="row">
@@ -101,6 +114,10 @@
                         <label for="dateRange">Date Range From</label>
                         <input type="text" placeholder="Select Date Range" class="form-control" bsDaterangepicker
                             formControlName="dateRange" id="dateRange" [bsConfig]='datePickerConfig' red>
+                    </div>
+                    <div class="col">
+                        <label for="serviceRequest">Service Request ID#</label>
+                        <input type="text" class="form-control value" name="serviceRequest" formControlName="serviceRequest" />
                     </div>
                     <!-- <div class="col-3">
                         <div class="form-group">
@@ -221,8 +238,8 @@
                         <p class="card-text">
 
                             {{item.dateToday}}
-                            <button type="button" class="btn regular-button float-right"
-                                (click)="setEOCID(item.eocId)">Work Screen</button>
+                            <button type="button" class="btn regular-button float-right" (click)="setEOCID(item.eocId)">Work
+                                Screen</button>
                         </p>
 
                     </div>

@@ -1175,9 +1175,6 @@ export class WorkScreenComponent implements OnInit {
     // statusItemSix.answer = [statusItemAnswer];
     statusItemAnswer.valueBoolean = true;
 
-    statusItemSeven.linkId = '6';
-    statusItemSeven.text = 'Waiting';
-    statusItemSeven.answer = [statusItemAnswer];
 
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
@@ -1194,8 +1191,7 @@ export class WorkScreenComponent implements OnInit {
       statusItemThree,
       statusItemFour,
       statusItemFive,
-      statusItemSix,
-      statusItemSeven
+      statusItemSix
     ];
 
     console.log(statusQResponse);
