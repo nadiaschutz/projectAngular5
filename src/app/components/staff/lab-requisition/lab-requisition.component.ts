@@ -477,11 +477,21 @@ export class LabRequisitionComponent implements OnInit {
                     this.listQuestionary = this.questionaryData.entry;
                     if (this.listQuestionary && this.listQuestionary.length > 0) {
 
-                        this.assessmentType = this.listQuestionary[0].resource.item.filter( data => {
-                            if (data && data.text === 'PSOHP Service') {
-                                return data;
+                      for (const questionnaire of this.listQuestionary) {
+                        const qr = questionnaire['resource'];
+                        if (qr['item']) {
+                          qr.item.forEach(item => {
+                            if (item['linkId'] === 'PSOHPSERV') {
+                              for (const answer of item['answer']) {
+                                if (answer['valueCoding']) {
+                                  this.assessmentType = answer['valueCoding']['display'];
+                                }
+                              }
                             }
-                        })[0].answer[0].valueString;
+                          });
+                        }
+                      }
+                       
                     }
 
 

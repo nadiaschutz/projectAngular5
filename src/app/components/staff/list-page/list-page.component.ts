@@ -451,8 +451,6 @@ export class ListPageComponent implements OnInit {
           for (const answer of item['answer']) {
             if (answer['valueCoding']) {
               serviceType = answer['valueCoding']['code'];
-              console.log('haha, ', serviceType);
-              
             }
           }
         }
@@ -505,7 +503,6 @@ export class ListPageComponent implements OnInit {
                   console.log(error);
                 });
             }
-
           });
         });
     } else {

@@ -269,7 +269,7 @@
   </div>
   <div class="row" *ngIf="printFlag && printObjectForDisplay">
     <div class="col button-row">
-      <button class="btn regular-dark-button margin-right-20" (click)="printFlag = !printFlag">
+      <button class="btn regular-dark-button margin-right-20" (click)="changeFlagsForPrinting()">
         Return to form
       </button>
       <button class="btn regular-dark-button margin-right-20" (click)="printToPDF()">

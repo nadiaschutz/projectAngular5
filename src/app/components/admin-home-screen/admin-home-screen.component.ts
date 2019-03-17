@@ -3,22 +3,17 @@ import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import {
     FormBuilder,
     FormGroup,
-    Validators,
     FormControl
 } from '@angular/forms';
 
 import { distinctUntilChanged } from 'rxjs/operators';
 import * as moment from 'moment';
 
-import { HttpClient } from '@angular/common/http';
-import { TitleCasePipe, LocationStrategy } from '@angular/common';
 import { UserService } from '../../service/user.service';
 
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { QuestionnaireService } from '../../service/questionnaire.service';
 import { AdminHomeScreenService } from '../../service/admin-home-screen.service';
-import { formatDate } from '@angular/common';
 import { UtilService } from '../../service/util.service';
 import { StaffService } from '../../service/staff.service';
 
@@ -45,7 +40,7 @@ export class AdminHomeScreenComponent implements OnInit {
 
   jobLocationList: NameValueLookup[] = [];
   employeeDepartmentList: NameValueLookup[] = [];
-  psohpList: NameValueLookup[] = [];
+  // psohpList: NameValueLookup[] = [];
   assesmentTypeList: NameValueLookup[] = [];
   assesmentCatList: NameValueLookup[] = [];
 
@@ -65,6 +60,170 @@ export class AdminHomeScreenComponent implements OnInit {
   serviceTaskRequestList = [];
 
   activeTab = 'all'; // all, todo, waiting
+  psohpCodes = {
+    HACAT1: 'Health Assessment-Periodic-Cat 1 (HACAT1)',
+    HACAT2: 'Health Assessment-Periodic-Cat 2 (HACAT2)',
+    HACAT3: 'Health Assessment-Periodic-Cat 3 (HACAT3)',
+    FTWORK: 'Fitness to Work Evaluation (FTWORK)',
+    SUBUYB: 'Superannuation-Buy-Back (SUBUYB)',
+    SUREMG: 'Superannuation-Medical Grounds (SUREMG)',
+    SUSURB: 'Superannuation-Supplemental Retirement Benefits (SUSURB)',
+    THSOTT: 'Posting and Travel Health-Short-Term Travel (THSOTT)',
+    THPPC1: 'Posting and Travel Health-Pre-Posting-Cat 1 (THPPC1)',
+    THPPC3: 'Posting and Travel Health-Pre-Posting-Cat 3 (THPPC3)',
+    THCRC1: 'Posting and Travel Health-Cross-Posting-Cat 1 (THCRC1)',
+    THCRC3: 'Posting and Travel Health-Cross-Posting Cat 3 (THCRC3)',
+    THREC3: 'Posting and Travel Health-Return Posting-Cat 3 (THREC3)',
+    IMREVW: 'Immunization Review (IMREVW)',
+  };
+
+  psohpList = [
+    {
+      value: 'Health Assessment',
+      text: 'Health Assessment'
+    },
+    {
+      value: 'FTWORK',
+      text: 'Fitness to work (FTWORK)'
+    },
+    {
+      value: 'Superannuation',
+      text: 'Superannuation'
+    },
+    {
+      value: 'Posting and Travel Health',
+      text: 'Posting and Travel Health'
+    },
+    {
+      value: 'IMREVW',
+      text: 'Immunization review (IMREVW)'
+    }
+  ];
+
+  psophNext = [
+    {
+      type: 'Health Assessment',
+      value: {
+        text: 'Pre-Placement',
+        value: 'Pre-Placement'
+      }
+    },
+    {
+      type: 'Health Assessment',
+      value: {
+        text: 'Periodic',
+        value: 'Periodic'
+      }
+    },
+    {
+      type: 'Superannuation',
+      value: {
+        text: 'Buy Back',
+        value: 'SUBUYB'
+      }
+    },
+    {
+      type: 'Superannuation',
+      value: {
+        text: 'Medical Grounds',
+        value: 'SUREMG'
+      }
+    },
+    {
+      type: 'Superannuation',
+      value: {
+        text: 'Supplemental Retirement Benefits',
+        value: 'SUSURB'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Short Term Travel',
+        value: 'THSOTT'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Pre-Posting Cat 1',
+        value: 'THPPC1'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Pre-Posting Cat 3',
+        value: 'THPPC3'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Cross-Posting Cat 1',
+        value: 'THCRC1'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Cross-Posting Cat 3',
+        value: 'THCRC3'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'return-posting cat 3',
+        value: 'THREC3'
+      }
+    }
+  ];
+
+  typeNext = [
+    {
+      type: 'Pre-Placement',
+      value: {
+        text: 'Cat 1',
+        value: 'HACAT1'
+      }
+    },
+    {
+      type: 'Pre-Placement',
+      value: {
+        text: 'Cat 2',
+        value: 'HACAT2'
+      }
+    },
+    {
+      type: 'Pre-Placement',
+      value: {
+        text: 'Cat 3',
+        value: 'HACAT3'
+      }
+    },
+    {
+      type: 'Periodic',
+      value: {
+        text: 'Cat 1',
+        value: 'HACAT1'
+      }
+    },
+    {
+      type: 'Periodic',
+      value: {
+        text: 'Cat 2',
+        value: 'HACAT2'
+      }
+    },
+    {
+      type: 'Periodic',
+      value: {
+        text: 'Cat 3',
+        value: 'HACAT3'
+      }
+    }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -104,7 +263,9 @@ export class AdminHomeScreenComponent implements OnInit {
       pri: new FormControl(''),
       employeeDepartment: new FormControl(''),
       jobLocation: new FormControl({ value: '', disabled: true}),
-      psohp: new FormControl(''),
+      psohpService: new FormControl(null),
+      assesmentType: new FormControl(null),
+      assesmentCat: new FormControl(null),
       // assesmentType: new FormControl('', Validators.required),
       // assesmentCat: new FormControl('', Validators.required),
       serviceRequest: new FormControl(''),
@@ -121,6 +282,32 @@ export class AdminHomeScreenComponent implements OnInit {
   setTab(tab) {
     this.activeTab = tab;
     console.log('Tab Set =>', this.activeTab);
+  }
+
+  psohpChanged() {
+    const psohpValue = this.adminHomeFormGroup.get('psohpService').value;
+    const temp = this.psophNext.filter(p => p.type === psohpValue).map(item => item.value);
+
+
+    this.assesmentTypeList = temp;
+    this.assesmentCatList = [];
+
+    // reset
+    this.adminHomeFormGroup.patchValue({assesmentType: null});
+    this.adminHomeFormGroup.patchValue({assesmentCat: null});
+  }
+
+  assessTypeChanged() {
+    const assesTypeValue = this.adminHomeFormGroup.get('assesmentType').value;
+    const temp = this.typeNext.filter(p => p.type === assesTypeValue).map(item => item.value);
+    this.assesmentCatList = temp;
+
+    // reset
+    this.adminHomeFormGroup.patchValue({assesmentCat: null});
+  }
+
+  assessCATChanged() {
+    const assesCATValue = this.adminHomeFormGroup.get('assesmentCat').value;
   }
 
   onChanges(): void {
@@ -201,8 +388,24 @@ export class AdminHomeScreenComponent implements OnInit {
         queryObj['patient:Patient.branch'] = obj.text;
       }
     }
-    if (form.value.psohp && form.value.psohp !== '') {
-      queryObj['psohpAnswer'] = form.value.psohp;
+
+
+    // console.log(form.value['psohpService']);
+    let code = '';
+    if (form.value['assesmentCat']) {
+      code = form.value['assesmentCat'] ;
+    }
+    if (form.value['psohpService'] === 'FTWORK' || form.value['psohpService'] === 'IMREVW') {
+      code = form.value['psohpService'];
+    }
+    if (form.value['assesmentType']) {
+      code = form.value['assesmentType'];
+      console.log(code);
+    }
+    // const title = this.psohpCodes[code];
+  
+    if (code && code !== '') {
+      queryObj['psohpService'] = code;
     }
     if (form.value.serviceRequest && form.value.serviceRequest !== '') {
       queryObj['_id'] = form.value.serviceRequest;
@@ -374,12 +577,12 @@ export class AdminHomeScreenComponent implements OnInit {
   }
 
   getAndSetLocations() {
-    this.adminHomeScreenService.getPsophServiceFromQR('TEST1')
-      .subscribe(questionnaire => {
-        console.log('questionnaire resource => ', questionnaire);
-        this.psohpList = this.extractPsophListFromQuestionnaire(questionnaire);
-      },
-      (err) => console.log('Employee Department list error', err));
+    // this.adminHomeScreenService.getPsophServiceFromQR('TEST1')
+    //   .subscribe(questionnaire => {
+    //     console.log('questionnaire resource => ', questionnaire);
+    //     this.psohpList = this.extractPsophListFromQuestionnaire(questionnaire);
+    //   },
+    //   (err) => console.log('Employee Department list error', err));
 
     this.datePickerConfig = Object.assign(
       {},
@@ -414,7 +617,7 @@ export class AdminHomeScreenComponent implements OnInit {
         temp['careManager'] = 'Unassigned';
       }
       temp['id'] = item['id'];
-      temp['header'] = this.getHeader(item, 'PSOHP Service');
+      temp['header'] = this.getHeader(item, 'PSOHPSERV');
       temp['clientDepartment'] = this.getClientDepartment(patient);
       temp['clientName'] = this.getClientName(patient);
       temp['daysInQueue'] = this.getDaysInQueue(eoc['period']['start']);
@@ -477,7 +680,8 @@ export class AdminHomeScreenComponent implements OnInit {
 
     if (form.dateRange !== '' || form.dob !== '' || form.employeeDepartment !== '' ||
         form.firstName !== '' || form.lastName !== '' || form.pri !== '' ||
-        form.psohp !== '' || form.serviceRequest !== '') {
+        form.assesmentCat !== '' || form.assesmentType !== '' || form.psohpService !== '' ||
+        form.serviceRequest !== '') {
       valueFilled = true;
     }
 
@@ -526,16 +730,21 @@ export class AdminHomeScreenComponent implements OnInit {
   }
 
   getHeader(qr, itemText) {
-    let answer = '';
-    if (qr && qr.item && Array.isArray(qr.item) && qr.item.length > 0) {
+    let serviceType = ''; 
+    if (qr['item']) {
       qr.item.forEach(item => {
-        if (item.text === itemText) {
-          answer = item['answer'][0]['valueString'];
+        if (item['linkId'] === itemText) {
+          for (const answer of item['answer']) {
+            if (answer['valueCoding']) {
+              serviceType = answer['valueCoding']['display'];
+            }
+          }
         }
       });
-
-      return answer;
+    } else {
+      console.log('buggy one', qr);
     }
+    return serviceType;
   }
 
   getPractitioner(pracId, isTaskRequest) {
