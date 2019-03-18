@@ -424,6 +424,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       );
 
     this.selected = temp;
+    console.log(this.selected);
+    sessionStorage.setItem('emplType', this.selected['employeeType']['valueString']);
 
     this.patientService
       .getPatientByLinkID(this.selected['linkID']['valueString'])
