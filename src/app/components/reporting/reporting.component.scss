@@ -24,8 +24,9 @@ button:focus {
 }
 
 .date-picker {
-    width: 100px;
+    width: 200px;
     display: inline-block;
+    margin-left: 10px;
 }
 
 .end-date {
@@ -34,4 +35,8 @@ button:focus {
 
 .export {
     margin-top: 25px;
+}
+
+.data-set {
+    width: 50%;
 }

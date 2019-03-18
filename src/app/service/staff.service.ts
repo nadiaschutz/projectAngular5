@@ -60,6 +60,10 @@ export class StaffService {
   }
 
   getAllEpisodeOfCare() {
+    return this.http.get(environment.queryURI + '/EpisodeOfCare', {headers: this.getHeaders()});
+  }
+
+  getAllEpisodeOfCareAndRelatedData() {
     return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*', {headers: this.getHeaders()});
   }
 

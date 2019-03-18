@@ -17,6 +17,7 @@ import {
 })
 export class ReportingComponent implements OnInit {
 
+  serviceRequestData = [];
   datePickerConfig: Partial<BsDatepickerConfig>;
   DATE_FORMAT = 'YYYY-MM-DD';
   regions = ['Select Region'];
@@ -25,6 +26,9 @@ export class ReportingComponent implements OnInit {
   clientDepartments = ['Select Department'];
   statuses = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   reportingFormGroup: FormGroup;
+  dataSets = ['Select Data Set', 'Service Request', 'Lab', 'Vaccines', 'Full Log'];
+  // If a service request is selected, then build the entire SR object
+  // For Labs/Vaccines, query the respective resources
 
   constructor(private staffService: StaffService, private userService: UserService, private fb: FormBuilder) { }
 
@@ -38,9 +42,6 @@ export class ReportingComponent implements OnInit {
     this.initializeDatePicker();
     this.getAllRegions();
     this.getAllClientDeparments();
-    this.staffService.getEpisodeOfCareAndRelatedData('13693').subscribe(data => {
-      console.log(data);
-    });
     this.reportingFormGroup = this.fb.group({
       startDate: new FormControl(''),
       endDate: new FormControl(''),
@@ -51,6 +52,7 @@ export class ReportingComponent implements OnInit {
       status: new FormControl(''),
       serviceRequest: new FormControl(''),
       vaccines: new FormControl(''),
+      dataSet: new FormControl(''),
       jobLocation: new FormControl({ value: '', disabled: true}),
       psohp: new FormControl(''),
       // assesmentType: new FormControl('', Validators.required),
@@ -75,7 +77,7 @@ export class ReportingComponent implements OnInit {
       data['entry'].forEach(element => {
         this.regions.push(element.resource.name);
       });
-      console.log(this.regions);
+      // console.log(this.regions);
     });
   }
 
@@ -84,14 +86,17 @@ export class ReportingComponent implements OnInit {
       data['entry'].forEach(element => {
         this.clientDepartments.push(element.resource.name);
       });
-      console.log(this.clientDepartments);
+      // console.log(this.clientDepartments);
     });
   }
 
   export() {
-    this.staffService.getEpisodeOfCareAndRelatedData('13693').subscribe(data => {
-      console.log(data);
-    });
+    if (this.reportingFormGroup.value.dataSet === 'Service Request') {
+      this.buildServiceRequestData();
+    }
+    // this.staffService.getEpisodeOfCareAndRelatedData('14654').subscribe(data => {
+    //   console.log(data);
+    // });
   }
 
   // This method builds Service Request Data
@@ -101,27 +106,82 @@ export class ReportingComponent implements OnInit {
   // 8.Charge back 9.Cliet Type 10.OHAG Occupation 11.Received Date
   // 12.Validated Date 13.Assigned Date 14.Scheduled Date 15.Work completed date
   // 16.Closed date 17. Assessment code and 18. Exam by code
-  buildServiceRequestData(data) {
-    const temp = {};
-    if (data.resource.resourceType === 'EpisodeOfCare') {
-    } else if (data.resource.resourceType === 'QuestionnaireResponse') {
-    } else if (data.resource.resourceType === 'Patient') {
+  buildServiceRequestData() {
+    this.staffService.getAllEpisodeOfCare().subscribe(data => {
+      data['entry'].forEach(episodeOfCare => {
+        this.buildIndividualServiceRequest(episodeOfCare.resource.id);
+      });
+      // console.log(this.serviceRequestData.length);
+      this.exportToCSV(this.serviceRequestData);
+    });
+  }
+
+  buildIndividualServiceRequest(episodeOfCareId) {
+    if (episodeOfCareId === '14654') {
+      const temp = {};
+      this.staffService.getEpisodeOfCareAndRelatedData(episodeOfCareId).subscribe(data => {
+        data['entry'].forEach(element => {
+          const resource = element.resource;
+          if (resource.resourceType === 'EpisodeOfCare') {
+            temp['Service Request Id'] = resource['id'];
+          }
+          if (resource.resourceType === 'QuestionnaireResponse') {
+            // console.log(resource);
+            if (resource.identifier.value === 'SERVREQ') {
+              resource['item'].forEach(item => {
+                if (item.linkId === 'PSOHPSERV') {
+                  temp['Psohp Service'] = item.answer[0].valueCoding.code;
+                }
+                if (item.linkId === 'REGOFFICE') {
+                  temp['Regional Office'] = item.answer[0].valueCoding.display;
+                }
+                if (item.linkId === 'OHAGOCC') {
+                  temp['OHAG Occupation'] = item.answer[0].valueCoding.display;
+                }
+              });
+            }
+            if (resource.identifier.value === 'STATUS') {
+              resource['item'].forEach(statusItem => {
+                if (!temp[statusItem.text]) {
+                  if (statusItem.answer) {
+                    if (statusItem.answer[1]) {
+                      temp[statusItem.text] = statusItem.answer[1].valueDate;
+                    } else {
+                      temp[statusItem.text] = '';
+                    }
+                  } else {
+                    temp[statusItem.text] = '';
+                  }
+                }
+              });
+            }
+          }
+        });
+        console.log(temp);
+        this.serviceRequestData.push(temp);
+        this.exportToCSV(temp);
+        console.log(this.serviceRequestData);
+      });
     }
   }
 
   exportToCSV(data) {
-    const options = {
-      fieldSeparator: ',',
-      quoteStrings: '"',
-      decimalSeparator: '.',
-      showLabels: true,
-      useTextFile: false,
-      useBom: true,
-      useKeysAsHeaders: true
-    };
+    console.log(this.serviceRequestData.length);
+    if (data.length > 0) {
+      console.log(data);
+      const options = {
+        fieldSeparator: ',',
+        quoteStrings: '"',
+        decimalSeparator: '.',
+        showLabels: true,
+        useTextFile: false,
+        useBom: true,
+        useKeysAsHeaders: true
+      };
 
-    const csvExporter = new ExportToCsv(options);
-    csvExporter.generateCsv(data);
+      const csvExporter = new ExportToCsv(options);
+      csvExporter.generateCsv(data);
+    }
   }
 
 }

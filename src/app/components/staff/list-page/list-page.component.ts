@@ -46,7 +46,7 @@ export class ListPageComponent implements OnInit {
       .subscribe(data => {
         this.mapToEpisodeOfCare(data);
         // this.getServiceTypeFromQuestionnaireResponse(data);
-        this.staffService.getAllEpisodeOfCare().subscribe(episodes => {
+        this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(episodes => {
           this.buildEpisodeResponseObject(episodes);
         });
       });
@@ -289,7 +289,7 @@ export class ListPageComponent implements OnInit {
     this.staffService
       .updateEpisodeOfCare(episode.id, episodeString)
       .subscribe(data => {
-        this.staffService.getAllEpisodeOfCare().subscribe(episodes => {
+        this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(episodes => {
           this.buildEpisodeResponseObject(episodes);
         });
       });

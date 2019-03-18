@@ -2,6 +2,8 @@
   <h5>Reporting</h5>
 
   <form [formGroup]="reportingFormGroup" novalidate>
+
+    {{reportingFormGroup.value | json}}
     <div>
   
       <!-- Date Range selection -->
@@ -15,9 +17,8 @@
             <button class="btn special-button range">Month</button>
           </div>
           <div class="col-6">
-            <input type="text" placeholder="Start Date" class="form-control date-picker" bsDatepicker [bsConfig]="datePickerConfig" formControlName="startDate" id="startDate">
-            <input type="text" placeholder="End Date" class="form-control date-picker end-date" bsDatepicker
-            [bsConfig]="datePickerConfig" formControlName="endDate" id="endDate">
+            <label for="dateRange">Date Range From</label>
+            <input type="text" placeholder="Select Date Range" class="form-control date-picker" bsDaterangepicker [bsConfig]="datePickerConfig" formControlName="dateRange" id="dateRange" [bsConfig]='datePickerConfig' red>
           </div>
         </div>
       </div>
@@ -94,12 +95,12 @@
 
         <div class="row">
           <div class="col">
-            <label for="serviceRequest">Service Request</label>
-            <input type="text" name="serviceRequest" id="serviceRequest" formControlName="serviceRequest" class="form-control">
-          </div>
-          <div class="col">
-            <label for="vaccines">Labs/Vaccines</label>
-            <input type="text" name="vaccines" id="vaccines" formControlName="vaccines" class="form-control">
+            <label for="dataSet">Data Set</label>
+            <select name="dataSet" id="dataSet" formControlName="dataSet" class="form-control data-set">
+            <option *ngFor="let dataSet of dataSets">
+              <span>{{dataSet}}</span>
+            </option>
+            </select>
           </div>
         </div>
 
