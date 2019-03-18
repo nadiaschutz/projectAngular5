@@ -30,6 +30,11 @@ export class ReportingComponent implements OnInit {
   statuses = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   reportingFormGroup: FormGroup;
   dataSets = ['Select Data Set', 'Service Request', 'Lab', 'Vaccines', 'Full Log'];
+  episodeOfCareList = [];
+  questionnaireResponseList = [];
+  patientsList = [];
+  carePlanList = [];
+  practitionerList = [];
   // If a service request is selected, then build the entire SR object
   // For Labs/Vaccines, query the respective resources
 
@@ -95,11 +100,41 @@ export class ReportingComponent implements OnInit {
 
   export() {
     if (this.reportingFormGroup.value.dataSet === 'Service Request') {
-      this.buildServiceRequestData();
+      // this.buildServiceRequestData();
     }
-    // this.staffService.getEpisodeOfCareAndRelatedData('14654').subscribe(data => {
-    //   console.log(data);
-    // });
+    this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(data => {
+      data['entry'].forEach(element => {
+        if (element.resource.resourceType === 'EpisodeOfCare') {
+          this.episodeOfCareList.push(element.resource);
+        }
+        if (element.resource.resourceType === 'QuestionnaireResponse') {
+          this.questionnaireResponseList.push(element.resource);
+        }
+        if (element.resource.resourceType === 'Patient') {
+          this.patientsList.push(element.resource);
+        }
+        if (element.resource.resourceType === 'Practitioner') {
+          this.practitionerList.push(element.resource);
+        }
+        if (element.resource.resourceType === 'CarePlan') {
+          this.carePlanList.push(element.resource);
+        }
+      });
+      this.processServiceRequestData();
+    });
+  }
+
+  processServiceRequestData() {
+    this.episodeOfCareList.forEach(episode => {
+      const episodeOfCareId = episode.id;
+      const relatedQuestionnaireResponses = new Array;
+      this.questionnaireResponseList.forEach(questionnaireResponse => {
+        if (questionnaireResponse.context.reference.contains(episodeOfCareId)) {
+          console.log(episodeOfCareId);
+          console.log(questionnaireResponse);
+        }
+      });
+    });
   }
 
   // This method builds Service Request Data
@@ -154,13 +189,14 @@ export class ReportingComponent implements OnInit {
                 }
               }
             });
+            console.log(temp);
+            tempArr.push(temp);
+            this.serviceRequestData.push(temp);
           });
-          console.log(temp);
-          tempArr.push(temp);
-          this.serviceRequestData.push(temp);
         }
       });
-      console.log(this.serviceRequestData);
+      console.log(tempArr);
+      // console.log(this.serviceRequestData);
       // this.exportToCSV(this.serviceRequestData);
       this.exportToCSV(tempArr);
     });
@@ -168,8 +204,9 @@ export class ReportingComponent implements OnInit {
 
   exportToCSV(data) {
     console.log(data);
-    console.log(typeof(data));
-    if (data[0]) {
+    console.log(data[0]);
+    console.log(Array.isArray(data));
+    if (Array.isArray(data)) {
       const options = {
         fieldSeparator: ',',
         quoteStrings: '"',
@@ -181,7 +218,7 @@ export class ReportingComponent implements OnInit {
       };
 
       const csvExporter = new ExportToCsv(options);
-      csvExporter.generateCsv(this.serviceRequestData);
+      csvExporter.generateCsv(data);
     }
   }
 
