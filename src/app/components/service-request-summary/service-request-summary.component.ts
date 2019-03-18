@@ -55,7 +55,7 @@ export class ServiceRequestSummaryComponent implements OnInit, OnDestroy {
     private router: Router,
     private userService: UserService,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit() {
     const selectedServiceRequestID = sessionStorage.getItem('selectedServiceRequestID');
@@ -118,6 +118,7 @@ export class ServiceRequestSummaryComponent implements OnInit, OnDestroy {
   // }
 
   processQuestionnaireResponse(data) {
+    console.log(data);
     if (data['item']) {
       this.serviceRequestObject.push({
         name: 'Service Request Id',
@@ -129,7 +130,9 @@ export class ServiceRequestSummaryComponent implements OnInit, OnDestroy {
           const temp = {};
           if (item.answer) {
             temp['name'] = item['text'];
-            if (item['answer'][0]['valueString']) {
+            if (item['answer'][0]['valueCoding']) {
+              temp['value'] = item['answer'][0]['valueCoding']['display'];
+            } else if (item['answer'][0]['valueString']) {
               temp['value'] = item['answer'][0]['valueString'];
             } else {
               if (item['answer'][0]['valueBoolean']) {
@@ -163,12 +166,12 @@ export class ServiceRequestSummaryComponent implements OnInit, OnDestroy {
 
     const byteNumbers = new Array(byteCharacters.length);
     for (let index = 0; index < byteCharacters.length; index++) {
-        byteNumbers[index] = byteCharacters.charCodeAt(index);
+      byteNumbers[index] = byteCharacters.charCodeAt(index);
     }
 
     const byteArray = new Uint8Array(byteNumbers);
 
-    const blob = new Blob([byteArray], {'type': incomingFile['content'][0]['attachment']['contentType']});
+    const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
 
     if (navigator.msSaveBlob) {
       const filename = incomingFile['content'][0]['attachment']['title'];
@@ -191,11 +194,11 @@ export class ServiceRequestSummaryComponent implements OnInit, OnDestroy {
 
     const byteNumbers = new Array(byteCharacters.length);
     for (let index = 0; index < byteCharacters.length; index++) {
-        byteNumbers[index] = byteCharacters.charCodeAt(index);
+      byteNumbers[index] = byteCharacters.charCodeAt(index);
     }
 
     const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {'type': incomingFile['content'][0]['attachment']['contentType']});
+    const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
     const filename = incomingFile['content'][0]['attachment']['title'];
 
     if (navigator.msSaveBlob) {
@@ -212,6 +215,7 @@ export class ServiceRequestSummaryComponent implements OnInit, OnDestroy {
   }
 
   processPatientDetails(data) {
+    console.log('DATA', data);
     if (data) {
       this.serviceRequestObject.push({
         name: 'First Name',
