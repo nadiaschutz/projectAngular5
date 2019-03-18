@@ -15,6 +15,7 @@ import { forEach } from '@angular/router/src/utils/collection';
 import { ItemToSend } from '../models/itemToSend.model';
 import { PatientService } from 'src/app/service/patient.service';
 import { formatDate } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 import * as FHIR from '../../interface/FHIR';
 import { link } from 'fs';
@@ -73,7 +74,8 @@ class SelectField {
 @Component({
   selector: 'app-new-service-request',
   templateUrl: './new-service-request.component.html',
-  styleUrls: ['./new-service-request.component.scss']
+  styleUrls: ['./new-service-request.component.scss'],
+  providers: [DatePipe]
 })
 export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   // @ViewChild('advReqForm') form: NgForm;
@@ -135,6 +137,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   createdsuccessfully = false;
 
   today = new Date();
+  todayPiped;
   myDay;
   dd: any;
   mm: any;
@@ -194,12 +197,14 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     private activatedRoute: ActivatedRoute,
     private userService: UserService,
     private patientService: PatientService,
-    private oauthService: OAuthService
+    private oauthService: OAuthService,
+    private datePipe: DatePipe
   ) {
 
   }
 
   ngOnInit() {
+    this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
     console.log(this.formCreated);
 
     const depList = sessionStorage.getItem('dependents');
@@ -806,27 +811,19 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       } else if (el.code[1].code === 'TEXT') {
 
         if (el.code[0].code === 'AUTHOR') {
-
           const formField = this.textInput(el);
-          // formField['placeholder'] = 'type your text';
           formField['readonly'] = true;
-          // formField['validation'] = el.enableWhen ? null : [
-          //   Validators.required
-          // ];
+          return formField;
+        } else if (el.code[0].code === 'DATECR') {
+          const formField = this.textInput(el);
+          formField['readonly'] = true;
           return formField;
         } else if (el.code[0].code === 'USERDEPT') {
-
           const formField = this.textInput(el);
           formField['readonly'] = true;
-          // formField['placeholder'] = 'type your text';
-          // formField['validation'] = el.enableWhen ? null : [
-          //   Validators.required
-          // ];
           return formField;
         } else {
           const formField = this.textInput(el);
-
-
           const enableWhen = this.populateEnableWhenObj(el);
           formField['placeholder'] = 'type your text';
           formField['validation'] = el.enableWhen ? undefined : [Validators.required];
@@ -1084,6 +1081,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       // this.form.setReadOnly('AUTHOR', true);
       this.form.setValue('AUTHOR', this.userName);
       this.form.setValue('USERDEPT', this.currentUserDepartment);
+      this.form.setValue('DATECR', this.todayPiped);
 
     });
 
@@ -1181,4 +1179,3 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
 
 }
-
