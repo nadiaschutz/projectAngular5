@@ -778,9 +778,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
             )
           ];
-        formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-        formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
-        formField['enableWhen'] = enableWhen;
+        // formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+        // formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+        formField['enableWhen'] = el.enableWhen ? enableWhen : false;
         formField['value'] = null;
         formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
         return formField;
@@ -796,9 +796,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           inputType: 'text',
           placeholder: 'datepicker',
           name: el.linkId,
-          enableWhen: enableWhen,
-          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
+          enableWhen: el.enableWhen ? enableWhen : false,
+          // enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+          // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           value: null
         };
@@ -830,9 +830,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           const enableWhen = this.populateEnableWhenObj(el);
           formField['placeholder'] = 'type your text';
           formField['validation'] = el.enableWhen ? undefined : [Validators.required];
-          formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
-          formField['enableWhen'] = enableWhen;
+
+          formField['enableWhen'] = el.enableWhen ? enableWhen : false;
           formField['value'] = null;
 
           formField['flag'] = el.enableWhen ? false : true;
@@ -849,9 +848,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         const formField = this.textInput(el);
         formField['placeholder'] = 'type your email';
         formField['validation'] = el.enableWhen ? [Validators.email] : [Validators.required, Validators.email];
-        formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-        formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
-        formField['enableWhen'] = enableWhen;
+
+        formField['enableWhen'] = el.enableWhen ? enableWhen : false;
         formField['value'] = null;
 
         formField['flag'] = el.enableWhen ? false : true;
@@ -868,9 +866,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         const formField = this.commentInput(el);
         formField['placeholder'] = 'type your text';
         formField['validation'] = undefined;
-        formField['enableWhen'] = enableWhen;
-        formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-        formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+        formField['enableWhen'] = el.enableWhen ? enableWhen : false;
+        // formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+        // formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
         formField['value'] = null;
 
         formField['flag'] = el.enableWhen ? false : true;
@@ -925,7 +923,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           type: 'selectSr',
           label: el.text,
           name: el.linkId,
-          enableWhen: enableWhen,
+          enableWhen: el.enableWhen ? enableWhen : false,
           // enableWhenQ: el.enableWhen ? enableWhenQ : false,
           // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           options: options,
@@ -944,9 +942,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           label: el.text,
           name: el.linkId,
           typeElem: 'checkbox',
-          enableWhen: enableWhen,
-          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
+          enableWhen: el.enableWhen ? enableWhen : false,
+          // enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+          // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
 
           // placeholder: 'Select an option',
@@ -959,13 +957,16 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     if (this.dependentsList !== []) {
       this.dependentsList.forEach((dependent, index) => {
+        const enableWhen = {
+          enableWhenQ: 'DEPENDINV',
+          enableWhenA: 'true',
+        };
         this.configuration.push(
           {
             type: 'depend',
             name: 'dependent' + '-' + index,
             label: dependent.family + ' ' + dependent.given,
-            enableWhenQ: 'DEPENDINV',
-            enableWhenA: 'true',
+            enable: enableWhen,
             elementClass: 'enable-when-hide',
             // placeholder: 'Select an option',
             // validation: el.enableWhen ? null : [Validators.required],
@@ -1061,8 +1062,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       placeholder: 'Select an option',
       name: data.linkId,
       validation: [Validators.required],
-      enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
-      enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.display : false,
+      // enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
+      // enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.display : false,
     });
   }
   /************************************************/

@@ -34,7 +34,6 @@ export interface FieldConfig {
   val?: any;
   validations?: Validator[];
   selected?: any;
-  enableWhenQ?: any;
-  enableWhenA?: any;
+  enableWhen?: any;
   flag?: boolean;
 }
