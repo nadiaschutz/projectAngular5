@@ -9,6 +9,9 @@ import {
   Validators,
   FormControl
 } from '@angular/forms';
+import * as ReportingInterfaces from '../../interface/reporting-interfaces';
+import { Reporting } from '../../interface/reporting';
+
 
 @Component({
   selector: 'app-reporting',
@@ -108,67 +111,65 @@ export class ReportingComponent implements OnInit {
   // 16.Closed date 17. Assessment code and 18. Exam by code
   buildServiceRequestData() {
     this.staffService.getAllEpisodeOfCare().subscribe(data => {
+      const tempArr = [];
       data['entry'].forEach(episodeOfCare => {
-        this.buildIndividualServiceRequest(episodeOfCare.resource.id);
+        const episodeOfCareId = episodeOfCare.resource.id;
+        if (episodeOfCareId === '14654') {
+          const temp = {};
+          this.staffService.getEpisodeOfCareAndRelatedData(episodeOfCareId).subscribe(data1 => {
+            data1['entry'].forEach(element => {
+              const resource = element.resource;
+              if (resource.resourceType === 'EpisodeOfCare') {
+                temp['Service Request Id'] = resource['id'];
+              }
+              if (resource.resourceType === 'QuestionnaireResponse') {
+                // console.log(resource);
+                if (resource.identifier.value === 'SERVREQ') {
+                  resource['item'].forEach(item => {
+                    if (item.linkId === 'PSOHPSERV') {
+                      temp['Psohp Service'] = item.answer[0].valueCoding.code;
+                    }
+                    if (item.linkId === 'REGOFFICE') {
+                      temp['Regional Office'] = item.answer[0].valueCoding.display;
+                    }
+                    if (item.linkId === 'OHAGOCC') {
+                      temp['OHAG Occupation'] = item.answer[0].valueCoding.display;
+                    }
+                  });
+                }
+                if (resource.identifier.value === 'STATUS') {
+                  resource['item'].forEach(statusItem => {
+                    if (!temp[statusItem.text]) {
+                      if (statusItem.answer) {
+                        if (statusItem.answer[1]) {
+                          temp[statusItem.text] = statusItem.answer[1].valueDate;
+                        } else {
+                          temp[statusItem.text] = '';
+                        }
+                      } else {
+                        temp[statusItem.text] = '';
+                      }
+                    }
+                  });
+                }
+              }
+            });
+          });
+          console.log(temp);
+          tempArr.push(temp);
+          this.serviceRequestData.push(temp);
+        }
       });
-      // console.log(this.serviceRequestData.length);
-      this.exportToCSV(this.serviceRequestData);
+      console.log(this.serviceRequestData);
+      // this.exportToCSV(this.serviceRequestData);
+      this.exportToCSV(tempArr);
     });
   }
 
-  buildIndividualServiceRequest(episodeOfCareId) {
-    if (episodeOfCareId === '14654') {
-      const temp = {};
-      this.staffService.getEpisodeOfCareAndRelatedData(episodeOfCareId).subscribe(data => {
-        data['entry'].forEach(element => {
-          const resource = element.resource;
-          if (resource.resourceType === 'EpisodeOfCare') {
-            temp['Service Request Id'] = resource['id'];
-          }
-          if (resource.resourceType === 'QuestionnaireResponse') {
-            // console.log(resource);
-            if (resource.identifier.value === 'SERVREQ') {
-              resource['item'].forEach(item => {
-                if (item.linkId === 'PSOHPSERV') {
-                  temp['Psohp Service'] = item.answer[0].valueCoding.code;
-                }
-                if (item.linkId === 'REGOFFICE') {
-                  temp['Regional Office'] = item.answer[0].valueCoding.display;
-                }
-                if (item.linkId === 'OHAGOCC') {
-                  temp['OHAG Occupation'] = item.answer[0].valueCoding.display;
-                }
-              });
-            }
-            if (resource.identifier.value === 'STATUS') {
-              resource['item'].forEach(statusItem => {
-                if (!temp[statusItem.text]) {
-                  if (statusItem.answer) {
-                    if (statusItem.answer[1]) {
-                      temp[statusItem.text] = statusItem.answer[1].valueDate;
-                    } else {
-                      temp[statusItem.text] = '';
-                    }
-                  } else {
-                    temp[statusItem.text] = '';
-                  }
-                }
-              });
-            }
-          }
-        });
-        console.log(temp);
-        this.serviceRequestData.push(temp);
-        this.exportToCSV(temp);
-        console.log(this.serviceRequestData);
-      });
-    }
-  }
-
   exportToCSV(data) {
-    console.log(this.serviceRequestData.length);
-    if (data.length > 0) {
-      console.log(data);
+    console.log(data);
+    console.log(typeof(data));
+    if (data[0]) {
       const options = {
         fieldSeparator: ',',
         quoteStrings: '"',
@@ -180,8 +181,39 @@ export class ReportingComponent implements OnInit {
       };
 
       const csvExporter = new ExportToCsv(options);
-      csvExporter.generateCsv(data);
+      csvExporter.generateCsv(this.serviceRequestData);
     }
+  }
+
+  sampleExport() {
+    const data = [{
+      'Assigned': '',
+      'Closed': '',
+      'OHAG Occupation': 'Health Care Workers-Nurses',
+      'Psohp Service': 'HACAT1',
+      'Received': '',
+      'Regional Office': 'Atlantic-Halifax',
+      'Scheduled': '',
+      'Service Request Id': '14654',
+      'Validated': '',
+      'Waiting': '',
+      'Work-Completed': '2019-03-17'
+    }];
+    console.log(typeof(data));
+    console.log(data[0]);
+    console.log(data);
+    const options = {
+      fieldSeparator: ',',
+      quoteStrings: '"',
+      decimalSeparator: '.',
+      showLabels: true,
+      useTextFile: false,
+      useBom: true,
+      useKeysAsHeaders: true
+    };
+
+    const csvExporter = new ExportToCsv(options);
+    csvExporter.generateCsv(data);
   }
 
 }
