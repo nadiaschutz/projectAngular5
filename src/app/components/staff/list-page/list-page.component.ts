@@ -225,9 +225,9 @@ export class ListPageComponent implements OnInit {
 
   getQuestionnaireResponseItemByLinkId(eocId, linkId) {
     const questionnaireResponse = this.questionnaireResponseList[eocId];
-    console.log(questionnaireResponse)
+    console.log(questionnaireResponse);
     let serviceName = '';
-    if (questionnaireResponse) {
+    if (questionnaireResponse && questionnaireResponse.item) {
       questionnaireResponse.item.forEach(item => {
         if (item['linkId'] === linkId) {
           for (const answer of item['answer']) {
@@ -456,7 +456,7 @@ export class ListPageComponent implements OnInit {
         }
       });
     } else {
-      console.log('buggy one', questionnaireResponse)
+      console.log('buggy one', questionnaireResponse);
     }
     return serviceType;
 
@@ -506,7 +506,7 @@ export class ListPageComponent implements OnInit {
           });
         });
     } else {
-      console.log('no assignment to careplan was made')
+      console.log('no assignment to careplan was made');
     }
   }
 }
