@@ -75,9 +75,9 @@ export class EmployeeComponent implements OnInit {
   // list of Provinces and territories in alphabetical order
   // tslint:disable-next-line:max-line-length
   provinces = ['Alberta', 'British Columbia',
-  'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
-  'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario',
-  'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
+    'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
+    'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario',
+    'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
 
 
   // list of countries
@@ -190,8 +190,11 @@ export class EmployeeComponent implements OnInit {
       addressStreet: new FormControl('', Validators.required),
       addressCity: new FormControl('', Validators.required),
       addressProv: new FormControl('', Validators.required),
-      addressPcode: new FormControl('', [Validators.required]),
-      addressCountry: new FormControl('', Validators.required),
+      addressPcode: new FormControl('', [Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(6)
+      ]),
+      addressCountry: new FormControl('', [Validators.required]),
 
       // Clients preferred language
       language: new FormControl('', Validators.required),
@@ -219,6 +222,8 @@ export class EmployeeComponent implements OnInit {
       // referenceTwo: ['']
 
       // departmentName.setValue(this.options[0]);
+
+
     });
 
     // this.employeeFormGroup.setValue({
@@ -240,6 +245,8 @@ export class EmployeeComponent implements OnInit {
 
     // tslint:disable-next-line:max-line-length
     // Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
+    this.employeeFormGroup.get('departmentName').setValue(this.currentUserDepartment);
+    this.employeeFormGroup.get('departmentBranch').setValue(this.currentUserBranch);
   }
 
   onChange(e) {
