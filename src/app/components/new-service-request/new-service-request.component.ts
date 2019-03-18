@@ -149,8 +149,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   msec: any;
 
   dependents = false;
-
-  dependentsList;
+  employeeType;
+  dependentsList = [];
   dependentBoolean = false;
   dependentNumber = null;
   qrequest: any;
@@ -206,9 +206,13 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
     console.log(this.formCreated);
+    this.employeeType = sessionStorage.getItem('emplType');
+    if (this.employeeType === 'Employee') {
+      const depList = sessionStorage.getItem('dependents');
+      this.dependentsList = JSON.parse(depList);
+    }
 
-    const depList = sessionStorage.getItem('dependents');
-    this.dependentsList = JSON.parse(depList);
+
     this.clientGivenName = sessionStorage.getItem('emplGiven');
     this.clientFamilyName = sessionStorage.getItem('emplFam');
     this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
