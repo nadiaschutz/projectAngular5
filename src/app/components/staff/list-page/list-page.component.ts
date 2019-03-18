@@ -31,6 +31,7 @@ export class ListPageComponent implements OnInit {
   activeTab = 'serviceRequest';
   selectAllEpisodesCheck = false;
   selectAllTasksCheck = false;
+  episodeOfCareWithCorrectQuestionnaireResponseId = [];
 
   constructor(
     private questionnaireService: QuestionnaireService,
@@ -164,6 +165,9 @@ export class ListPageComponent implements OnInit {
           // Creating a Questionnaire Response List that can refer individual Questionnaire Response
           // item from an episode of Care id
           this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
+          if (resource['identifier']['value'] === 'SERVREQ') {
+            this.episodeOfCareWithCorrectQuestionnaireResponseId[associatedEpisodeOfCareId] = resource.id;
+          }
         }
         //   }
         // }
@@ -174,6 +178,7 @@ export class ListPageComponent implements OnInit {
     this.episodesOfCareList.forEach(episode => {
       const temp = {};
       temp['episodeOfCareId'] = episode['id'];
+      temp['questionnaireResponseId'] = this.episodeOfCareWithCorrectQuestionnaireResponseId[episode.id];
       temp['clientName'] = this.getClientName(episode['patient']['reference']);
       temp['serviceAssessmentType'] = this.getServiceAssessmentType(episode['id']);
       temp['clientDepartment'] = this.getClientDepartment(episode['id']);
@@ -225,7 +230,6 @@ export class ListPageComponent implements OnInit {
 
   getQuestionnaireResponseItemByLinkId(eocId, linkId) {
     const questionnaireResponse = this.questionnaireResponseList[eocId];
-    console.log(questionnaireResponse);
     let serviceName = '';
     if (questionnaireResponse && questionnaireResponse.item) {
       questionnaireResponse.item.forEach(item => {
