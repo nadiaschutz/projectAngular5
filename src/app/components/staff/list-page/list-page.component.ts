@@ -456,7 +456,7 @@ export class ListPageComponent implements OnInit {
         }
       });
     } else {
-      console.log('buggy one', questionnaireResponse)
+      console.log('buggy one', questionnaireResponse);
     }
     return serviceType;
 
@@ -506,7 +506,7 @@ export class ListPageComponent implements OnInit {
           });
         });
     } else {
-      console.log('no assignment to careplan was made')
+      console.log('no assignment to careplan was made');
     }
   }
 }
