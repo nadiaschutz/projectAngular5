@@ -209,6 +209,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     const depList = sessionStorage.getItem('dependents');
     this.dependentsList = JSON.parse(depList);
+    this.clientGivenName = sessionStorage.getItem('emplGiven');
+    this.clientFamilyName = sessionStorage.getItem('emplFam');
     this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
     this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
     this.userName = sessionStorage.getItem('userName');
@@ -219,6 +221,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     if (!this.clientId) {
       this.router.navigateByUrl('/dashboard');
     }
+
+    console.log(this.dependentsList);
   }
 
   wrap() {
@@ -658,11 +662,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     }
 
 
-
     // creating itemToSend
-    this.createItemToSend(this.clientId, sessionStorage.getItem('emplGiven'), sessionStorage.getItem('emplFam'));
+    this.createItemToSend(this.clientId, this.clientGivenName, this.clientFamilyName);
     this.mapItemToItems();
-    if (this.dependentsList) {
+    if (this.dependentsList.length > 0) {
       this.dependentsList.forEach(depend => {
         if (depend.value === true) {
           this.createItemToSend(depend.id, depend.given, depend.family);
@@ -933,37 +936,69 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
         };
       } else if (el.code[1].code === 'BOOL') {
-        const enableWhen = this.populateEnableWhenObj(el);
-        return {
-          type: 'checkbox',
-          label: el.text,
-          name: el.linkId,
-          typeElem: 'checkbox',
-          enableWhen: el.enableWhen ? enableWhen : false,
-          // enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
-          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+        if (el.code[0].code === 'DEPENDINV') {
+          // console.log(this.dependentsList);
+          if (this.dependentsList.length < 1) {
+            console.log('this.dependentsList.length < 1');
 
-          // placeholder: 'Select an option',
-          // validation: el.enableWhen ? null : [Validators.required],
-          value: el.enableWhen ? null : false,
-        };
+            return {
+              type: 'checkbox',
+              label: el.text + ' (disabled)',
+              name: el.linkId,
+              typeElem: 'checkbox',
+              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+              value: el.enableWhen ? null : false,
+              disabled: true
+            };
+
+          } else if (this.dependentsList.length > 0) {
+            console.log('this.dependentsList.length > 0');
+
+            return {
+              type: 'checkbox',
+              label: el.text,
+              name: el.linkId,
+              typeElem: 'checkbox',
+              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+              value: el.enableWhen ? null : false,
+              disabled: false
+            };
+          }
+        } else {
+
+          const enableWhen = this.populateEnableWhenObj(el);
+          return {
+            type: 'checkbox',
+            label: el.text,
+            name: el.linkId,
+            typeElem: 'checkbox',
+            enableWhen: el.enableWhen ? enableWhen : false,
+            // enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+            // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+
+            // placeholder: 'Select an option',
+            // validation: el.enableWhen ? null : [Validators.required],
+            value: el.enableWhen ? null : false,
+          };
+        }
+
 
       }
     });
 
-    if (this.dependentsList !== []) {
+    if (this.dependentsList.length > 0) {
       this.dependentsList.forEach((dependent, index) => {
-        const enableWhen = {
+        const enableWhen = [{
           enableWhenQ: 'DEPENDINV',
           enableWhenA: 'true',
-        };
+        }];
         this.configuration.push(
           {
             type: 'depend',
             name: 'dependent' + '-' + index,
             label: dependent.family + ' ' + dependent.given,
-            enable: enableWhen,
+            enableWhen: enableWhen,
             elementClass: 'enable-when-hide',
             // placeholder: 'Select an option',
             // validation: el.enableWhen ? null : [Validators.required],
@@ -973,6 +1008,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
 
     }
+    console.log('CONFIG AFTER DEPENDENTS PUSH', this.configuration);
 
 
     this.configuration.push(
@@ -1091,6 +1127,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   public checkEnableWhen(value, index) {
+    console.log('checking enableWhen', value, index);
     this.config.forEach(elemOfConfig => {
       if (elemOfConfig.enableWhen) {
         for (const formElem of elemOfConfig.enableWhen) {
