@@ -468,7 +468,6 @@ export class AdminHomeScreenComponent implements OnInit {
                 bundle['entry'].forEach(element => {
                   const resource = element.resource;
                   if (resource.resourceType === 'Task') {
-                    console.log(resource);
                     this.tasksList.push(resource);
                   } else if (resource.resourceType === 'Practitioner') {
                     this.taskPractList.push(resource);
