@@ -9,7 +9,7 @@ import { FieldConfig } from './field-config.interface';
     <div
       [formGroup]="group">
       <button
-      class="btn regular-button"
+      class="btn regular-dark-button"
         [disabled]="config.disabled"
         type="submit">
         {{ config.label }}
