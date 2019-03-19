@@ -75,6 +75,13 @@ interface HTMLAnchorElement {
   `
 })
 export class DocComponent implements Field {
+
+  // figure out how the doc uploads....
+  // each time it uploads, give it a new name doc + 1, use for loop
+  // check how all docs info transfers into new-serv-req.ts
+  // if it sends only one name
+
+
   documents = [];
   itemReference;
   enableFlag = false;
@@ -109,7 +116,7 @@ export class DocComponent implements Field {
       }
     }
   }
-
+  // on document upload
   addDocument($event) {
     const documentReference = new FHIR.DocumentReference;
     const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
@@ -119,6 +126,7 @@ export class DocComponent implements Field {
     const contentCode = new FHIR.Coding;
     const documentReferenceAuthor = new FHIR.Reference();
 
+    // sets the data to item to send
     documentReferenceAuthor.reference =
       'Practitioner/' + sessionStorage.getItem('userFHIRID');
     let file;
@@ -135,7 +143,7 @@ export class DocComponent implements Field {
       reader.readAsDataURL(fileList[0]);
     }
     const that = this;
-    reader.onloadend = function() {
+    reader.onloadend = function () {
 
       file = reader.result;
       console.log(file);
@@ -156,7 +164,7 @@ export class DocComponent implements Field {
       content.format = contentCode;
       content.attachment = contentAttachment;
 
-      documentReferenceCodeableConcept.coding = [ documentReferenceCoding];
+      documentReferenceCodeableConcept.coding = [documentReferenceCoding];
       documentReferenceCodeableConcept.text = that.docFormGroup.get(
         'filetype'
       ).value;
@@ -166,13 +174,14 @@ export class DocComponent implements Field {
       documentReference.content = [content];
 
       that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
-        data =>   {
+        data => {
           that.retrieveDocuments(data),
-          that.createItemReferenceObject(data);
+            // this where the reference is createed. change the link id for each....WORK HERE
+            that.createItemReferenceObject(data);
         }
       );
 
-      console.log (contentAttachment);
+      console.log('contentAttachment', contentAttachment);
       return reader.result;
     };
 
@@ -188,7 +197,7 @@ export class DocComponent implements Field {
       linkId: '30',
       // text: obj.content[0].attachment.title,
       text: 'Document',
-      answer:  'DocumentReference/' + obj
+      answer: 'DocumentReference/' + obj
     };
 
     this.questionnaireService.shareDocument(this.itemReference);
@@ -196,21 +205,23 @@ export class DocComponent implements Field {
 
   retrieveDocuments(data) {
     this.documents.push(data);
-    console.log (this.documents);
+    console.log(this.documents);
   }
 
+
+  // check if it does anything
   downloadFile(incomingFile) {
 
     const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
 
     const byteNumbers = new Array(byteCharacters.length);
     for (let index = 0; index < byteCharacters.length; index++) {
-        byteNumbers[index] = byteCharacters.charCodeAt(index);
+      byteNumbers[index] = byteCharacters.charCodeAt(index);
     }
 
     const byteArray = new Uint8Array(byteNumbers);
 
-    const blob = new Blob([byteArray], {'type': incomingFile['content'][0]['attachment']['contentType']});
+    const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
 
     if (navigator.msSaveBlob) {
       const filename = incomingFile['content'][0]['attachment']['title'];
@@ -227,6 +238,8 @@ export class DocComponent implements Field {
 
   }
 
+
+  // check if it does anything
   allowPreview(incomingFile) {
     if (incomingFile['content'][0]['attachment']['contentType'].includes('/pdf')) {
       this.allowPreviewFlag = true;
@@ -237,17 +250,17 @@ export class DocComponent implements Field {
 
     }
   }
-
+  // check if it does anything
   previewFile(incomingFile) {
     console.log(incomingFile)
     const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
     const byteNumbers = new Array(byteCharacters.length);
     for (let index = 0; index < byteCharacters.length; index++) {
-        byteNumbers[index] = byteCharacters.charCodeAt(index);
+      byteNumbers[index] = byteCharacters.charCodeAt(index);
     }
 
     const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {'type': incomingFile['content'][0]['attachment']['contentType']});
+    const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
     const filename = incomingFile['content'][0]['attachment']['title'];
 
     if (navigator.msSaveBlob) {

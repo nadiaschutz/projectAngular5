@@ -264,115 +264,117 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
    * FHIR server.
    */
 
-  addDocument($event) {
 
-    const documentReference = new FHIR.DocumentReference;
-    const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
-    const documentReferenceCoding = new FHIR.Coding;
-    const content = new FHIR.Content;
-    const contentAttachment = new FHIR.Attachment;
-    const contentCode = new FHIR.Coding;
-    let file;
-    let trimmedFile = '';
-    let size: number;
-    let type;
-    const date = new Date().toJSON();
-    const fileList = $event.target.files;
-    const reader = new FileReader();
-    if (fileList[0]) {
-      size = fileList[0].size;
-      type = fileList[0].type;
-      reader.readAsDataURL(fileList[0]);
-    }
-    const self = this;
-    reader.onloadend = function () {
+  // CHECK ME NOW!!!
+  // addDocument($event) {
 
-      file = reader.result;
-      trimmedFile = file.split(',').pop();
+  //   const documentReference = new FHIR.DocumentReference;
+  //   const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
+  //   const documentReferenceCoding = new FHIR.Coding;
+  //   const content = new FHIR.Content;
+  //   const contentAttachment = new FHIR.Attachment;
+  //   const contentCode = new FHIR.Coding;
+  //   let file;
+  //   let trimmedFile = '';
+  //   let size: number;
+  //   let type;
+  //   const date = new Date().toJSON();
+  //   const fileList = $event.target.files;
+  //   const reader = new FileReader();
+  //   if (fileList[0]) {
+  //     size = fileList[0].size;
+  //     type = fileList[0].type;
+  //     reader.readAsDataURL(fileList[0]);
+  //   }
+  //   const self = this;
+  //   reader.onloadend = function () {
 
-      documentReference.resourceType = 'DocumentReference';
+  //     file = reader.result;
+  //     trimmedFile = file.split(',').pop();
 
-      contentAttachment.size = size;
-      contentAttachment.contentType = type;
-      contentAttachment.data = trimmedFile;
-      contentAttachment.creation = date;
-      contentAttachment.title = fileList[0].name;
+  //     documentReference.resourceType = 'DocumentReference';
 
-      contentCode.code = 'urn:ihe:pcc:xphr:2007';
-      contentCode.display = 'Personal Health Records';
+  //     contentAttachment.size = size;
+  //     contentAttachment.contentType = type;
+  //     contentAttachment.data = trimmedFile;
+  //     contentAttachment.creation = date;
+  //     contentAttachment.title = fileList[0].name;
 
-      content.format = contentCode;
-      content.attachment = contentAttachment;
+  //     contentCode.code = 'urn:ihe:pcc:xphr:2007';
+  //     contentCode.display = 'Personal Health Records';
 
-      documentReferenceCoding.code = '51851-4';
-      documentReferenceCoding.system = 'http://loinc.org';
-      documentReferenceCoding.display = 'Administrative note';
+  //     content.format = contentCode;
+  //     content.attachment = contentAttachment;
 
-      documentReferenceCodeableConcept.coding = [documentReferenceCoding];
-      documentReferenceCodeableConcept.text = 'Administrative note';
+  //     documentReferenceCoding.code = '51851-4';
+  //     documentReferenceCoding.system = 'http://loinc.org';
+  //     documentReferenceCoding.display = 'Administrative note';
 
-      documentReference.instant = date;
-      documentReference.type = documentReferenceCodeableConcept;
-      documentReference.content = [content];
+  //     documentReferenceCodeableConcept.coding = [documentReferenceCoding];
+  //     documentReferenceCodeableConcept.text = 'Administrative note';
 
-
-      self.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
-        data => self.documents = data,
-        error => self.handleError(error)
-      );
-      return reader.result;
-
-    };
-    reader.onerror = function (error) {
-      console.log('Error: ', error);
-    };
-
-  }
-
-  retrieveDocuments(data) {
-    this.documents.push(data);
-  }
-
-  downloadFile(incomingFile) {
-
-    const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
-
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let index = 0; index < byteCharacters.length; index++) {
-      byteNumbers[index] = byteCharacters.charCodeAt(index);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-
-    const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
-
-    if (navigator.msSaveBlob) {
-      const filename = incomingFile['content'][0]['attachment']['title'];
-      navigator.msSaveBlob(blob, filename);
-    } else {
-      const fileLink = document.createElement('a');
-      fileLink.href = URL.createObjectURL(blob);
-      fileLink.setAttribute('visibility', 'hidden');
-      fileLink.download = incomingFile['content'][0]['attachment']['title'];
-      document.body.appendChild(fileLink);
-      fileLink.click();
-      document.body.removeChild(fileLink);
-    }
+  //     documentReference.instant = date;
+  //     documentReference.type = documentReferenceCodeableConcept;
+  //     documentReference.content = [content];
 
 
-    // const linkSource =
-    //   'data:' +
-    //   name['content'][0]['attachment']['contentType'] +
-    //   ';base64,' +
-    //   name['content'][0]['attachment']['data'];
-    // console.log(linkSource);
-    // const downloadLink = document.createElement('a');
-    // const fileName = name['content'][0]['attachment']['title'];
+  //     self.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
+  //       data => self.documents = data,
+  //       error => self.handleError(error)
+  //     );
+  //     return reader.result;
 
-    // downloadLink.href = linkSource;
-    // downloadLink.download = fileName;
-    // downloadLink.click();
-  }
+  //   };
+  //   reader.onerror = function (error) {
+  //     console.log('Error: ', error);
+  //   };
+
+  // }
+
+  // retrieveDocuments(data) {
+  //   this.documents.push(data);
+  // }
+
+  // downloadFile(incomingFile) {
+
+  //   const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
+
+  //   const byteNumbers = new Array(byteCharacters.length);
+  //   for (let index = 0; index < byteCharacters.length; index++) {
+  //     byteNumbers[index] = byteCharacters.charCodeAt(index);
+  //   }
+
+  //   const byteArray = new Uint8Array(byteNumbers);
+
+  //   const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
+
+  //   if (navigator.msSaveBlob) {
+  //     const filename = incomingFile['content'][0]['attachment']['title'];
+  //     navigator.msSaveBlob(blob, filename);
+  //   } else {
+  //     const fileLink = document.createElement('a');
+  //     fileLink.href = URL.createObjectURL(blob);
+  //     fileLink.setAttribute('visibility', 'hidden');
+  //     fileLink.download = incomingFile['content'][0]['attachment']['title'];
+  //     document.body.appendChild(fileLink);
+  //     fileLink.click();
+  //     document.body.removeChild(fileLink);
+  //   }
+
+
+  // const linkSource =
+  //   'data:' +
+  //   name['content'][0]['attachment']['contentType'] +
+  //   ';base64,' +
+  //   name['content'][0]['attachment']['data'];
+  // console.log(linkSource);
+  // const downloadLink = document.createElement('a');
+  // const fileName = name['content'][0]['attachment']['title'];
+
+  // downloadLink.href = linkSource;
+  // downloadLink.download = fileName;
+  // downloadLink.click();
+  // }
 
   // convertBase64ToFile (data) {
   //   const obj = data;
@@ -461,23 +463,23 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   //   );
   // }
 
-  fetchAnswer(question): FHIR.Answer[] {
-    const answerArray = new Array<FHIR.Answer>();
-    const answer = new FHIR.Answer;
-    if (question['type'] === 'choice' || question['type'] === 'text') {
-      answer.valueString = question['answer'];
-    }
-    if (question['type'] === 'boolean') {
-      answer.valueBoolean = question['answer'];
-    }
-    if (question['type'] === 'Reference') {
-      const answerReference = new FHIR.Reference;
-      answerReference.reference = question['answer'];
-      answer.valueReference = answerReference;
-    }
-    answerArray.push(answer);
-    return answerArray;
-  }
+  // fetchAnswer(question): FHIR.Answer[] {
+  //   const answerArray = new Array<FHIR.Answer>();
+  //   const answer = new FHIR.Answer;
+  //   if (question['type'] === 'choice' || question['type'] === 'text') {
+  //     answer.valueString = question['answer'];
+  //   }
+  //   if (question['type'] === 'boolean') {
+  //     answer.valueBoolean = question['answer'];
+  //   }
+  //   if (question['type'] === 'Reference') {
+  //     const answerReference = new FHIR.Reference;
+  //     answerReference.reference = question['answer'];
+  //     answer.valueReference = answerReference;
+  //   }
+  //   answerArray.push(answer);
+  //   return answerArray;
+  // }
 
 
 

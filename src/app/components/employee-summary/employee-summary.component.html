@@ -272,10 +272,11 @@
     </section>
 
     <!-- buttons -->
-    <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-button" (click)="addDependent()">
+    <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-dark-button" (click)="addDependent()"
+      style='margin-right: 15px;'>
       Add a Dependent</button>
     <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
-      class="btn regular-button" (click)="newServiceRequest()">Create a Service Request</button>
+      class="btn regular-dark-button" (click)="newServiceRequest()">Create a Service Request</button>
     <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
       class="btn regular-button float-right" (click)="backToDashboard()">Back to Dashboard</button>
   </div>
