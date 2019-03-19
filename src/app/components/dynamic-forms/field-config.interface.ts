@@ -20,7 +20,7 @@ export interface Validator {
 
 export interface FieldConfig {
   disabled?: boolean;
-  readonly?: boolean;
+  readonly?: any;
   class?: string;
   elementClass?: string;
   label?: string;

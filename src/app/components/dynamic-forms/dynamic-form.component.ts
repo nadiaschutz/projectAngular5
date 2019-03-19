@@ -45,6 +45,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   get valid() { return this.form.valid; }
 
   get value() { return this.form.value; }
+  get getRawValue() { return this.form.getRawValue(); }
 
   constructor(private fb: FormBuilder) { }
 
@@ -113,7 +114,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
 
   setReadOnly(name: string, readonly: boolean) {
     if (this.form.controls[name]) {
-      const method = readonly ? 'readonly' : 'null';
+      const method = readonly ? 'readonly' : 'readwrite';
       this.form.controls[name][method]();
       return;
     }
