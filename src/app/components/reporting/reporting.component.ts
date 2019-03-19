@@ -121,19 +121,52 @@ export class ReportingComponent implements OnInit {
         }
       });
       this.processServiceRequestData();
+      console.log(this.serviceRequestData);
+      // this.exportToCSV(this.serviceRequestData);
     });
   }
 
   processServiceRequestData() {
     this.episodeOfCareList.forEach(episode => {
+      const temp = {};
       const episodeOfCareId = episode.id;
-      const relatedQuestionnaireResponses = new Array;
-      this.questionnaireResponseList.forEach(questionnaireResponse => {
-        if (questionnaireResponse.context.reference.contains(episodeOfCareId)) {
-          console.log(episodeOfCareId);
-          console.log(questionnaireResponse);
-        }
-      });
+      if (episodeOfCareId === '14810') {
+        temp['Service Request Id'] = episode.id;
+        this.questionnaireResponseList.forEach(questionnaireResponse => {
+          if (questionnaireResponse.context.reference.includes(episodeOfCareId)) {
+            console.log(questionnaireResponse);
+            if (questionnaireResponse.identifier.value === 'SERVREQ') {
+              questionnaireResponse['item'].forEach(item => {
+                if (item.linkId === 'PSOHPSERV') {
+                  temp['Psohp Service'] = item.answer[0].valueCoding.code;
+                }
+                if (item.linkId === 'REGOFFICE') {
+                  temp['Regional Office'] = item.answer[0].valueCoding.display;
+                }
+                if (item.linkId === 'OHAGOCC') {
+                  temp['OHAG Occupation'] = item.answer[0].valueCoding.display;
+                }
+              });
+            }
+            if (questionnaireResponse.identifier.value === 'STATUS') {
+              questionnaireResponse['item'].forEach(statusItem => {
+                if (statusItem.answer) {
+                  console.log(statusItem.answer);
+                  if (statusItem.answer[1] && statusItem.answer[1]['valueDate']) {
+                    temp[statusItem.text] = statusItem.answer[1].valueDate;
+                  } else {
+                    temp[statusItem.text] = '';
+                  }
+                } else {
+                  temp[statusItem.text] = '';
+                }
+              });
+            }
+          }
+        });
+        console.log(temp);
+        this.serviceRequestData.push(temp);
+      }
     });
   }
 
