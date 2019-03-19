@@ -112,6 +112,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   style = 'col-11';
   configuration;
   userName;
+  userRole;
   loaded = false;
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   config: FieldConfig[] = [];
@@ -204,6 +205,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.userRole = sessionStorage.getItem('userRole');
+    console.log('userRole', this.userRole);
     this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
     console.log(this.formCreated);
     this.employeeType = sessionStorage.getItem('emplType');
@@ -221,6 +224,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.currentUserDepartment = sessionStorage.getItem('userDept');
     this.createdsuccessfully = false;
     this.clientId = sessionStorage.getItem('patientSummaryId');
+
 
     if (!this.clientId) {
       this.router.navigateByUrl('/dashboard');
@@ -482,10 +486,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   // }
 
 
-
-  submit(value: { [name: string]: any }) {
-
-
+  // submit(value: { [name: string]: any }) {
+  submit() {
+    // console.log(this.form.value);
+    // console.log(this.form.getRawValue);
+    const value = this.form.getRawValue;
     const list = Object.entries(value)
       .filter(([key]) => key.includes('dependent'))
       .map(([key, val]) => ({
@@ -828,9 +833,32 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           formField['readonly'] = true;
           return formField;
         } else if (el.code[0].code === 'USERDEPT') {
-          const formField = this.textInput(el);
-          formField['readonly'] = true;
-          return formField;
+          if (this.userRole === 'clientdept') {
+            const options = this.departmentList;
+
+            const enableWhen = this.populateEnableWhenObj(el);
+
+            return {
+              type: 'selectSr',
+              label: el.text,
+              name: el.linkId,
+              enableWhen: el.enableWhen ? enableWhen : false,
+              options: options,
+              flag: el.enableWhen ? false : true,
+              placeholder: 'Select an option',
+              // validation: el.enableWhen ? [Validators.required] : null,
+              validation: el.enableWhen ? undefined : [Validators.required],
+              // validation: [Validators.required],
+              value: null,
+              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+              disable: true
+            };
+          } else {
+            const formField = this.textInput(el);
+            formField['readonly'] = true;
+            return formField;
+          }
+
         } else {
           const formField = this.textInput(el);
           const enableWhen = this.populateEnableWhenObj(el);
@@ -954,7 +982,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               typeElem: 'checkbox',
               elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
               value: el.enableWhen ? null : false,
-              disabled: true
+              readonly: true
             };
 
           } else if (this.dependentsList.length > 0) {
@@ -967,7 +995,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               typeElem: 'checkbox',
               elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
               value: el.enableWhen ? null : false,
-              disabled: false
+              readonly: false
             };
           }
         } else {
@@ -1122,7 +1150,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       // this.form.setDisabled('14', true);
       // this.form.setReadOnly('AUTHOR', true);
       this.form.setValue('AUTHOR', this.userName);
+
       this.form.setValue('USERDEPT', this.currentUserDepartment);
+      this.form.setDisabled('USERDEPT', true);
       this.form.setValue('DATECR', this.todayPiped);
 
     });
@@ -1133,14 +1163,30 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   public checkEnableWhen(value, index) {
-    console.log('checking enableWhen', value, index);
+    // console.log(this.form.value);
+    // console.log(this.form.value.ASSESTYPE);
     this.config.forEach(elemOfConfig => {
+      if (this.form.value.ASSESTYPE === 'Pre-Placement' && this.userRole === 'clientdept') {
+        // console.log(elemOfConfig);
+
+        this.form.setDisabled('USERDEPT', false);
+
+      } else {
+        this.form.setDisabled('USERDEPT', true);
+        this.form.setValue('USERDEPT', this.currentUserDepartment);
+      }
       if (elemOfConfig.enableWhen) {
+
+
         for (const formElem of elemOfConfig.enableWhen) {
           if (index === formElem.enableWhenQ) {
             if (value === formElem.enableWhenA) {
+              // console.log(elemOfConfig);
               elemOfConfig.elementClass = 'enable-when-show';
               elemOfConfig.flag = true;
+              // if (elemOfConfig.name === 'ASSESTYPE' && elemOfConfig.value === 'Pre-Placement') {
+              //   console.log("i am here", elemOfConfig);
+              // }
               return;
             } else {
               elemOfConfig.flag = false;
