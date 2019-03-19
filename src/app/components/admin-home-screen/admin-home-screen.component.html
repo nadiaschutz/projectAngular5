@@ -269,6 +269,8 @@
                         <p class="card-text" *ngIf="item.status !='completed'">
                             <span (click)="taskCompleted(item.id)" style="color: #398ef2; cursor: pointer;">Mark as
                                 done</span>
+                            <button type="button" class="btn regular-button float-right" (click)="setEOCID(item.eocId)">Work
+                                    Screen</button>
                         </p>
                     </div>
                 </div>
