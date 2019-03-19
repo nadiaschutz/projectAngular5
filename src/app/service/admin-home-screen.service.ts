@@ -29,7 +29,7 @@ export class AdminHomeScreenService {
 
     let obj = Object.assign({}, eocIds, { 'context.care-manager': loggedInUserId });
     const query = this.encodeData(obj);
-    
+
     // console.log('Original for getQRStatuses =>', eocIds);
     // console.log('Query Obj for getQRStatuses =>', this.encodeData(obj));
 
@@ -42,7 +42,7 @@ export class AdminHomeScreenService {
         .filter(item => item.resource.resourceType === 'QuestionnaireResponse')
         .map(item => item.resource.context.reference)
         .join(',');
-      
+
       // console.log(extractEOCIds);
 
       const query = {
@@ -54,13 +54,21 @@ export class AdminHomeScreenService {
     }
     // return bundle;
   }
-  
+
+  getTasksAssignedToLoggedInClinician() {
+    const loggedInUserId = sessionStorage.getItem('userFHIRID');
+
+    return this.http.get(environment.queryURI + '/Task?' +
+    '&owner=Practitioner/' + loggedInUserId + '&status=ready&_include=*', { headers: this.getHeaders() });
+  }
+
   getAllQRTaskIncludeRefs() {
     const loggedInUserId = sessionStorage.getItem('userFHIRID');
 
-    return this.http.get(environment.queryURI + '/EpisodeOfCare?_has:QuestionnaireResponse:context:identifier=SERVREQ&care-manager=Practitioner/' + loggedInUserId + '&_revinclude=Task:context&_include=*', { headers: this.getHeaders() });
+    return this.http.get(environment.queryURI + '/EpisodeOfCare?_has:QuestionnaireResponse:context:identifier=SERVREQ' +
+    '&care-manager=Practitioner/' + loggedInUserId + '&_revinclude=Task:context&_include=*', { headers: this.getHeaders() });
   }
-  
+
   getDepartmentNames() {
     return this.http.get(
       environment.queryURI + '/Organization?type=CLIENTDEPT',
@@ -101,7 +109,7 @@ export class AdminHomeScreenService {
 
     let obj = Object.assign({}, queryObj, { 'context.care-manager': loggedInUserId });
     const query = this.encodeData(obj);
-    
+
     // console.log('Original for serachQR =>', queryObj);
     // console.log('Query Obj for searchQR =>', this.encodeData(obj));
 
@@ -113,10 +121,10 @@ export class AdminHomeScreenService {
 
   searchEOC(queryObj) {
     const loggedInUserId = sessionStorage.getItem('userFHIRID');
-    
+
     let obj = Object.assign({}, queryObj, { 'care-manager': loggedInUserId });
     const query = this.encodeData(obj);
-    
+
     // console.log('Original for searchEOC =>', queryObj);
     // console.log('Query Obj for searchEOC =>', this.encodeData(obj));
 

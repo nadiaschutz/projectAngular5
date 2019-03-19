@@ -403,7 +403,7 @@ export class AdminHomeScreenComponent implements OnInit {
       console.log(code);
     }
     // const title = this.psohpCodes[code];
-  
+
     if (code && code !== '') {
       queryObj['psohpService'] = code;
     }
@@ -468,6 +468,7 @@ export class AdminHomeScreenComponent implements OnInit {
                 bundle['entry'].forEach(element => {
                   const resource = element.resource;
                   if (resource.resourceType === 'Task') {
+                    console.log(resource);
                     this.tasksList.push(resource);
                   } else if (resource.resourceType === 'Practitioner') {
                     this.taskPractList.push(resource);
@@ -542,29 +543,49 @@ export class AdminHomeScreenComponent implements OnInit {
 
   getTasksForQRs() {
     // get Tasks
-    this.adminHomeScreenService.getAllQRTaskIncludeRefs()
-      .subscribe(list => {
-        // console.log(list);
-        // we loop through all the entries
+    this.adminHomeScreenService.getTasksAssignedToLoggedInClinician().subscribe(list => {
+      if (list && list['entry']) {
+        // for each entry, check what resource it is. and add it to the internal arr of tems
+        list['entry'].forEach(element => {
+          const resource = element.resource;
+          if (resource.resourceType === 'Task') {
+            console.log(resource);
+            this.tasksList.push(resource);
+          } else if (resource.resourceType === 'Practitioner') {
+            this.taskPractList.push(resource);
+          }
+        });
 
-        if (list && list['entry']) {
-          // for each entry, check what resource it is. and add it to the internal arr of tems
-          list['entry'].forEach(element => {
-            const resource = element.resource;
-            if (resource.resourceType === 'Task') {
-              this.tasksList.push(resource);
-            } else if (resource.resourceType === 'Practitioner') {
-              this.taskPractList.push(resource);
-            }
-          });
+        // create our service request obj to render for UI comp
+        this.mapTaskRenderingList();
+      }
+    }, err => {
+      console.log(err);
+    });
+    // this.adminHomeScreenService.getAllQRTaskIncludeRefs()
+    //   .subscribe(list => {
+    //     // console.log(list);
+    //     // we loop through all the entries
 
-          // create our service request obj to render for UI comp
-          this.mapTaskRenderingList();
-        }
-      },
-      err => {
-        console.log(err);
-      });
+    //     if (list && list['entry']) {
+    //       // for each entry, check what resource it is. and add it to the internal arr of tems
+    //       list['entry'].forEach(element => {
+    //         const resource = element.resource;
+    //         if (resource.resourceType === 'Task') {
+    //           console.log(resource);
+    //           this.tasksList.push(resource);
+    //         } else if (resource.resourceType === 'Practitioner') {
+    //           this.taskPractList.push(resource);
+    //         }
+    //       });
+
+    //       // create our service request obj to render for UI comp
+    //       this.mapTaskRenderingList();
+    //     }
+    //   },
+    //   err => {
+    //     console.log(err);
+    //   });
   }
 
   getAndSetDepartmentList() {
@@ -730,7 +751,7 @@ export class AdminHomeScreenComponent implements OnInit {
   }
 
   getHeader(qr, itemText) {
-    let serviceType = ''; 
+    let serviceType = '';
     if (qr['item']) {
       qr.item.forEach(item => {
         if (item['linkId'] === itemText) {
