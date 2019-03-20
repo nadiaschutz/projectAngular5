@@ -4,11 +4,13 @@
 
 
   <div class="edit-button-row">
-    <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()" *ngIf="!editEmployee; else backButton">Edit
+    <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()"
+      *ngIf="!editEmployee; else backButton">Edit
       Client Record</button>
 
     <ng-template #backButton>
-      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Cancel Edit</button>
+      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Cancel
+        Edit</button>
     </ng-template>
   </div>
 
@@ -28,7 +30,8 @@
         <div class="row">
           <div class="col" *ngIf='selected.dateCreated'>
             <label>Date Created</label>
-            <textarea type="text" class="form-control" rows="1" disabled>{{selected['dateCreated'] | date: 'dd-MM-yyyy'}}</textarea>
+            <textarea type="text" class="form-control" rows="1"
+              disabled>{{selected['dateCreated'] | date: 'dd-MM-yyyy'}}</textarea>
           </div>
           <div class="col" *ngIf='selected.createdBy'>
             <label>Created By</label>
@@ -39,7 +42,8 @@
         <div class="row" *ngIf='selected.dateModified'>
           <div class="col">
             <label>Date Modified</label>
-            <textarea type="text" class="form-control" rows="1" disabled>{{selected['dateModified'] | date: 'dd-MM-yyyy'}}</textarea>
+            <textarea type="text" class="form-control" rows="1"
+              disabled>{{selected['dateModified'] | date: 'dd-MM-yyyy'}}</textarea>
           </div>
 
 
@@ -152,7 +156,8 @@
           <div class="col-6">
             <div>
               <label>Job Title</label>
-              <textarea type="text" class="form-control" rows="1" disabled>{{selected['jobtitle']['valueString']}}</textarea>
+              <textarea type="text" class="form-control" rows="1"
+                disabled>{{selected['jobtitle']['valueString']}}</textarea>
             </div>
           </div>
           <div class="col-6">
@@ -164,19 +169,22 @@
           <div class="col-6">
             <div>
               <label>Employing Department Name</label>
-              <textarea type="text" class="form-control" rows="1" disabled>{{selected['department']['valueString']}}</textarea>
+              <textarea type="text" class="form-control" rows="1"
+                disabled>{{selected['department']['valueString']}}</textarea>
             </div>
           </div>
           <div class="col-6">
             <label>Employing Department Branch</label>
-            <textarea type="text" class="form-control" rows="1" disabled>{{selected['branch']['valueString']}}</textarea>
+            <textarea type="text" class="form-control" rows="1"
+              disabled>{{selected['branch']['valueString']}}</textarea>
           </div>
         </div>
 
         <div class="row">
           <div class="col-6" *ngIf="selected['crossref1']">
-              <label>Cross Reference</label>
-              <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref1']['valueString']}}</textarea>
+            <label>Cross Reference</label>
+            <textarea type="text" class="form-control" rows="1"
+              disabled>{{selected['crossref1']['valueString']}}</textarea>
           </div>
           <div class="col-6" *ngIf="!selected['crossref1']">
             <div>
@@ -187,12 +195,13 @@
 
           <div class="col-6" *ngIf="selected['crossref2']">
             <label>Cross Reference</label>
-            <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref2']['valueString']}}</textarea>
+            <textarea type="text" class="form-control" rows="1"
+              disabled>{{selected['crossref2']['valueString']}}</textarea>
           </div>
           <div class="col-6" *ngIf="!selected['crossref2']">
-              <label>Cross Reference</label>
-              <textarea type="text" class="form-control" rows="1" disabled> - </textarea>
-            </div>
+            <label>Cross Reference</label>
+            <textarea type="text" class="form-control" rows="1" disabled> - </textarea>
+          </div>
         </div>
       </div>
 
@@ -210,7 +219,8 @@
             <div class="row">
               <div class="col-sm-5">
                 <label>Dependent</label>
-                <textarea type="text" class="form-control view-summary-name-box" rows="1" disabled>{{dependent['given']}} {{dependent['family']}}</textarea>
+                <textarea type="text" class="form-control view-summary-name-box" rows="1"
+                  disabled>{{dependent['given']}} {{dependent['family']}}</textarea>
               </div>
               <div class="col-sm-5">
                 <button (click)="routeToSummary(dependent['id'])" class="btn view-button">View</button>
@@ -235,7 +245,8 @@
           <div class="row">
             <div class="col-sm-5">
               <label>Employee</label>
-              <textarea type="text" class="form-control view-summary-name-box" rows="1" disabled>{{dependent['given']}} {{dependent['family']}}</textarea>
+              <textarea type="text" class="form-control view-summary-name-box" rows="1"
+                disabled>{{dependent['given']}} {{dependent['family']}}</textarea>
             </div>
             <div class="col-sm-5">
               <button (click)="routeToSummary(dependent['id'])" class="btn view-button">View</button>
@@ -279,12 +290,14 @@
     </section>
 
     <!-- buttons -->
-    <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-dark-button" (click)="addDependent()"
-      style='margin-right: 15px;'>
+    <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-dark-button"
+      (click)="addDependent()" style='margin-right: 15px;'>
       Add a Dependent</button>
-    <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
+    <button
+      *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
       class="btn regular-dark-button" (click)="newServiceRequest()">Create a Service Request</button>
-    <button *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
+    <button
+      *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
       class="btn regular-button float-right" (click)="backToDashboard()">Back to Dashboard</button>
   </div>
 
@@ -321,7 +334,8 @@
             <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
               required>
 
-            <div *ngIf="employeeFormGroup.controls['familyName'].invalid
+            <div
+              *ngIf="employeeFormGroup.controls['familyName'].invalid
                 && (employeeFormGroup.controls['familyName'].touched || employeeFormGroup.controls['familyName'].dirty)">
               <div class="error-message">
                 Must be two or more characters long
@@ -354,7 +368,8 @@
               <option *ngFor="let lang of languageList" [value]="lang.value">
                 {{lang.viewValue}}
               </option>
-              <div *ngIf="employeeFormGroup.controls['language'].invalid
+              <div
+                *ngIf="employeeFormGroup.controls['language'].invalid
                     && (employeeFormGroup.controls['language'].touched || employeeFormGroup.controls['language'].dirty)">
                 <div class="error-message">
                   Must enter a valid date
@@ -388,9 +403,10 @@
           </div>
           <div class="col">
             <label for="phoneNumber">Phone Number</label>
-            <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber"
-              required>
-            <div *ngIf="employeeFormGroup.controls['phoneNumber'].invalid
+            <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber"
+              id="phoneNumber" required>
+            <div
+              *ngIf="employeeFormGroup.controls['phoneNumber'].invalid
               && (employeeFormGroup.controls['phoneNumber'].touched || employeeFormGroup.controls['phoneNumber'].dirty)">
               <div class="error-message">
                 Must be ten digits, no spaces or dashes
@@ -402,9 +418,10 @@
         <div class="row">
           <div class="col">
             <label for="addressStreet">Street Address</label>
-            <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet" id="addressStreet"
-              required>
-            <div *ngIf="employeeFormGroup.controls['addressStreet'].invalid
+            <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet"
+              id="addressStreet" required>
+            <div
+              *ngIf="employeeFormGroup.controls['addressStreet'].invalid
               && (employeeFormGroup.controls['addressStreet'].touched || employeeFormGroup.controls['addressStreet'].dirty)">
               <div class="error-message">
                 Must be two or more characters long
@@ -415,7 +432,8 @@
             <label for="addressCity">City</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="addressCity" id="addressCity"
               required>
-            <div *ngIf="employeeFormGroup.controls['addressCity'].invalid
+            <div
+              *ngIf="employeeFormGroup.controls['addressCity'].invalid
               && (employeeFormGroup.controls['addressCity'].touched || employeeFormGroup.controls['addressCity'].dirty)">
               <div class="error-message">
                 Must be two or more characters long
@@ -431,7 +449,8 @@
               <option *ngFor="let province of provinces" [value]="province.value">
                 {{province.viewValue}}
               </option>
-              <div *ngIf="employeeFormGroup.controls['addressProv'].invalid
+              <div
+                *ngIf="employeeFormGroup.controls['addressProv'].invalid
                   && (employeeFormGroup.controls['addressProv'].touched || employeeFormGroup.controls['addressProv'].dirty)">
                 <div class="error-message">
                   Cannot be blank
@@ -441,9 +460,10 @@
           </div>
           <div class="col-3">
             <label for="addressPcode">Postal Code</label>
-            <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode" id="addressPcode"
-              required>
-            <div *ngIf="employeeFormGroup.controls['addressPcode'].invalid
+            <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode"
+              id="addressPcode" required>
+            <div
+              *ngIf="employeeFormGroup.controls['addressPcode'].invalid
               && (employeeFormGroup.controls['addressPcode'].touched || employeeFormGroup.controls['addressPcode'].dirty)">
               <div class="error-message">
                 Must be two or more characters long
@@ -453,7 +473,8 @@
           <div class="col-6">
             <label for="addressCountry">Country</label>
             <input type="text" class="form-control" formControlName="addressCountry" id="addressCountry" required>
-            <div *ngIf="employeeFormGroup.controls['addressCountry'].invalid
+            <div
+              *ngIf="employeeFormGroup.controls['addressCountry'].invalid
               && (employeeFormGroup.controls['addressCountry'].touched || employeeFormGroup.controls['addressCountry'].dirty)">
               <div class="error-message">
                 Must be two or more characters long
@@ -497,28 +518,52 @@
         </div>
 
         <div class="row">
-          <div class="col">
-            <label for="departmentName">Derpartment Name</label>
+          <div class="col" *ngIf="currentRole !== 'clientdept'">
+            <label for="departmentName">Department Name</label>
             <select class="form-control" formControlName="departmentName" id="departmentName" required>
-              <option *ngFor="let dept of department" [value]="dept">
-                {{dept}}
+              <option *ngFor="let dept of employeeDepartmentList" [value]="dept.value">
+                {{dept.text}}
               </option>
             </select>
-            <div *ngIf="employeeFormGroup.controls['departmentName'].invalid
+            <div
+              *ngIf="employeeFormGroup.controls['departmentName'].invalid
               && (employeeFormGroup.controls['departmentName'].touched || employeeFormGroup.controls['departmentName'].dirty)">
               <div class="error-message">
                 Cannot be blank
               </div>
             </div>
           </div>
-          <div class="col">
+          <div class="col" *ngIf="currentRole === 'clientdept'">
+            <label for="departmentName">Department Name</label>
+            <input type="text" class="form-control" readonly formControlName="departmentName" id="departmentName"
+              required>
+          </div>
+          <div class="col" *ngIf="currentRole !== 'clientdept'">
             <label for="departmentBranch">Department Branch</label>
             <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
-              <option *ngFor="let branch of branches" [value]="branch">
-                {{branch}}
+              <option value="">(Select)</option>
+              <option *ngFor="let item of jobLocationList" [value]="item.value">
+                {{item.text}}
               </option>
             </select>
-            <div *ngIf="employeeFormGroup.controls['departmentBranch'].invalid
+            <div
+              *ngIf="employeeFormGroup.controls['departmentBranch'].invalid
+              && (employeeFormGroup.controls['departmentBranch'].touched || employeeFormGroup.controls['departmentBranch'].dirty)">
+              <div class="error-message">
+                Cannot be blank
+              </div>
+            </div>
+          </div>
+          <div class="col" *ngIf="currentRole === 'clientdept'">
+            <label for="departmentBranch">Department Branch</label>
+            <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
+              <option value="">(Select)</option>
+              <option *ngFor="let item of jobLocationList" [value]="item.text">
+                {{item.text}}
+              </option>
+            </select>
+            <div
+              *ngIf="employeeFormGroup.controls['departmentBranch'].invalid
               && (employeeFormGroup.controls['departmentBranch'].touched || employeeFormGroup.controls['departmentBranch'].dirty)">
               <div class="error-message">
                 Cannot be blank
@@ -530,11 +575,13 @@
         <div class="row">
           <div class="col">
             <label for="referenceOne">Cross-reference No. 1</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne">
+            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne"
+              id="referenceOne">
           </div>
           <div class="col">
             <label for="referenceTwo">Cross-reference No. 2</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
+            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo"
+              id="referenceTwo">
           </div>
         </div>
 
@@ -547,7 +594,8 @@
         <button class="btn regular-button" (click)="disableInputsBeforeSubmission()">Next</button>
       </div> -->
       <div class="col">
-        <button class="btn regular-button float-right" [disabled]="!employeeFormGroup.valid" (click)="updateEmployee()">Update
+        <button class="btn regular-button float-right" [disabled]="!employeeFormGroup.valid"
+          (click)="updateEmployee()">Update
           Client Info</button>
       </div>
 

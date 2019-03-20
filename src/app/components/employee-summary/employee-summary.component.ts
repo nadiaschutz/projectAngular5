@@ -11,9 +11,10 @@ import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 import { Router } from '@angular/router';
 import { QrequestService } from 'src/app/service/qrequest.service';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { AdminHomeScreenService } from '../../service/admin-home-screen.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleCasePipe } from '@angular/common';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 import * as Employee from '../../interface/patient';
 import { formatDate } from '@angular/common';
@@ -21,6 +22,10 @@ import { formatDate } from '@angular/common';
 export interface LanguageType {
   value: string;
   viewValue: string;
+}
+export interface NameValueLookup {
+  text?: string;
+  value?: string;
 }
 
 @Component({
@@ -45,6 +50,9 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   deptName = [];
   deptBranch = [];
 
+  jobLocationList: NameValueLookup[] = [];
+  employeeDepartmentList: NameValueLookup[] = [];
+  
   confirmSubmit = false;
   successHeaderCheck;
   activateSubmitButton = null;
@@ -56,90 +64,27 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   // Declaration for Employree form group object
 
   employeeFormGroup: FormGroup;
-
-  // Declarations for objects related Patients and Extensions
-
-  // Employee base object
-
   employee;
-
-  // Employee name object
-
   employee_name;
-
-  // Employee address object
-
   employee_address;
-
-  // Employee Contact (Phone)
-
   employee_telecom_phone;
-
-  // Employee Contact (Email)
-
   employee_telecom_email;
-
-  // Employee Extension object (Dependent Link)
-
   employee_extension_dependentlink;
-
-  // Employee Extension object (Job Title)
-
   employee_extension_jobtitle;
-
-  // Employee Extension object (Workplace)
-
   employee_extension_workplace;
-
-  // Employee Extension object (Branch)
-
   employee_extension_branch;
-
-  // Employee Extension object (Type)
-
   employee_extension_type;
-
-  // Employee Extension object (Cross Reference One)
-
   employee_extension_crossreferenceone;
-
-  // Employee Extension object (Cross Reference Two)
-
   employee_extension_crossreferencetwo;
-
-  // Employe Language Object
-
   employee_language;
-
-  // Employee Language Coding Object
-
   employee_language_coding;
-
-  // Employee Communication Object
-
   employee_communication;
-
-  // Employee Identifier object
-
   employee_identifier;
-
-  // Employee Identifier Type subobject
-
   employee_identifier_type;
-
-  // Array for Dependent Objects
-
   dependentsArray: any[];
 
-  // Store list of Departments
-
   department: any;
-
-  // Store list of Branches
-
   branches: any;
-
-  // Store a UUID to link Employee and Dependent objects
 
   linkId;
 
@@ -152,7 +97,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
 
   // list of countries
   countries = ['Canada'];
-
+  currentRole;
   minDate: Date;
   maxDate: Date;
 
@@ -162,6 +107,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private userService: UserService,
     private patientService: PatientService,
+    private adminHomeScreenService: AdminHomeScreenService,
     private router: Router,
     private qrequestService: QrequestService
   ) {
@@ -203,6 +149,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   dateinform;
 
   ngOnInit() {
+    this.currentRole = sessionStorage.getItem('userRole');
+
     this.datePickerConfig = Object.assign({},
       {
         containerClass: 'theme-dark-blue',
@@ -211,41 +159,41 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       });
 
 
-    this.userService
-      .getDepartmentList()
-      .subscribe(
-        data => this.setDepartments(data),
-        error => this.handleError(error)
-      );
+    // this.userService
+    //   .getDepartmentList()
+    //   .subscribe(
+    //     data => this.setDepartments(data),
+    //     error => this.handleError(error)
+    //   );
 
-    // Set Branch List
+    // // Set Branch List
 
-    this.userService
-      .getBranchList()
-      .subscribe(
-        data => this.setBranchList(data),
-        error => this.handleError(error)
-      );
+    // this.userService
+    //   .getBranchList()
+    //   .subscribe(
+    //     data => this.setBranchList(data),
+    //     error => this.handleError(error)
+    //   );
 
-    /**
-     * Initializes list for regional offices on our system
-     */
-    this.userService
-      .fetchAllRegionalOffices()
-      .subscribe(
-        data => this.populateRegionalOffices(data),
-        error => this.handleError(error)
-      );
+    // /**
+    //  * Initializes list for regional offices on our system
+    //  */
+    // this.userService
+    //   .fetchAllRegionalOffices()
+    //   .subscribe(
+    //     data => this.populateRegionalOffices(data),
+    //     error => this.handleError(error)
+    //   );
 
-    /**
-     * Initializes list for district offices on our system
-     */
-    this.userService
-      .fetchAllDistrictOffices()
-      .subscribe(
-        data => this.populateDistrictOffices(data),
-        error => this.handleError(error)
-      );
+    // /**
+    //  * Initializes list for district offices on our system
+    //  */
+    // this.userService
+    //   .fetchAllDistrictOffices()
+    //   .subscribe(
+    //     data => this.populateDistrictOffices(data),
+    //     error => this.handleError(error)
+    //   );
 
     // /**
     //  * Initializes the names of all departments on our system
@@ -276,52 +224,129 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       this.router.navigateByUrl('/dashboard');
     }
 
-    // if (this.selected) {
     this.employeeFormGroup = this.fb.group({
-      // Employee type
-      // type: new FormControl(null, Validators.required),
-
-      // Last Name
       familyName: new FormControl('', [
         Validators.required,
         Validators.minLength(2)
       ]),
-
-      // First Name
       givenName: new FormControl('', [
         Validators.required,
         Validators.minLength(2)
       ]),
-
-      // Date of Birth
       dob: new FormControl('', Validators.required),
-
-      // Email
       email: new FormControl('', [Validators.required, Validators.email]),
-
-      // Client's phone number (can be any number of their choosing)
       phoneNumber: new FormControl('', [
         Validators.required,
         // Validators.pattern('/^[1-9]{1}[0-9]{9}$/')
         Validators.minLength(10),
         Validators.maxLength(10)
       ]),
-
-      // Address section
       addressStreet: new FormControl('', Validators.required),
       addressCity: new FormControl('', Validators.required),
       addressProv: new FormControl('', Validators.required),
       addressPcode: new FormControl('', [Validators.required]),
       addressCountry: new FormControl('', Validators.required),
-
-      // Clients preferred language
       language: new FormControl('', Validators.required)
     });
+
 
   }
 
   ngOnDestroy() {
     // sessionStorage.removeItem('patientSummaryId');
+  }
+
+  extractKeyValuePairsFromBundle(bundle) {
+    if (bundle && bundle['entry']) {
+      const bundleEntries = bundle['entry'];
+
+      const list = bundleEntries.map(item => {
+        if (item && item.resource) {
+          const temp = {
+            value: item.resource.resourceType + '/' + item.resource.id,
+            text: item.resource.name
+          };
+
+          return temp;
+        }
+        return { value: null, text: null };
+      });
+
+      return list;
+    }
+
+    return [];
+  }
+
+  getAndSetDepartmentList() {
+    this.adminHomeScreenService.getDepartmentNames()
+      .subscribe(bundle => {
+        console.log('employee department => ', bundle);
+        if (sessionStorage.getItem('userRole') === ('clientdept')) {
+          for (const index in this.extractKeyValuePairsFromBundle(bundle)) {
+            if (index) {
+              const individualItem = this.extractKeyValuePairsFromBundle(bundle)[index];
+              if (individualItem['text'] === (sessionStorage.getItem('userDept'))) {
+                this.onChangesClientDept(individualItem['value']);
+                this.employeeFormGroup.patchValue({ departmentName: individualItem['text'] });
+                console.log(individualItem['text']);
+              }
+            }
+          }
+        } else {
+          this.employeeDepartmentList = this.extractKeyValuePairsFromBundle(bundle);
+      console.log(this.employeeDepartmentList);
+
+        }
+        console.log(this.employeeDepartmentList)
+      },
+        (err) => console.log('Employee Department list error', err));
+  }
+
+  onChanges(): void {
+
+
+    // listen to one aprticular field for form change
+    this.employeeFormGroup.get('departmentName')
+      .valueChanges
+      .pipe(distinctUntilChanged((a, b) => {
+        return JSON.stringify(a) === JSON.stringify(b);
+      }))
+      .subscribe(val => {
+        if (val !== '') {
+          // get job locations dropdown items
+          this.adminHomeScreenService.getJobLocations({ organization: val })
+            .subscribe(locations => {
+              console.log('job list =>', locations);
+              this.jobLocationList = this.extractKeyValuePairsFromBundle(locations);
+              this.employeeFormGroup.get('departmentBranch').enable();
+            },
+              (err) => {
+                console.log('Job locations list error => ', err);
+              });
+        } else {
+          this.employeeFormGroup.get('departmentBranch').disable();
+          this.jobLocationList = [];
+        }
+      });
+  }
+
+  onChangesClientDept(val) {
+
+    if (val !== '') {
+      this.adminHomeScreenService.getJobLocationsClientDept(val)
+        .subscribe(locations => {
+          console.log('job list =>', locations);
+          this.jobLocationList = this.extractKeyValuePairsFromBundle(locations);
+          this.employeeFormGroup.get('departmentBranch').enable();
+        },
+          (err) => {
+            console.log('Job locations list error => ', err);
+          });
+    } else {
+      this.employeeFormGroup.get('departmentBranch').disable();
+      this.jobLocationList = [];
+    }
   }
 
   populatePatientArray(data) {
@@ -747,7 +772,10 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       }
     }
 
-    console.log(this.employeeFormGroup['value']);
+    if (this.currentRole !== 'clientdept') {
+      this.onChanges();
+    }
+    this.getAndSetDepartmentList();
   }
 
   updateEmployee() {
