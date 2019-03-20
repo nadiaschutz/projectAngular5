@@ -264,7 +264,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
     const extension = [];
 
     const chargeBackExtension = new FHIR.Extension();
-    chargeBackExtension.url = 'https:bcip.smilecdr.com/fhir/chargebackClient';
+    chargeBackExtension.url = 'https://bcip.smilecdr.com/fhir/chargebackClient';
     chargeBackExtension.valueBoolean = value.chargebackClient;
     extension.push(chargeBackExtension);
 

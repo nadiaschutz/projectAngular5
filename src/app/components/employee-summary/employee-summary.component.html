@@ -26,26 +26,24 @@
       <div *ngIf="selected">
 
         <div class="row">
-          <div class="col-6" *ngIf='selected.dateCreated'>
+          <div class="col" *ngIf='selected.dateCreated'>
             <label>Date Created</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['dateCreated'] | date: 'dd-MM-yyyy'}}</textarea>
           </div>
-
-
-          <div class="col-6" *ngIf='selected.createdBy'>
+          <div class="col" *ngIf='selected.createdBy'>
             <label>Created By</label>
             <textarea type="text" class="form-control" rows="1" readonly>{{selected['createdBy']}}</textarea>
           </div>
         </div>
 
         <div class="row" *ngIf='selected.dateModified'>
-          <div class="col-6">
+          <div class="col">
             <label>Date Modified</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['dateModified'] | date: 'dd-MM-yyyy'}}</textarea>
           </div>
 
 
-          <div class="col-6" *ngIf='selected.modifiedBy'>
+          <div class="col" *ngIf='selected.modifiedBy'>
             <label>Modified By</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['modifiedBy']}}</textarea>
           </div>
@@ -177,15 +175,24 @@
 
         <div class="row">
           <div class="col-6" *ngIf="selected['crossref1']">
-            <div>
               <label>Cross Reference</label>
               <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref1']['valueString']}}</textarea>
+          </div>
+          <div class="col-6" *ngIf="!selected['crossref1']">
+            <div>
+              <label>Cross Reference</label>
+              <textarea type="text" class="form-control" rows="1" disabled> - </textarea>
             </div>
           </div>
+
           <div class="col-6" *ngIf="selected['crossref2']">
             <label>Cross Reference</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref2']['valueString']}}</textarea>
           </div>
+          <div class="col-6" *ngIf="!selected['crossref2']">
+              <label>Cross Reference</label>
+              <textarea type="text" class="form-control" rows="1" disabled> - </textarea>
+            </div>
         </div>
       </div>
 

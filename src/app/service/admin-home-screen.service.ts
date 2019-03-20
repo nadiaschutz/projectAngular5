@@ -96,6 +96,14 @@ export class AdminHomeScreenService {
     );
   }
 
+
+  getJobLocationsClientDept(query) {
+    return this.http.get(
+      environment.queryURI + '/Location?organization=' + query,
+      { headers: this.getHeaders() }
+    );
+  }
+
   getPsophServiceFromQR(QR_Id) {
     // https://bcip.smilecdr.com/fhir-request/Questionnaire?_id=TEST1
     return this.http.get(
@@ -143,9 +151,9 @@ export class AdminHomeScreenService {
 
   encodeData(obj) {
     return Object.keys(obj).map(function(key) {
-      if (key.indexOf('dup-') == -1)
+      if (key.indexOf('dup-') == -1){
         return [key, obj[key]].map(encodeURIComponent).join('=');
-      else {
+      } else {
         let tempKey = key;
         tempKey = tempKey.slice(tempKey.indexOf('dup') + 4);
         return [tempKey, obj[key]].map(encodeURIComponent).join('=');
@@ -154,11 +162,12 @@ export class AdminHomeScreenService {
   }
 
   extractStatusFromStatusQR(statusFHIRObj) {
-    if (statusFHIRObj && statusFHIRObj.resource && statusFHIRObj.resource.item && Array.isArray(statusFHIRObj.resource.item) && statusFHIRObj.resource.item.length > 0) {
+    if (statusFHIRObj && statusFHIRObj.resource && statusFHIRObj.resource.item 
+      && Array.isArray(statusFHIRObj.resource.item) && statusFHIRObj.resource.item.length > 0) {
       const obj = statusFHIRObj.resource.item.find(item => item && item.hasOwnProperty('answer'));
       if (obj && obj['answer']) {
         return obj['text'];
-      } 
+      }
     }
 
     return null;
@@ -173,8 +182,9 @@ export class AdminHomeScreenService {
     if (statusBundle && statusBundle['entry'] && Array.isArray(statusBundle['entry']) && statusBundle['entry'].length > 0) {
       qrs['entry'] = qrs['entry'].map(qr => {
         const matchedStatusItem = statusBundle['entry'].find(statusItem => 
-          statusItem.resource && statusItem.resource.context && qr.resource && qr.resource.context && qr.resource.context.reference && statusItem.resource.context.reference == qr.resource.context.reference);
-        
+          statusItem.resource && statusItem.resource.context && qr.resource && qr.resource.context 
+          && qr.resource.context.reference && statusItem.resource.context.reference == qr.resource.context.reference);
+
         const statusStr = this.extractStatusFromStatusQR(matchedStatusItem);  // can be status text or null
 
         qr.resource['displayStatus'] = statusStr;
