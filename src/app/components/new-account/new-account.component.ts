@@ -156,8 +156,8 @@ export class NewAccountComponent implements OnInit {
 
     practitioner.extension = [pracEx];
     // Set the identifier for the Practitioner
-    pracIdentifier.system = 'http://www.acme.org/practitioners';
-    pracIdentifier.value = 'testID';
+    pracIdentifier.system = 'https://bcip.smilecdr.com/smile/Practitioners';
+    pracIdentifier.value = this.accountFormGroup.get('pri').value;
 
     // Set the users name
     pracName.family = this.accountFormGroup.get('family').value;

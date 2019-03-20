@@ -38,7 +38,7 @@ export class WorkScreenComponent implements OnInit {
   statusFormGroup: FormGroup;
   currentProgressFormGroup: FormGroup;
   checkListDocObject;
-  statusObject;
+  milestoneObject;
   episodeOfCareId = '';
   practitioners = [];
   practitionersWithId = [];
@@ -125,7 +125,7 @@ export class WorkScreenComponent implements OnInit {
       error => console.error(error)
     );
     this.checkIfAssociatedDocCheckListExists();
-    this.checkIfAssociatedStatusListExists();
+    this.checkIfAssociatedMilestoneListExists();
   }
 
 
@@ -383,6 +383,12 @@ export class WorkScreenComponent implements OnInit {
     this.summary['patientFHIRID'] = patient['id'];
     this.summary['clientName'] = this.utilService.getNameFromResource(patient);
     this.summary['clientDOB'] = patient['birthDate'];
+
+    if (patient['identifier']) {
+      patient['identifier'].forEach(identifier => {
+          this.summary['employeePRI'] = identifier['value'];
+      });
+    }
     patient.extension.forEach(extension => {
       if (extension.url === 'https://bcip.smilecdr.com/fhir/workplace') {
         this.summary['clientDepartment'] = extension.valueString;
@@ -401,8 +407,8 @@ export class WorkScreenComponent implements OnInit {
   }
 
   processQuestionnaireResponseForSummary(questionnaireResponse) {
+    this.summary['serviceRequestId'] = questionnaireResponse['id'];
     questionnaireResponse.item.forEach(item => {
-
       if (item['linkId'] === 'PSOHPSERV') {
         for (const answer of item['answer']) {
           if (answer['valueCoding']) {
@@ -618,74 +624,7 @@ export class WorkScreenComponent implements OnInit {
           this.enableWorkListUpdate = !this.enableWorkListUpdate;
         });
   }
-  // TODO - revisit functionality with updated logic after March 1st
-  // onCheckListChangeStatus(cheklistItem) {
 
-  //   const newAnswer = new FHIR.Answer;
-  //   const itemTime = new FHIR.Answer;
-  //   const onHoldAnswer = new FHIR.Answer;
-
-  //   const statusArray =
-  //   ['on-hold', 'waiting', 'validated', 'scheduled', 'assigned', 'work-completed'];
-
-  //   itemTime.valueDate = this.utilService.getCurrentDate();
-  //   newAnswer.valueBoolean = cheklistItem['value'];
-
-  //   onHoldAnswer.valueBoolean = !cheklistItem['value'];
-  //   // onHoldAnswer.valueDate = this.utilService.getCurrentDate();
-
-  //   if (statusArray.indexOf(cheklistItem['statusChanger']) > -1 ) {
-  //     if (cheklistItem['statusChanger'] === 'on-hold') {
-  //       const onHoldFound = this.statusObject['item'].find(item => {
-  //         return item['text'].toLowerCase() === 'on-hold';
-  //       });
-  //       if (!onHoldFound) {
-  //         const onHoldItem = new FHIR.Item;
-  //         onHoldItem.linkId = '0';
-  //         onHoldItem.text = 'On-Hold';
-  //         onHoldItem.answer = [onHoldAnswer, itemTime];
-  //       }
-  //       this.statusObject['item'].forEach(item => {
-  //         if (item['text'].toLowerCase() === 'on-hold' ) {
-  //             item['answer'] = [onHoldAnswer, itemTime];
-  //         } else {
-  //           const falseAnswer = new FHIR.Answer;
-  //           falseAnswer.valueBoolean = false;
-  //           item['answer'] = [falseAnswer];
-  //         }
-  //       });
-  //     }
-
-  //     if (cheklistItem['statusChanger'] !== 'on-hold') {
-  //       const onHoldFound = this.statusObject['item'].find(item => {
-  //         console.log('checking on hold status ', item['text'].toLowerCase() !== 'on-hold');
-  //         return item['text'].toLowerCase() !== 'on-hold';
-  //       });
-  //       // if (!onHoldFound) {
-  //       //   const onHoldItem = new FHIR.Item;
-  //       //   onHoldItem.linkId = '0';
-  //       //   onHoldItem.text = this.titleCase.transform(cheklistItem['statusChanger']);
-  //       //   onHoldItem.answer = [newAnswer, itemTime];
-  //       // }
-  //       this.statusObject['item'].forEach(item => {
-  //         if (item['text'].toLowerCase() == cheklistItem['statusChanger'] ) {
-  //             item['answer'] = [newAnswer, itemTime];
-  //         } else {
-  //           const falseAnswer = new FHIR.Answer;
-  //           falseAnswer.valueBoolean = false;
-  //           item['answer'] = [falseAnswer];
-  //         }
-  //       });
-  //     }
-  //   }
-
-  //   this.staffService.updateStatusList(this.statusObject['id'], JSON.stringify(this.statusObject)).subscribe(
-  //     data => {
-  //       console.log('UPDATED', data);
-  //       this.statusObject = data;
-  //     }
-  //   );
-  // }
 
   processListOfDependents(patientLinkId) {
     this.staffService
@@ -732,7 +671,7 @@ export class WorkScreenComponent implements OnInit {
     this.milestoneForDisplay = selectedStatus;
     itemTime.valueDate = this.utilService.getCurrentDate();
     itemReason.valueString = this.statusFormGroup.get('statusNote').value;
-    this.statusObject['item'].forEach(element => {
+    this.milestoneObject['item'].forEach(element => {
       if (element['text'] === selectedStatus) {
         itemAnswer.valueBoolean = true;
 
@@ -753,12 +692,12 @@ export class WorkScreenComponent implements OnInit {
     this.showStatusFormGroup = !this.showStatusFormGroup;
     this.staffService
       .updateStatusList(
-        this.statusObject['id'],
-        JSON.stringify(this.statusObject)
+        this.milestoneObject['id'],
+        JSON.stringify(this.milestoneObject)
       )
       .subscribe(data => {
         console.log(data);
-        this.statusObject = data;
+        this.milestoneObject = data;
       });
   }
 
@@ -1120,17 +1059,17 @@ export class WorkScreenComponent implements OnInit {
     });
   }
 
-  checkIfAssociatedStatusListExists() {
+  checkIfAssociatedMilestoneListExists() {
     this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
       if (data) {
         if (data['total'] === 0) {
-          console.log('nothing here, creating status skeleton');
-          this.newStatusList();
+          console.log('nothing here, creating milestone skeleton');
+          this.newMilestoneList();
         } else {
           data['entry'].forEach(entry => {
-            this.statusObject = entry['resource'];
-            if (this.statusObject['item']) {
-              for (const item of this.statusObject['item']) {
+            this.milestoneObject = entry['resource'];
+            if (this.milestoneObject['item']) {
+              for (const item of this.milestoneObject['item']) {
                 if (item['answer']) {
                   if (item['answer'][0]['valueBoolean'] === true) {
                     console.log(item['text']);
@@ -1145,7 +1084,7 @@ export class WorkScreenComponent implements OnInit {
     });
   }
 
-  newStatusList() {
+  newMilestoneList() {
     const statusQResponse = new FHIR.QuestionnaireResponse();
     const statusReference = new FHIR.Reference();
     const statusContextReference = new FHIR.Reference();
@@ -1158,7 +1097,7 @@ export class WorkScreenComponent implements OnInit {
     const statusItemSix = new FHIR.Item();
     const statusItemSeven = new FHIR.Item();
     const statusItemAnswer = new FHIR.Answer();
-
+    const receivedAnswer = new FHIR.Answer();
     statusItemAnswer.valueBoolean = false;
 
     statusItemOne.linkId = '1';
@@ -1183,8 +1122,10 @@ export class WorkScreenComponent implements OnInit {
 
     statusItemSix.linkId = '0';
     statusItemSix.text = 'Received';
-    // statusItemSix.answer = [statusItemAnswer];
     statusItemAnswer.valueBoolean = true;
+    statusItemSix.answer = [statusItemAnswer];
+
+    // statusItemSix.answer = [statusItemAnswer];
 
 
     statusReference.reference = 'Questionnaire/13064';
@@ -1211,7 +1152,7 @@ export class WorkScreenComponent implements OnInit {
       .createStatusList(JSON.stringify(statusQResponse))
       .subscribe(data => {
         console.log('POST SUCCESSFUL', data);
-        this.statusObject = data;
+        this.milestoneObject = data;
       });
   }
 
