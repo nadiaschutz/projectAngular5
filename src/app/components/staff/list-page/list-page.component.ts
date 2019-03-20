@@ -164,8 +164,8 @@ export class ListPageComponent implements OnInit {
           );
           // Creating a Questionnaire Response List that can refer individual Questionnaire Response
           // item from an episode of Care id
-          this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
           if (resource['identifier']['value'] === 'SERVREQ') {
+            this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
             this.episodeOfCareWithCorrectQuestionnaireResponseId[associatedEpisodeOfCareId] = resource.id;
           }
         }
