@@ -72,7 +72,6 @@ export class EmployeeComponent implements OnInit {
   branches: any;
   jobLocationList: NameValueLookup[] = [];
   employeeDepartmentList: NameValueLookup[] = [];
-  deptValueWhenClinician;
   currentRole;
   // Store a UUID to link Employee and Dependent objects
 
@@ -272,7 +271,6 @@ export class EmployeeComponent implements OnInit {
             if (index) {
               const individualItem = this.extractKeyValuePairsFromBundle(bundle)[index];
               if (individualItem['text'] === (sessionStorage.getItem('userDept'))) {
-                this.deptValueWhenClinician = individualItem['value'];
                 this.onChangesClientDept(individualItem['value']);
                 this.employeeFormGroup.patchValue({ departmentName: individualItem['text'] });
                 console.log(individualItem['text']);
@@ -323,7 +321,6 @@ export class EmployeeComponent implements OnInit {
     //   this.formattedMessage =
     //     `Hello, My name is ${val.name} and my email is ${val.email}. I would like to tell you that ${val.message}.`;
     // });
-    console.log('this is passed in', this.deptValueWhenClinician)
     // listen to one aprticular field for form change
 
     if (val !== '') {
