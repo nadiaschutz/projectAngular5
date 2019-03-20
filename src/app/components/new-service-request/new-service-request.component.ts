@@ -913,7 +913,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         return formField;
 
       } else if (el.code[1].code === 'SELECT') {
-        //  const enableWhenQ = [];
+
+
         const options = [];
 
         el.option.forEach(el1 => {
@@ -927,48 +928,39 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         el.option.forEach(el1 => {
           options.push(el1.valueCoding.display);
         });
-
-
         const enableWhen = this.populateEnableWhenObj(el);
 
-
-
-        // if (el.enableWhen) {
-        //   el.enableWhen.forEach(el1 => {
-        //     enableWhen.push(
-        //       {
-        //         enableWhenQ: el1.question,
-        //         nableWhenA: el1.answerCoding.display
-        //       }
-        //     );
-        //   });
-        // }
-        // if (el.enableWhen) {
-
-        //   el.enableWhen.forEach(el1 => {
-        //     enableWhenQ.push(el1.question);
-        //   });
-        // }
-
-
-
-
-        return {
-          type: 'selectSr',
-          label: el.text,
-          name: el.linkId,
-          enableWhen: el.enableWhen ? enableWhen : false,
-          // enableWhenQ: el.enableWhen ? enableWhenQ : false,
-          // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
-          options: options,
-          flag: el.enableWhen ? false : true,
-          placeholder: 'Select an option',
-          // validation: el.enableWhen ? [Validators.required] : null,
-          validation: el.enableWhen ? undefined : [Validators.required],
-          // validation: [Validators.required],
-          value: null,
-          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-        };
+        if (el.code[0].code === 'OHAGOCC' || el.code[0].code === 'ENVMODIF' || el.code[0].code === 'EXPMODIF') {
+          console.log(el.code[0].code);
+          return {
+            type: 'selectSr',
+            label: el.text,
+            name: el.linkId,
+            enableWhen: el.enableWhen ? enableWhen : false,
+            options: options,
+            flag: el.enableWhen ? false : true,
+            placeholder: 'Select an option',
+            validation: undefined,
+            // validation: [Validators.required],
+            value: null,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          };
+        } else {
+          const enableWhenQ = [];
+          return {
+            type: 'selectSr',
+            label: el.text,
+            name: el.linkId,
+            enableWhen: el.enableWhen ? enableWhen : false,
+            options: options,
+            flag: el.enableWhen ? false : true,
+            placeholder: 'Select an option',
+            validation: el.enableWhen ? undefined : [Validators.required],
+            // validation: [Validators.required],
+            value: null,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          };
+        }
       } else if (el.code[1].code === 'BOOL') {
         if (el.code[0].code === 'DEPENDINV') {
           // console.log(this.dependentsList);
