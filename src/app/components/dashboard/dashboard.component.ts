@@ -339,17 +339,20 @@ export class DashboardComponent implements OnInit {
 
 
   createClientsObject(data) {
-    this.clients = data.map(el => ({
-      ...this.client,
-      id: el.id,
-      lastName: el['name'][0]['family'],
-      firstName: el['name'][0]['given'][0],
-      dateOfBirth: el['birthDate'],
-      clientType: this.getClientType(el),
-      department: this.getDepartment(el),
-      branch: this.getBranch(el)
+    if (data) {
+      this.clients = data.map(el => ({
+        ...this.client,
+        id: el.id,
+        lastName: el['name'][0]['family'],
+        firstName: el['name'][0]['given'][0],
+        dateOfBirth: el['birthDate'],
+        clientType: this.getClientType(el),
+        department: this.getDepartment(el),
+        branch: this.getBranch(el)
+      }
+      ));
+
     }
-    ));
   }
 
 

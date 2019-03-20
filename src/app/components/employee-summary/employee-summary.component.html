@@ -540,7 +540,7 @@
         <button class="btn regular-button" (click)="disableInputsBeforeSubmission()">Next</button>
       </div> -->
       <div class="col">
-        <button class="btn regular-button  float-right" (click)="updateEmployee()">Update
+        <button class="btn regular-button float-right" [disabled]="!employeeFormGroup.valid" (click)="updateEmployee()">Update
           Client Info</button>
       </div>
 
