@@ -3,6 +3,7 @@ import { StaffService } from '../../service/staff.service';
 import { ExportToCsv } from 'export-to-csv';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { UserService } from '../../service/user.service';
+import { UtilService } from '../../service/util.service';
 import {
   FormBuilder,
   FormGroup,
@@ -24,21 +25,26 @@ export class ReportingComponent implements OnInit {
   datePickerConfig: Partial<BsDatepickerConfig>;
   DATE_FORMAT = 'YYYY-MM-DD';
   regions = ['Select Region'];
-  psohpTypes = ['Select Type', 'HACAT1', 'HACAT2', 'HACAT3', 'FTWORK', 'SUBUYB', 'SUREMG', 'SUSURB',
-  'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC2', 'THCRC3'];
+  psohpTypes = ['Select Type', 'HACAT1', 'HACAT2', 'HACAT3', 'FTWORK',
+  'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC2', 'THCRC3'];
   clientDepartments = ['Select Department'];
   statuses = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   reportingFormGroup: FormGroup;
-  dataSets = ['Select Data Set', 'Service Request', 'Lab', 'Vaccines', 'Full Log'];
+  dataSets = ['Select Data Set', 'Service Request', 'Care Plan', 'Diagnostics Test',
+  'Consultation', 'Medical Information', 'Vaccines', 'Full Log'];
   episodeOfCareList = [];
   questionnaireResponseList = [];
   patientsList = [];
   carePlanList = [];
   practitionerList = [];
+  diagnosticsTestList = [];
+  consultationList = [];
+  medicalInformationList = [];
   // If a service request is selected, then build the entire SR object
   // For Labs/Vaccines, query the respective resources
 
-  constructor(private staffService: StaffService, private userService: UserService, private fb: FormBuilder) { }
+  constructor(private staffService: StaffService, private userService: UserService,
+    private fb: FormBuilder, private utilService: UtilService) { }
 
   // This screen needs a date range picker: year, quarter, and month
   // a date picker: start date and end date
@@ -85,7 +91,6 @@ export class ReportingComponent implements OnInit {
       data['entry'].forEach(element => {
         this.regions.push(element.resource.name);
       });
-      // console.log(this.regions);
     });
   }
 
@@ -94,35 +99,107 @@ export class ReportingComponent implements OnInit {
       data['entry'].forEach(element => {
         this.clientDepartments.push(element.resource.name);
       });
-      // console.log(this.clientDepartments);
     });
   }
 
   export() {
     if (this.reportingFormGroup.value.dataSet === 'Service Request') {
-      // this.buildServiceRequestData();
+      this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(data => {
+        data['entry'].forEach(element => {
+          if (element.resource.resourceType === 'EpisodeOfCare') {
+            this.episodeOfCareList.push(element.resource);
+          }
+          if (element.resource.resourceType === 'QuestionnaireResponse') {
+            this.questionnaireResponseList.push(element.resource);
+          }
+          if (element.resource.resourceType === 'Patient') {
+            this.patientsList.push(element.resource);
+          }
+          if (element.resource.resourceType === 'Practitioner') {
+            this.practitionerList.push(element.resource);
+          }
+          if (element.resource.resourceType === 'CarePlan') {
+            this.carePlanList.push(element.resource);
+          }
+        });
+        this.processServiceRequestData();
+        this.exportToCSV(this.serviceRequestData);
+      });
     }
-    this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(data => {
-      data['entry'].forEach(element => {
-        if (element.resource.resourceType === 'EpisodeOfCare') {
-          this.episodeOfCareList.push(element.resource);
-        }
-        if (element.resource.resourceType === 'QuestionnaireResponse') {
-          this.questionnaireResponseList.push(element.resource);
-        }
-        if (element.resource.resourceType === 'Patient') {
-          this.patientsList.push(element.resource);
-        }
-        if (element.resource.resourceType === 'Practitioner') {
-          this.practitionerList.push(element.resource);
-        }
-        if (element.resource.resourceType === 'CarePlan') {
+    if (this.reportingFormGroup.value.dataSet === 'Care Plan') {
+      this.staffService.fetchAllCarePlans().subscribe(data => {
+        data['entry'].forEach(element => {
           this.carePlanList.push(element.resource);
+        });
+        this.processCarePlan();
+      });
+    }
+    if (this.reportingFormGroup.value.dataSet === 'Diagnostics Test' ||
+    this.reportingFormGroup.value.dataSet === 'Consultation' ||
+    this.reportingFormGroup.value.dataSet === 'Medical Information') {
+      this.processProcedureRequestData(this.reportingFormGroup.value.dataSet);
+    }
+  }
+
+  processCarePlan() {
+    if (this.carePlanList.length > 0) {
+      const carePlanResultList = [];
+      this.carePlanList.forEach(carePlan => {
+        console.log(carePlan);
+        const episodeOfCareId = this.utilService.getIdFromReference(carePlan.context.reference);
+        this.staffService.getQuestionnaireResponseFromEpisodeOfCareId(episodeOfCareId).subscribe(questionnaireResponse => {
+          console.log(questionnaireResponse);
+        });
+        const temp = {};
+      });
+    }
+  }
+
+  // This method builds Procedure Request data. This is used for: Diagnostics Test, Consultation, Medical information and Immuizations
+  processProcedureRequestData(typeOfProcedureRequest: string) {
+    this.staffService.getProcedureRequestFromIdentifier(typeOfProcedureRequest).subscribe(data => {
+      data['entry'].forEach(element => {
+        if (element.resource.identifier[0].value === 'Diagnostics Test') {
+          this.diagnosticsTestList.push(element.resource);
+        }
+        if (element.resource.identifier[0].value === 'Consultation') {
+          this.consultationList.push(element.resource);
+        }
+        if (element.resource.identifier[0].value === 'Medical Information') {
+          this.medicalInformationList.push(element.resource);
         }
       });
-      this.processServiceRequestData();
-      console.log(this.serviceRequestData);
-      // this.exportToCSV(this.serviceRequestData);
+      if (typeOfProcedureRequest === 'Diagnostics Test') {
+        this.processDiagnosticsTest();
+      }
+      if (typeOfProcedureRequest === 'Consultation') {
+        this.processConsultations();
+      }
+      if (typeOfProcedureRequest === 'Medical Information') {
+        this.processMedicalInformation();
+      }
+    });
+  }
+
+  processDiagnosticsTest() {
+    if (this.diagnosticsTestList.length > 0) {
+      const diagnosticTestResultList = [];
+      this.diagnosticsTestList.forEach(data => {
+        console.log(data);
+        const temp = {};
+      });
+    }
+  }
+
+  processConsultations() {
+    this.consultationList.forEach(data => {
+      console.log(data);
+    });
+  }
+
+  processMedicalInformation() {
+    this.medicalInformationList.forEach(data => {
+      console.log(data);
     });
   }
 
@@ -130,11 +207,10 @@ export class ReportingComponent implements OnInit {
     this.episodeOfCareList.forEach(episode => {
       const temp = {};
       const episodeOfCareId = episode.id;
-      if (episodeOfCareId === '14810') {
+      if (episodeOfCareId) {
         temp['Service Request Id'] = episode.id;
         this.questionnaireResponseList.forEach(questionnaireResponse => {
           if (questionnaireResponse.context.reference.includes(episodeOfCareId)) {
-            console.log(questionnaireResponse);
             if (questionnaireResponse.identifier.value === 'SERVREQ') {
               questionnaireResponse['item'].forEach(item => {
                 if (item.linkId === 'PSOHPSERV') {
@@ -151,7 +227,6 @@ export class ReportingComponent implements OnInit {
             if (questionnaireResponse.identifier.value === 'STATUS') {
               questionnaireResponse['item'].forEach(statusItem => {
                 if (statusItem.answer) {
-                  console.log(statusItem.answer);
                   if (statusItem.answer[1] && statusItem.answer[1]['valueDate']) {
                     temp[statusItem.text] = statusItem.answer[1].valueDate;
                   } else {
@@ -164,74 +239,8 @@ export class ReportingComponent implements OnInit {
             }
           }
         });
-        console.log(temp);
         this.serviceRequestData.push(temp);
       }
-    });
-  }
-
-  // This method builds Service Request Data
-  // The needed columns in the csv are:
-  // 1.Service Request id 2.PSOHP service 3.Assessment type 4.Assessment category
-  // 5.PSOHP region 6.Submitting department code 7.Submitting Department Branch
-  // 8.Charge back 9.Cliet Type 10.OHAG Occupation 11.Received Date
-  // 12.Validated Date 13.Assigned Date 14.Scheduled Date 15.Work completed date
-  // 16.Closed date 17. Assessment code and 18. Exam by code
-  buildServiceRequestData() {
-    this.staffService.getAllEpisodeOfCare().subscribe(data => {
-      const tempArr = [];
-      data['entry'].forEach(episodeOfCare => {
-        const episodeOfCareId = episodeOfCare.resource.id;
-        if (episodeOfCareId === '14654') {
-          const temp = {};
-          this.staffService.getEpisodeOfCareAndRelatedData(episodeOfCareId).subscribe(data1 => {
-            data1['entry'].forEach(element => {
-              const resource = element.resource;
-              if (resource.resourceType === 'EpisodeOfCare') {
-                temp['Service Request Id'] = resource['id'];
-              }
-              if (resource.resourceType === 'QuestionnaireResponse') {
-                // console.log(resource);
-                if (resource.identifier.value === 'SERVREQ') {
-                  resource['item'].forEach(item => {
-                    if (item.linkId === 'PSOHPSERV') {
-                      temp['Psohp Service'] = item.answer[0].valueCoding.code;
-                    }
-                    if (item.linkId === 'REGOFFICE') {
-                      temp['Regional Office'] = item.answer[0].valueCoding.display;
-                    }
-                    if (item.linkId === 'OHAGOCC') {
-                      temp['OHAG Occupation'] = item.answer[0].valueCoding.display;
-                    }
-                  });
-                }
-                if (resource.identifier.value === 'STATUS') {
-                  resource['item'].forEach(statusItem => {
-                    if (!temp[statusItem.text]) {
-                      if (statusItem.answer) {
-                        if (statusItem.answer[1]) {
-                          temp[statusItem.text] = statusItem.answer[1].valueDate;
-                        } else {
-                          temp[statusItem.text] = '';
-                        }
-                      } else {
-                        temp[statusItem.text] = '';
-                      }
-                    }
-                  });
-                }
-              }
-            });
-            console.log(temp);
-            tempArr.push(temp);
-            this.serviceRequestData.push(temp);
-          });
-        }
-      });
-      console.log(tempArr);
-      // console.log(this.serviceRequestData);
-      // this.exportToCSV(this.serviceRequestData);
-      this.exportToCSV(tempArr);
     });
   }
 

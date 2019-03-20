@@ -35,6 +35,10 @@ export class StaffService {
     return this.http.get(environment.queryURI + '/CarePlan?status=draft', {headers: this.getHeaders()});
   }
 
+  fetchAllCarePlans() {
+    return this.http.get(environment.queryURI + '/CarePlan?status=active', {headers: this.getHeaders()});
+  }
+
   saveCarePlan(carePlanData) {
     return this.http.post(environment.queryURI + '/CarePlan', carePlanData, {headers: this.getPostHeaders()});
   }
@@ -53,6 +57,11 @@ export class StaffService {
 
   getAllUnassignedQuestionnaireResponses() {
     return this.http.get(environment.queryURI + '/QuestionnaireResponse?identifier=SERVREQ', {headers: this.getHeaders()});
+  }
+
+  getQuestionnaireResponseFromEpisodeOfCareId(episodeOfCareId) {
+    return this.http.get(environment.queryURI +
+      '/QuestionnaireResponse?identifier=SERVREQ&context=' + episodeOfCareId, {headers: this.getHeaders()});
   }
 
   saveEpisodeOfCare(data) {
@@ -262,6 +271,14 @@ export class StaffService {
 
   saveProcedureRequest(procedureRequestData) {
     return this.http.post(environment.queryURI + '/ProcedureRequest', procedureRequestData, {headers: this.getPostHeaders()});
+  }
+
+  getAllProcedureRequests() {
+    return this.http.get(environment.queryURI + '/ProcedureRequest', {headers: this.getHeaders()});
+  }
+
+  getProcedureRequestFromIdentifier(identifier: string) {
+    return this.http.get(environment.queryURI + '/ProcedureRequest?identifier=' + identifier, {headers: this.getHeaders()});
   }
 
   saveClinicalQuestionnaireResponse(data) {
