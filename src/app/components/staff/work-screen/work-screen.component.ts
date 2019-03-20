@@ -21,6 +21,7 @@ export class WorkScreenComponent implements OnInit {
   carePlanActivities = [];
   summary = {} as any;
   episodeOfCare = {};
+  indexOfCheckListItems = [];
   carePlan = {};
   showTaskForm = false;
   showNoteForm = false;
@@ -489,7 +490,6 @@ export class WorkScreenComponent implements OnInit {
   }
 
   processClinicalAssignmentForHistory(task) {
-    console.log(task);
     if (task['intent'] === 'plan') {
       const temp = {};
       temp['title'] = 'Clinical Assignment';
@@ -537,56 +537,67 @@ export class WorkScreenComponent implements OnInit {
         temp['showActivity'] = false;
         temp['closingNotes'] = '';
       }
-      console.log(temp);
       this.history.push(temp);
     }
   }
 
+  cancelCarePlanUpdate() {
+    this.enableWorkListUpdate = !this.enableWorkListUpdate;
+    this.indexOfCheckListItems.forEach(index => {
+      this.carePlanActivities[index]['value'] = !this.carePlanActivities[index]['value'];
+    });
+    this.indexOfCheckListItems = [];
+  }
+
   onChecklistChange(index) {
-    const indexArray = [];
-    indexArray.push(index);
-    if (this.carePlan) {
-      console.log(this.carePlan);
-      const annotation = new FHIR.Annotation();
-      annotation.time = new Date();
-      if (this.carePlanActivities[index]['value']) {
-        annotation.text =
-          'COMPLETED: User ' +
-          this.fetchCurrentUsername() +
-          ' marked item ' +
-          this.carePlan['activity'][index]['detail']['description'] +
-          ' as Completed';
-        this.carePlan['activity'][index]['detail']['status'] = 'completed';
-        // this.onCheckListChangeStatus(this.carePlanActivities[index]);
-      } else {
-        annotation.text =
-          'INCOMPLETE: User ' +
-          this.fetchCurrentUsername() +
-          ' marked item ' +
-          this.carePlan['activity'][index]['detail']['description'] +
-          ' as Incomplete';
-        this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
-        console.log(this.carePlan['activity'][index]);
-        // this.onCheckListChangeStatus(this.carePlanActivities[index]);
+    this.indexOfCheckListItems.push(index);
+  }
+
+
+  saveCarePlan() {
+    this.indexOfCheckListItems.forEach(index => {
+
+      if (this.carePlan) {
+        const annotation = new FHIR.Annotation();
+        annotation.time = new Date();
+        if (this.carePlanActivities[index]['value']) {
+          annotation.text =
+            'COMPLETED: User ' +
+            this.fetchCurrentUsername() +
+            ' marked item ' +
+            this.carePlan['activity'][index]['detail']['description'] +
+            ' as Completed';
+          this.carePlan['activity'][index]['detail']['status'] = 'completed';
+          // this.onCheckListChangeStatus(this.carePlanActivities[index]);
+        } else {
+          annotation.text =
+            'INCOMPLETE: User ' +
+            this.fetchCurrentUsername() +
+            ' marked item ' +
+            this.carePlan['activity'][index]['detail']['description'] +
+            ' as Incomplete';
+          this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
+        }
+        if (this.carePlan['activity'][index]['progress']) {
+          this.carePlan['activity'][index]['progress'].push(annotation);
+        } else {
+          this.carePlan['activity'][index]['progress'] = new Array<
+            FHIR.Annotation
+          >();
+          this.carePlan['activity'][index]['progress'].push(annotation);
+        }
       }
-      if (this.carePlan['activity'][index]['progress']) {
-        this.carePlan['activity'][index]['progress'].push(annotation);
-      } else {
-        this.carePlan['activity'][index]['progress'] = new Array<
-          FHIR.Annotation
-        >();
-        this.carePlan['activity'][index]['progress'].push(annotation);
-      }
-      this.staffService
-        .updateCarePlan(this.carePlan['id'], JSON.stringify(this.carePlan))
-        .subscribe(data => {
-          console.log(data['activity'][index]);
-          // this.processRecentCarePlanActivityForHistory(data['activity'][index]);
-          this.carePlan = data;
-          this.processCarePlanForDisplay();
-          this.displayAll();
-        });
-    }
+    });
+    this.staffService
+          .updateCarePlan(this.carePlan['id'], JSON.stringify(this.carePlan))
+          .subscribe(data => {
+            // this.processRecentCarePlanActivityForHistory(data['activity'][index]);
+            this.indexOfCheckListItems = [];
+            this.carePlan = data;
+            this.enableWorkListUpdate = !this.enableWorkListUpdate;
+            this.processCarePlanForDisplay();
+            this.displayAll();
+          });
   }
 
   updateHistoryForDisplay() {

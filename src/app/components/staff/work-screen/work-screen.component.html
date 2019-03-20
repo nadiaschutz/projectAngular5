@@ -878,16 +878,15 @@
       <div class="search-box">
         <div class="text-center update-section">
           <div *ngIf="enableWorkListUpdate">
-            <button class="btn special-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update
-              Work Progress</button>
+            <button class="btn special-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update TO DO List</button>
           </div>
           <div *ngIf="!enableWorkListUpdate">
-            <button class="btn regular-button function-buttons col-4 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Cancel
+            <button class="btn regular-button function-buttons col-4 button-padding" (click)="cancelCarePlanUpdate()">Cancel
               Changes</button>
-            <button class="btn regular-button function-buttons col-4 button-padding" (click)="updateHistoryForDisplay()">Save
+            <button class="btn regular-button function-buttons col-4 button-padding" (click)="saveCarePlan()">Save
               Changes</button>
-            <button class="btn regular-button function-buttons col-3 button-padding" (click)="redirectToCloseScreen()">Close
-              Order</button>
+            <!-- <button class="btn regular-button function-buttons col-3 button-padding" (click)="redirectToCloseScreen()">Close
+              Order</button> -->
           </div>
         </div>
 
@@ -897,7 +896,7 @@
             <table>
               <tr>
                 <td> <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" [disabled]='enableWorkListUpdate'
-                    checked="{{item.value}}" id="i"></td>
+                     id="i"></td>
                 <td class="checklist-desc"> <span class="checklist-label">{{item.description}}</span></td>
 
               </tr>
