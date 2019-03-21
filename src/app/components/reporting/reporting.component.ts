@@ -150,12 +150,29 @@ export class ReportingComponent implements OnInit {
     if (this.carePlanList.length > 0) {
       const carePlanResultList = [];
       this.carePlanList.forEach(carePlan => {
-        console.log(carePlan);
         const episodeOfCareId = this.utilService.getIdFromReference(carePlan.context.reference);
-        const temp = {};
-        temp['Service Request Id'] = this.associatedEoCAndQResponseIds[episodeOfCareId];
-        // console.log(temp);
+        if (carePlan.identifier[0].value === 'HACAT1') {
+          console.log(carePlan.identifier[0].value);
+        }
+        carePlan.activity.forEach(activity => {
+          if (activity.detail.status === 'completed' && activity.progress) {
+            const temp = {};
+            temp['Service Request Id'] = this.associatedEoCAndQResponseIds[episodeOfCareId];
+            temp['Careplan Code'] = carePlan.id;
+            temp['Careplan Activity No.'] = activity.detail.description;
+            const latestProgressItem = activity.progress[activity.progress.length - 1];
+            if (latestProgressItem.authorReference) {
+              temp ['User ID that completed the activity'] = latestProgressItem.authorReference;
+            } else {
+              temp ['User ID that completed the activity'] = '';
+            }
+            temp['Timestamp when activity was done'] =
+            this.utilService.getDateTime(latestProgressItem.time);
+            carePlanResultList.push(temp);
+          }
+        });
       });
+      this.exportToCSV(carePlanResultList);
     }
   }
 

@@ -560,6 +560,9 @@ export class WorkScreenComponent implements OnInit {
       if (this.carePlan) {
         const annotation = new FHIR.Annotation();
         annotation.time = new Date();
+        const authorReference = new FHIR.Reference();
+        authorReference.reference = 'Practitioner/' + sessionStorage.getItem('userFHIRID');
+        annotation.authorReference = authorReference;
         if (this.carePlanActivities[index]['value']) {
           annotation.text =
             'COMPLETED: User ' +
