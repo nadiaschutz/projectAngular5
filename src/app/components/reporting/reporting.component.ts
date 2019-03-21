@@ -40,6 +40,7 @@ export class ReportingComponent implements OnInit {
   diagnosticsTestList = [];
   consultationList = [];
   medicalInformationList = [];
+  associatedEoCAndQResponseIds = [];
   // If a service request is selected, then build the entire SR object
   // For Labs/Vaccines, query the respective resources
 
@@ -53,6 +54,7 @@ export class ReportingComponent implements OnInit {
   // Get data to populate dropdowns for Regions/Types/Department/Category/Status/Milestones
 
   ngOnInit() {
+    this.preLoadServiceRequestData();
     this.initializeDatePicker();
     this.getAllRegions();
     this.getAllClientDeparments();
@@ -102,29 +104,32 @@ export class ReportingComponent implements OnInit {
     });
   }
 
+  preLoadServiceRequestData() {
+    this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(data => {
+      data['entry'].forEach(element => {
+        if (element.resource.resourceType === 'EpisodeOfCare') {
+          this.episodeOfCareList.push(element.resource);
+        }
+        if (element.resource.resourceType === 'QuestionnaireResponse') {
+          this.questionnaireResponseList.push(element.resource);
+        }
+        if (element.resource.resourceType === 'Patient') {
+          this.patientsList.push(element.resource);
+        }
+        if (element.resource.resourceType === 'Practitioner') {
+          this.practitionerList.push(element.resource);
+        }
+        if (element.resource.resourceType === 'CarePlan') {
+          this.carePlanList.push(element.resource);
+        }
+      });
+      this.processServiceRequestData();
+    });
+  }
+
   export() {
     if (this.reportingFormGroup.value.dataSet === 'Service Request') {
-      this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(data => {
-        data['entry'].forEach(element => {
-          if (element.resource.resourceType === 'EpisodeOfCare') {
-            this.episodeOfCareList.push(element.resource);
-          }
-          if (element.resource.resourceType === 'QuestionnaireResponse') {
-            this.questionnaireResponseList.push(element.resource);
-          }
-          if (element.resource.resourceType === 'Patient') {
-            this.patientsList.push(element.resource);
-          }
-          if (element.resource.resourceType === 'Practitioner') {
-            this.practitionerList.push(element.resource);
-          }
-          if (element.resource.resourceType === 'CarePlan') {
-            this.carePlanList.push(element.resource);
-          }
-        });
-        this.processServiceRequestData();
-        this.exportToCSV(this.serviceRequestData);
-      });
+      this.exportToCSV(this.serviceRequestData);
     }
     if (this.reportingFormGroup.value.dataSet === 'Care Plan') {
       this.staffService.fetchAllCarePlans().subscribe(data => {
@@ -147,10 +152,9 @@ export class ReportingComponent implements OnInit {
       this.carePlanList.forEach(carePlan => {
         console.log(carePlan);
         const episodeOfCareId = this.utilService.getIdFromReference(carePlan.context.reference);
-        this.staffService.getQuestionnaireResponseFromEpisodeOfCareId(episodeOfCareId).subscribe(questionnaireResponse => {
-          console.log(questionnaireResponse);
-        });
         const temp = {};
+        temp['Service Request Id'] = this.associatedEoCAndQResponseIds[episodeOfCareId];
+        // console.log(temp);
       });
     }
   }
@@ -212,6 +216,7 @@ export class ReportingComponent implements OnInit {
         this.questionnaireResponseList.forEach(questionnaireResponse => {
           if (questionnaireResponse.context.reference.includes(episodeOfCareId)) {
             if (questionnaireResponse.identifier.value === 'SERVREQ') {
+              this.associatedEoCAndQResponseIds[episodeOfCareId] = questionnaireResponse.id;
               questionnaireResponse['item'].forEach(item => {
                 if (item.linkId === 'PSOHPSERV') {
                   temp['Psohp Service'] = item.answer[0].valueCoding.code;
