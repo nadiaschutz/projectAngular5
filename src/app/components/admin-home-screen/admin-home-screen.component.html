@@ -29,8 +29,8 @@
                     <label for="dob">Date of Birth</label>
                     <!-- <input class="form-control" type="text" placeholder="Select Date" formControlName="dob" id="dob"
                         bsDatepicker [bsConfig]='datePickerConfig' red /> -->
-                    <input type="text" placeholder="Date of Birth" class="form-control" bsDatepicker
-                        formControlName="dob" id="dob" [bsConfig]='datePickerConfig'>
+                    <input type="text" placeholder="Date of Birth" class="form-control" bsDatepicker formControlName="dob"
+                        id="dob" [bsConfig]='datePickerConfig'>
                 </div>
                 <div class="col">
                     <label for="pri">PRI</label>
@@ -62,8 +62,7 @@
                 <div class="row">
                     <div class="col">
                         <label for="psohpService">PSOHP Service</label>
-                        <select class="form-control" formControlName="psohpService" id="psohpService"
-                            (change)="psohpChanged()">
+                        <select class="form-control" formControlName="psohpService" id="psohpService" (change)="psohpChanged()">
                             <option value="">(Select)</option>
                             <option *ngFor="let item of psohpList" [value]="item.value">
                                 {{item.text}}
@@ -72,8 +71,7 @@
                     </div>
                     <div class="col">
                         <label for="assesmentType">Assesment Type</label>
-                        <select class="form-control" formControlName="assesmentType" id="assesmentType"
-                            (change)="assessTypeChanged()">
+                        <select class="form-control" formControlName="assesmentType" id="assesmentType" (change)="assessTypeChanged()">
                             <option value="">(Select)</option>
                             <option *ngFor="let item of assesmentTypeList" [value]="item.value">
                                 {{item.text}}
@@ -82,8 +80,7 @@
                     </div>
                     <div class="col">
                         <label for="assesmentCat">Assesment CAT</label>
-                        <select class="form-control" formControlName="assesmentCat" id="assesmentCat"
-                            (change)="assessCATChanged()">
+                        <select class="form-control" formControlName="assesmentCat" id="assesmentCat" (change)="assessCATChanged()">
                             <option value="">(Select)</option>
                             <option *ngFor="let item of assesmentCatList" [value]="item.value">
                                 {{item.text}}
@@ -119,8 +116,7 @@
                     </div>
                     <div class="col">
                         <label for="serviceRequest">Service Request ID#</label>
-                        <input type="text" class="form-control value" name="serviceRequest"
-                            formControlName="serviceRequest" />
+                        <input type="text" class="form-control value" name="serviceRequest" formControlName="serviceRequest" />
                     </div>
                     <!-- <div class="col-3">
                         <div class="form-group">
@@ -241,8 +237,7 @@
                         <p class="card-text">
 
                             {{item.dateToday}}
-                            <button type="button" class="btn regular-button float-right"
-                                (click)="setEOCID(item.eocId)">Work
+                            <button type="button" class="btn regular-button float-right" (click)="setEOCID(item.eocId)">Work
                                 Screen</button>
                         </p>
 
@@ -274,7 +269,7 @@
                             <span (click)="taskCompleted(item.id)" style="color: #398ef2; cursor: pointer;">Mark as
                                 done</span>
                             <button type="button" class="btn regular-button float-right" (click)="setEOCID(item.eocId)">Work
-                                    Screen</button>
+                                Screen</button>
                         </p>
                     </div>
                 </div>

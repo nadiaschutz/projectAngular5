@@ -412,8 +412,52 @@ button {
 .summary-top-card {
   min-width: 98%;
   margin-left: 9px;
+  padding-top: 34px;
+  padding-bottom: 15px;
 }
 
 .summary-card-body {
   padding: 0px 0px 17px 32px;
+}
+
+.center-button {
+  text-align:center
+}
+
+
+.milestone-formgroup-adjust {
+  margin-left: 8px;
+}
+
+.summary-card-row-adjust {
+  margin-left: -13px;
+}
+
+.summary-card-text {
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 0.81;
+  letter-spacing: normal;
+  color:  #333333;
+}
+
+.milestone-menu {
+  min-width: 83.5%;
+}
+
+.milestone-menu-button {
+  border-radius: 2px;
+  background-color: #398ef2;
+  color: white;
+  font-size: 13px;
+  padding: 6px 28px 6px 28px;
+}
+
+.timeline-row {
+  width: 96%;
+  border-bottom:  solid  #c4c4c4 3px;
+  padding-top: 10px;
+  margin-bottom: 30px;
 }
