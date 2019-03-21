@@ -81,6 +81,11 @@ export class StaffService {
     + episodeOfCareId, {headers: this.getHeaders()});
   }
 
+  getSampleEpisodeOfCareAndRelatedData(episodeOfCareId) {
+    return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*&_id='
+    + episodeOfCareId, {headers: this.getHeaders()});
+  }
+
    getEpisodeOfCareEagerLoading(episodeOfCareId) {
     return  this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_id='
         + episodeOfCareId, { headers: this.getHeaders() });

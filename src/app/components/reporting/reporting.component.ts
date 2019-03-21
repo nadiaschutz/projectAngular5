@@ -14,6 +14,11 @@ import * as ReportingInterfaces from '../../interface/reporting-interfaces';
 import { Reporting } from '../../interface/reporting';
 
 
+export interface NameValueLookup {
+  text?: string;
+  value?: string;
+}
+
 @Component({
   selector: 'app-reporting',
   templateUrl: './reporting.component.html',
@@ -29,6 +34,7 @@ export class ReportingComponent implements OnInit {
   'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC2', 'THCRC3'];
   clientDepartments = ['Select Department'];
   statuses = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
+  milestones = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   reportingFormGroup: FormGroup;
   dataSets = ['Select Data Set', 'Service Request', 'Care Plan', 'Diagnostics Test',
   'Consultation', 'Medical Information', 'Vaccines', 'Full Log'];
@@ -41,6 +47,174 @@ export class ReportingComponent implements OnInit {
   consultationList = [];
   medicalInformationList = [];
   associatedEoCAndQResponseIds = [];
+
+  assesmentTypeList: NameValueLookup[] = [];
+  assesmentCatList: NameValueLookup[] = [];
+
+  psohpCodes = {
+    HACAT1: 'Health Assessment-Periodic-Cat 1 (HACAT1)',
+    HACAT2: 'Health Assessment-Periodic-Cat 2 (HACAT2)',
+    HACAT3: 'Health Assessment-Periodic-Cat 3 (HACAT3)',
+    FTWORK: 'Fitness to Work Evaluation (FTWORK)',
+    SUBUYB: 'Superannuation-Buy-Back (SUBUYB)',
+    SUREMG: 'Superannuation-Medical Grounds (SUREMG)',
+    SUSURB: 'Superannuation-Supplemental Retirement Benefits (SUSURB)',
+    THSOTT: 'Posting and Travel Health-Short-Term Travel (THSOTT)',
+    THPPC1: 'Posting and Travel Health-Pre-Posting-Cat 1 (THPPC1)',
+    THPPC3: 'Posting and Travel Health-Pre-Posting-Cat 3 (THPPC3)',
+    THCRC1: 'Posting and Travel Health-Cross-Posting-Cat 1 (THCRC1)',
+    THCRC3: 'Posting and Travel Health-Cross-Posting Cat 3 (THCRC3)',
+    THREC3: 'Posting and Travel Health-Return Posting-Cat 3 (THREC3)',
+    IMREVW: 'Immunization Review (IMREVW)',
+  };
+
+  psohpList = [
+    {
+      value: 'Health Assessment',
+      text: 'Health Assessment'
+    },
+    {
+      value: 'FTWORK',
+      text: 'Fitness to work (FTWORK)'
+    },
+    {
+      value: 'Superannuation',
+      text: 'Superannuation'
+    },
+    {
+      value: 'Posting and Travel Health',
+      text: 'Posting and Travel Health'
+    },
+    {
+      value: 'IMREVW',
+      text: 'Immunization review (IMREVW)'
+    }
+  ];
+
+  psophNext = [
+    {
+      type: 'Health Assessment',
+      value: {
+        text: 'Pre-Placement',
+        value: 'Pre-Placement'
+      }
+    },
+    {
+      type: 'Health Assessment',
+      value: {
+        text: 'Periodic',
+        value: 'Periodic'
+      }
+    },
+    {
+      type: 'Superannuation',
+      value: {
+        text: 'Buy Back',
+        value: 'SUBUYB'
+      }
+    },
+    {
+      type: 'Superannuation',
+      value: {
+        text: 'Medical Grounds',
+        value: 'SUREMG'
+      }
+    },
+    {
+      type: 'Superannuation',
+      value: {
+        text: 'Supplemental Retirement Benefits',
+        value: 'SUSURB'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Short Term Travel',
+        value: 'THSOTT'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Pre-Posting Cat 1',
+        value: 'THPPC1'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Pre-Posting Cat 3',
+        value: 'THPPC3'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Cross-Posting Cat 1',
+        value: 'THCRC1'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'Cross-Posting Cat 3',
+        value: 'THCRC3'
+      }
+    },
+    {
+      type: 'Posting and Travel Health',
+      value: {
+        text: 'return-posting cat 3',
+        value: 'THREC3'
+      }
+    }
+  ];
+
+  typeNext = [
+    {
+      type: 'Pre-Placement',
+      value: {
+        text: 'Cat 1',
+        value: 'HACAT1'
+      }
+    },
+    {
+      type: 'Pre-Placement',
+      value: {
+        text: 'Cat 2',
+        value: 'HACAT2'
+      }
+    },
+    {
+      type: 'Pre-Placement',
+      value: {
+        text: 'Cat 3',
+        value: 'HACAT3'
+      }
+    },
+    {
+      type: 'Periodic',
+      value: {
+        text: 'Cat 1',
+        value: 'HACAT1'
+      }
+    },
+    {
+      type: 'Periodic',
+      value: {
+        text: 'Cat 2',
+        value: 'HACAT2'
+      }
+    },
+    {
+      type: 'Periodic',
+      value: {
+        text: 'Cat 3',
+        value: 'HACAT3'
+      }
+    }
+  ];
   // If a service request is selected, then build the entire SR object
   // For Labs/Vaccines, query the respective resources
 
@@ -59,24 +233,16 @@ export class ReportingComponent implements OnInit {
     this.getAllRegions();
     this.getAllClientDeparments();
     this.reportingFormGroup = this.fb.group({
-      startDate: new FormControl(''),
-      endDate: new FormControl(''),
-      all: new FormControl(''),
+      psohpService: new FormControl(null),
+      assesmentType: new FormControl(null),
+      assesmentCat: new FormControl(null),
       region: new FormControl(''),
-      psohpType: new FormControl(''),
       department: new FormControl(''),
       status: new FormControl(''),
+      milestone: new FormControl(''),
       serviceRequest: new FormControl(''),
       vaccines: new FormControl(''),
       dataSet: new FormControl(''),
-      jobLocation: new FormControl({ value: '', disabled: true}),
-      psohp: new FormControl(''),
-      // assesmentType: new FormControl('', Validators.required),
-      // assesmentCat: new FormControl('', Validators.required),
-      // processingLocation: new FormControl('', Validators.required),
-      // changeBack: new FormControl('', Validators.required),
-      // dateFrom: new FormControl(''),
-      // dateEnd: new FormControl(''),
       dateRange: new FormControl('')
     });
   }
@@ -127,23 +293,54 @@ export class ReportingComponent implements OnInit {
     });
   }
 
+  buildQuery(form: FormGroup) {
+    const queryObj = {};
+    queryObj['_include:recurse'] = '*';
+    if (form.value.department) {
+      queryObj['patient:Patient.workplace'] = form.value.department;
+    }
+    if (form.value.region) {
+      queryObj['organization:Organization.name'] = form.value.department;
+    }
+  }
+
   export() {
-    if (this.reportingFormGroup.value.dataSet === 'Service Request') {
-      this.exportToCSV(this.serviceRequestData);
+    let assessmentCode = '';
+    if (this.reportingFormGroup.get('assesmentCat').value !== null) {
+      assessmentCode = this.reportingFormGroup.get('assesmentCat').value;
+    } else {
+      if (this.reportingFormGroup.get('assesmentType').value !== null) {
+        assessmentCode = this.reportingFormGroup.get('assesmentType').value;
+      } else {
+        if (this.reportingFormGroup.get('psohpService').value !== null) {
+          assessmentCode = this.reportingFormGroup.get('psohpService').value;
+        }
+      }
     }
-    if (this.reportingFormGroup.value.dataSet === 'Care Plan') {
-      this.staffService.fetchAllCarePlans().subscribe(data => {
-        data['entry'].forEach(element => {
-          this.carePlanList.push(element.resource);
-        });
-        this.processCarePlan();
+    this.staffService.getSampleEpisodeOfCareAndRelatedData('14654').subscribe(data => {
+      data['entry'].forEach(element => {
+        const resource = element.resource;
+        console.log(resource);
+        if (resource.resourceType === 'Organization') {
+        }
       });
-    }
-    if (this.reportingFormGroup.value.dataSet === 'Diagnostics Test' ||
-    this.reportingFormGroup.value.dataSet === 'Consultation' ||
-    this.reportingFormGroup.value.dataSet === 'Medical Information') {
-      this.processProcedureRequestData(this.reportingFormGroup.value.dataSet);
-    }
+    });
+    // if (this.reportingFormGroup.value.dataSet === 'Service Request') {
+    //   this.exportToCSV(this.serviceRequestData);
+    // }
+    // if (this.reportingFormGroup.value.dataSet === 'Care Plan') {
+    //   this.staffService.fetchAllCarePlans().subscribe(data => {
+    //     data['entry'].forEach(element => {
+    //       this.carePlanList.push(element.resource);
+    //     });
+    //     this.processCarePlan();
+    //   });
+    // }
+    // if (this.reportingFormGroup.value.dataSet === 'Diagnostics Test' ||
+    // this.reportingFormGroup.value.dataSet === 'Consultation' ||
+    // this.reportingFormGroup.value.dataSet === 'Medical Information') {
+    //   this.processProcedureRequestData(this.reportingFormGroup.value.dataSet);
+    // }
   }
 
   processCarePlan() {
@@ -312,6 +509,28 @@ export class ReportingComponent implements OnInit {
 
     const csvExporter = new ExportToCsv(options);
     csvExporter.generateCsv(data);
+  }
+
+  psohpChanged() {
+    const psohpValue = this.reportingFormGroup.get('psohpService').value;
+    const temp = this.psophNext.filter(p => p.type === psohpValue).map(item => item.value);
+    this.assesmentTypeList = temp;
+    this.assesmentCatList = [];
+    // reset
+    this.reportingFormGroup.patchValue({assesmentType: null});
+    this.reportingFormGroup.patchValue({assesmentCat: null});
+  }
+
+  assessTypeChanged() {
+    const assesTypeValue = this.reportingFormGroup.get('assesmentType').value;
+    const temp = this.typeNext.filter(p => p.type === assesTypeValue).map(item => item.value);
+    this.assesmentCatList = temp;
+    // reset
+    this.reportingFormGroup.patchValue({assesmentCat: null});
+  }
+
+  assessCATChanged() {
+    const assesCATValue = this.reportingFormGroup.get('assesmentCat').value;
   }
 
 }

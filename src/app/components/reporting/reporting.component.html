@@ -31,12 +31,31 @@
 
           <div class="row">
             <div class="col">
-              <label for="all">All</label>
-              <input type="text" name="all" id="all" formControlName="all" class="form-control">
+                <label for="psohpService">PSOHP Service</label>
+                <select class="form-control" formControlName="psohpService" id="psohpService" (change)="psohpChanged()">
+                    <option value="">(Select)</option>
+                    <option *ngFor="let item of psohpList" [value]="item.value">
+                        {{item.text}}
+                    </option>
+                </select>
             </div>
             <div class="col">
-              <label for="psohp">PSOHP</label>
-              <input type="text" name="psohp" id="psohp" formControlName="psohp" class="form-control">
+                <label for="assesmentType">Assesment Type</label>
+                <select class="form-control" formControlName="assesmentType" id="assesmentType" (change)="assessTypeChanged()">
+                    <option value="">(Select)</option>
+                    <option *ngFor="let item of assesmentTypeList" [value]="item.value">
+                        {{item.text}}
+                    </option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="assesmentCat">Assesment CAT</label>
+                <select class="form-control" formControlName="assesmentCat" id="assesmentCat" (change)="assessCATChanged()">
+                    <option value="">(Select)</option>
+                    <option *ngFor="let item of assesmentCatList" [value]="item.value">
+                        {{item.text}}
+                    </option>
+                </select>
             </div>
           </div>
 
@@ -50,17 +69,6 @@
               </select>
             </div>
             <div class="col">
-              <label for="psohpType">Type</label>
-              <select name="psohpType" id="psohpType" formControlName="psohpType" class="form-control">
-              <option *ngFor="let psohpType of psohpTypes">
-                <span>{{psohpType}}</span>
-              </option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col">
               <label for="department">Department</label>
               <select name="department" id="department" formControlName="department" class="form-control">
               <option *ngFor="let department of clientDepartments">
@@ -68,6 +76,9 @@
               </option>
               </select>
             </div>
+          </div>
+
+          <div class="row">
             <div class="col">
               <label for="status">Status</label>
               <select name="status" id="status" formControlName="status" class="form-control">
@@ -76,14 +87,15 @@
               </option>
               </select>
             </div>
+            <div class="col">
+              <label for="milestone">Milestone</label>
+              <select name="milestone" id="milestone" formControlName="milestone" class="form-control">
+              <option *ngFor="let milestone of milestones">
+                <span>{{milestone}}</span>
+              </option>
+              </select>
+            </div>
           </div>
-
-          <!-- <label for="assignTo">Assign To</label>
-          <select name="assignTo" id="assignTo" formControlName="assignTo" class="form-control" required>
-            <option *ngFor="let practitioner of practitioners" [value]="practitioner.id">
-              <span *ngFor="let name of practitioner.name">{{name.given}} {{name.family}} </span>
-            </option>
-          </select> -->
 
         </div>
   
