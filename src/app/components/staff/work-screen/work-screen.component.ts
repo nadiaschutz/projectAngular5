@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-
+import * as moment from 'moment';
 @Component({
   selector: 'app-work-screen',
   templateUrl: './work-screen.component.html',
@@ -29,13 +29,13 @@ export class WorkScreenComponent implements OnInit {
   showChecklistForm = false;
   showSelectionOfDocsForm = false;
   showShowDocListField = false;
-  showStatusFormGroup = false;
+  showMilestoneFormGroup = false;
   taskFormGroup: FormGroup;
   noteFormGroup: FormGroup;
   docFormGroup: FormGroup;
   checkListItemGroup: FormGroup;
   selectionOfDocsGroup: FormGroup;
-  statusFormGroup: FormGroup;
+  milestoneFormGroup: FormGroup;
   currentProgressFormGroup: FormGroup;
   checkListDocObject;
   milestoneObject;
@@ -89,7 +89,15 @@ export class WorkScreenComponent implements OnInit {
   statusSelectionList = [
     { value: 'stopped', viewValue: 'WAITING' },
     { value: 'amended', viewValue: 'ACTION-REQUIRED' },
-    { value: 'in-progress', viewValue: 'IN-PROGRESS' },
+    { value: 'in-progress', viewValue: 'IN-PROGRESS' }
+  ];
+
+  milestoneSelectionList = [
+    { value: 'Validated', viewValue: 'Validated' },
+    { value: 'Assigned', viewValue: 'Assigned' },
+    { value: 'Scheduled', viewValue: 'Scheduled' },
+    { value: 'Work-Completed', viewValue: 'Work-Completed' },
+    { value: 'Closed', viewValue: 'Closed' }
   ];
 
   constructor(
@@ -103,6 +111,7 @@ export class WorkScreenComponent implements OnInit {
 
   ngOnInit() {
 
+    this.enableMilestoneFormGroup();
 
     this.currentProgressFormGroup = this.formBuilder.group({
       currentProgress: new FormControl('')
@@ -371,6 +380,7 @@ export class WorkScreenComponent implements OnInit {
   sortHistory() {
     this.historyToDisplay.sort(function(a, b) {
       if (a['lastUpdated'] && b['lastUpdated']) {
+        console.log(typeof(new Date(b['lastUpdated']).getTime()));
         return (
           new Date(b['lastUpdated']).getTime() -
           new Date(a['lastUpdated']).getTime()
@@ -408,6 +418,7 @@ export class WorkScreenComponent implements OnInit {
 
   processQuestionnaireResponseForSummary(questionnaireResponse) {
     this.summary['serviceRequestId'] = questionnaireResponse['id'];
+    this.summary['serviceRequestSubmittedDate'] = questionnaireResponse['meta']['lastUpdated'];
     questionnaireResponse.item.forEach(item => {
       if (item['linkId'] === 'PSOHPSERV') {
         for (const answer of item['answer']) {
@@ -654,42 +665,41 @@ export class WorkScreenComponent implements OnInit {
       );
   }
 
-  enableStatusFormGroup() {
-    this.showStatusFormGroup = !this.showStatusFormGroup;
-    this.statusFormGroup = this.formBuilder.group({
+  enableMilestoneFormGroup() {
+    // this.showMilestoneFormGroup = !this.showMilestoneFormGroup;
+    this.milestoneFormGroup = this.formBuilder.group({
       status: new FormControl(''),
       statusNote: new FormControl('')
     });
   }
 
-  changeStatusToSelected() {
+  changeMilestoneToSelected() {
     const itemAnswer = new FHIR.Answer();
-    const itemTime = new FHIR.Answer();
-    const itemReason = new FHIR.Answer();
-
-    const selectedStatus = this.statusFormGroup.get('status').value;
-    this.milestoneForDisplay = selectedStatus;
-    itemTime.valueDate = this.utilService.getCurrentDate();
-    itemReason.valueString = this.statusFormGroup.get('statusNote').value;
+    const dateTime = moment();
+    const selectedStatus = this.milestoneFormGroup.get('status').value;
     this.milestoneObject['item'].forEach(element => {
-      if (element['text'] === selectedStatus) {
-        itemAnswer.valueBoolean = true;
-
-        element['answer'] = [];
-        element['answer'][0] = itemAnswer;
-        element['answer'][1] = itemTime;
-        element['answer'][2] = itemReason;
+      if (element['linkId'] === selectedStatus) {
+        if (!element['text']) {
+          element['text'] = '';
+        }
+        if (!element['answer']) {
+          element['answer'] = [];
+          itemAnswer.valueDateTime = dateTime.format();
+          element['answer'].push(itemAnswer);
+        }
+        if (element['answer']) {
+          element['answer'].forEach(timeFound => {
+            if (timeFound['valueDateTime']) {
+              timeFound['valueDateTime'] = dateTime.format();
+            }
+          });
+        }
+        element['text'] = this.milestoneFormGroup.get('statusNote').value;
         console.log('matched', element['answer']);
       }
-      if (element['text'] !== selectedStatus) {
-        element['answer'] = [];
-        // itemAnswer.valueBoolean = false;
-        // element['answer'][0] = itemAnswer;
-        // element['answer'][1] = itemTime;
-        console.log('unmatched', element['answer']);
-      }
+
     });
-    this.showStatusFormGroup = !this.showStatusFormGroup;
+    this.showMilestoneFormGroup = !this.showMilestoneFormGroup;
     this.staffService
       .updateStatusList(
         this.milestoneObject['id'],
@@ -698,7 +708,44 @@ export class WorkScreenComponent implements OnInit {
       .subscribe(data => {
         console.log(data);
         this.milestoneObject = data;
+        // console.log(this.sortMilestone());
+        this.sortMilestone();
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.milestoneFormGroup.patchValue({status: null});
+        this.milestoneFormGroup.patchValue({statusNote: null});
       });
+  }
+
+  sortMilestone() {
+    if (this.milestoneObject) {
+      const arr = [];
+      this.milestoneObject.item.forEach(element => {
+        if (element.answer) {
+          arr.push(element);
+        }
+      });
+      console.log(arr);
+      arr.sort(function(a, b) {
+        if (a['answer'] && b['answer']) {
+          if (a['answer'][0]['valueDateTime'] && b['answer'][0]['valueDateTime']) {
+            return (
+              new Date(b['answer'][0]['valueDateTime']).getTime() -
+              new Date(a['answer'][0]['valueDateTime']).getTime()
+            );
+          }
+        }
+      });
+
+      const temp = arr[0];
+      const timeVariable = this.utilService.convertUTCForDisplay(arr[0]['answer'][0]['valueDateTime']);
+      temp['displayTime'] = timeVariable;
+     this.milestoneForDisplay = temp;
+
+    }
   }
 
   captureStatusReasonInput(event) {
@@ -1068,16 +1115,7 @@ export class WorkScreenComponent implements OnInit {
         } else {
           data['entry'].forEach(entry => {
             this.milestoneObject = entry['resource'];
-            if (this.milestoneObject['item']) {
-              for (const item of this.milestoneObject['item']) {
-                if (item['answer']) {
-                  if (item['answer'][0]['valueBoolean'] === true) {
-                    console.log(item['text']);
-                    this.milestoneForDisplay = item['text'];
-                  }
-                }
-              }
-            }
+            this.sortMilestone();
           });
         }
       }
@@ -1089,45 +1127,31 @@ export class WorkScreenComponent implements OnInit {
     const statusReference = new FHIR.Reference();
     const statusContextReference = new FHIR.Reference();
     const statusIdentifier = new FHIR.Identifier();
-    const statusItemOne = new FHIR.Item();
-    const statusItemTwo = new FHIR.Item();
-    const statusItemThree = new FHIR.Item();
-    const statusItemFour = new FHIR.Item();
-    const statusItemFive = new FHIR.Item();
-    const statusItemSix = new FHIR.Item();
-    const statusItemSeven = new FHIR.Item();
+    const milestoneItemOne = new FHIR.Item();
+    const milestoneItemTwo = new FHIR.Item();
+    const milestoneItemThree = new FHIR.Item();
+    const milestoneItemFour = new FHIR.Item();
+    const milestoneItemFive = new FHIR.Item();
+    const milestoneItemSix = new FHIR.Item();
     const statusItemAnswer = new FHIR.Answer();
-    const receivedAnswer = new FHIR.Answer();
-    statusItemAnswer.valueBoolean = false;
+    statusItemAnswer.valueCoding = new FHIR.Coding();
 
-    statusItemOne.linkId = '1';
-    statusItemOne.text = 'Validated';
-    // statusItemOne.answer = [statusItemAnswer];
+    milestoneItemOne.linkId = 'Validated';
 
-    statusItemTwo.linkId = '2';
-    statusItemTwo.text = 'Scheduled';
-    // statusItemTwo.answer = [statusItemAnswer];
+    milestoneItemTwo.linkId = 'Scheduled';
 
-    statusItemThree.linkId = '3';
-    statusItemThree.text = 'Assigned';
-    // statusItemThree.answer = [statusItemAnswer];
+    milestoneItemThree.linkId = 'Assigned';
 
-    statusItemFour.linkId = '4';
-    statusItemFour.text = 'Work-Completed';
-    // statusItemFour.answer = [statusItemAnswer];
+    milestoneItemFour.linkId = 'Work-Completed';
 
-    statusItemFive.linkId = '5';
-    statusItemFive.text = 'Closed';
-    // statusItemFive.answer = [statusItemAnswer];
+    milestoneItemFive.linkId = 'Closed';
 
-    statusItemSix.linkId = '0';
-    statusItemSix.text = 'Received';
-    statusItemAnswer.valueBoolean = true;
-    statusItemSix.answer = [statusItemAnswer];
-
-    // statusItemSix.answer = [statusItemAnswer];
-
-
+    milestoneItemSix.linkId = 'Received';
+    milestoneItemSix.text = 'Received at ' + this.summary['serviceRequestSubmittedDate'];
+    statusItemAnswer.valueCoding.code = this.utilService.getCurrentDateTime();
+    statusItemAnswer.valueCoding.system = 'https://bcip.smilecdr.com/fhir/WorkOrderMlestone';
+    statusItemAnswer.valueCoding.display = 'Received at ' + this.utilService.getCurrentDateTime();
+    milestoneItemSix.answer = [statusItemAnswer];
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     statusIdentifier.value = 'STATUS';
@@ -1138,12 +1162,12 @@ export class WorkScreenComponent implements OnInit {
     statusQResponse.status = 'in-progress';
     statusQResponse.context = statusContextReference;
     statusQResponse.item = [
-      statusItemOne,
-      statusItemTwo,
-      statusItemThree,
-      statusItemFour,
-      statusItemFive,
-      statusItemSix
+      milestoneItemOne,
+      milestoneItemTwo,
+      milestoneItemThree,
+      milestoneItemFour,
+      milestoneItemFive,
+      milestoneItemSix
     ];
 
     console.log(statusQResponse);
@@ -1168,11 +1192,11 @@ export class WorkScreenComponent implements OnInit {
               this.checkDocListStatus();
 
               // this.determineWorkOrderStatus(this.checkListDocObject);
-              for (const status of this.statusSelectionList) {
-                if (status['value'] === this.checkListDocObject['status']) {
-                  this.displayDocStatus = status['viewValue'];
-                }
-              }
+              // for (const status of this.statusSelectionList) {
+              //   if (status['value'] === this.checkListDocObject['status']) {
+              //     this.displayDocStatus = status['viewValue'];
+              //   }
+              // }
               if (!this.checkListDocObject['item']) {
                 this.checkListDocObject['item'] = [];
               }
@@ -1530,7 +1554,7 @@ export class WorkScreenComponent implements OnInit {
       itemToAdd.text = this.checkListItemGroup.get('document').value;
       itemBoolAnswer.valueBoolean = false;
       itemToAdd.answer = [itemBoolAnswer];
-      this.checkListDocObject['status'] = 'stopped';
+      // this.checkListDocObject['status'] = 'stopped';
       this.checkListDocObject['item'].push(itemToAdd);
       this.staffService
         .updateDocumentsChecklist(
@@ -1541,11 +1565,11 @@ export class WorkScreenComponent implements OnInit {
           if (data) {
             console.log('UPDATED', data);
             this.checkListDocObject = data;
-            for (const status of this.statusSelectionList) {
-              if (status['value'] === this.checkListDocObject['status']) {
-                this.displayDocStatus = status['viewValue'];
-              }
-            }
+            // for (const status of this.statusSelectionList) {
+            //   if (status['value'] === this.checkListDocObject['status']) {
+            //     this.displayDocStatus = status['viewValue'];
+            //   }
+            // }
             this.showChecklistForm = !this.showChecklistForm;
           }
         });
@@ -1576,7 +1600,7 @@ export class WorkScreenComponent implements OnInit {
       if (itemFound['linkId'] === item['linkId']) {
         item['answer'][1] = docAnswer;
         itemFound = item;
-        this.checkListDocObject['status'] = 'amended';
+        // this.checkListDocObject['status'] = 'amended';
         this.staffService
           .updateDocumentsChecklist(
             this.checkListDocObject['id'],
@@ -1586,11 +1610,11 @@ export class WorkScreenComponent implements OnInit {
             if (data) {
               console.log('UPDATED', data);
               this.checkListDocObject = data;
-              for (const status of this.statusSelectionList) {
-                if (status['value'] === this.checkListDocObject['status']) {
-                  this.displayDocStatus = status['viewValue'];
-                }
-              }
+              // for (const status of this.statusSelectionList) {
+              //   if (status['value'] === this.checkListDocObject['status']) {
+              //     this.displayDocStatus = status['viewValue'];
+              //   }
+              // }
             }
           },
           error => {
@@ -1651,25 +1675,6 @@ export class WorkScreenComponent implements OnInit {
       window.open(fileLink.href);
     }
   }
-
-  // determineWorkOrderStatus(data) {
-  //   console.log(data);
-  //   let counter = 0;
-  //   const itemList = data['item'];
-  //   const numberOfItems = itemList.length;
-  //   itemList.forEach(item => {
-  //     if (item['answer'].length > 1 && item['answer'][0]['valueBoolean'] === true) {
-  //       console.log(item);
-  //     } else {
-  //       counter++;
-  //     }
-  //   });
-  //   if (counter > 1) {
-  //     this.displayDocStatus = 'ACTION-REQURIED';
-  //   } else {
-  //     this.displayDocStatus = 'WAITING';
-  //   }
-  // }
 
   /* Document Functions (end) */
 

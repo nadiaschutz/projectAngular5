@@ -51,6 +51,10 @@ export class UtilService {
     return formatDate(new Date(dateTime), 'dd-MM-yyyy, HH:mm:ss', 'en');
   }
 
+  convertUTCForDisplay(dateTime) {
+    return formatDate(new Date(dateTime), 'dd-MM-yyyy T HH:mm:ss', 'en');
+  }
+
   getPatientJsonObjectFromPatientFhirObject(patientFHIR) {
     const patientJSON = {};
     patientJSON['name'] = this.getNameFromResource(patientFHIR);

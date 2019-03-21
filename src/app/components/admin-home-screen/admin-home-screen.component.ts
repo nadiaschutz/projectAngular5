@@ -343,21 +343,8 @@ export class AdminHomeScreenComponent implements OnInit {
   }
 
   onSubmit(form: FormGroup) {
-    // console.log('Valid?', form.valid); // true or false
-    // form.value is an obj with the key's defined as per form init above
+
     console.log('Form Data submitted =>', form.value);
-    // https://bcip.smilecdr.com/fhir-request/QuestionnaireResponse?
-    //  identifier=SERVREQ&
-    //  patient.family=smith&
-    //  patient.given=john&
-    //  patient.birthdate=1972-01-02&
-    //  patient.identifier=https://bcip.smilecdr.com/fhir/employeeid|123356755&
-    //  patient.workplace=Canadian%20Coast%20Guard%20(CCG)&
-    //  patient.branch=Fort%20Simpson&
-    //  psohpAnswer=Health%20Assessment-PrePlacement-Cat%202%20(HACAT2)&
-    //  _id=13092&
-    //  context.date=ge2019-02-13&
-    //  context.date=le2019-02-13
 
     const queryObj = {};
     queryObj['_include:recurse'] = '*';
@@ -597,13 +584,7 @@ export class AdminHomeScreenComponent implements OnInit {
   }
 
   getAndSetLocations() {
-    // this.adminHomeScreenService.getPsophServiceFromQR('TEST1')
-    //   .subscribe(questionnaire => {
-    //     console.log('questionnaire resource => ', questionnaire);
-    //     this.psohpList = this.extractPsophListFromQuestionnaire(questionnaire);
-    //   },
-    //   (err) => console.log('Employee Department list error', err));
-
+    
     this.datePickerConfig = Object.assign(
       {},
       { containerClass: 'theme-dark-blue', dateInputFormat: this.DATE_FORMAT, rangeInputFormat: this.DATE_FORMAT }
@@ -648,16 +629,9 @@ export class AdminHomeScreenComponent implements OnInit {
       this.serviceRequestList.push(temp);
     });
 
-    // console.log(this.serviceRequestList);
   }
 
   mapTaskRenderingList() {
-    // caremanager == task owner (pracitioner)
-    // id == task id
-    // title === description of task prop
-    // insructons = task.note[0].text
-    // status == task's status
-    // authoredon === task's authoredon
 
     this.tasksList.forEach(item => {
       const temp = {};
