@@ -151,9 +151,6 @@ export class ReportingComponent implements OnInit {
       const carePlanResultList = [];
       this.carePlanList.forEach(carePlan => {
         const episodeOfCareId = this.utilService.getIdFromReference(carePlan.context.reference);
-        if (carePlan.identifier[0].value === 'HACAT1') {
-          console.log(carePlan.identifier[0].value);
-        }
         carePlan.activity.forEach(activity => {
           if (activity.detail.status === 'completed' && activity.progress) {
             const temp = {};
