@@ -803,6 +803,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         // formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
         // formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
         formField['enableWhen'] = el.enableWhen ? enableWhen : false;
+        formField['required'] = el.required ? true : false;
         formField['value'] = null;
         formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
         return formField;
@@ -820,6 +821,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           placeholder: 'datepicker',
           name: el.linkId,
           enableWhen: el.enableWhen ? enableWhen : false,
+          required: el.required ? true : false,
           // enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
           // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
@@ -831,10 +833,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         if (el.code[0].code === 'AUTHOR') {
           const formField = this.textInput(el);
           formField['readonly'] = true;
+          formField['required'] = el.required ? true : false;
           return formField;
         } else if (el.code[0].code === 'DATECR') {
           const formField = this.textInput(el);
           formField['readonly'] = true;
+          formField['required'] = el.required ? true : false;
           return formField;
         } else if (el.code[0].code === 'USERDEPT') {
           if (this.userRole === 'clientdept') {
@@ -851,6 +855,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               options: options,
               flag: el.enableWhen ? false : true,
               placeholder: 'Select an option',
+              required: el.required ? true : false,
               // validation: el.enableWhen ? [Validators.required] : null,
               validation: el.enableWhen ? undefined : [Validators.required],
               // validation: [Validators.required],
@@ -861,6 +866,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           } else {
             const formField = this.textInput(el);
             formField['readonly'] = true;
+            formField['required'] = el.required ? true : false;
             return formField;
           }
 
@@ -869,7 +875,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           const enableWhen = this.populateEnableWhenObj(el);
           formField['placeholder'] = 'type your text';
           formField['validation'] = el.enableWhen ? undefined : [Validators.required];
-
+          formField['required'] = el.required ? true : false;
           formField['enableWhen'] = el.enableWhen ? enableWhen : false;
           formField['value'] = null;
 
@@ -887,7 +893,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         const formField = this.textInput(el);
         formField['placeholder'] = 'type your email';
         formField['validation'] = el.enableWhen ? [Validators.email] : [Validators.required, Validators.email];
-
+        formField['required'] = el.required ? true : false;
         formField['enableWhen'] = el.enableWhen ? enableWhen : false;
         formField['value'] = null;
 
@@ -909,7 +915,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         // formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
         // formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
         formField['value'] = null;
-
+        formField['required'] = el.required ? true : false;
         formField['flag'] = el.enableWhen ? false : true;
 
         formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
@@ -947,6 +953,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             flag: el.enableWhen ? false : true,
             placeholder: 'Select an option',
             validation: undefined,
+            required: el.required ? true : false,
             // validation: [Validators.required],
             value: null,
             elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
@@ -963,6 +970,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             flag: el.enableWhen ? false : true,
             placeholder: 'Select an option',
             validation: el.enableWhen ? undefined : [Validators.required],
+            required: el.required ? true : false,
             // validation: [Validators.required],
             value: null,
             elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
@@ -976,12 +984,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
             return {
               type: 'checkbox',
-              label: el.text + ' (disabled)',
+              label: el.text + ' (Disabled)',
               name: el.linkId,
               typeElem: el.code[1].code,
               elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
               value: el.enableWhen ? null : false,
-              readonly: true
+              disabled: true
             };
 
           } else if (this.dependentsList.length > 0) {
@@ -994,7 +1002,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               typeElem: el.code[1].code,
               elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
               value: el.enableWhen ? null : false,
-              readonly: false
+              disabled: false
             };
           }
         } else {
@@ -1186,20 +1194,24 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               // console.log(elemOfConfig);
               elemOfConfig.elementClass = 'enable-when-show';
               elemOfConfig.flag = true;
-              if (elemOfConfig.typeElem === 'PHONE') {
-                console.log(elemOfConfig.type);
-                this.form.setRequired(elemOfConfig.name, [
-                  Validators.required,
-                  Validators.pattern(
-                    '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-                  )
-                ]);
-              } else if (elemOfConfig.typeElem === 'EMAIL') {
-                console.log(elemOfConfig.type);
-                this.form.setRequired(elemOfConfig.name, [Validators.required, Validators.email]);
-              } else {
+              if (elemOfConfig.typeElem !== 'BOOL') {
 
-                this.form.setRequired(elemOfConfig.name, [Validators.required]);
+
+                if (elemOfConfig.typeElem === 'PHONE') {
+                  console.log(elemOfConfig.type);
+                  this.form.setRequired(elemOfConfig.name, [
+                    Validators.required,
+                    Validators.pattern(
+                      '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
+                    )
+                  ]);
+                } else if (elemOfConfig.typeElem === 'EMAIL') {
+                  console.log(elemOfConfig.type);
+                  this.form.setRequired(elemOfConfig.name, [Validators.required, Validators.email]);
+                } else {
+
+                  this.form.setRequired(elemOfConfig.name, [Validators.required]);
+                }
               }
               return;
             } else {

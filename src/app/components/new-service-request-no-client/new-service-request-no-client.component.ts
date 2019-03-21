@@ -27,6 +27,7 @@ import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
 import { CustomValidator } from '../dynamic-forms/custom-validator';
 import { FileDetector } from 'protractor';
 import { ValueAddress } from 'src/app/interface/organization';
+import { e } from '@angular/core/src/render3';
 
 // const httpOptions = {
 //   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -38,7 +39,8 @@ class TextInput {
       type: event.type,
       label: event.label,
       inputType: event.inputType,
-      name: event.name
+      name: event.name,
+      typeElem: event.typeElem,
     };
   }
 }
@@ -49,7 +51,8 @@ class SelectField {
       type: event.type,
       label: event.label,
       inputType: event.inputType,
-      name: event.name
+      name: event.name,
+      typeElem: event.typeElem,
     };
   }
 }
@@ -284,6 +287,7 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
             placeholder: 'type your phone',
             name: el.linkId,
             value: '',
+            required: el.required ? true : false,
             validation: [Validators.required, Validators.pattern(
               '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
             )]
@@ -294,6 +298,7 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
           const formField = this.textInput(el);
           formField['placeholder'] = 'type your email';
           formField['validation'] = [Validators.required, Validators.email];
+          formField['required'] = el.required ? true : false;
           return formField;
 
         } else if (el.text === 'Name of the Requester') {
@@ -301,6 +306,7 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
           const formField = this.textInput(el);
           formField['value'] = 'null';
           formField['placeholder'] = 'type your text';
+          formField['required'] = el.required ? true : false;
           formField['validation'] = [
             Validators.required,
             Validators.minLength(4)
@@ -313,6 +319,7 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
             inputType: 'text',
             placeholder: 'type your text',
             name: el.linkId,
+            required: el.required ? true : false,
             value: '',
             validation: [Validators.required, Validators.minLength(4)]
           };
@@ -327,6 +334,7 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
           const formField = this.selectField(el);
           formField['value'] = '';
           formField['options'] = this.departmentList;
+          formField['required'] = el.required ? true : false;
           return formField;
 
         } else {
@@ -335,6 +343,7 @@ export class NewServiceRequestNoClientComponent implements OnInit, AfterViewInit
             label: el.text,
             name: el.linkId,
             options: options,
+            required: el.required ? true : false,
             placeholder: 'Select an option',
             validation: [Validators.required],
             value: ''

@@ -9,8 +9,8 @@ import { FieldConfig } from './field-config.interface';
  
   <div
   [formGroup]="group" [class]='config.elementClass'>
-
-  <label class="label-name">{{ config.label }}</label>
+  <label class="label-name" *ngIf="config.required">{{ config.label }} (Required)</label>
+  <label class="label-name" *ngIf="!config.required">{{ config.label }}</label>
   <input
   class="form-control field-box-name"
   [type]="config.type"
