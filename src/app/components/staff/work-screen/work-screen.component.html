@@ -60,7 +60,7 @@
     <rect [attr.width]="progressBarValue" height="1" fill="#398ef2"></rect>
   </svg> -->
 
-  <div *ngIf="!milestoneForDisplay">
+  <div *ngIf="!milestoneForDisplay || milestoneForDisplay === ''">
     <div class="vefs-milestone-wrapper">
       <div class="milestone-container">
 
@@ -111,7 +111,7 @@
     </div>
   </div>
 
-  <div *ngIf="milestoneForDisplay === 'Validated'">
+  <div *ngIf="milestoneForDisplay === 'Received'">
     <div class="vefs-milestone-wrapper">
       <div class="milestone-container">
 
@@ -125,13 +125,16 @@
             <div class="milestones milestone__0">
               <div class="dot completed colored"></div>
             </div>
-            <div class="milestones milestone__25">
+            <div class="milestones milestone__20">
               <div class="dot"></div>
             </div>
-            <div class="milestones milestone__50">
+            <div class="milestones milestone__40">
               <div class="dot"></div>
             </div>
-            <div class="milestones milestone__75">
+            <div class="milestones milestone__60">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__80">
               <div class="dot"></div>
             </div>
             <div class="milestones milestone__100">
@@ -142,15 +145,75 @@
 
         <div class="label-container">
           <div class="milestones milestone__0">
-            <div class="label colored">Validated</div>
+            <div class="label colored">Received</div>
           </div>
-          <div class="milestones milestone__25">
+          <div class="milestones milestone__20">
+            <div class="label">Validated</div>
+          </div>
+          <div class="milestones milestone__40">
             <div class="label">Assigned</div>
           </div>
-          <div class="milestones milestone__50">
+          <div class="milestones milestone__60">
             <div class="label">Scheduled</div>
           </div>
-          <div class="milestones milestone__75">
+          <div class="milestones milestone__80">
+            <div class="label">Work Completed</div>
+          </div>
+          <div class="milestones milestone__100">
+            <div class="label">Closed</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="milestoneForDisplay === 'Validated'">
+    <div class="vefs-milestone-wrapper">
+      <div class="milestone-container">
+
+        <div class="chart-container">
+          <div class="line-container">
+            <div class="line-status"></div>
+            <div class="line-status left" style="width: 20%;"></div>
+          </div>
+
+          <div class="dot-container">
+            <div class="milestones milestone__0">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__20">
+              <div class="dot completed colored"></div>
+            </div>
+            <div class="milestones milestone__40">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__60">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__80">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__100">
+              <div class="dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="label-container">
+          <div class="milestones milestone__0">
+            <div class="label">Received</div>
+          </div>
+          <div class="milestones milestone__20">
+            <div class="label colored">Validated</div>
+          </div>
+          <div class="milestones milestone__40">
+            <div class="label">Assigned</div>
+          </div>
+          <div class="milestones milestone__60">
+            <div class="label">Scheduled</div>
+          </div>
+          <div class="milestones milestone__80">
             <div class="label">Work Completed</div>
           </div>
           <div class="milestones milestone__100">
@@ -169,20 +232,23 @@
         <div class="chart-container">
           <div class="line-container">
             <div class="line-status"></div>
-            <div class="line-status left" style="width: 25%;"></div>
+            <div class="line-status left" style="width: 40%;"></div>
           </div>
 
           <div class="dot-container">
             <div class="milestones milestone__0">
-              <div class="dot completed colored"></div>
-            </div>
-            <div class="milestones milestone__25">
-              <div class="dot completed colored"></div>
-            </div>
-            <div class="milestones milestone__50">
               <div class="dot"></div>
             </div>
-            <div class="milestones milestone__75">
+            <div class="milestones milestone__20">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__40">
+              <div class="dot completed colored"></div>
+            </div>
+            <div class="milestones milestone__60">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__80">
               <div class="dot"></div>
             </div>
             <div class="milestones milestone__100">
@@ -193,15 +259,18 @@
 
         <div class="label-container">
           <div class="milestones milestone__0">
-            <div class="label colored">Validated</div>
+            <div class="label">Received</div>
           </div>
-          <div class="milestones milestone__25">
+          <div class="milestones milestone__20">
+            <div class="label">Validated</div>
+          </div>
+          <div class="milestones milestone__40">
             <div class="label colored">Assigned</div>
           </div>
-          <div class="milestones milestone__50">
+          <div class="milestones milestone__60">
             <div class="label">Scheduled</div>
           </div>
-          <div class="milestones milestone__75">
+          <div class="milestones milestone__80">
             <div class="label">Work Completed</div>
           </div>
           <div class="milestones milestone__100">
@@ -220,20 +289,23 @@
         <div class="chart-container">
           <div class="line-container">
             <div class="line-status"></div>
-            <div class="line-status left" style="width: 50%;"></div>
+            <div class="line-status left" style="width: 60%;"></div>
           </div>
 
           <div class="dot-container">
             <div class="milestones milestone__0">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__20">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__40">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__60">
               <div class="dot completed colored"></div>
             </div>
-            <div class="milestones milestone__25">
-              <div class="dot completed colored"></div>
-            </div>
-            <div class="milestones milestone__50">
-              <div class="dot completed colored"></div>
-            </div>
-            <div class="milestones milestone__75">
+            <div class="milestones milestone__80">
               <div class="dot"></div>
             </div>
             <div class="milestones milestone__100">
@@ -244,15 +316,18 @@
 
         <div class="label-container">
           <div class="milestones milestone__0">
-            <div class="label colored">Validated</div>
+            <div class="label">Received</div>
           </div>
-          <div class="milestones milestone__25">
-            <div class="label colored">Assigned</div>
+          <div class="milestones milestone__20">
+            <div class="label">Validated</div>
           </div>
-          <div class="milestones milestone__50">
+          <div class="milestones milestone__40">
+            <div class="label">Assigned</div>
+          </div>
+          <div class="milestones milestone__60">
             <div class="label colored">Scheduled</div>
           </div>
-          <div class="milestones milestone__75">
+          <div class="milestones milestone__80">
             <div class="label">Work Completed</div>
           </div>
           <div class="milestones milestone__100">
@@ -271,20 +346,23 @@
         <div class="chart-container">
           <div class="line-container">
             <div class="line-status"></div>
-            <div class="line-status left" style="width: 75%;"></div>
+            <div class="line-status left" style="width: 80%;"></div>
           </div>
 
           <div class="dot-container">
             <div class="milestones milestone__0">
-              <div class="dot completed colored"></div>
+              <div class="dot"></div>
             </div>
-            <div class="milestones milestone__25">
-              <div class="dot completed colored"></div>
+            <div class="milestones milestone__20">
+              <div class="dot"></div>
             </div>
-            <div class="milestones milestone__50">
-              <div class="dot completed colored"></div>
+            <div class="milestones milestone__40">
+              <div class="dot"></div>
             </div>
-            <div class="milestones milestone__75">
+            <div class="milestones milestone__60">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__80">
               <div class="dot completed colored"></div>
             </div>
             <div class="milestones milestone__100">
@@ -295,15 +373,18 @@
 
         <div class="label-container">
           <div class="milestones milestone__0">
-            <div class="label colored">Validated</div>
+            <div class="label">Received</div>
           </div>
-          <div class="milestones milestone__25">
-            <div class="label colored">Assigned</div>
+          <div class="milestones milestone__20">
+            <div class="label">Validated</div>
           </div>
-          <div class="milestones milestone__50">
-            <div class="label colored">Scheduled</div>
+          <div class="milestones milestone__40">
+            <div class="label">Assigned</div>
           </div>
-          <div class="milestones milestone__75">
+          <div class="milestones milestone__60">
+            <div class="label">Scheduled</div>
+          </div>
+          <div class="milestones milestone__80">
             <div class="label colored">Work Completed</div>
           </div>
           <div class="milestones milestone__100">
@@ -327,16 +408,19 @@
 
           <div class="dot-container">
             <div class="milestones milestone__0">
-              <div class="dot completed colored"></div>
+              <div class="dot"></div>
             </div>
-            <div class="milestones milestone__25">
-              <div class="dot completed colored"></div>
+            <div class="milestones milestone__20">
+              <div class="dot"></div>
             </div>
-            <div class="milestones milestone__50">
-              <div class="dot completed colored"></div>
+            <div class="milestones milestone__40">
+              <div class="dot"></div>
             </div>
-            <div class="milestones milestone__75">
-              <div class="dot completed colored"></div>
+            <div class="milestones milestone__60">
+              <div class="dot"></div>
+            </div>
+            <div class="milestones milestone__80">
+              <div class="document"></div>
             </div>
             <div class="milestones milestone__100">
               <div class="dot completed colored"></div>
@@ -346,16 +430,19 @@
 
         <div class="label-container">
           <div class="milestones milestone__0">
-            <div class="label colored">Validated</div>
+            <div class="label">Received</div>
           </div>
-          <div class="milestones milestone__25">
-            <div class="label colored">Assigned</div>
+          <div class="milestones milestone__20">
+            <div class="label">Validated</div>
           </div>
-          <div class="milestones milestone__50">
-            <div class="label colored">Scheduled</div>
+          <div class="milestones milestone__40">
+            <div class="label">Assigned</div>
           </div>
-          <div class="milestones milestone__75">
-            <div class="label colored">Work Completed</div>
+          <div class="milestones milestone__60">
+            <div class="label">Scheduled</div>
+          </div>
+          <div class="milestones milestone__80">
+            <div class="label">Work Completed</div>
           </div>
           <div class="milestones milestone__100">
             <div class="label colored">Closed</div>
@@ -366,10 +453,27 @@
     </div>
   </div>
 
+  <div class="row">
+    <div class="card summary-top-card">
+      <div class="card-body summary-card-body">
+        <div class="row">
+          <div class="col">
+            Service Request:  {{summary['psohpService']}}
+          </div>
+          <div class="col">
+            Employee: {{summary['clientName']}}
+          </div>
+          <!-- <div class="col">
+
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="row">
     <h6 class="col-4">History</h6>
-    <h6 class="col-5">Work List - Status: {{displayDocStatus}}</h6>
+    <h6 class="col-5">Work List</h6>
     <h6 class="col-3">Summary</h6>
   </div>
 
@@ -601,6 +705,7 @@
             Required Documents Checklist
           </div>
           <div class="card-text">
+            Status: {{displayDocStatus}}
             <div *ngIf="!showChecklistForm && checkListDocObject['item'].length === 0">
               Add a required document to this checklist
             </div>
@@ -660,11 +765,11 @@
                         Add checklist item
                       </button>
                     </div>
-                    <div class="col">
+                    <!-- <div class="col">
                       <button class="btn regular-button btn-file" [disabled]='!checkListItemGroup.valid' (click)='saveItemToQResponse()'>
                         Add checklist item
                       </button>
-                    </div>
+                    </div> -->
                   </div>
                 </section>
               </form>
@@ -773,13 +878,15 @@
       <div class="search-box">
         <div class="text-center update-section">
           <div *ngIf="enableWorkListUpdate">
-            <button class="btn special-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update
-              Work Progress</button>
+            <button class="btn special-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update TO DO List</button>
           </div>
           <div *ngIf="!enableWorkListUpdate">
-            <button class="btn regular-button function-buttons col-4 button-padding" (click)="enableWorkListUpdate = !enableWorkListUpdate">Cancel Changes</button>
-            <button class="btn regular-button function-buttons col-4 button-padding" (click)="updateHistoryForDisplay()">Save Changes</button>
-            <button class="btn regular-button function-buttons col-3 button-padding" (click)="redirectToCloseScreen()">Close Order</button>
+            <button class="btn regular-button function-buttons col-4 button-padding" (click)="cancelCarePlanUpdate()">Cancel
+              Changes</button>
+            <button class="btn regular-button function-buttons col-4 button-padding" (click)="saveCarePlan()">Save
+              Changes</button>
+            <!-- <button class="btn regular-button function-buttons col-3 button-padding" (click)="redirectToCloseScreen()">Close
+              Order</button> -->
           </div>
         </div>
 
@@ -789,7 +896,7 @@
             <table>
               <tr>
                 <td> <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)" [disabled]='enableWorkListUpdate'
-                    checked="{{item.value}}" id="i"></td>
+                     id="i"></td>
                 <td class="checklist-desc"> <span class="checklist-label">{{item.description}}</span></td>
 
               </tr>
@@ -911,8 +1018,8 @@
           <p class="card-text" *ngIf="summary.ohagOccupation">
             <strong>OHAG Occupation: </strong> {{summary.ohagOccupation}}
           </p>
-          <p class="card-text" *ngIf="summary.ohagEnvironmentalModifier">
-            <strong>OHAG Environmental Modifier: </strong> {{summary.ohagEnvironmentalModifier}}
+          <p class="card-text" *ngIf="summary.regionalOffice">
+            <strong>Regional Office for Processing: </strong> {{summary.ohagEnvironmentalModifier}}
           </p>
         </div>
       </div>

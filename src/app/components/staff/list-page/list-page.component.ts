@@ -31,6 +31,7 @@ export class ListPageComponent implements OnInit {
   activeTab = 'serviceRequest';
   selectAllEpisodesCheck = false;
   selectAllTasksCheck = false;
+  episodeOfCareWithCorrectQuestionnaireResponseId = [];
 
   constructor(
     private questionnaireService: QuestionnaireService,
@@ -163,7 +164,10 @@ export class ListPageComponent implements OnInit {
           );
           // Creating a Questionnaire Response List that can refer individual Questionnaire Response
           // item from an episode of Care id
-          this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
+          if (resource['identifier']['value'] === 'SERVREQ') {
+            this.questionnaireResponseList[associatedEpisodeOfCareId] = resource;
+            this.episodeOfCareWithCorrectQuestionnaireResponseId[associatedEpisodeOfCareId] = resource.id;
+          }
         }
         //   }
         // }
@@ -174,8 +178,9 @@ export class ListPageComponent implements OnInit {
     this.episodesOfCareList.forEach(episode => {
       const temp = {};
       temp['episodeOfCareId'] = episode['id'];
+      temp['questionnaireResponseId'] = this.episodeOfCareWithCorrectQuestionnaireResponseId[episode.id];
       temp['clientName'] = this.getClientName(episode['patient']['reference']);
-      temp['serviceAssessmentType'] = 'asd';
+      temp['serviceAssessmentType'] = this.getServiceAssessmentType(episode['id']);
       temp['clientDepartment'] = this.getClientDepartment(episode['id']);
       temp['daysInQueue'] = this.getDaysInQueue(episode['period']['start']);
       temp['status'] = episode['status'];
@@ -213,7 +218,7 @@ export class ListPageComponent implements OnInit {
   }
 
   getServiceAssessmentType(episodeOfCareId) {
-    return this.getQuestionnaireReponseItem(episodeOfCareId, 'PSOHP Service');
+    return this.getQuestionnaireResponseItemByLinkId(episodeOfCareId, 'PSOHPSERV');
   }
 
   getClientDepartment(episodeOfCareId) {
@@ -221,6 +226,25 @@ export class ListPageComponent implements OnInit {
       episodeOfCareId,
       'Submitting Department'
     );
+  }
+
+  getQuestionnaireResponseItemByLinkId(eocId, linkId) {
+    const questionnaireResponse = this.questionnaireResponseList[eocId];
+    let serviceName = '';
+    if (questionnaireResponse && questionnaireResponse.item) {
+      questionnaireResponse.item.forEach(item => {
+        if (item['linkId'] === linkId) {
+          for (const answer of item['answer']) {
+            if (answer['valueCoding']) {
+              serviceName = answer['valueCoding']['display'];
+            }
+          }
+        }
+      });
+    } else {
+      console.log(eocId);
+    }
+    return serviceName;
   }
 
   getQuestionnaireReponseItem(episodeOfCareId, itemText) {
@@ -421,18 +445,23 @@ export class ListPageComponent implements OnInit {
     }
   }
 
+
   getServiceTypeFromQuestionnaireResponse(questionnaireResponse) {
 
     let serviceType = '';
-    questionnaireResponse.item.forEach(item => {
-      if (item.text === 'PSOHP Service' || item.text === 'Assessment Type' || item.text === 'Assessment Category') {
-        const value = item.answer[1].valueString;
-        if (value.indexOf('(') >= 0) {
-          serviceType = value.substring(value.indexOf('(') + 1, value.indexOf(')'));
+    if (questionnaireResponse['item']) {
+      questionnaireResponse.item.forEach(item => {
+        if (item['linkId'] === 'PSOHPSERV') {
+          for (const answer of item['answer']) {
+            if (answer['valueCoding']) {
+              serviceType = answer['valueCoding']['code'];
+            }
+          }
         }
-      }
-    });
-    console.log(serviceType);
+      });
+    } else {
+      console.log('buggy one', questionnaireResponse);
+    }
     return serviceType;
 
   }
@@ -478,9 +507,10 @@ export class ListPageComponent implements OnInit {
                   console.log(error);
                 });
             }
-
           });
         });
+    } else {
+      console.log('no assignment to careplan was made');
     }
   }
 }

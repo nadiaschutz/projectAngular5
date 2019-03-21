@@ -5,30 +5,42 @@
     </div>
     <div *ngIf="serviceRequestObject.length > 0 && !showSuccessMessage && serviceRequestID">
         <div class="button-section">
-            <button (click)="deleteServiceRequest()" class="btn special-button">
-                Delete
-            </button>
+            <!-- <button (click)="deleteServiceRequest()" class="btn special-button">
+                    Delete
+                </button> -->
             <button (click)="redirectToServiceRequestMainPage()" class="btn special-button back-button">
                 Back to Service Requests page
             </button>
         </div>
 
         <!-- <div *ngFor="let item of serviceRequestObject; let x = index">
-    <div [ngClass]="{'left-style': x%2 != 0, 'right-style': x%2 === 0 }">
-      <label class="label-name">{{item.name | titlecase}}</label>
-      <input disabled=true class="form-control field-box-name" placeholder="{{item.value | titlecase}}"/>
-    </div>
-  </div> -->
+        <div [ngClass]="{'left-style': x%2 != 0, 'right-style': x%2 === 0 }">
+          <label class="label-name">{{item.name | titlecase}}</label>
+          <input disabled=true class="form-control field-box-name" placeholder="{{item.value | titlecase}}"/>
+        </div>
+      </div> -->
         <section class="form-section">
             <div class="row">
                 <div class="col-6" *ngIf="newArr.ServiceRequestId">
                     <label class="label-name">Service Request Id</label>
                     <input readonly=true placeholder="{{ newArr.ServiceRequestId }}" class="form-control field-box-name">
                 </div>
+
+                <div class="col-6" *ngIf="newArr.Datecreated">
+                    <label class="label-name">Date Created</label>
+                    <input readonly=true placeholder="{{ newArr.Datecreated }}" class="form-control field-box-name">
+                </div>
             </div>
 
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.FirstName">
+                <div class="col-6" *ngIf="newArr.CreatedBy">
+                    <label class="label-name">Created By</label>
+                    <input readonly=true placeholder="{{ newArr.CreatedBy }}" class="form-control field-box-name">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6" *ngIf="newArr.FirstName">
                     <label class="label-name">First Name</label>
                     <input disabled=true placeholder="{{ newArr.FirstName }}" class="form-control field-box-name">
                 </div>
@@ -39,7 +51,7 @@
             </div>
 
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.DateofBirth">
+                <div class="col-6" *ngIf="newArr.DateofBirth">
                     <label class="label-name">Date of Birth</label>
                     <input disabled=true placeholder="{{ newArr.DateofBirth }}" class="form-control field-box-name">
                 </div>
@@ -51,13 +63,13 @@
         </section>
         <section class="form-section">
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.PSOHPService">
+                <div class="col-6" *ngIf="newArr.PSOHPService">
                     <label class="label-name">PSOHP Service</label>
                     <input disabled=true placeholder="{{ newArr.PSOHPService }}" class="form-control field-box-name">
                 </div>
             </div>
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.EmployingDepartmentBranch">
+                <div class="col-6" *ngIf="newArr.EmployingDepartmentBranch">
                     <label class="label-name">Employing Department Branch</label>
                     <input disabled=true placeholder="{{ newArr.EmployingDepartmentBranch }}" class="form-control field-box-name">
                 </div>
@@ -67,7 +79,7 @@
                 </div>
             </div>
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.SubmittingDepartment">
+                <div class="col-6" *ngIf="newArr.SubmittingDepartment">
                     <label class="label-name">Submitting Department</label>
                     <input disabled=true placeholder="{{ newArr.SubmittingDepartment }}" class="form-control field-box-name">
                 </div>
@@ -78,7 +90,7 @@
             </div>
 
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.RegionalOfficeforProcessing">
+                <div class="col-6" *ngIf="newArr.RegionalOfficeforProcessing">
                     <label class="label-name">Regional Office for Processing</label>
                     <input disabled=true placeholder="{{ newArr.RegionalOfficeforProcessing }}" class="form-control field-box-name">
                 </div>
@@ -92,14 +104,14 @@
         <section class="form-section">
 
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.Instructionsregardingtherequest">
+                <div class="col-6" *ngIf="newArr.Instructionsregardingtherequest">
                     <label class="label-name">Instructions regarding the request</label>
                     <input disabled=true placeholder="{{ newArr.Instructionsregardingtherequest }}" class="form-control field-box-name">
                 </div>
             </div>
 
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.OHAGOccupation">
+                <div class="col-6" *ngIf="newArr.OHAGOccupation">
                     <label class="label-name">OHAG Occupation</label>
                     <input disabled=true placeholder="{{ newArr.OHAGOccupation }}" class="form-control field-box-name">
                 </div>
@@ -109,7 +121,7 @@
                 </div>
             </div>
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.OHAGExposureModifier">
+                <div class="col-6" *ngIf="newArr.OHAGExposureModifier">
                     <label class="label-name">OHAG Exposure Modifier</label>
                     <input disabled=true placeholder="{{ newArr.OHAGExposureModifier }}" class="form-control field-box-name">
                 </div>
@@ -120,14 +132,14 @@
         <section class="form-section">
 
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.NoteforEmployeeavailabilityforappointment">
+                <div class="col-6" *ngIf="newArr.NoteforEmployeeavailabilityforappointment">
                     <label class="label-name">Note for Employee availability for appointment</label>
                     <input disabled=true placeholder="{{ newArr.NoteforEmployeeavailabilityforappointment }}" class="form-control field-box-name">
                 </div>
             </div>
 
             <div class="row">
-                    <div class="col-6" *ngIf="newArr.Instructionsregardingtherequest">
+                <div class="col-6" *ngIf="newArr.Instructionsregardingtherequest">
                     <label class="label-name">Instructions regarding the request</label>
                     <input disabled=true placeholder="{{ newArr.Instructionsregardingtherequest }}" class="form-control field-box-name">
                 </div>
@@ -141,7 +153,7 @@
         <section class="form-section" *ngIf="documentForServiceRequest">
             <div class="col-12-custom">
                 <h6>documents</h6>
- 
+
                 <div>
                     <table class="table">
                         <thead class="header-table">
@@ -159,14 +171,15 @@
                         </thead>
                         <tbody class="body-table">
 
-                            <tr *ngFor="let doc of documentForServiceRequest" >
+                            <tr *ngFor="let doc of documentForServiceRequest">
                                 <td>{{doc['id']}}</td>
-                                <td >{{doc['content'][0]['attachment']['creation'] | date: 'dd/MM/yyyy'}}</td>
+                                <td>{{doc['content'][0]['attachment']['creation'] | date: 'dd/MM/yyyy'}}</td>
                                 <td class="cursor" (click)="downloadFile(doc)">{{doc['content'][0]['attachment']['title']}}</td>
                                 <td>{{doc['type']['text']}}</td>
                                 <td>{{doc['content'][0]['attachment']['contentType']}}</td>
                                 <td>{{doc['content'][0]['attachment']['size'] }}</td>
-                                <td *ngIf="doc['content'][0]['attachment']['contentType'] === 'application/pdf'" class="cursor" (click)="previewFile(doc)"> Preview this doc </td>
+                                <td *ngIf="doc['content'][0]['attachment']['contentType'] === 'application/pdf'" class="cursor"
+                                    (click)="previewFile(doc)"> Preview this doc </td>
                             </tr>
 
                         </tbody>

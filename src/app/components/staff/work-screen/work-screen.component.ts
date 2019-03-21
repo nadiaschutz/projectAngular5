@@ -21,6 +21,7 @@ export class WorkScreenComponent implements OnInit {
   carePlanActivities = [];
   summary = {} as any;
   episodeOfCare = {};
+  indexOfCheckListItems = [];
   carePlan = {};
   showTaskForm = false;
   showNoteForm = false;
@@ -401,18 +402,43 @@ export class WorkScreenComponent implements OnInit {
 
   processQuestionnaireResponseForSummary(questionnaireResponse) {
     questionnaireResponse.item.forEach(item => {
-      if (item.text === 'PSOHP Service') {
-        this.summary['psohpService'] = item['answer'][0]['valueString'];
-      } else if (item.text === 'Submitting Department') {
-        this.summary['submittingDepartment'] = item['answer'][0]['valueString'];
-      } else if (item.text === 'Receiving Department') {
-        this.summary['receivingDepartment'] = item['answer'][0]['valueString'];
-      } else if (item.text === 'OHAG Occupation') {
-        this.summary['ohagOccupation'] = item['answer'][0]['valueString'];
-      } else if (item.text === 'OHAG Environmental Modifier') {
-        this.summary['ohagEnvironmentalModifier'] =
-          item['answer'][0]['valueString'];
+
+      if (item['linkId'] === 'PSOHPSERV') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['psohpService'] = answer['valueCoding']['display'];
+          }
+        }
       }
+      if (item['linkId'] === 'OHAGOCC') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['ohagOccupation'] = answer['valueCoding']['display'];
+          }
+        }
+      }
+      if (item['linkId'] === 'ENVMODIF') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['ohagEnvironmentalModifier'] = answer['valueCoding']['display'];
+          }
+        }
+      }
+      if (item['linkId'] === 'USERDEPT') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['submittingDepartment'] = answer['valueCoding']['display'];
+          }
+        }
+      }
+      if (item['linkId'] === 'REGOFFICE') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['regionalOffice'] = answer['valueCoding']['display'];
+          }
+        }
+      }
+
     });
     console.log(this.summary);
   }
@@ -464,7 +490,6 @@ export class WorkScreenComponent implements OnInit {
   }
 
   processClinicalAssignmentForHistory(task) {
-    console.log(task);
     if (task['intent'] === 'plan') {
       const temp = {};
       temp['title'] = 'Clinical Assignment';
@@ -512,56 +537,67 @@ export class WorkScreenComponent implements OnInit {
         temp['showActivity'] = false;
         temp['closingNotes'] = '';
       }
-      console.log(temp);
       this.history.push(temp);
     }
   }
 
+  cancelCarePlanUpdate() {
+    this.enableWorkListUpdate = !this.enableWorkListUpdate;
+    this.indexOfCheckListItems.forEach(index => {
+      this.carePlanActivities[index]['value'] = !this.carePlanActivities[index]['value'];
+    });
+    this.indexOfCheckListItems = [];
+  }
+
   onChecklistChange(index) {
-    const indexArray = [];
-    indexArray.push(index);
-    if (this.carePlan) {
-      console.log(this.carePlan);
-      const annotation = new FHIR.Annotation();
-      annotation.time = new Date();
-      if (this.carePlanActivities[index]['value']) {
-        annotation.text =
-          'COMPLETED: User ' +
-          this.fetchCurrentUsername() +
-          ' marked item ' +
-          this.carePlan['activity'][index]['detail']['description'] +
-          ' as Completed';
-        this.carePlan['activity'][index]['detail']['status'] = 'completed';
-        // this.onCheckListChangeStatus(this.carePlanActivities[index]);
-      } else {
-        annotation.text =
-          'INCOMPLETE: User ' +
-          this.fetchCurrentUsername() +
-          ' marked item ' +
-          this.carePlan['activity'][index]['detail']['description'] +
-          ' as Incomplete';
-        this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
-        console.log(this.carePlan['activity'][index]);
-        // this.onCheckListChangeStatus(this.carePlanActivities[index]);
+    this.indexOfCheckListItems.push(index);
+  }
+
+
+  saveCarePlan() {
+    this.indexOfCheckListItems.forEach(index => {
+
+      if (this.carePlan) {
+        const annotation = new FHIR.Annotation();
+        annotation.time = new Date();
+        if (this.carePlanActivities[index]['value']) {
+          annotation.text =
+            'COMPLETED: User ' +
+            this.fetchCurrentUsername() +
+            ' marked item ' +
+            this.carePlan['activity'][index]['detail']['description'] +
+            ' as Completed';
+          this.carePlan['activity'][index]['detail']['status'] = 'completed';
+          // this.onCheckListChangeStatus(this.carePlanActivities[index]);
+        } else {
+          annotation.text =
+            'INCOMPLETE: User ' +
+            this.fetchCurrentUsername() +
+            ' marked item ' +
+            this.carePlan['activity'][index]['detail']['description'] +
+            ' as Incomplete';
+          this.carePlan['activity'][index]['detail']['status'] = 'in-progress';
+        }
+        if (this.carePlan['activity'][index]['progress']) {
+          this.carePlan['activity'][index]['progress'].push(annotation);
+        } else {
+          this.carePlan['activity'][index]['progress'] = new Array<
+            FHIR.Annotation
+          >();
+          this.carePlan['activity'][index]['progress'].push(annotation);
+        }
       }
-      if (this.carePlan['activity'][index]['progress']) {
-        this.carePlan['activity'][index]['progress'].push(annotation);
-      } else {
-        this.carePlan['activity'][index]['progress'] = new Array<
-          FHIR.Annotation
-        >();
-        this.carePlan['activity'][index]['progress'].push(annotation);
-      }
-      this.staffService
-        .updateCarePlan(this.carePlan['id'], JSON.stringify(this.carePlan))
-        .subscribe(data => {
-          console.log(data['activity'][index]);
-          // this.processRecentCarePlanActivityForHistory(data['activity'][index]);
-          this.carePlan = data;
-          this.processCarePlanForDisplay();
-          this.displayAll();
-        });
-    }
+    });
+    this.staffService
+          .updateCarePlan(this.carePlan['id'], JSON.stringify(this.carePlan))
+          .subscribe(data => {
+            // this.processRecentCarePlanActivityForHistory(data['activity'][index]);
+            this.indexOfCheckListItems = [];
+            this.carePlan = data;
+            this.enableWorkListUpdate = !this.enableWorkListUpdate;
+            this.processCarePlanForDisplay();
+            this.displayAll();
+          });
   }
 
   updateHistoryForDisplay() {
@@ -572,6 +608,8 @@ export class WorkScreenComponent implements OnInit {
           this.carePlan = data;
           this.processCarePlanForDisplay();
           this.displayAll();
+          location.reload();
+
         },
         error => {
           console.log(error);
@@ -1148,9 +1186,6 @@ export class WorkScreenComponent implements OnInit {
     // statusItemSix.answer = [statusItemAnswer];
     statusItemAnswer.valueBoolean = true;
 
-    statusItemSeven.linkId = '6';
-    statusItemSeven.text = 'Waiting';
-    statusItemSeven.answer = [statusItemAnswer];
 
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
@@ -1167,8 +1202,7 @@ export class WorkScreenComponent implements OnInit {
       statusItemThree,
       statusItemFour,
       statusItemFive,
-      statusItemSix,
-      statusItemSeven
+      statusItemSix
     ];
 
     console.log(statusQResponse);

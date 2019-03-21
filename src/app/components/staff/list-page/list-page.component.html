@@ -55,7 +55,7 @@
           <td>
             <input type="checkbox" [(ngModel)]="selectedEpisodes[i]" value="i">
           </td>
-          <td>{{result.episodeOfCareId}}</td>
+          <td>{{result.questionnaireResponseId}}</td>
           <td>{{result.clientName}}</td>
           <td>{{result.serviceAssessmentType}}</td>
           <td>{{result.clientDepartment}}</td>
@@ -63,7 +63,8 @@
           <td>{{result.status}}</td>
           <td>{{result.daysInQueue}}</td>
           <td>
-            <button class="btn special-button" (click)="setEOCID(result.episodeOfCareId)">Work Screen</button>
+            <button class="btn special-button" (click)="setEOCID(result.episodeOfCareId)"
+            [disabled]="result.careManager==='Unassigned'">Work Screen</button>
           </td>
           <!-- <td>
             <button (click)="release(result.episodeOfCareId)" class="special-button">Release</button>

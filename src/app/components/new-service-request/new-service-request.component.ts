@@ -15,6 +15,7 @@ import { forEach } from '@angular/router/src/utils/collection';
 import { ItemToSend } from '../models/itemToSend.model';
 import { PatientService } from 'src/app/service/patient.service';
 import { formatDate } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 import * as FHIR from '../../interface/FHIR';
 import { link } from 'fs';
@@ -73,7 +74,8 @@ class SelectField {
 @Component({
   selector: 'app-new-service-request',
   templateUrl: './new-service-request.component.html',
-  styleUrls: ['./new-service-request.component.scss']
+  styleUrls: ['./new-service-request.component.scss'],
+  providers: [DatePipe]
 })
 export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   // @ViewChild('advReqForm') form: NgForm;
@@ -99,13 +101,18 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     ['PTH', 'THPPC3'],
     ['PTH', 'THCRC1'],
     ['PTH', 'THCRC3'],
-    ['PTH', 'THREC3']
+    ['PTH', 'THREC3'],
+
+    ['FTWORK'],
+    ['IMREVW']
+
   ];
   options = [];
 
   style = 'col-11';
   configuration;
   userName;
+  userRole;
   loaded = false;
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   config: FieldConfig[] = [];
@@ -114,6 +121,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   currentUserDepartment;
 
   formId = 'TEST4';
+  formCreated = false;
 
   responseId = null;
   clientId = null;
@@ -130,6 +138,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   createdsuccessfully = false;
 
   today = new Date();
+  todayPiped;
   myDay;
   dd: any;
   mm: any;
@@ -141,8 +150,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   msec: any;
 
   dependents = false;
-
-  dependentsList;
+  employeeType;
+  dependentsList = [];
   dependentBoolean = false;
   dependentNumber = null;
   qrequest: any;
@@ -189,15 +198,26 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     private activatedRoute: ActivatedRoute,
     private userService: UserService,
     private patientService: PatientService,
-    private oauthService: OAuthService
+    private oauthService: OAuthService,
+    private datePipe: DatePipe
   ) {
 
   }
 
   ngOnInit() {
+    this.userRole = sessionStorage.getItem('userRole');
+    console.log('userRole', this.userRole);
+    this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
+    console.log(this.formCreated);
+    this.employeeType = sessionStorage.getItem('emplType');
+    if (this.employeeType === 'Employee') {
+      const depList = sessionStorage.getItem('dependents');
+      this.dependentsList = JSON.parse(depList);
+    }
 
-    const depList = sessionStorage.getItem('dependents');
-    this.dependentsList = JSON.parse(depList);
+
+    this.clientGivenName = sessionStorage.getItem('emplGiven');
+    this.clientFamilyName = sessionStorage.getItem('emplFam');
     this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
     this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
     this.userName = sessionStorage.getItem('userName');
@@ -205,9 +225,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.createdsuccessfully = false;
     this.clientId = sessionStorage.getItem('patientSummaryId');
 
+
     if (!this.clientId) {
       this.router.navigateByUrl('/dashboard');
     }
+
+    console.log(this.dependentsList);
   }
 
   wrap() {
@@ -245,115 +268,117 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
    * FHIR server.
    */
 
-  addDocument($event) {
 
-    const documentReference = new FHIR.DocumentReference;
-    const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
-    const documentReferenceCoding = new FHIR.Coding;
-    const content = new FHIR.Content;
-    const contentAttachment = new FHIR.Attachment;
-    const contentCode = new FHIR.Coding;
-    let file;
-    let trimmedFile = '';
-    let size: number;
-    let type;
-    const date = new Date().toJSON();
-    const fileList = $event.target.files;
-    const reader = new FileReader();
-    if (fileList[0]) {
-      size = fileList[0].size;
-      type = fileList[0].type;
-      reader.readAsDataURL(fileList[0]);
-    }
-    const self = this;
-    reader.onloadend = function () {
+  // CHECK ME NOW!!!
+  // addDocument($event) {
 
-      file = reader.result;
-      trimmedFile = file.split(',').pop();
+  //   const documentReference = new FHIR.DocumentReference;
+  //   const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
+  //   const documentReferenceCoding = new FHIR.Coding;
+  //   const content = new FHIR.Content;
+  //   const contentAttachment = new FHIR.Attachment;
+  //   const contentCode = new FHIR.Coding;
+  //   let file;
+  //   let trimmedFile = '';
+  //   let size: number;
+  //   let type;
+  //   const date = new Date().toJSON();
+  //   const fileList = $event.target.files;
+  //   const reader = new FileReader();
+  //   if (fileList[0]) {
+  //     size = fileList[0].size;
+  //     type = fileList[0].type;
+  //     reader.readAsDataURL(fileList[0]);
+  //   }
+  //   const self = this;
+  //   reader.onloadend = function () {
 
-      documentReference.resourceType = 'DocumentReference';
+  //     file = reader.result;
+  //     trimmedFile = file.split(',').pop();
 
-      contentAttachment.size = size;
-      contentAttachment.contentType = type;
-      contentAttachment.data = trimmedFile;
-      contentAttachment.creation = date;
-      contentAttachment.title = fileList[0].name;
+  //     documentReference.resourceType = 'DocumentReference';
 
-      contentCode.code = 'urn:ihe:pcc:xphr:2007';
-      contentCode.display = 'Personal Health Records';
+  //     contentAttachment.size = size;
+  //     contentAttachment.contentType = type;
+  //     contentAttachment.data = trimmedFile;
+  //     contentAttachment.creation = date;
+  //     contentAttachment.title = fileList[0].name;
 
-      content.format = contentCode;
-      content.attachment = contentAttachment;
+  //     contentCode.code = 'urn:ihe:pcc:xphr:2007';
+  //     contentCode.display = 'Personal Health Records';
 
-      documentReferenceCoding.code = '51851-4';
-      documentReferenceCoding.system = 'http://loinc.org';
-      documentReferenceCoding.display = 'Administrative note';
+  //     content.format = contentCode;
+  //     content.attachment = contentAttachment;
 
-      documentReferenceCodeableConcept.coding = [documentReferenceCoding];
-      documentReferenceCodeableConcept.text = 'Administrative note';
+  //     documentReferenceCoding.code = '51851-4';
+  //     documentReferenceCoding.system = 'http://loinc.org';
+  //     documentReferenceCoding.display = 'Administrative note';
 
-      documentReference.instant = date;
-      documentReference.type = documentReferenceCodeableConcept;
-      documentReference.content = [content];
+  //     documentReferenceCodeableConcept.coding = [documentReferenceCoding];
+  //     documentReferenceCodeableConcept.text = 'Administrative note';
 
-
-      self.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
-        data => self.documents = data,
-        error => self.handleError(error)
-      );
-      return reader.result;
-
-    };
-    reader.onerror = function (error) {
-      console.log('Error: ', error);
-    };
-
-  }
-
-  retrieveDocuments(data) {
-    this.documents.push(data);
-  }
-
-  downloadFile(incomingFile) {
-
-    const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
-
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let index = 0; index < byteCharacters.length; index++) {
-      byteNumbers[index] = byteCharacters.charCodeAt(index);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-
-    const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
-
-    if (navigator.msSaveBlob) {
-      const filename = incomingFile['content'][0]['attachment']['title'];
-      navigator.msSaveBlob(blob, filename);
-    } else {
-      const fileLink = document.createElement('a');
-      fileLink.href = URL.createObjectURL(blob);
-      fileLink.setAttribute('visibility', 'hidden');
-      fileLink.download = incomingFile['content'][0]['attachment']['title'];
-      document.body.appendChild(fileLink);
-      fileLink.click();
-      document.body.removeChild(fileLink);
-    }
+  //     documentReference.instant = date;
+  //     documentReference.type = documentReferenceCodeableConcept;
+  //     documentReference.content = [content];
 
 
-    // const linkSource =
-    //   'data:' +
-    //   name['content'][0]['attachment']['contentType'] +
-    //   ';base64,' +
-    //   name['content'][0]['attachment']['data'];
-    // console.log(linkSource);
-    // const downloadLink = document.createElement('a');
-    // const fileName = name['content'][0]['attachment']['title'];
+  //     self.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
+  //       data => self.documents = data,
+  //       error => self.handleError(error)
+  //     );
+  //     return reader.result;
 
-    // downloadLink.href = linkSource;
-    // downloadLink.download = fileName;
-    // downloadLink.click();
-  }
+  //   };
+  //   reader.onerror = function (error) {
+  //     console.log('Error: ', error);
+  //   };
+
+  // }
+
+  // retrieveDocuments(data) {
+  //   this.documents.push(data);
+  // }
+
+  // downloadFile(incomingFile) {
+
+  //   const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
+
+  //   const byteNumbers = new Array(byteCharacters.length);
+  //   for (let index = 0; index < byteCharacters.length; index++) {
+  //     byteNumbers[index] = byteCharacters.charCodeAt(index);
+  //   }
+
+  //   const byteArray = new Uint8Array(byteNumbers);
+
+  //   const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
+
+  //   if (navigator.msSaveBlob) {
+  //     const filename = incomingFile['content'][0]['attachment']['title'];
+  //     navigator.msSaveBlob(blob, filename);
+  //   } else {
+  //     const fileLink = document.createElement('a');
+  //     fileLink.href = URL.createObjectURL(blob);
+  //     fileLink.setAttribute('visibility', 'hidden');
+  //     fileLink.download = incomingFile['content'][0]['attachment']['title'];
+  //     document.body.appendChild(fileLink);
+  //     fileLink.click();
+  //     document.body.removeChild(fileLink);
+  //   }
+
+
+  // const linkSource =
+  //   'data:' +
+  //   name['content'][0]['attachment']['contentType'] +
+  //   ';base64,' +
+  //   name['content'][0]['attachment']['data'];
+  // console.log(linkSource);
+  // const downloadLink = document.createElement('a');
+  // const fileName = name['content'][0]['attachment']['title'];
+
+  // downloadLink.href = linkSource;
+  // downloadLink.download = fileName;
+  // downloadLink.click();
+  // }
 
   // convertBase64ToFile (data) {
   //   const obj = data;
@@ -442,39 +467,30 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   //   );
   // }
 
-  fetchAnswer(question): FHIR.Answer[] {
-    const answerArray = new Array<FHIR.Answer>();
-    const answer = new FHIR.Answer;
-    if (question['type'] === 'choice' || question['type'] === 'text') {
-      answer.valueString = question['answer'];
-    }
-    if (question['type'] === 'boolean') {
-      answer.valueBoolean = question['answer'];
-    }
-    if (question['type'] === 'Reference') {
-      const answerReference = new FHIR.Reference;
-      answerReference.reference = question['answer'];
-      answer.valueReference = answerReference;
-    }
-    answerArray.push(answer);
-    return answerArray;
-  }
+  // fetchAnswer(question): FHIR.Answer[] {
+  //   const answerArray = new Array<FHIR.Answer>();
+  //   const answer = new FHIR.Answer;
+  //   if (question['type'] === 'choice' || question['type'] === 'text') {
+  //     answer.valueString = question['answer'];
+  //   }
+  //   if (question['type'] === 'boolean') {
+  //     answer.valueBoolean = question['answer'];
+  //   }
+  //   if (question['type'] === 'Reference') {
+  //     const answerReference = new FHIR.Reference;
+  //     answerReference.reference = question['answer'];
+  //     answer.valueReference = answerReference;
+  //   }
+  //   answerArray.push(answer);
+  //   return answerArray;
+  // }
 
-  submit(value: { [name: string]: any }) {
-    // const list = [];
 
-    // tslint:disable-next-line:forin
-    // for (const key in value) {
-    //   if (key.indexOf('dependent') !== - 1) {
-
-    //     list.push({
-    //       key: key,
-    //       value: value[key]
-    //     });
-
-    //   }
-    // }
-
+  // submit(value: { [name: string]: any }) {
+  submit() {
+    // console.log(this.form.value);
+    // console.log(this.form.getRawValue);
+    const value = this.form.getRawValue;
     const list = Object.entries(value)
       .filter(([key]) => key.includes('dependent'))
       .map(([key, val]) => ({
@@ -491,7 +507,19 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
     }
 
+    // // console.log('ITEMS on submit before change', this.items);
+    // for (const [name, value] of Object.entries(values))
+    //   if (itemsByLinkId.has(name)) {
+    //     const indivElem = itemsByLinkId.get(name)
+    //     indivElem.answer = value
+    //     if (typeof value === "string" && codeByDisplay.has(value))
+    //       indivElem.code = codeByDisplay.get(value)
+    //   }
 
+
+    // const flatCodes = new Set()
+    // for (const code of this.listOfCodes)
+    //   for (const co of code) flatCodes.add(co)
     // console.log('ITEMS on submit before change', this.items);
 
     this.items.forEach(indivElem => {
@@ -501,16 +529,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         if (value.hasOwnProperty(key)) {
           if (key === indivElem.linkId) {
             indivElem.answer = value[key];
-            if (indivElem.answer !== null) {
-              if (typeof indivElem.answer === 'string') {
-
-                this.options.forEach(option => {
-                  if (option.display === indivElem.answer) {
-                    indivElem.code = option.code;
-                  }
-                });
-              }
-
+            if (typeof indivElem.answer === 'string') {
+              this.options.forEach(option => {
+                if (option.display === indivElem.answer) {
+                  indivElem.code = option.code;
+                }
+              });
             }
           }
         }
@@ -538,14 +562,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     // console.log(selectItems);
 
+
     resultItem = {
-      // answer: selectItems.forEach((item, index) => {
-      //   let result;
-      //   result += item.answer;
-      //   return result;
-      // }),
-      // tslint:disable-next-line:max-line-length
-      answer: selectItems.length === 2 ? selectItems[0].answer + '-' + selectItems[1].answer : selectItems[0].answer + '-' + selectItems[1].answer + '-' + selectItems[2].answer,
+      answer: selectItems.map(x => x.answer).join('-'),
       code: selectItems[selectItems.length - 1].code,
       linkId: selectItems[0].linkId,
       system: selectItems[0].system,
@@ -560,6 +579,13 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         }
       });
 
+
+      // if (foundItem) {
+      //   foundItem.answer = resultItem.answer;
+      //   foundItem.code = resultItem.code;
+      //   foundItem.system = resultItem.system;
+      //   foundItem.text = resultItem.text;
+      // }
       if (item.linkId === resultItem.linkId) {
         item.answer = resultItem.answer;
         item.code = resultItem.code;
@@ -572,14 +598,14 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // this.disableInputsForReview = true;
     this.savingData();
 
-    this.itemsToSend.forEach(request => {
+    for (const request of this.itemsToSend) {
       this.questionnaireService
         .saveRequest(request)
         .subscribe(
           data => this.handleSuccessOnSave(data),
           error => this.handleErrorOnSave(error)
         );
-    });
+    }
 
   }
 
@@ -647,11 +673,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     }
 
 
-
     // creating itemToSend
-    this.createItemToSend(this.clientId, sessionStorage.getItem('emplGiven'), sessionStorage.getItem('emplFam'));
+    this.createItemToSend(this.clientId, this.clientGivenName, this.clientFamilyName);
     this.mapItemToItems();
-    if (this.dependentsList) {
+    if (this.dependentsList.length > 0) {
       this.dependentsList.forEach(depend => {
         if (depend.value === true) {
           this.createItemToSend(depend.id, depend.given, depend.family);
@@ -759,6 +784,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       // if (el.type === 'text') {
       if (el.code[1].code === 'PHONE') {
         const formField = this.textInput(el);
+        const enableWhen = this.populateEnableWhenObj(el);
+
         formField['placeholder'] = 'type your phone';
         formField['validation'] = el.enableWhen ? [
           Validators.pattern(
@@ -770,23 +797,27 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
             )
           ];
-        formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-        formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+        // formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+        // formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+        formField['enableWhen'] = el.enableWhen ? enableWhen : false;
         formField['value'] = null;
         formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
         return formField;
 
 
       } else if (el.code[1].code === 'DATE') {
+
+
+        const enableWhen = this.populateEnableWhenObj(el);
         return {
           type: 'date',
           label: el.text,
           inputType: 'text',
           placeholder: 'datepicker',
           name: el.linkId,
-
-          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
+          enableWhen: el.enableWhen ? enableWhen : false,
+          // enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+          // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           value: null
         };
@@ -794,29 +825,47 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       } else if (el.code[1].code === 'TEXT') {
 
         if (el.code[0].code === 'AUTHOR') {
-
           const formField = this.textInput(el);
-          // formField['placeholder'] = 'type your text';
           formField['readonly'] = true;
-          // formField['validation'] = el.enableWhen ? null : [
-          //   Validators.required
-          // ];
+          return formField;
+        } else if (el.code[0].code === 'DATECR') {
+          const formField = this.textInput(el);
+          formField['readonly'] = true;
           return formField;
         } else if (el.code[0].code === 'USERDEPT') {
+          if (this.userRole === 'clientdept') {
+            const options = this.departmentList;
 
-          const formField = this.textInput(el);
-          formField['readonly'] = true;
-          // formField['placeholder'] = 'type your text';
-          // formField['validation'] = el.enableWhen ? null : [
-          //   Validators.required
-          // ];
-          return formField;
+            const enableWhen = this.populateEnableWhenObj(el);
+
+            return {
+              type: 'selectSr',
+              label: el.text,
+              name: el.linkId,
+              enableWhen: el.enableWhen ? enableWhen : false,
+              options: options,
+              flag: el.enableWhen ? false : true,
+              placeholder: 'Select an option',
+              // validation: el.enableWhen ? [Validators.required] : null,
+              validation: el.enableWhen ? undefined : [Validators.required],
+              // validation: [Validators.required],
+              value: null,
+              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+              disable: true
+            };
+          } else {
+            const formField = this.textInput(el);
+            formField['readonly'] = true;
+            return formField;
+          }
+
         } else {
           const formField = this.textInput(el);
+          const enableWhen = this.populateEnableWhenObj(el);
           formField['placeholder'] = 'type your text';
           formField['validation'] = el.enableWhen ? undefined : [Validators.required];
-          formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-          formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+
+          formField['enableWhen'] = el.enableWhen ? enableWhen : false;
           formField['value'] = null;
 
           formField['flag'] = el.enableWhen ? false : true;
@@ -827,11 +876,14 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
       } else if (el.code[1].code === 'EMAIL') {
 
+
+        const enableWhen = this.populateEnableWhenObj(el);
+
         const formField = this.textInput(el);
         formField['placeholder'] = 'type your email';
         formField['validation'] = el.enableWhen ? [Validators.email] : [Validators.required, Validators.email];
-        formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-        formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+
+        formField['enableWhen'] = el.enableWhen ? enableWhen : false;
         formField['value'] = null;
 
         formField['flag'] = el.enableWhen ? false : true;
@@ -843,11 +895,14 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       } else if (el.code[1].code === 'COMMENT') {
 
 
+        const enableWhen = this.populateEnableWhenObj(el);
+
         const formField = this.commentInput(el);
         formField['placeholder'] = 'type your text';
         formField['validation'] = undefined;
-        formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-        formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
+        formField['enableWhen'] = el.enableWhen ? enableWhen : false;
+        // formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
+        // formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
         formField['value'] = null;
 
         formField['flag'] = el.enableWhen ? false : true;
@@ -858,6 +913,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         return formField;
 
       } else if (el.code[1].code === 'SELECT') {
+
+
         const options = [];
 
         el.option.forEach(el1 => {
@@ -871,49 +928,103 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         el.option.forEach(el1 => {
           options.push(el1.valueCoding.display);
         });
+        const enableWhen = this.populateEnableWhenObj(el);
 
-        return {
-          type: 'selectSr',
-          label: el.text,
-          name: el.linkId,
-          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
-          options: options,
-          flag: el.enableWhen ? false : true,
-          placeholder: 'Select an option',
-          // validation: el.enableWhen ? [Validators.required] : null,
-          validation: el.enableWhen ? undefined : [Validators.required],
-          // validation: [Validators.required],
-          value: null,
-          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-        };
+        if (el.code[0].code === 'OHAGOCC' || el.code[0].code === 'ENVMODIF' || el.code[0].code === 'EXPMODIF') {
+          console.log(el.code[0].code);
+          return {
+            type: 'selectSr',
+            label: el.text,
+            name: el.linkId,
+            enableWhen: el.enableWhen ? enableWhen : false,
+            options: options,
+            flag: el.enableWhen ? false : true,
+            placeholder: 'Select an option',
+            validation: undefined,
+            // validation: [Validators.required],
+            value: null,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          };
+        } else {
+          const enableWhenQ = [];
+          return {
+            type: 'selectSr',
+            label: el.text,
+            name: el.linkId,
+            enableWhen: el.enableWhen ? enableWhen : false,
+            options: options,
+            flag: el.enableWhen ? false : true,
+            placeholder: 'Select an option',
+            validation: el.enableWhen ? undefined : [Validators.required],
+            // validation: [Validators.required],
+            value: null,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          };
+        }
       } else if (el.code[1].code === 'BOOL') {
-        return {
-          type: 'checkbox',
-          label: el.text,
-          name: el.linkId,
-          typeElem: 'checkbox',
-          enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
-          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+        if (el.code[0].code === 'DEPENDINV') {
+          // console.log(this.dependentsList);
+          if (this.dependentsList.length < 1) {
+            console.log('this.dependentsList.length < 1');
 
-          // placeholder: 'Select an option',
-          // validation: el.enableWhen ? null : [Validators.required],
-          value: el.enableWhen ? null : false,
-        };
+            return {
+              type: 'checkbox',
+              label: el.text + ' (disabled)',
+              name: el.linkId,
+              typeElem: 'checkbox',
+              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+              value: el.enableWhen ? null : false,
+              readonly: true
+            };
+
+          } else if (this.dependentsList.length > 0) {
+            console.log('this.dependentsList.length > 0');
+
+            return {
+              type: 'checkbox',
+              label: el.text,
+              name: el.linkId,
+              typeElem: 'checkbox',
+              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+              value: el.enableWhen ? null : false,
+              readonly: false
+            };
+          }
+        } else {
+
+          const enableWhen = this.populateEnableWhenObj(el);
+          return {
+            type: 'checkbox',
+            label: el.text,
+            name: el.linkId,
+            typeElem: 'checkbox',
+            enableWhen: el.enableWhen ? enableWhen : false,
+            // enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
+            // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+
+            // placeholder: 'Select an option',
+            // validation: el.enableWhen ? null : [Validators.required],
+            value: el.enableWhen ? null : false,
+          };
+        }
+
 
       }
     });
 
-    if (this.dependentsList !== []) {
+    if (this.dependentsList.length > 0) {
       this.dependentsList.forEach((dependent, index) => {
+        const enableWhen = [{
+          enableWhenQ: 'DEPENDINV',
+          enableWhenA: 'true',
+        }];
         this.configuration.push(
           {
             type: 'depend',
             name: 'dependent' + '-' + index,
             label: dependent.family + ' ' + dependent.given,
-            enableWhenQ: 'DEPENDINV',
-            enableWhenA: 'true',
+            enableWhen: enableWhen,
             elementClass: 'enable-when-hide',
             // placeholder: 'Select an option',
             // validation: el.enableWhen ? null : [Validators.required],
@@ -923,6 +1034,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
 
     }
+    console.log('CONFIG AFTER DEPENDENTS PUSH', this.configuration);
 
 
     this.configuration.push(
@@ -938,7 +1050,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       {
         type: 'button',
         name: 'submit',
-        label: 'Next'
+        label: 'Submit'
       }
     );
 
@@ -957,6 +1069,21 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     console.log('THIS.OPTIONS', this.options);
   }
+
+  populateEnableWhenObj(el) {
+    const enableWhen = [];
+    if (el.enableWhen) {
+      el.enableWhen.forEach(elem => {
+        enableWhen.push(
+          {
+            enableWhenQ: elem.question,
+            enableWhenA: elem.answerCoding.display
+          });
+      });
+    }
+    return enableWhen;
+  }
+
 
 
 
@@ -994,8 +1121,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       placeholder: 'Select an option',
       name: data.linkId,
       validation: [Validators.required],
-      enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
-      enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.display : false,
+      // enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
+      // enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.display : false,
     });
   }
   /************************************************/
@@ -1015,7 +1142,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       // this.form.setDisabled('14', true);
       // this.form.setReadOnly('AUTHOR', true);
       this.form.setValue('AUTHOR', this.userName);
+
       this.form.setValue('USERDEPT', this.currentUserDepartment);
+      this.form.setDisabled('USERDEPT', true);
+      this.form.setValue('DATECR', this.todayPiped);
 
     });
 
@@ -1025,33 +1155,85 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   public checkEnableWhen(value, index) {
-    this.config.forEach(el => {
-      if (el.enableWhenA && el.enableWhenQ) {
-        if (index === el.enableWhenQ) {
+    // console.log(this.form.value);
+    // console.log(this.form.value.ASSESTYPE);
+    this.config.forEach(elemOfConfig => {
+      if (this.form.value.ASSESTYPE === 'Pre-Placement' && this.userRole === 'clientdept') {
+        // console.log(elemOfConfig);
 
-          if (value === el.enableWhenA) {
+        this.form.setDisabled('USERDEPT', false);
 
-            el.elementClass = 'enable-when-show';
-            el.flag = true;
+      } else {
+        this.form.setDisabled('USERDEPT', true);
+        this.form.setValue('USERDEPT', this.currentUserDepartment);
+      }
+      if (elemOfConfig.enableWhen) {
 
-          } else {
-            el.flag = false;
-            el.elementClass = 'enable-when-hide';
-            this.form.setValue(el.name, null);
-            this.config.forEach(elem => {
-              if (elem.enableWhenA && elem.enableWhenQ) {
-                if (el.name === elem.enableWhenQ && elem.elementClass === 'enable-when-show') {
-                  elem.elementClass = 'enable-when-hide';
-                  this.form.setValue(elem.name, null);
-                }
+
+        for (const formElem of elemOfConfig.enableWhen) {
+          if (index === formElem.enableWhenQ) {
+            if (value === formElem.enableWhenA) {
+              // console.log(elemOfConfig);
+              elemOfConfig.elementClass = 'enable-when-show';
+              elemOfConfig.flag = true;
+              // if (elemOfConfig.name === 'ASSESTYPE' && elemOfConfig.value === 'Pre-Placement') {
+              //   console.log("i am here", elemOfConfig);
+              // }
+              return;
+            } else {
+              elemOfConfig.flag = false;
+              elemOfConfig.elementClass = 'enable-when-hide';
+              this.form.setValue(elemOfConfig.name, null);
+              if (elemOfConfig.options) {
+                elemOfConfig.options.forEach(option => {
+                  this.config.forEach(configElement => {
+                    if (configElement.enableWhen) {
+                      configElement.enableWhen.forEach(enableW => {
+                        if (enableW.enableWhenA === option && configElement.elementClass === 'enable-when-show') {
+                          configElement.elementClass = 'enable-when-hide';
+                          this.form.setValue(configElement.name, null);
+                        }
+                      });
+                    }
+                  });
+                });
               }
-
-            });
+            }
           }
         }
       }
     });
+
   }
+
+  // public checkEnableWhen(value, index) {
+  //   this.config.forEach(el => {
+  //     if (el.enableWhenA && el.enableWhenQ) {
+  //       if (index === el.enableWhenQ) {
+
+  //         if (value === el.enableWhenA) {
+
+  //           el.elementClass = 'enable-when-show';
+  //           el.flag = true;
+
+  //         } else {
+  //           el.flag = false;
+  //           el.elementClass = 'enable-when-hide';
+  //           this.form.setValue(el.name, null);
+  //           this.config.forEach(elem => {
+  //             if (elem.enableWhenA && elem.enableWhenQ) {
+  //               if (el.name === elem.enableWhenQ && elem.elementClass === 'enable-when-show') {
+  //                 elem.elementClass = 'enable-when-hide';
+  //                 this.form.setValue(elem.name, null);
+  //               }
+  //             }
+
+  //           });
+  //         }
+  //       }
+  //     }
+  //   });
+  // }
 
 
 
@@ -1064,7 +1246,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   // getting response from thr server on "next"
   handleSuccessOnSave(data) {
     console.log(data);
-    this.createdsuccessfully = true;
+
+    this.formCreated = true;
+  }
+
+  onOk() {
+    this.router.navigateByUrl('/dashboard');
   }
 
   handleErrorOnSave(error) {
@@ -1073,4 +1260,3 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
 
 }
-

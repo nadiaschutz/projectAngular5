@@ -334,6 +334,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     temp['id'] = data['id'];
     temp['given'] = data['name'][0]['given'][0];
     temp['family'] = data['name'][0]['family'];
+    sessionStorage.setItem('emplFam', data['name'][0]['family']);
+    sessionStorage.setItem('emplGiven', data['name'][0]['given'][0]);
     temp['dob'] = data['birthDate'];
     temp['identifier'] = {};
     if (data['identifier']) {
@@ -422,6 +424,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       );
 
     this.selected = temp;
+    console.log(this.selected);
+    sessionStorage.setItem('emplType', this.selected['employeeType']['valueString']);
 
     this.patientService
       .getPatientByLinkID(this.selected['linkID']['valueString'])

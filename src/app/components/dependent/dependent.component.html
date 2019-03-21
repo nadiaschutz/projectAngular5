@@ -38,8 +38,8 @@
             <label for="dob">Date of Birth</label>
             <!-- <input type="date" class="form-control" placeholder="Enter" formControlName="dob" id="dob" required> -->
 
-            <input  class="form-control"  type="text" placeholder="Datepicker" formControlName="dob" id="dob"
-                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red required>
+            <input class="form-control" type="text" placeholder="Datepicker" formControlName="dob" id="dob"
+              bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red required>
             <div class="invalid-feedback">
               Cannot be blank
             </div>
@@ -137,7 +137,8 @@
       <div class="row">
         <div class="col">
           <div class="button-section line">
-            <button class="btn regular-button float-right" (click)="setDependent()">Submit Dependent</button>
+            <button class="btn regular-dark-button" (click)="setDependent()" [disabled]="!dependentFormGroup.valid">Submit
+              Dependent</button>
             <div class="valid-feedback">
               Success!
             </div>

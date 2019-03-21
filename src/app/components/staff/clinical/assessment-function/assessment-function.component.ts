@@ -160,9 +160,13 @@ export class AssessmentFunctionComponent implements OnInit {
                 const individualEntry = currentEntry['resource'];
                 temp['serviceId'] = individualEntry['id'];
                 for (const item of individualEntry['item']) {
-                  if (item['text'].toLowerCase().includes('regional office')) {
+                  if (item['linkId'] === 'REGOFFICE') {
                     if (item['answer']) {
-                      temp['region'] = item['answer'][0]['valueString'];
+                      for (const answer of item['answer']) {
+                        if (answer['valueCoding']) {
+                          temp['region'] = answer['valueCoding']['display'];
+                        }
+                      }
                     }
                   }
                 }
