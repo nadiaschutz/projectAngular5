@@ -232,27 +232,12 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     this.adminHomeScreenService.getDepartmentNames()
       .subscribe(bundle => {
         console.log('employee department => ', bundle);
-        if (sessionStorage.getItem('userRole') === ('clientdept')) {
-          for (const index in this.extractKeyValuePairsFromBundle(bundle)) {
-            if (index) {
-              const individualItem = this.extractKeyValuePairsFromBundle(bundle)[index];
-              if (individualItem['text'] === (sessionStorage.getItem('userDept'))) {
-                this.onChangesClientDept(individualItem['value']);
-                this.employeeFormGroup.patchValue({ departmentName: individualItem['text'] });
-                console.log(individualItem['text']);
-              }
-            }
-          }
-        } else {
-          this.employeeDepartmentList = this.extractKeyValuePairsFromBundle(bundle);
-          console.log(this.employeeDepartmentList);
-
-        }
-        console.log(this.employeeDepartmentList)
+        this.employeeDepartmentList = this.extractKeyValuePairsFromBundle(bundle);
       },
-        (err) => console.log('Employee Department list error', err));
+      (err) => console.log('Employee Department list error', err));
   }
 
+  
   onChanges(): void {
 
 
@@ -279,24 +264,6 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
           this.jobLocationList = [];
         }
       });
-  }
-
-  onChangesClientDept(val) {
-
-    if (val !== '') {
-      this.adminHomeScreenService.getJobLocationsClientDept(val)
-        .subscribe(locations => {
-          console.log('job list =>', locations);
-          this.jobLocationList = this.extractKeyValuePairsFromBundle(locations);
-          this.employeeFormGroup.get('departmentBranch').enable();
-        },
-          (err) => {
-            console.log('Job locations list error => ', err);
-          });
-    } else {
-      this.employeeFormGroup.get('departmentBranch').disable();
-      this.jobLocationList = [];
-    }
   }
 
   populatePatientArray(data) {
@@ -722,9 +689,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (this.currentRole !== 'clientdept') {
-      this.onChanges();
-    }
+    this.onChanges();
     this.getAndSetDepartmentList();
   }
 
