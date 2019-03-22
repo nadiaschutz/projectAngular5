@@ -16,7 +16,8 @@ export class AdminHomeScreenService {
   getAllQRIncludeRefs() {
     const loggedInUserId = sessionStorage.getItem('userFHIRID');
 
-    return this.http.get(environment.queryURI + '/QuestionnaireResponse?_include:recurse=*&identifier=SERVREQ&context.care-manager=' + loggedInUserId, { headers: this.getHeaders() })
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse?_include:recurse=*&identifier=SERVREQ&context.care-manager=' 
+    + loggedInUserId, { headers: this.getHeaders() })
       .pipe(
         mergeMap((qrs) => this.getAndAddStatusForQRs(qrs))
       );
@@ -33,7 +34,8 @@ export class AdminHomeScreenService {
     // console.log('Original for getQRStatuses =>', eocIds);
     // console.log('Query Obj for getQRStatuses =>', this.encodeData(obj));
 
-    return this.http.post(environment.queryURI + '/QuestionnaireResponse/_search', query, { headers: this.getHeaders().append('Content-Type', 'application/x-www-form-urlencoded') }).toPromise();
+    return this.http.post(environment.queryURI + '/QuestionnaireResponse/_search', query, 
+    { headers: this.getHeaders().append('Content-Type', 'application/x-www-form-urlencoded') }).toPromise();
   }
 
   getStatusForQRs(bundle) {
@@ -164,13 +166,37 @@ export class AdminHomeScreenService {
   extractStatusFromStatusQR(statusFHIRObj) {
     if (statusFHIRObj && statusFHIRObj.resource && statusFHIRObj.resource.item 
       && Array.isArray(statusFHIRObj.resource.item) && statusFHIRObj.resource.item.length > 0) {
-      const obj = statusFHIRObj.resource.item.find(item => item && item.hasOwnProperty('answer'));
-      if (obj && obj['answer']) {
-        return obj['text'];
-      }
+      const obj = statusFHIRObj.resource;
+      const status = this.sortMilestone(obj);
+      return status;
     }
 
     return null;
+  }
+
+  sortMilestone(obj) {
+    if (obj) {
+      const arr = [];
+      obj['item'].forEach(element => {
+        if (element.answer) {
+          arr.push(element);
+        }
+      });
+      console.log(arr);
+      arr.sort(function(a, b) {
+        if (a['answer'] && b['answer']) {
+          if (a['answer'][0]['valueDateTime'] && b['answer'][0]['valueDateTime']) {
+            return (
+              new Date(b['answer'][0]['valueDateTime']).getTime() -
+              new Date(a['answer'][0]['valueDateTime']).getTime()
+            );
+          }
+        }
+      });
+
+      return arr[0]['linkId'];
+
+    }
   }
 
   async getAndAddStatusForQRs(qrs) {
