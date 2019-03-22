@@ -16,121 +16,130 @@ import { FieldConfig } from '../dynamic-forms/field-config.interface';
 })
 export class DistrictOfficeAddComponent implements AfterViewInit, OnInit {
 
-// var for styling each form field
-style = 'col-5';
+  // var for styling each form field
+  style = 'col-5';
 
 
 
-regionalOffices = [];
-regionalOfficesWithId = {};
+  regionalOffices = [];
+  regionalOfficesWithId = {};
 
-districtOffices = [];
-locationFormGroup: FormGroup;
+  districtOffices = [];
+  locationFormGroup: FormGroup;
 
 
 
-constructor(
-  private formBuilder: FormBuilder,
-  private httpClient: HttpClient,
-  private userService: UserService,
-  private router: Router
-) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private httpClient: HttpClient,
+    private userService: UserService,
+    private router: Router
+  ) { }
 
-@ViewChild(DynamicFormComponent) form: DynamicFormComponent;
-    config: FieldConfig[] = [
-      {
-        type: 'input',
-        label: 'PSOHP Office',
-        inputType: 'text',
-        placeholder: 'Enter District Office',
-        name: 'officeName',
-        validation: [Validators.required]
-      },
-      {
-        type: 'select',
-        label: 'Region',
-        name: 'region',
-        options: this.regionalOffices,
-        placeholder: 'Select Region',
-        validation: [Validators.required]
-      },
-      {
-        type: 'input',
-        label: 'Phone Number',
-        inputType: 'text',
-        placeholder: 'Enter Phone Number',
-        name: 'phoneNumber',
-        validation: [
-          Validators.required,
-          // CustomValidator.numberValidator,
-          Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
-        ]
-      },
-      {
-        type: 'input',
-        label: 'Fax Number',
-        inputType: 'text',
-        placeholder: 'Enter Fax Number',
-        name: 'faxNumber',
-        validation: [
-          Validators.required,
-          // CustomValidator.numberValidator,
-          Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
-        ]
-      },
-      {
-        type: 'input',
-        label: 'Email Address',
-        inputType: 'email',
-        placeholder: 'Enter Email',
-        name: 'email',
-        validation: [Validators.required, Validators.email]
-      },
-      {
-        type: 'input',
-        label: 'Address',
-        inputType: 'text',
-        placeholder: 'Enter Address',
-        name: 'addressStreet',
-        validation: [Validators.required]
-      },
-      {
-        type: 'input',
-        label: 'City',
-        inputType: 'text',
-        placeholder: 'Enter City',
-        name: 'city',
-        validation: [Validators.required]
-      },
-      {
-        type: 'select',
-        label: 'Province',
-        inputType: 'text',
-        name: 'province',
-        placeholder: 'Enter Province',
-        options: this.regionalOffices,
-        validation: [Validators.required]
-      },
-      {
-        type: 'input',
-        label: 'Postal Code',
-        inputType: 'text',
-        placeholder: 'Enter Postal Code',
-        name: 'postalCode',
-        validation: [Validators.required]
-      },
-      {
-        type: 'line'
-      },
-      {
-        type: 'button',
-        name: 'submit',
-        label: 'Save'
-      }
-    ];
+  @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
+  config: FieldConfig[] = [
+    {
+      type: 'input',
+      label: 'PSOHP Office',
+      inputType: 'text',
+      placeholder: 'Enter District Office',
+      name: 'officeName',
+      validation: [Validators.required],
+      required: true
+    },
+    {
+      type: 'select',
+      label: 'Region',
+      name: 'region',
+      options: this.regionalOffices,
+      placeholder: 'Select Region',
+      validation: [Validators.required],
+      required: true
+    },
+    {
+      type: 'input',
+      label: 'Phone Number',
+      inputType: 'text',
+      placeholder: 'Enter Phone Number',
+      name: 'phoneNumber',
+      required: true,
+      validation: [
+        Validators.required,
+        // CustomValidator.numberValidator,
+        Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
+      ]
+    },
+    {
+      type: 'input',
+      label: 'Fax Number',
+      inputType: 'text',
+      placeholder: 'Enter Fax Number',
+      name: 'faxNumber',
+      required: true,
+      validation: [
+        Validators.required,
+        // CustomValidator.numberValidator,
+        Validators.pattern('^[(]{0,1}[0-9]{3}[)]{0,1}[-\s\.]{0,1}[0-9]{3}[-\s\.]{0,1}[0-9]{4}$')
+      ]
+    },
+    {
+      type: 'input',
+      label: 'Email Address',
+      inputType: 'email',
+      placeholder: 'Enter Email',
+      name: 'email',
+      required: true,
+      validation: [Validators.required, Validators.email]
+    },
+    {
+      type: 'input',
+      label: 'Address',
+      inputType: 'text',
+      placeholder: 'Enter Address',
+      name: 'addressStreet',
+      required: true,
+      validation: [Validators.required]
+    },
+    {
+      type: 'input',
+      label: 'City',
+      inputType: 'text',
+      placeholder: 'Enter City',
+      name: 'city',
+      required: true,
+      validation: [Validators.required]
+    },
+    {
+      type: 'select',
+      label: 'Province',
+      inputType: 'text',
+      name: 'province',
+      placeholder: 'Enter Province',
+      options: this.regionalOffices,
+      required: true,
+      validation: [Validators.required]
+    },
+    {
+      type: 'input',
+      label: 'Postal Code',
+      inputType: 'text',
+      placeholder: 'Enter Postal Code',
+      name: 'postalCode',
+      required: true,
+      validation: [Validators.required, Validators.maxLength(6), Validators.minLength(6)]
+    },
+    {
+      type: 'line'
+    },
+    {
+      type: 'button',
+      name: 'submit',
+      label: 'Save'
+    }
+  ];
 
-    ngAfterViewInit() {
-      setTimeout(() => {
+  ngAfterViewInit() {
+    setTimeout(() => {
       let previousValid = this.form.valid;
       this.form.changes.subscribe(() => {
         if (this.form.valid !== previousValid) {
@@ -149,20 +158,20 @@ constructor(
     this.addDiv();
     // the end
 
-    }
+  }
 
 
   wrap() {
     const x = $('.field-holder-2 form-input');
-    for (let i = 0; i < x.length; i ++) {
+    for (let i = 0; i < x.length; i++) {
       console.log(x[i]);
-      $(x[i]).wrap("<div class='" + this.style +"'></div>");
+      $(x[i]).wrap("<div class='" + this.style + "'></div>");
     }
   }
 
-    addDiv() {
-      const sections = $('.dynamic-form .' + this.style);
-      for (let i = 0; i < sections.length; i += 2) {
+  addDiv() {
+    const sections = $('.dynamic-form .' + this.style);
+    for (let i = 0; i < sections.length; i += 2) {
       sections.slice(i, i + 2).wrapAll("<div class='row'></div>");
     }
   }
@@ -189,7 +198,7 @@ constructor(
     organizationReference.reference =
       'Organization/' +
       this.regionalOfficesWithId[
-        value.region
+      value.region
       ];
     districtOffice.managingOrganization = organizationReference;
 
