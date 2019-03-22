@@ -244,6 +244,7 @@ $milestone-20-color: #73d2de;
 
 .checklist-label {
     // margin-left: 10px;
+    font-size: 11px;
     text-align: justify;
 }
 
@@ -460,4 +461,10 @@ button {
   border-bottom:  solid  #c4c4c4 3px;
   padding-top: 10px;
   margin-bottom: 30px;
+}
+
+.doc-list-section {
+  padding-top: 10px;
+
+  border-bottom:  solid  #c4c4c4 0.5px;
 }
