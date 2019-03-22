@@ -455,7 +455,7 @@
         </div>
         <div class="timeline-row">
 
-          </div>
+        </div>
         <div class="row summary-card-row-adjust" *ngIf="milestoneForDisplay">
           <div class="col-5" *ngIf="milestoneForDisplay['answer']">
             Milestone updated: {{milestoneForDisplay['displayTime']}}
@@ -465,52 +465,52 @@
           </div>
           <div class="col">
 
-              <div class=" text-left" *ngIf="milestoneObject">
-                <div class="dropdown ">
-                  <button class="btn milestone-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                    Update Milestone Progress
-                  </button>
-                  <div class="dropdown-menu milestone-menu" aria-labelledby="dropdownMenuButton">
-                    <form [formGroup]="milestoneFormGroup" class="px-4 milestone-formgroup-adjust" novalidate>
-                      <section class="form-section">
-                        <div class="row">
-                          <div class="col">
-                            <label for="statusNote">Reason for change - <strong>Required</strong></label>
-                            <input type="text" name="statusNote" #statusNote id="statusNote" (keyup)="captureStatusReasonInput(statusNote.value)"
-                              formControlName="statusNote" class="form-control" required placeholder="Enter">
-                            <div *ngIf="milestoneFormGroup.controls['statusNote'].invalid
+            <div class=" text-left" *ngIf="milestoneObject">
+              <div class="dropdown ">
+                <button class="btn milestone-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                  Update Milestone Progress
+                </button>
+                <div class="dropdown-menu milestone-menu" aria-labelledby="dropdownMenuButton">
+                  <form [formGroup]="milestoneFormGroup" class="px-4 milestone-formgroup-adjust" novalidate>
+                    <section class="form-section">
+                      <div class="row">
+                        <div class="col">
+                          <label for="statusNote">Reason for change - <strong>Required</strong></label>
+                          <input type="text" name="statusNote" #statusNote id="statusNote" (keyup)="captureStatusReasonInput(statusNote.value)"
+                            formControlName="statusNote" class="form-control" required placeholder="Enter">
+                          <div *ngIf="milestoneFormGroup.controls['statusNote'].invalid
                               && (milestoneFormGroup.controls['statusNote'].touched || milestoneFormGroup.controls['statusNote'].dirty)">
-                              <div class="error-message">
-                                Field cannot be blank
-                              </div>
+                            <div class="error-message">
+                              Field cannot be blank
                             </div>
                           </div>
                         </div>
-                        <div class="row">
-                          <div class="col">
-                            <div>
-                              <label for="status">Select a status</label>
-                              <select formControlName="status" class="form-control" id="status" name="status">
-                                <option [disabled]="!milestoneFormGroup.valid" *ngFor="let milestone of milestoneSelectionList"
-                                  [value]="milestone.value">
-                                  {{milestone['viewValue']}}
-                                </option>
-                              </select>
-                            </div>
+                      </div>
+                      <div class="row">
+                        <div class="col">
+                          <div>
+                            <label for="status">Select a status</label>
+                            <select formControlName="status" class="form-control" id="status" name="status">
+                              <option [disabled]="!milestoneFormGroup.valid" *ngFor="let milestone of milestoneSelectionList"
+                                [value]="milestone.value">
+                                {{milestone['viewValue']}}
+                              </option>
+                            </select>
                           </div>
                         </div>
-                        <div class="row">
-                          <div class="col">
-                              <button [disabled]="!milestoneFormGroup.valid" class="btn special-button" (click)="changeMilestoneToSelected()">
-                                  Change Status</button>
-                          </div>
+                      </div>
+                      <div class="row">
+                        <div class="col">
+                          <button [disabled]="!milestoneFormGroup.valid" class="btn special-button" (click)="changeMilestoneToSelected()">
+                            Change Status</button>
                         </div>
-                      </section>
-                    </form>
-                  </div>
+                      </div>
+                    </section>
+                  </form>
                 </div>
               </div>
             </div>
+          </div>
         </div>
         <div class="row summary-card-row-adjust">
           <div class="col-5">
@@ -519,7 +519,7 @@
           <div class="col-3">
             Service Request ID: {{summary['serviceRequestId']}}
           </div>
-        
+
         </div>
         <div class="row summary-card-row-adjust">
           <div class="col-5" *ngIf="summary['employeePRI']">
@@ -771,38 +771,35 @@
               Add a required document to this checklist
             </div>
             <div *ngIf="!showChecklistForm">
-              <div *ngFor="let item of checkListDocObject['item']">
+              <div *ngFor="let item of checkListDocObject['item']; let i = index">
                 <div>
-                  <input class="form-check-input" (change)="docChecklistItemStateChange(item)" type="checkbox" value="item['answer'][0]['valueBoolean']"
-                    id="doclabel{{item['linkId']}}" [(ngModel)]="item['answer'][0]['valueBoolean']" checked="{{item['answer'][0]['valueBoolean']}}">
-                  <label class="form-check-label checklist-label " for="doclabel{{item['linkId']}}">
-                    {{item['text']}}
-                  </label>
-                  <div *ngIf="item['answer'][0]['valueBoolean']">
-                    <div *ngFor="let display of documentsList">
-                      <div *ngIf="item['answer'][1]">
-                        <div *ngIf="item['answer'][1]['valueReference']['reference'] === display['docReference']">
-                          <label for="">Document Associated: <strong>{{display['fileFullName']}}</strong></label>
-                          <label for=""></label>
+                  <table>
+                    <tr>
+                      <td><input (change)="onDockChecklistItemChange(i)" type="checkbox" id="doclabel{{item['linkId']}}"
+                          [(ngModel)]="item.value"></td>
+                      <td class="checklist-desc"><span class="checklist-label">{{item['text']}}</span></td>
+                    </tr>
+                  </table>
+                  <div *ngIf="item['answer']">
+                    <div *ngFor="let document of item['answer']">
+                      <div *ngFor="let display of documentsList">
+                        <div *ngIf="document['valueReference']['reference'] === display['docReference']">
+                          <label for="">Document Associated: <span class="cursor"><strong (click)="changeDocStatusFromActionRequired(display)">{{display['fileFullName']}}</strong></span></label>
                         </div>
                       </div>
-                      <div *ngIf="!item['answer']">
-                        <div *ngIf="item['answer'][1]['valueReference']['reference'] === display['docReference']">
-                          <label for="">Document Associated: <strong>Only Available to Clinical Users</strong></label>
-                          <label for=""></label>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <label for="docSelected{{item['linkId']}}">Select a document</label>
-                      <select class="form-control" id="docSelected{{item['linkId']}}" (change)="updateDocumentsCheckedOff(item, $event.target.value)">
-                        <option value="null">Select a doc</option>
-                        <option *ngFor="let doc of documentsList" [value]="doc['docReference']">
-                          {{doc['fileFullName']}}
-                        </option>
-                      </select>
                     </div>
                   </div>
+                  <div>
+                    <label for="docSelected{{item['linkId']}}">Select a document</label>
+                    <select class="form-control" id="docSelected{{item['linkId']}}" (change)="updateDocumentsCheckedOff(item, $event.target.value, i)">
+                      <option value="null">Select a document</option>
+                      <option *ngFor="let doc of documentsList" [value]="doc['docReference']">
+                        {{doc['fileFullName']}}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div class="doc-list-section">
                 </div>
               </div>
 
@@ -810,9 +807,7 @@
 
             <div *ngIf="showChecklistForm">
               <form [formGroup]="checkListItemGroup" novalidate>
-
                 <section class="form-section">
-
                   <div class="row">
                     <div class="col">
                       <input type="text" name="document" id="document" formControlName="document" class="form-control"
@@ -826,11 +821,6 @@
                         Add checklist item
                       </button>
                     </div>
-                    <!-- <div class="col">
-                      <button class="btn regular-button btn-file" [disabled]='!checkListItemGroup.valid' (click)='saveItemToQResponse()'>
-                        Add checklist item
-                      </button>
-                    </div> -->
                   </div>
                 </section>
               </form>
