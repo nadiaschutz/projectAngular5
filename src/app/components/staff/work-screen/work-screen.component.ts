@@ -1656,7 +1656,7 @@ export class WorkScreenComponent implements OnInit {
           });
         }
       }
-    )
+    );
   }
 
   downloadFile(incomingFile) {

@@ -73,8 +73,8 @@ export class EmployeeComponent implements OnInit {
   jobLocationList: NameValueLookup[] = [];
   employeeDepartmentList: NameValueLookup[] = [];
   currentRole;
-  // Store a UUID to link Employee and Dependent objects
 
+  // Store a UUID to link Employee and Dependent objects
   linkId;
 
   // list of  Languages

@@ -158,59 +158,6 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
         showWeekNumbers: false
       });
 
-
-    // this.userService
-    //   .getDepartmentList()
-    //   .subscribe(
-    //     data => this.setDepartments(data),
-    //     error => this.handleError(error)
-    //   );
-
-    // // Set Branch List
-
-    // this.userService
-    //   .getBranchList()
-    //   .subscribe(
-    //     data => this.setBranchList(data),
-    //     error => this.handleError(error)
-    //   );
-
-    // /**
-    //  * Initializes list for regional offices on our system
-    //  */
-    // this.userService
-    //   .fetchAllRegionalOffices()
-    //   .subscribe(
-    //     data => this.populateRegionalOffices(data),
-    //     error => this.handleError(error)
-    //   );
-
-    // /**
-    //  * Initializes list for district offices on our system
-    //  */
-    // this.userService
-    //   .fetchAllDistrictOffices()
-    //   .subscribe(
-    //     data => this.populateDistrictOffices(data),
-    //     error => this.handleError(error)
-    //   );
-
-    // /**
-    //  * Initializes the names of all departments on our system
-    //  */
-    // this.userService.fetchAllDepartmentNames().subscribe (
-    //   data => this.populateDeptNames(data),
-    //   error => this.handleError(error)
-    // );
-
-    // /**
-    //  * Initializes the list of branches from our system
-    //  */
-    // this.userService.fetchAllDepartmentBranches().subscribe (
-    //   data => this.populateDeptBranches(data),
-    //   error => this.handleError(error)
-    // );
-
     this.summaryId = sessionStorage.getItem('patientSummaryId');
     this.userService.getEmployeeSummaryID(this.summaryId);
     if (this.summaryId) {
