@@ -498,7 +498,7 @@
         </div>
 
         <div class="row">
-          <div class="col" *ngIf="currentRole !== 'clientdept'">
+          <div class="col">
             <label for="departmentName">Department Name</label>
             <select class="form-control" formControlName="departmentName" id="departmentName" required>
               <option *ngFor="let dept of employeeDepartmentList" [value]="dept.value">
@@ -512,12 +512,8 @@
               </div>
             </div>
           </div>
-          <div class="col" *ngIf="currentRole === 'clientdept'">
-            <label for="departmentName">Department Name</label>
-            <input type="text" class="form-control" readonly formControlName="departmentName" id="departmentName"
-              required>
-          </div>
-          <div class="col" *ngIf="currentRole !== 'clientdept'">
+
+          <div class="col">
             <label for="departmentBranch">Department Branch</label>
             <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
               <option value="">(Select)</option>
@@ -532,21 +528,7 @@
               </div>
             </div>
           </div>
-          <div class="col" *ngIf="currentRole === 'clientdept'">
-            <label for="departmentBranch">Department Branch</label>
-            <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
-              <option value="">(Select)</option>
-              <option *ngFor="let item of jobLocationList" [value]="item.text">
-                {{item.text}}
-              </option>
-            </select>
-            <div *ngIf="employeeFormGroup.controls['departmentBranch'].invalid
-              && (employeeFormGroup.controls['departmentBranch'].touched || employeeFormGroup.controls['departmentBranch'].dirty)">
-              <div class="error-message">
-                Cannot be blank
-              </div>
-            </div>
-          </div>
+
         </div>
 
         <div class="row">

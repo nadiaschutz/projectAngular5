@@ -36,7 +36,7 @@
   <li (click)="adviceRequestPage()" class="menu-item">
     <a (click)="adviceRequestPage()">Contact Us</a>
   </li>
-  <div [ngClass]="roleInSession">
+  <div [ngClass]="roleInSession" *ngIf="roleInSession !== 'clientdept'">
     <li (click)="acccountCreation()" class="menu-item">
       <a (click)="acccountCreation()">Add New Account</a>
     </li>

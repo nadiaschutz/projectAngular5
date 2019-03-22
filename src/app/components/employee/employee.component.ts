@@ -203,9 +203,7 @@ export class EmployeeComponent implements OnInit {
     this.employeeFormGroup.get('departmentName').setValue(this.currentUserDepartment);
     this.employeeFormGroup.get('departmentBranch').setValue(this.currentUserBranch);
 
-    if (this.currentRole !== 'clientdept') {
       this.onChanges();
-    }
     this.getAndSetDepartmentList();
 
   }
@@ -266,25 +264,9 @@ export class EmployeeComponent implements OnInit {
     this.adminHomeScreenService.getDepartmentNames()
       .subscribe(bundle => {
         console.log('employee department => ', bundle);
-        if (sessionStorage.getItem('userRole') === ('clientdept')) {
-          for (const index in this.extractKeyValuePairsFromBundle(bundle)) {
-            if (index) {
-              const individualItem = this.extractKeyValuePairsFromBundle(bundle)[index];
-              if (individualItem['text'] === (sessionStorage.getItem('userDept'))) {
-                this.onChangesClientDept(individualItem['value']);
-                this.employeeFormGroup.patchValue({ departmentName: individualItem['text'] });
-                console.log(individualItem['text']);
-              }
-            }
-          }
-        } else {
-          this.employeeDepartmentList = this.extractKeyValuePairsFromBundle(bundle);
-      console.log(this.employeeDepartmentList);
-
-        }
-        console.log(this.employeeDepartmentList)
+        this.employeeDepartmentList = this.extractKeyValuePairsFromBundle(bundle);
       },
-        (err) => console.log('Employee Department list error', err));
+      (err) => console.log('Employee Department list error', err));
   }
 
   onChanges(): void {
@@ -315,29 +297,7 @@ export class EmployeeComponent implements OnInit {
       });
   }
 
-  onChangesClientDept(val) {
-    // list to whole form for value changes
-    // this.adminHomeFormGroup.valueChanges.subscribe(val => {
-    //   this.formattedMessage =
-    //     `Hello, My name is ${val.name} and my email is ${val.email}. I would like to tell you that ${val.message}.`;
-    // });
-    // listen to one aprticular field for form change
-
-    if (val !== '') {
-      this.adminHomeScreenService.getJobLocationsClientDept(val)
-        .subscribe(locations => {
-          console.log('job list =>', locations);
-          this.jobLocationList = this.extractKeyValuePairsFromBundle(locations);
-          this.employeeFormGroup.get('departmentBranch').enable();
-        },
-          (err) => {
-            console.log('Job locations list error => ', err);
-          });
-    } else {
-      this.employeeFormGroup.get('departmentBranch').disable();
-      this.jobLocationList = [];
-    }
-  }
+ 
   // Sets the employee when called. Builds a new Patient object, along with associated
   // objects, generates a unique ID to link patient resources (useful for linking)
   // employees & dependents

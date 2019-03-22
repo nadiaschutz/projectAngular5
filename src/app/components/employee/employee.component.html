@@ -186,7 +186,7 @@
         </div>
 
         <div class="row">
-          <div class="col" *ngIf="currentRole !== 'clientdept'">
+          <div class="col">
             <label for="departmentName">Department Name (Required)</label>
             <select class="form-control" formControlName="departmentName" id="departmentName" required>
               <!-- <option value="">{{currentUserDepartment}}</option> -->
@@ -195,26 +195,12 @@
               </option>
             </select>
           </div>
-          <div class="col" *ngIf="currentRole === 'clientdept'">
-            <label for="departmentName">Department Name (Required)</label>
-            <input type="text" class="form-control" readonly formControlName="departmentName" id="departmentName"
-              required>
-          </div>
 
-          <div class="col" *ngIf="currentRole !== 'clientdept'">
+          <div class="col">
             <label for="departmentBranch">Department Branch (Required)</label>
             <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
               <option value="">(Select)</option>
               <option *ngFor="let item of jobLocationList" [value]="item.value">
-                {{item.text}}
-              </option>
-            </select>
-          </div>
-          <div class="col" *ngIf="currentRole === 'clientdept'">
-            <label for="departmentBranch">Department Branch (Required)</label>
-            <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
-              <option value="">(Select)</option>
-              <option *ngFor="let item of jobLocationList" [value]="item.text">
                 {{item.text}}
               </option>
             </select>
