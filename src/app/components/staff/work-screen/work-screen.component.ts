@@ -1334,16 +1334,9 @@ export class WorkScreenComponent implements OnInit {
 
       newReference.reference = 'DocumentReference/' + data;
       newAnswer.valueReference = newReference;
-      newAnswerBoolean.valueBoolean = true;
-      console.log(
-        newReference.reference,
-        this.checkListDocObject,
-        selectedValue
-      );
       this.checkListDocObject['item'].forEach(itemFound => {
         if (itemFound['text'] === selectedValue['text']) {
-          selectedValue['answer'][0] = newAnswerBoolean;
-          selectedValue['answer'][1] = newAnswer;
+          selectedValue['answer'][0] = newAnswer;
           itemFound = selectedValue;
 
           console.log('match!,', this.checkListDocObject['id']);
