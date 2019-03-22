@@ -19,7 +19,8 @@
   <ng-template #successHeader>
     <div class="main-header">
       <h5>accounts</h5>
-      <h6>accounts > Success! Account for {{practitionerPieces.given}} {{practitionerPieces.family}} has been created! </h6>
+      <h6>accounts > Success! Account for {{practitionerPieces.given}} {{practitionerPieces.family}} has been created!
+      </h6>
     </div>
   </ng-template>
 
@@ -28,8 +29,8 @@
     <div class="row">
 
       <div class="col">
-        <label for="pri">Employee PRI</label>
-        <input type="text" class="form-control" placeholder="PRI" formControlName="pri" id="pri" name="pri">
+        <label for="pri">Employee PRI (Required)</label>
+        <input type="text" class="form-control" placeholder="PRI" formControlName="pri" id="pri" name="pri" required>
         <div *ngIf="accountFormGroup.controls['pri'].invalid
                   && (accountFormGroup.controls['pri'].touched || accountFormGroup.controls['pri'].dirty)">
           <div class="error-message">
@@ -38,9 +39,9 @@
         </div>
       </div>
       <div class="col">
-        <label for="password">Password</label>
+        <label for="password">Password (Required)</label>
         <input type="password" class="form-control" placeholder="password" formControlName="password" id="password"
-          name="password">
+          name="password" required>
         <div *ngIf="accountFormGroup.controls['password'].invalid
                     && (accountFormGroup.controls['password'].touched || accountFormGroup.controls['password'].dirty)">
           <div class="error-message">
@@ -52,8 +53,9 @@
 
     <div class="row">
       <div class="col">
-        <label for="family">Last Name</label>
-        <input type="text" class="form-control" placeholder="Last Name" formControlName="family" id="family" name="family">
+        <label for="family">Last Name (Required)</label>
+        <input type="text" class="form-control" placeholder="Last Name" formControlName="family" id="family" name="family"
+          required>
         <div *ngIf="accountFormGroup.controls['family'].invalid
                       && (accountFormGroup.controls['family'].touched || accountFormGroup.controls['family'].dirty)">
           <div class="error-message">
@@ -62,8 +64,9 @@
         </div>
       </div>
       <div class="col">
-        <label for="given">First Name</label>
-        <input type="text" class="form-control" placeholder="First Name" formControlName="given" id="given" name="given">
+        <label for="given">First Name (Required)</label>
+        <input type="text" class="form-control" placeholder="First Name" formControlName="given" id="given" name="given"
+          required>
         <div *ngIf="accountFormGroup.controls['given'].invalid
                         && (accountFormGroup.controls['given'].touched || accountFormGroup.controls['given'].dirty)">
           <div class="error-message">
@@ -75,7 +78,7 @@
 
     <div class="row">
       <div class="col">
-        <label for="role">Role</label>
+        <label for="role">Role (Required)</label>
         <select class="form-control" formControlName="role" id="role" required>
           <option *ngFor="let roles of roleTypes" [value]="roles.value">
             {{roles.viewValue}}
@@ -103,9 +106,9 @@
 
     <div class="row">
       <div class="col">
-        <label for="phoneNumber">Phone Number</label>
+        <label for="phoneNumber">Phone Number (Required)</label>
         <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber"
-          name="phoneNumber">
+          name="phoneNumber" required>
         <div *ngIf="accountFormGroup.controls['phoneNumber'].invalid
                         && (accountFormGroup.controls['phoneNumber'].touched || accountFormGroup.controls['phoneNumber'].dirty)">
           <div class="error-message">
@@ -114,8 +117,9 @@
         </div>
       </div>
       <div class="col">
-        <label for="email">Email</label>
-        <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email" name="email">
+        <label for="email">Email (Required)</label>
+        <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email" name="email"
+          required>
         <div *ngIf="accountFormGroup.controls['email'].invalid
                           && (accountFormGroup.controls['email'].touched || accountFormGroup.controls['email'].dirty)">
           <div class="error-message">
@@ -128,7 +132,7 @@
     <div class="row">
       <div class="col">
         <label for="regionalOffice">Regional Office</label>
-        <select class="form-control" formControlName="regionalOffice" id="regionalOffice" required>
+        <select class="form-control" formControlName="regionalOffice" id="regionalOffice">
           <option *ngFor="let regionalOffice of regionalOffices" [value]="regionalOffice.id">
             {{regionalOffice.name}}
           </option>
@@ -142,7 +146,7 @@
       </div>
       <div class="col">
         <label for="districtOffice">District Office</label>
-        <select class="form-control" formControlName="districtOffice" id="districtOffice" required>
+        <select class="form-control" formControlName="districtOffice" id="districtOffice">
           <option *ngFor="let districtOffice of districtOffices" [value]="districtOffice.id">
             {{districtOffice.name}}
           </option>
@@ -158,7 +162,7 @@
 
     <div class="row">
       <div class="col">
-        <label for="departmentName">Department Name</label>
+        <label for="departmentName">Department Name (Required)</label>
         <select class="form-control" formControlName="departmentName" id="departmentName" required>
           <option *ngFor="let department of deptName" [value]="department.id">
             {{department.name}}
@@ -172,7 +176,7 @@
         </select>
       </div>
       <div class="col">
-        <label for="departmentBranch">Department Branch</label>
+        <label for="departmentBranch">Department Branch (Required)</label>
         <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
           <option *ngFor="let branch of deptBranch" [value]="branch.id">
             {{branch.name}}
@@ -199,9 +203,9 @@
       </div>
       <!-- <div *ngIf="confirmSubmit" class="float-right">  -->
       <!-- </div> -->
-      
+
     </div>
-    
-   
+
+
   </form>
 </div>

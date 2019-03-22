@@ -70,8 +70,9 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       type: 'select',
       label: 'Department Branch',
       options: this.deptBranch,
-      placeholder: 'Enter Department Branch',
+      placeholder: 'Select Department Branch',
       name: 'branch',
+      required: true,
       validation: [Validators.required],
       value: this.deptBranch[0]
     },
@@ -82,6 +83,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       options: this.regionalOffices,
       value: 'Prairies',
       placeholder: 'Select Region',
+      required: true,
       validation: [Validators.required]
     },
     {
@@ -90,6 +92,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       name: 'department',
       options: this.deptName,
       placeholder: 'Select Department Name',
+      required: true,
       validation: [Validators.required]
     },
     // {
@@ -102,7 +105,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       inputType: 'text',
       placeholder: '000-000-0000',
       name: 'phone',
-      value: 'kolobok',
+      required: true,
       validation: [
         Validators.required,
         // CustomValidator.numberValidator,
@@ -115,6 +118,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       inputType: 'text',
       placeholder: '000-000-0000',
       name: 'fax',
+      required: true,
       validation: [
         Validators.required,
         // CustomValidator.numberValidator,
@@ -127,6 +131,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       inputType: 'email',
       placeholder: 'Enter Email',
       name: 'email',
+      required: true,
       validation: [Validators.required, Validators.email]
     },
     {
@@ -135,6 +140,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       inputType: 'text',
       placeholder: 'Enter Address',
       name: 'address',
+      required: true,
       validation: [Validators.required]
     },
     {
@@ -143,6 +149,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       inputType: 'text',
       placeholder: 'Enter City',
       name: 'city',
+      required: true,
       validation: [Validators.required]
     },
     {
@@ -151,6 +158,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       options: this.regionalOffices,
       placeholder: 'Enter Province',
       name: 'province',
+      required: true,
       validation: [Validators.required]
     },
     {
@@ -159,12 +167,14 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       inputType: 'text',
       placeholder: 'Enter Postal Code',
       name: 'postalCode',
-      validation: [Validators.required]
+      required: true,
+      validation: [Validators.required, Validators.maxLength(6), Validators.minLength(6)]
     },
     {
       type: 'checkbox',
       label: 'Chargeback Client',
       name: 'chargebackClient',
+      required: true,
       validation: [Validators.required]
     },
     {
