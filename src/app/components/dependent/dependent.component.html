@@ -16,7 +16,7 @@
 
         <div class="row">
           <div class="col">
-            <label for="givenName">First Name</label>
+            <label for="givenName">First Name (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName"
               required>
             <div class="invalid-feedback">
@@ -24,7 +24,7 @@
             </div>
           </div>
           <div class="col">
-            <label for="familyName">Last Name</label>
+            <label for="familyName">Last Name (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
               required>
             <div class="invalid-feedback">
@@ -35,7 +35,7 @@
 
         <div class="row">
           <div class="col">
-            <label for="dob">Date of Birth</label>
+            <label for="dob">Date of Birth (Required)</label>
             <!-- <input type="date" class="form-control" placeholder="Enter" formControlName="dob" id="dob" required> -->
 
             <input class="form-control" type="text" placeholder="Datepicker" formControlName="dob" id="dob"
@@ -45,7 +45,7 @@
             </div>
           </div>
           <div class="col">
-            <label for="type">Preferred Language</label>
+            <label for="type">Preferred Language (Required)</label>
             <select class="form-control" formControlName="language" id="language" placeholder="Select a language"
               required>
               <option *ngFor="let lang of languageList" [value]="lang.value">
@@ -76,7 +76,7 @@
             </div>
           </div>
           <div class="col">
-            <label for="phoneNumber">Phone Number</label>
+            <label for="phoneNumber">Phone Number (Required)</label>
             <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber"
               required>
             <div class="invalid-feedback">
@@ -87,7 +87,7 @@
 
         <div class="row">
           <div class="col">
-            <label for="addressStreet">Street Address</label>
+            <label for="addressStreet">Street Address (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="addressStreet" id="addressStreet"
               required>
             <div class="invalid-feedback">
@@ -106,7 +106,7 @@
 
         <div class="row">
           <div class="col-3">
-            <label for="addressProv">Province</label>
+            <label for="addressProv">Province (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="addressProv" id="addressProv"
               required>
             <div class="invalid-feedback">
@@ -114,7 +114,7 @@
             </div>
           </div>
           <div class="col-3">
-            <label for="addressPcode">Postal Code</label>
+            <label for="addressPcode">Postal Code (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="addressPcode" id="addressPcode"
               required>
             <div class="invalid-feedback">
@@ -122,7 +122,7 @@
             </div>
           </div>
           <div class="col-6">
-            <label for="addressCountry">Country</label>
+            <label for="addressCountry">Country (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="addressCountry" id="addressCountry"
               required>
             <div class="invalid-feedback">
