@@ -67,10 +67,10 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   config: FieldConfig[] = [
     {
-      type: 'select',
+      type: 'input',
       label: 'Department Branch',
-      options: this.deptBranch,
-      placeholder: 'Select Department Branch',
+      // options: this.deptBranch,
+      placeholder: 'Type Department Branch',
       name: 'branch',
       required: true,
       validation: [Validators.required],
