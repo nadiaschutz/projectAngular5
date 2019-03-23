@@ -225,7 +225,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     TitleCasePipe,
     StaffService,
     AdminHomeScreenService,
-    AudiogramService
+    AudiogramService,
+    NewServiceRequestComponent
   ],
   bootstrap: [AppComponent],
   entryComponents: [
