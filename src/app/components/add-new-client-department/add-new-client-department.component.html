@@ -1,0 +1,32 @@
+<div class="container">
+  <div class="main-header">
+    <h5>Client Department</h5>
+    <h6>Create New Client Department</h6>
+  </div>
+
+  <div>
+    <div class="row">
+      <div class="col-md-8" *ngIf="!clientDepartmentCreationSuccess">
+        <input type="text" name="clientDepartmentName" id="clientDepartmentName" class="form-control " placeholder="Enter Client Department Name"
+          [(ngModel)]="clientDepartmentName" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="alert alert-success" *ngIf="clientDepartmentCreationSuccess">
+          <strong>Client Department: {{clientDepartmentName}} added successfully</strong>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-8">
+        <div class="button-section">
+          <button (click)="createClientDepartment()" class="btn special-button" *ngIf="!clientDepartmentCreationSuccess">
+            Add new Client Department</button>
+          <button (click)="backToCreateBranch()" class="btn special-button">
+            Back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -70,7 +70,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       type: 'input',
       label: 'Department Branch',
       // options: this.deptBranch,
-      placeholder: 'Type Department Branch',
+      placeholder: 'Enter Department Branch',
       name: 'branch',
       required: true,
       validation: [Validators.required],
@@ -175,7 +175,6 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       label: 'Chargeback Client',
       name: 'chargebackClient',
       required: true,
-      validation: [Validators.required]
     },
     {
       type: 'line'
@@ -235,10 +234,10 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
     /**
      * Initializes the list of branches from our system
      */
-    this.userService.fetchAllDepartmentBranches().subscribe(
-      data => this.populateDeptBranches(data),
-      error => this.handleError(error)
-    );
+    // this.userService.fetchAllDepartmentBranches().subscribe(
+    //   data => this.populateDeptBranches(data),
+    //   error => this.handleError(error)
+    // );
 
 
     /**
@@ -363,62 +362,27 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
   }
 
   addNewClientDepartment() {
-    this.addClientDepartment = true;
-    this.clientDepartmentName = '';
-    this.clientDepartmentCreationSuccess = false;
+
+    // this.addClientDepartment = true;
+    this.router.navigateByUrl('/addnewclientdepartment');
+    // this.clientDepartmentName = '';
+    // this.clientDepartmentCreationSuccess = false;
   }
 
-  createClientDepartment(data) {
-    if (this.clientDepartmentName !== '') {
-      console.log(this.clientDepartmentName);
-      const clientDepartment = new FHIR.Organization();
-      clientDepartment.resourceType = 'Organization';
 
-      clientDepartment.active = true;
-      clientDepartment.name = this.clientDepartmentName;
-      const typeCoding = new FHIR.Coding();
-
-      typeCoding.system = 'https:bcip.smilecdr.com/fhir/clientDepartment';
-      typeCoding.code = 'CLIENTDEPT';
-      typeCoding.display = 'Client Department';
-
-      const type = new FHIR.CodeableConcept();
-      type.text = 'Client Department';
-      type.coding = [typeCoding];
-      clientDepartment.type = [type];
-      console.log(clientDepartment);
-      this.saveClientDepartment(JSON.stringify(clientDepartment));
-
-    }
-  }
-
-  saveClientDepartment(clientDepartmentData) {
-    this.userService.saveClientDepartment(clientDepartmentData).subscribe(data => {
-      console.log(data);
-      this.clientDepartmentCreationSuccess = true;
-    });
-  }
-
-  backToCreateBranch() {
-    this.addClientDepartment = false;
-    // if you want to style 2 form fields per a row do these :
-    this.wrap();
-    this.addDiv();
-    // the end
-  }
 
   fetchAllClientDepartments() {
     this.userService.fetchAllClientDepartments().subscribe(data => {
-      data['entry'].forEach(element => {
-        this.clientDepartments.push(element['resource']);
+      data['entry'].forEach(element2 => {
+        this.clientDepartments.push(element2['resource']);
       });
       // console.log(this.clientDepartments);
     });
   }
 
   populateRegionalOffices(data: any) {
-    data.entry.forEach(element => {
-      this.regionalOffices.push(element.resource.name);
+    data.entry.forEach(element1 => {
+      this.regionalOffices.push(element1.resource.name);
     });
   }
 
@@ -429,9 +393,9 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
  */
   populateDeptBranches(data: any) {
     // console.log(data.entry);
-    data.entry.forEach(element => {
+    data.entry.forEach(el => {
       // console.log(element.resource.name);
-      this.deptBranch.push(element.resource.name);
+      this.deptBranch.push(el.resource.name);
     });
 
     // this.deptBranch = data.entry.map(el =>
@@ -441,23 +405,48 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
 
   populateDeptNames(data: any) {
-    console.log(data);
+    const arrToSort = [];
     data.entry.forEach(element1 => {
-      // console.log(element1);
-      this.deptName.push(element1.resource.name);
-      this.deptId.push(element1.resource.id);
+      arrToSort.push(element1.resource);
     });
-    // this.deptName = data.entry.map(el =>
-    //  el['resource']['name']
-    // );
-    // this.deptId = data.entry.map(el =>
-    //   el.resource.id
-    //  );
 
-    // console.log(this.deptName);
-    // console.log(this.deptId);
+    const newDeptName = JSON.parse(sessionStorage.getItem('newClientDept'));
 
+    let addDept = true;
+    if (newDeptName) {
+      arrToSort.forEach(obj => {
+        if (obj.name === newDeptName.name) {
+          console.log(obj.name, newDeptName.name);
+          addDept = false;
+        }
+        return;
+      });
+
+    }
+    if (addDept && newDeptName) {
+      console.log('I AM NOT HERE');
+      console.log(newDeptName);
+      arrToSort.push(newDeptName);
+    }
+
+    const sortedArray = arrToSort.sort((obj1, obj2) => {
+      const textA = obj1.name.toUpperCase();
+      const textB = obj2.name.toUpperCase();
+      if (textA > textB) {
+        return 1;
+      }
+      if (textA < textB) {
+        return -1;
+      }
+      return 0;
+    });
+    sortedArray.forEach(obj => {
+      this.deptName.push(obj.name);
+      this.deptId.push(obj.id);
+    });
   }
+
+
 
 
   /**
