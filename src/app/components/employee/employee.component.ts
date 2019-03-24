@@ -366,23 +366,6 @@ export class EmployeeComponent implements OnInit {
     ).value;
 
 
-    if (this.currentRole === 'clientdept') {
-      this.employee_extension_workplace.url =
-        'https://bcip.smilecdr.com/fhir/workplace';
-      this.employee_extension_workplace.valueString = this.employeeFormGroup.get(
-        'departmentName'
-      ).value;
-
-
-      this.employee_extension_branch.url =
-        'https://bcip.smilecdr.com/fhir/branch';
-      this.employee_extension_branch.valueString = this.employeeFormGroup.get(
-        'departmentBranch'
-      ).value;
-    }
-
-
-    if (this.currentRole !== 'clientdept') {
       let deptText = '';
       let branchText = '';
       this.employeeDepartmentList.forEach(item => {
@@ -404,7 +387,6 @@ export class EmployeeComponent implements OnInit {
       this.employee_extension_branch.url =
         'https://bcip.smilecdr.com/fhir/branch';
       this.employee_extension_branch.valueString = branchText;
-    }
 
 
     // Cross Reference One extension
