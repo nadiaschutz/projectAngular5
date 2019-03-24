@@ -758,19 +758,27 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
 
       // Workplace extension
 
+      let deptText = '';
+      let branchText = '';
+      this.employeeDepartmentList.forEach(item => {
+        if (item['value'] === this.employeeFormGroup.get('departmentName').value) {
+          deptText = item['text'];
+        }
+      });
+
+      this.jobLocationList.forEach(branch => {
+        if (branch['value'] === this.employeeFormGroup.get('departmentBranch').value) {
+          branchText = branch['text'];
+        }
+      });
       this.employee_extension_workplace.url =
         'https://bcip.smilecdr.com/fhir/workplace';
-      this.employee_extension_workplace.valueString = this.employeeFormGroup.get(
-        'departmentName'
-      ).value;
+      this.employee_extension_workplace.valueString = deptText;
 
-      // Branch extension
 
       this.employee_extension_branch.url =
         'https://bcip.smilecdr.com/fhir/branch';
-      this.employee_extension_branch.valueString = this.employeeFormGroup.get(
-        'departmentBranch'
-      ).value;
+      this.employee_extension_branch.valueString = branchText;
 
       // Cross Reference One extension
 
