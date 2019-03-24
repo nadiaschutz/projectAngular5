@@ -43,7 +43,21 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
 
 
-
+  provinces = [
+    'Alberta' ,
+    'British Columbia',
+    'Manitoba' ,
+    'New Brunswick' ,
+    'Newfoundland and Labrador',
+    'Northwest Territories',
+    'Nova Scotia' ,
+    'Nunavut',
+    'Ontario',
+    'Prince Edward Island',
+    'Quebec',
+    'Saskatchewan',
+    'Yukon',
+  ];
   // var for styling each form field
   style = 'col-5';
 
@@ -154,9 +168,9 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
     },
     {
       type: 'select',
-      label: 'Province',
-      options: this.regionalOffices,
-      placeholder: 'Enter Province',
+      label: 'Provinces & Territories',
+      options: this.provinces,
+      placeholder: 'Enter P & T',
       name: 'province',
       required: true,
       validation: [Validators.required]
