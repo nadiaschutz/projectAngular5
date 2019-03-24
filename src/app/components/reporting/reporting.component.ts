@@ -4,6 +4,7 @@ import { ExportToCsv } from 'export-to-csv';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { UserService } from '../../service/user.service';
 import { UtilService } from '../../service/util.service';
+import { ReportingService } from '../../service/reporting.service';
 import {
   FormBuilder,
   FormGroup,
@@ -12,6 +13,7 @@ import {
 } from '@angular/forms';
 import * as ReportingInterfaces from '../../interface/reporting-interfaces';
 import { Reporting } from '../../interface/reporting';
+import { Organization } from '../../interface/FHIR';
 
 
 export interface NameValueLookup {
@@ -219,7 +221,7 @@ export class ReportingComponent implements OnInit {
   // For Labs/Vaccines, query the respective resources
 
   constructor(private staffService: StaffService, private userService: UserService,
-    private fb: FormBuilder, private utilService: UtilService) { }
+    private fb: FormBuilder, private utilService: UtilService, private reportingService: ReportingService) { }
 
   // This screen needs a date range picker: year, quarter, and month
   // a date picker: start date and end date
@@ -304,6 +306,17 @@ export class ReportingComponent implements OnInit {
     }
   }
 
+  async testAwait() {
+    const episodeData = await this.reportingService.fetchAllEpisodeOfCare();
+    const questionnaireResponseList = [];
+    for (const episode of episodeData['entry']) {
+      const questionnaireResponses = await this.reportingService.fetchQuestionnaireResponseFromEpisodeOfCare(episode.resource.id);
+      for (const questionnaireResponse of questionnaireResponses['entry']) {
+        console.log(questionnaireResponse.resource);
+      }
+    }
+  }
+
   export() {
     let assessmentCode = '';
     if (this.reportingFormGroup.get('assesmentCat').value !== null) {
@@ -317,36 +330,35 @@ export class ReportingComponent implements OnInit {
         }
       }
     }
-    this.staffService.getSampleEpisodeOfCareAndRelatedData('14654').subscribe(data => {
-      data['entry'].forEach(element => {
-        const resource = element.resource;
-        console.log(resource);
-        if (resource.resourceType === 'Organization') {
-        }
-      });
-    });
-    // if (this.reportingFormGroup.value.dataSet === 'Service Request') {
-    //   this.exportToCSV(this.serviceRequestData);
-    // }
-    // if (this.reportingFormGroup.value.dataSet === 'Care Plan') {
-    //   this.staffService.fetchAllCarePlans().subscribe(data => {
-    //     data['entry'].forEach(element => {
-    //       this.carePlanList.push(element.resource);
-    //     });
-    //     this.processCarePlan();
-    //   });
-    // }
-    // if (this.reportingFormGroup.value.dataSet === 'Diagnostics Test' ||
-    // this.reportingFormGroup.value.dataSet === 'Consultation' ||
-    // this.reportingFormGroup.value.dataSet === 'Medical Information') {
-    //   this.processProcedureRequestData(this.reportingFormGroup.value.dataSet);
-    // }
+    if (this.reportingFormGroup.value.dataSet === 'Service Request') {
+      this.exportToCSV(this.serviceRequestData);
+    }
+    if (this.reportingFormGroup.value.dataSet === 'Care Plan') {
+      const arr = new Array;
+      if (assessmentCode.length > 0 && assessmentCode !== 'Select') {
+        this.carePlanList.forEach(carePlan => {
+          if (carePlan.identifier[0].value === assessmentCode) {
+            arr.push(carePlan);
+          }
+        });
+        this.processCarePlan(arr);
+      } else {
+        this.processCarePlan(arr);
+      }
+    }
+    if (this.reportingFormGroup.value.dataSet === 'Diagnostics Test' ||
+    this.reportingFormGroup.value.dataSet === 'Consultation' ||
+    this.reportingFormGroup.value.dataSet === 'Medical Information') {
+      this.processProcedureRequestData(this.reportingFormGroup.value.dataSet);
+    }
+    // this.resetData();
   }
 
-  processCarePlan() {
-    if (this.carePlanList.length > 0) {
+  processCarePlan(carePlans) {
+    console.log(carePlans);
+    if (carePlans.length > 0) {
       const carePlanResultList = [];
-      this.carePlanList.forEach(carePlan => {
+      carePlans.forEach(carePlan => {
         const episodeOfCareId = this.utilService.getIdFromReference(carePlan.context.reference);
         carePlan.activity.forEach(activity => {
           if (activity.detail.status === 'completed' && activity.progress) {
@@ -367,6 +379,14 @@ export class ReportingComponent implements OnInit {
         });
       });
       this.exportToCSV(carePlanResultList);
+    }
+  }
+
+  async delete() {
+    const data = await this.reportingService.call();
+    for (const element of data['entry']) {
+      const result = await this.reportingService.delete(element.resource.id);
+      console.log(result);
     }
   }
 
@@ -461,9 +481,6 @@ export class ReportingComponent implements OnInit {
   }
 
   exportToCSV(data) {
-    console.log(data);
-    console.log(data[0]);
-    console.log(Array.isArray(data));
     if (Array.isArray(data)) {
       const options = {
         fieldSeparator: ',',
@@ -477,38 +494,8 @@ export class ReportingComponent implements OnInit {
 
       const csvExporter = new ExportToCsv(options);
       csvExporter.generateCsv(data);
+      this.resetData();
     }
-  }
-
-  sampleExport() {
-    const data = [{
-      'Assigned': '',
-      'Closed': '',
-      'OHAG Occupation': 'Health Care Workers-Nurses',
-      'Psohp Service': 'HACAT1',
-      'Received': '',
-      'Regional Office': 'Atlantic-Halifax',
-      'Scheduled': '',
-      'Service Request Id': '14654',
-      'Validated': '',
-      'Waiting': '',
-      'Work-Completed': '2019-03-17'
-    }];
-    console.log(typeof(data));
-    console.log(data[0]);
-    console.log(data);
-    const options = {
-      fieldSeparator: ',',
-      quoteStrings: '"',
-      decimalSeparator: '.',
-      showLabels: true,
-      useTextFile: false,
-      useBom: true,
-      useKeysAsHeaders: true
-    };
-
-    const csvExporter = new ExportToCsv(options);
-    csvExporter.generateCsv(data);
   }
 
   psohpChanged() {
@@ -531,6 +518,10 @@ export class ReportingComponent implements OnInit {
 
   assessCATChanged() {
     const assesCATValue = this.reportingFormGroup.get('assesmentCat').value;
+  }
+
+  resetData() {
+    this.carePlanList = [];
   }
 
 }

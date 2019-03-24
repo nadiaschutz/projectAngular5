@@ -51,6 +51,13 @@ export class StaffService {
     return this.http.get(environment.queryURI + '/CarePlan?context=' + episodeOfCareId, {headers: this.getHeaders()});
   }
 
+  getCarePlanFromAssessmentType(assessmentType) {
+    console.log(environment.queryURI +
+      '/CarePlan?status=active&identifier=' + assessmentType);
+    return this.http.get<FHIR.CarePlan>(environment.queryURI +
+      '/CarePlan?status=active&identifier=' + assessmentType, {headers: this.getHeaders()});
+  }
+
   updateCarePlan(id, carePlanData) {
     return this.http.put(environment.queryURI + '/CarePlan/' + id, carePlanData, {headers: this.getPostHeaders()});
   }
