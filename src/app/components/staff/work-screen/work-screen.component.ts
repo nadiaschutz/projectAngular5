@@ -600,6 +600,29 @@ export class WorkScreenComponent implements OnInit {
         });
   }
 
+  updateCurrentProgress() {
+    if (this.currentProgressFormGroup.valid) {
+      if (this.checkListDocObject) {
+        this.checkListDocObject['status'] = this.currentProgressFormGroup.get('currentProgress').value;
+        this.staffService
+        .updateDocumentsChecklist(
+          this.checkListDocObject['id'],
+          JSON.stringify(this.checkListDocObject)
+        )
+        .subscribe(data => {
+          if (data) {
+            console.log('UPDATED', data);
+            this.checkListDocObject = data;
+            this.checkDocStatusViewText();
+            this.currentProgressFormGroup.reset();
+          }
+        },
+        error => {
+          console.log(error);
+        });
+      }
+    }
+  }
 
   processListOfDependents(patientLinkId) {
     this.staffService
@@ -706,8 +729,11 @@ export class WorkScreenComponent implements OnInit {
       });
 
       const temp = arr[0];
-      const timeVariable = this.utilService.convertUTCForDisplay(arr[0]['answer'][0]['valueDateTime']);
-      temp['displayTime'] = timeVariable;
+      if (arr[0]['answer'][0]['valueDateTime']) {
+
+        const timeVariable = this.utilService.convertUTCForDisplay(arr[0]['answer'][0]['valueDateTime']);
+        temp['displayTime'] = timeVariable;
+      }
      this.milestoneForDisplay = temp;
 
     }
@@ -1112,7 +1138,7 @@ export class WorkScreenComponent implements OnInit {
     milestoneItemFive.linkId = 'Closed';
 
     milestoneItemSix.linkId = 'Received';
-    milestoneItemSix.text = 'Received at ' + this.summary['serviceRequestSubmittedDate'];
+    // milestoneItemSix.text = 'Received at ' + this.summary['serviceRequestSubmittedDate'];
     statusItemAnswer.valueCoding.code = this.utilService.getCurrentDateTime();
     statusItemAnswer.valueCoding.system = 'https://bcip.smilecdr.com/fhir/WorkOrderMlestone';
     statusItemAnswer.valueCoding.display = 'Received at ' + this.utilService.getCurrentDateTime();
@@ -1155,13 +1181,15 @@ export class WorkScreenComponent implements OnInit {
             data['entry'].forEach(element => {
               this.checkListDocObject = element['resource'];
               this.checkDocStatusViewText();
-              this.checkListDocObject['item'].forEach(item => {
-                if (item.answer) {
-                  item.value = true;
-                } else {
-                  item.value = false;
-                }
-              });
+              if (this.checkListDocObject['item']) {
+                this.checkListDocObject['item'].forEach(item => {
+                  if (item.answer) {
+                    item.value = true;
+                  } else {
+                    item.value = false;
+                  }
+                });
+              }
               if (!this.checkListDocObject['item']) {
                 this.checkListDocObject['item'] = [];
               }
@@ -1650,6 +1678,14 @@ export class WorkScreenComponent implements OnInit {
         }
       }
     );
+  }
+
+  hideIfFileIsClinicalToNonClinicians(data) {
+    if (data['docCategory'].toLowerCase() === 'clinical' && sessionStorage.getItem('userRole') !== 'clinician') {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   downloadFile(incomingFile) {

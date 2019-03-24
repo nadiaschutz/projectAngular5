@@ -767,7 +767,7 @@
           </div>
           <div class="card-text">
             Status: {{displayDocStatus}}
-            <div *ngIf="!showChecklistForm && checkListDocObject['item'].length === 0">
+            <div *ngIf="!showChecklistForm && !checkListDocObject['item']">
               Add a required document to this checklist
             </div>
             <div *ngIf="!showChecklistForm">
@@ -784,7 +784,8 @@
                     <div *ngFor="let document of item['answer']">
                       <div *ngFor="let display of documentsList">
                         <div *ngIf="document['valueReference']['reference'] === display['docReference']">
-                          <label for="">Document Associated: <span class="cursor"><strong (click)="changeDocStatusFromActionRequired(display)">{{display['fileFullName']}}</strong></span></label>
+                          <label for="">Document Associated: <span class="cursor" [ngClass]="{'class': true}"><strong
+                                (click)="changeDocStatusFromActionRequired(display)">{{display['fileFullName']}}</strong></span></label>
                         </div>
                       </div>
                     </div>
@@ -980,9 +981,35 @@
         <div class="card-body">
           <label class="card-title"><strong>Override Document Status</strong></label>
 
-
+          <form [formGroup]="currentProgressFormGroup">
+            <section class="form-section">
+              <div class="row">
+                <div class="col">
+                  <label for="currentProgress">Department Branch</label>
+                  <select class="form-control" formControlName="currentProgress" id="currentProgress" required>
+                    <option value="">(Select)</option>
+                    <option *ngFor="let item of statusSelectionList" [value]="item.value">
+                      {{item.viewValue}}
+                    </option>
+                  </select>
+                  <div *ngIf="currentProgressFormGroup.controls['currentProgress'].invalid
+                        && (currentProgressFormGroup.controls['currentProgress'].touched || currentProgressFormGroup.controls['currentProgress'].dirty)">
+                    <div class="error-message">
+                      Cannot be blank
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                  <div class="col justify-content-center">
+                      <button class="btn milestone-menu-button" style="min-width: 100%" [disabled]="!currentProgressFormGroup.valid" (click)="updateCurrentProgress()">Update Progress</button>
+                  </div>
+              </div>
+            </section>
+          </form>
         </div>
       </div>
+
       <div class="card">
         <div class="card-body">
           <label class="card-title"><strong>Summary</strong></label>
