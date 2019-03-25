@@ -1347,6 +1347,7 @@ export class WorkScreenComponent implements OnInit {
         this.showDocForm = false;
         setTimeout(() => {
           this.showSpinner = false;
+          this.docFormGroup.reset();
           location.reload();
         }, 500);
       }
@@ -1356,7 +1357,6 @@ export class WorkScreenComponent implements OnInit {
   associateDocumentWithChecklistItemOnUpload(data) {
     if (this.docFormGroup.get('checkListItem').value && data) {
       const newAnswer = new FHIR.Answer();
-      const newAnswerBoolean = new FHIR.Answer();
       const newReference = new FHIR.Reference();
       const selectedValue = this.docFormGroup.get('checkListItem').value;
 
@@ -1364,8 +1364,9 @@ export class WorkScreenComponent implements OnInit {
       newAnswer.valueReference = newReference;
       this.checkListDocObject['item'].forEach(itemFound => {
         if (itemFound['text'] === selectedValue['text']) {
-          selectedValue['answer'][0] = newAnswer;
-          itemFound = selectedValue;
+            selectedValue['answer'] = [];
+            selectedValue['answer'].push(newAnswer);
+            itemFound = selectedValue;
 
           console.log('match!,', this.checkListDocObject['id']);
 
