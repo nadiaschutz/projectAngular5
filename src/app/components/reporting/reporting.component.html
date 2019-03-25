@@ -3,7 +3,7 @@
 
   <form [formGroup]="reportingFormGroup" novalidate>
 
-    {{reportingFormGroup.value | json}}
+    <!-- {{reportingFormGroup.value | json}} -->
     <div>
   
       <!-- Date Range selection -->
@@ -118,7 +118,6 @@
 
       </div>
       <button (click)="export()" class="export btn special-button">Export</button>
-      <button (click)="delete()" class="export btn special-button">Delete Chicken Wings</button>
     </div>
 
   </form>

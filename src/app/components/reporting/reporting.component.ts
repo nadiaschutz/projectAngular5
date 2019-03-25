@@ -382,14 +382,6 @@ export class ReportingComponent implements OnInit {
     }
   }
 
-  async delete() {
-    const data = await this.reportingService.call();
-    for (const element of data['entry']) {
-      const result = await this.reportingService.delete(element.resource.id);
-      console.log(result);
-    }
-  }
-
   // This method builds Procedure Request data. This is used for: Diagnostics Test, Consultation, Medical information and Immuizations
   processProcedureRequestData(typeOfProcedureRequest: string) {
     this.staffService.getProcedureRequestFromIdentifier(typeOfProcedureRequest).subscribe(data => {

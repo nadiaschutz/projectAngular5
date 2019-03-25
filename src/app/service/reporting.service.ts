@@ -39,11 +39,11 @@ export class ReportingService {
 
   call() {
     return this.httpClient.get(environment.queryURI +
-      '/Location?name=chicken', {headers: this.getHeaders()}).toPromise();
+      '/Organization?name=test', {headers: this.getHeaders()}).toPromise();
   }
 
   delete(id) {
-    return this.httpClient.delete(environment.queryURI +
-      '/Location/' + id, {headers: this.getPostHeaders()}).toPromise();
+    // return this.httpClient.delete(environment.queryURI +
+    //   '/Organization/' + id, {headers: this.getPostHeaders()}).toPromise();
   }
 }
