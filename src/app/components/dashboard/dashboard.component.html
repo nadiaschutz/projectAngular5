@@ -84,12 +84,14 @@
         <div class="client-button-row" [ngClass]="roleInSession">
           <div>
             <div class="col">
-              <button *ngIf="!enableAll" type="button" id="new-client-button" class="btn  float-right regular-dark-button " (click)="enableAllFunction()">Show
+              <button *ngIf="!enableAll" type="button" id="new-client-button" class="btn  float-right regular-dark-button "
+                (click)="enableAllFunction()">Show
                 All Records
               </button>
-              <button *ngIf="enableAll" type="button" id="new-client-button" class="btn  float-right regular-dark-button " (click)="enableAllFunction()">Hide
-                  All Records
-                </button>
+              <button *ngIf="enableAll" type="button" id="new-client-button" class="btn  float-right regular-dark-button "
+                (click)="enableAllFunction()">Hide
+                All Records
+              </button>
             </div>
           </div>
           <div class="col">
@@ -108,7 +110,7 @@
           <!-- <table class="table table-hover"> -->
           <thead class="header-table ">
             <tr>
-              <th scope="col" (click)="sorterFunction('id')">Employee ID</th>
+              <th scope="col" (click)="sorterFunction('id')">Record ID</th>
               <th scope="col" (click)="sorterFunction('firstName')">First Name</th>
               <th scope="col" (click)="sorterFunction('lastName')">Last Name</th>
               <th scope="col" (click)="sorterFunction('dateOfBirth')">Date of Birth</th>
@@ -133,11 +135,8 @@
                   </ng-template>
 
 
-
-
                   <ng-container *ngIf="roleInSession !== 'businessuser'; else plainFirstName">
-                    <!-- <td (click)="routeToSummary(patient)" [ngClass]="{cursor: showCursor(patient)}"> -->
-                    <td>
+                    <td (click)="routeToSummary(patient)" [ngClass]="{cursor: showCursor(patient)}">
                       {{patient.firstName}}</td>
                   </ng-container>
 

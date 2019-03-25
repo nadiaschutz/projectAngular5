@@ -3,7 +3,6 @@
     <div>
         <div class="main-header">
             <h5>Admin Home Screen</h5>
-            <!-- <h6>CHANDLER BING > SERVICE REQUEST # > WORK ORDER-HACAT1</h6> -->
         </div>
     </div>
 
@@ -184,9 +183,6 @@
                         <a class="nav-link active" data-toggle="tab" (click)="setTab('All')">All</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" (click)="setTab('On-Hold')">On-Hold</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" data-toggle="tab" (click)="setTab('Validated')">Validated</a>
                     </li>
                     <li class="nav-item">
@@ -270,7 +266,7 @@
                             <span (click)="taskCompleted(item.id)" style="color: #398ef2; cursor: pointer;">Mark as
                                 done</span>
                             <button type="button" class="btn regular-button float-right" (click)="setEOCID(item.eocId)">Work
-                                    Screen</button>
+                                Screen</button>
                         </p>
                     </div>
                 </div>

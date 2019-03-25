@@ -90,7 +90,7 @@ export class UserService {
           setTimeout(() => {
             if (sessionStorage.getItem('userRole') === 'admin' || sessionStorage.getItem('userRole') === 'clinician') {
               this.router.navigate(['/adminhome']);
-            } else if (sessionStorage.getItem('userRole') === 'manager') {
+            } else if (sessionStorage.getItem('userRole') === 'manager' || sessionStorage.getItem('userRole') === 'superuser') {
               this.router.navigate(['/staff/list-page']);
             } else {
               this.router.navigate(['/dashboard']);

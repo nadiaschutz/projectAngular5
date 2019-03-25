@@ -4,20 +4,21 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  FormControl,
-  NgControlStatusGroup
+  FormControl
 } from '@angular/forms';
 
 import { OAuthService } from 'angular-oauth2-oidc';
 
 import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
+import { AdminHomeScreenService } from '../../service/admin-home-screen.service';
 
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as Employee from '../../interface/patient';
 import * as uuid from 'uuid';
 import { formatDate } from '@angular/common';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 export interface AccountType {
   value: string;
@@ -27,6 +28,11 @@ export interface AccountType {
 export interface LanguageType {
   value: string;
   viewValue: string;
+}
+
+export interface NameValueLookup {
+  text?: string;
+  value?: string;
 }
 
 @Component({
@@ -64,9 +70,11 @@ export class EmployeeComponent implements OnInit {
   dependentsArray: any[];
   department: any = [];
   branches: any;
+  jobLocationList: NameValueLookup[] = [];
+  employeeDepartmentList: NameValueLookup[] = [];
+  currentRole;
 
   // Store a UUID to link Employee and Dependent objects
-
   linkId;
 
   // list of  Languages
@@ -98,6 +106,7 @@ export class EmployeeComponent implements OnInit {
     private oauthService: OAuthService,
     private userService: UserService,
     private patientService: PatientService,
+    private adminHomeScreenService: AdminHomeScreenService,
     private router: Router,
     private bsDatepickerConfig: BsDatepickerConfig
   ) {
@@ -128,7 +137,7 @@ export class EmployeeComponent implements OnInit {
 
     this.currentUserDepartment = sessionStorage.getItem('userDept');
     this.currentUserBranch = sessionStorage.getItem('userBranch');
-
+    this.currentRole = sessionStorage.getItem('userRole');
     this.datePickerConfig = Object.assign({},
       {
         containerClass: 'theme-dark-blue',
@@ -140,28 +149,9 @@ export class EmployeeComponent implements OnInit {
     this.i = 0;
     // Set Department List
 
-    this.userService
-      .fetchAllDepartmentNames().subscribe(
-        data => this.setDepartments(data),
-        error => this.handleError(error)
-      );
-
-    // Set Branch List
-
-    this.userService
-      .getBranchList()
-      .subscribe(
-        data => this.setBranchList(data),
-        error => this.handleError(error)
-      );
-
     // Initialize Employee Form Group for DOM
 
     this.employeeFormGroup = this.fb.group({
-      // Employee type
-      // type: new FormControl(null, Validators.required),
-
-      // Last Name
       familyName: new FormControl('', [
         Validators.required,
         Validators.minLength(2)
@@ -172,21 +162,14 @@ export class EmployeeComponent implements OnInit {
         Validators.required,
         Validators.minLength(2)
       ]),
-
-      // Date of Birth
       dob: new FormControl('', Validators.required),
-
-      // Email
       email: new FormControl('', [Validators.required, Validators.email]),
-
-      // Client's phone number (can be any number of their choosing)
       phoneNumber: new FormControl('', [
         Validators.required,
         // Validators.pattern('/^[1-9]{1}[0-9]{9}$/')
         Validators.minLength(10),
         Validators.maxLength(10),
       ]),
-      // Address section
       addressStreet: new FormControl('', Validators.required),
       addressCity: new FormControl('', Validators.required),
       addressProv: new FormControl('', Validators.required),
@@ -195,10 +178,7 @@ export class EmployeeComponent implements OnInit {
       Validators.maxLength(6)
       ]),
       addressCountry: new FormControl('', [Validators.required]),
-
-      // Clients preferred language
       language: new FormControl('', Validators.required),
-
       // PRI (handled in Patient with an extension)
       id: new FormControl('', [
         Validators.required,
@@ -208,50 +188,26 @@ export class EmployeeComponent implements OnInit {
 
       // Job title (handled in Patient with an extension)
       jobTitle: new FormControl('', Validators.required),
-
       // Department they work in (handled in Patient with an extension)
       departmentName: new FormControl('', Validators.required),
-
-
       // Branch they work in (handled in Patient with an extension)
       departmentBranch: new FormControl('', Validators.required),
-
       // References related to the employee (handled in Patient with an extension)
       referenceOne: new FormControl(''),
       referenceTwo: new FormControl('')
-      // referenceTwo: ['']
-
-      // departmentName.setValue(this.options[0]);
-
 
     });
-
-    // this.employeeFormGroup.setValue({
-    //   familyName: null,
-    //   givenName: null,
-    //   dob: null,
-    //   email: null,
-    //   phoneNumber: null,
-    //   addressStreet: null,
-    //   addressCity: null,
-    //   addressProv: null,
-    //   addressPcode: null,
-    //   addressCountry: null,
-    //   jobTitle: null,
-    //   id: null,
-    //   departmentName: this.currentUserDepartment,
-    //   departmentBranch: this.currentUserBranch
-    // });
 
     // tslint:disable-next-line:max-line-length
     // Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
     this.employeeFormGroup.get('departmentName').setValue(this.currentUserDepartment);
     this.employeeFormGroup.get('departmentBranch').setValue(this.currentUserBranch);
+
+      this.onChanges();
+    this.getAndSetDepartmentList();
+
   }
 
-  onChange(e) {
-    console.log(e);
-  }
 
   // callback function to set the branch list dropdown from the JSON included
   // TODO: change implementation to load from list of organizations
@@ -281,6 +237,67 @@ export class EmployeeComponent implements OnInit {
     console.log(error);
   }
 
+
+  extractKeyValuePairsFromBundle(bundle) {
+    if (bundle && bundle['entry']) {
+      const bundleEntries = bundle['entry'];
+
+      const list = bundleEntries.map(item => {
+        if (item && item.resource) {
+          const temp = {
+            value: item.resource.resourceType + '/' + item.resource.id,
+            text: item.resource.name
+          };
+
+          return temp;
+        }
+        return { value: null, text: null };
+      });
+
+      return list;
+    }
+
+    return [];
+  }
+
+  getAndSetDepartmentList() {
+    this.adminHomeScreenService.getDepartmentNames()
+      .subscribe(bundle => {
+        console.log('employee department => ', bundle);
+        this.employeeDepartmentList = this.extractKeyValuePairsFromBundle(bundle);
+      },
+      (err) => console.log('Employee Department list error', err));
+  }
+
+  onChanges(): void {
+
+
+    // listen to one aprticular field for form change
+    this.employeeFormGroup.get('departmentName')
+      .valueChanges
+      .pipe(distinctUntilChanged((a, b) => {
+        return JSON.stringify(a) === JSON.stringify(b);
+      }))
+      .subscribe(val => {
+        if (val !== '') {
+          // get job locations dropdown items
+          this.adminHomeScreenService.getJobLocations({ organization: val })
+            .subscribe(locations => {
+              console.log('job list =>', locations);
+              this.jobLocationList = this.extractKeyValuePairsFromBundle(locations);
+              this.employeeFormGroup.get('departmentBranch').enable();
+            },
+              (err) => {
+                console.log('Job locations list error => ', err);
+              });
+        } else {
+          this.employeeFormGroup.get('departmentBranch').disable();
+          this.jobLocationList = [];
+        }
+      });
+  }
+
+ 
   // Sets the employee when called. Builds a new Patient object, along with associated
   // objects, generates a unique ID to link patient resources (useful for linking)
   // employees & dependents
@@ -348,21 +365,29 @@ export class EmployeeComponent implements OnInit {
       'jobTitle'
     ).value;
 
-    // Workplace extension
 
-    this.employee_extension_workplace.url =
-      'https://bcip.smilecdr.com/fhir/workplace';
-    this.employee_extension_workplace.valueString = this.employeeFormGroup.get(
-      'departmentName'
-    ).value;
+      let deptText = '';
+      let branchText = '';
+      this.employeeDepartmentList.forEach(item => {
+        if (item['value'] === this.employeeFormGroup.get('departmentName').value) {
+          deptText = item['text'];
+        }
+      });
 
-    // Branch extension
+      this.jobLocationList.forEach(branch => {
+        if (branch['value'] === this.employeeFormGroup.get('departmentBranch').value) {
+          branchText = branch['text'];
+        }
+      });
+      this.employee_extension_workplace.url =
+        'https://bcip.smilecdr.com/fhir/workplace';
+      this.employee_extension_workplace.valueString = deptText;
 
-    this.employee_extension_branch.url =
-      'https://bcip.smilecdr.com/fhir/branch';
-    this.employee_extension_branch.valueString = this.employeeFormGroup.get(
-      'departmentBranch'
-    ).value;
+
+      this.employee_extension_branch.url =
+        'https://bcip.smilecdr.com/fhir/branch';
+      this.employee_extension_branch.valueString = branchText;
+
 
     // Cross Reference One extension
 
@@ -472,6 +497,8 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
+
+
   returnToDashboard() {
     this.router.navigateByUrl('/dashboard');
   }
@@ -488,87 +515,4 @@ export class EmployeeComponent implements OnInit {
     this.router.navigateByUrl('/dependentform');
   }
 
-  get resourceType() {
-    return this.employeeFormGroup.get('resourceType');
-  }
-
-  get type() {
-    return this.employeeFormGroup.get('type');
-  }
-
-  get dob() {
-    return this.employeeFormGroup.get('dob');
-  }
-
-  get phoneNumber() {
-    return this.employeeFormGroup.get('phoneNumber');
-  }
-
-  get password() {
-    return this.employeeFormGroup.get('password');
-  }
-
-  get email() {
-    return this.employeeFormGroup.get('email');
-  }
-
-  get givenName() {
-    return this.employeeFormGroup.get('givenName');
-  }
-
-  get familyName() {
-    return this.employeeFormGroup.get('familyName');
-  }
-
-  get addressCity() {
-    return this.employeeFormGroup.get('addressCity');
-  }
-
-  get addressStreet() {
-    return this.employeeFormGroup.get('addressStreet');
-  }
-  get addressProv() {
-    return this.employeeFormGroup.get('addressProv');
-  }
-  get addressPcode() {
-    return this.employeeFormGroup.get('addressPcode');
-  }
-  get addressCountry() {
-    return this.employeeFormGroup.get('addressCountry');
-  }
-  get language() {
-    return this.employeeFormGroup.get('language');
-  }
-
-  get userName() {
-    return this.employeeFormGroup.get('userName');
-  }
-
-  get agree() {
-    return this.employeeFormGroup.get('agree');
-  }
-
-  get id() {
-    return this.employeeFormGroup.get('id');
-  }
-
-  get jobTitle() {
-    return this.employeeFormGroup.get('jobTitle');
-  }
-
-  get departmentName() {
-    return this.employeeFormGroup.get('departmentName');
-  }
-
-  get departmentBranch() {
-    return this.employeeFormGroup.get('departmentBranch');
-  }
-
-  get referenceOne() {
-    return this.employeeFormGroup.get('referenceOne');
-  }
-
-  get referenceTwo() {
-    return this.employeeFormGroup.get('referenceTwo');
-  }
 }

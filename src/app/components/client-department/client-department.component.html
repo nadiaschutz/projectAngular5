@@ -174,11 +174,11 @@
 <div class="container">
   <div class="main-header">
     <h5>Client Department</h5>
-    <h6>Create Client department</h6>
+    <h6>Create Client Department & Branches</h6>
   </div>
 
-  <div *ngIf="!addClientDepartment">
-
+  <!-- <div *ngIf="!addClientDepartment"> -->
+  <div>
     <div class="button-section">
       <button (click)="addNewClientDepartment()" class="btn special-button">
         Add new Client Department</button>
@@ -193,7 +193,7 @@
 
   </div>
 
-  <div *ngIf="addClientDepartment">
+  <!-- <div *ngIf="addClientDepartment">
     <div class="row">
       <div class="col-md-8">
         <input type="text" name="clientDepartmentName" id="clientDepartmentName" class="form-control " placeholder="Enter Client Department Name"
@@ -217,7 +217,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
 
 </div>

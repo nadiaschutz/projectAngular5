@@ -78,6 +78,7 @@ import { CancelRequestComponent } from './components/staff/cancel-request/cancel
 import { NewServReqService } from './service/new-serv-req.service';
 import { DependentComponent } from './components/dependent/dependent.component';
 import { ReportingComponent } from './components/reporting/reporting.component';
+import { AddNewClientDepartmentComponent } from './components/add-new-client-department/add-new-client-department.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -110,6 +111,7 @@ const routes: Routes = [
   { path: 'employeesummary', component: EmployeeSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'newaccount', component: NewAccountComponent, canActivate: [AuthGuardService] },
   { path: 'clientdepartment', component: ClientDepartmentComponent, canActivate: [AuthGuardService] },
+  { path: 'addnewclientdepartment', component: AddNewClientDepartmentComponent, canActivate: [AuthGuardService] },
   { path: 'assigntasks', component: TasklistComponent, canActivate: [AuthGuardService] },
   { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
@@ -195,7 +197,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     AssessmentFunctionComponent,
     SchedulerComponent,
     CancelRequestComponent,
-    ReportingComponent
+    ReportingComponent,
+    AddNewClientDepartmentComponent
 
   ],
   imports: [
@@ -228,7 +231,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     TitleCasePipe,
     StaffService,
     AdminHomeScreenService,
-    AudiogramService
+    AudiogramService,
+    NewServiceRequestComponent
   ],
   bootstrap: [AppComponent],
   entryComponents: [

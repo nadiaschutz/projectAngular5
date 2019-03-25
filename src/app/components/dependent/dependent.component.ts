@@ -153,7 +153,9 @@ export class DependentComponent implements OnInit {
       addressCity: new FormControl('', Validators.required),
       addressProv: new FormControl('', Validators.required),
       addressPcode: new FormControl('', [
-        Validators.required]),
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(6)]),
       addressCountry: new FormControl('', Validators.required),
 
       // Clients preferred language

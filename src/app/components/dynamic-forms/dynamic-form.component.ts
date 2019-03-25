@@ -96,13 +96,6 @@ export class DynamicFormComponent implements OnInit, OnChanges {
       return;
     }
 
-
-    // form = new FormGroup({
-    //   first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
-    //   last: new FormControl('Drew', Validators.required)
-    // });
-
-
     this.config = this.config.map((item) => {
       if (item.name === name) {
         item.disabled = disable;
@@ -111,28 +104,26 @@ export class DynamicFormComponent implements OnInit, OnChanges {
     });
   }
 
+  // setValidation(name: string, value: any) {
+  //   console.log('was not looking for anything', name, value);
 
-  setReadOnly(name: string, readonly: boolean) {
-    if (this.form.controls[name]) {
-      const method = readonly ? 'readonly' : 'readwrite';
-      this.form.controls[name][method]();
-      return;
-    }
+  //   this.form.controls[name].setValidators(value);
 
+  // }
 
-    // form = new FormGroup({
-    //   first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
-    //   last: new FormControl('Drew', Validators.required)
-    // });
-
-
-    this.config = this.config.map((item) => {
-      if (item.name === name) {
-        item.readonly = readonly;
-      }
-      return item;
-    });
+  setRequired(name: string, validator: any) {
+    this.form.controls[name].setValidators(validator);
+    this.form.controls[name].updateValueAndValidity();
   }
+
+  removeRequired(name: string) {
+    this.form.controls[name].clearValidators();
+    this.form.controls[name].updateValueAndValidity();
+  }
+
+
+  // this.form.controls["firstName"].setValidators([Validators.minLength(1), Validators.maxLength(30)]);
+
 
   setValue(name: string, value: any) {
     this.form.controls[name].setValue(value, { emitEvent: true });

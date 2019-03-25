@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-
+import * as moment from 'moment';
 @Component({
   selector: 'app-work-screen',
   templateUrl: './work-screen.component.html',
@@ -22,6 +22,7 @@ export class WorkScreenComponent implements OnInit {
   summary = {} as any;
   episodeOfCare = {};
   indexOfCheckListItems = [];
+  indexOfDocCheckListItems = [];
   carePlan = {};
   showTaskForm = false;
   showNoteForm = false;
@@ -29,16 +30,16 @@ export class WorkScreenComponent implements OnInit {
   showChecklistForm = false;
   showSelectionOfDocsForm = false;
   showShowDocListField = false;
-  showStatusFormGroup = false;
+  showMilestoneFormGroup = false;
   taskFormGroup: FormGroup;
   noteFormGroup: FormGroup;
   docFormGroup: FormGroup;
   checkListItemGroup: FormGroup;
   selectionOfDocsGroup: FormGroup;
-  statusFormGroup: FormGroup;
+  milestoneFormGroup: FormGroup;
   currentProgressFormGroup: FormGroup;
   checkListDocObject;
-  statusObject;
+  milestoneObject;
   episodeOfCareId = '';
   practitioners = [];
   practitionersWithId = [];
@@ -52,7 +53,7 @@ export class WorkScreenComponent implements OnInit {
   showOnlyDocs = false;
   collapseFlag = false;
   enableWorkListUpdate = true;
-  displayDocStatus = 'WAITING';
+  displayDocStatus;
   milestoneForDisplay;
   encounterd;
   currentPractitionerFHIRIDInSession;
@@ -89,7 +90,15 @@ export class WorkScreenComponent implements OnInit {
   statusSelectionList = [
     { value: 'stopped', viewValue: 'WAITING' },
     { value: 'amended', viewValue: 'ACTION-REQUIRED' },
-    { value: 'in-progress', viewValue: 'IN-PROGRESS' },
+    { value: 'completed', viewValue: 'IN-PROGRESS' }
+  ];
+
+  milestoneSelectionList = [
+    { value: 'Validated', viewValue: 'Validated' },
+    { value: 'Assigned', viewValue: 'Assigned' },
+    { value: 'Scheduled', viewValue: 'Scheduled' },
+    { value: 'Work-Completed', viewValue: 'Work-Completed' },
+    { value: 'Closed', viewValue: 'Closed' }
   ];
 
   constructor(
@@ -103,7 +112,8 @@ export class WorkScreenComponent implements OnInit {
 
   ngOnInit() {
 
-
+    this.enableMilestoneFormGroup();
+    this.checkDocStatusViewText();
     this.currentProgressFormGroup = this.formBuilder.group({
       currentProgress: new FormControl('')
     });
@@ -125,46 +135,9 @@ export class WorkScreenComponent implements OnInit {
       error => console.error(error)
     );
     this.checkIfAssociatedDocCheckListExists();
-    this.checkIfAssociatedStatusListExists();
+    this.checkIfAssociatedMilestoneListExists();
   }
 
-
-  checkDocListStatus() {
-    let counter = 0;
-    let lengthOfItems = 0;
-    if (this.checkListDocObject) {
-      for (const item in this.checkListDocObject['item']) {
-        if (item['answer']) {
-          lengthOfItems = item.length;
-          for (const answer in item['answer']) {
-            if (answer['valueBoolean'] === true) {
-              counter ++;
-              if (counter === lengthOfItems) {
-                console.log('they match', counter);
-                this.checkListDocObject['status'] = 'in-progress';
-                this.staffService.updateDocumentsChecklist(
-                  this.checkListDocObject['id'],
-                  JSON.stringify(this.checkListDocObject)).subscribe(
-                    data => {
-                      if (data) {
-                        this.checkListDocObject = data;
-                        for (const status of this.statusSelectionList) {
-                          if (status['value'] === this.checkListDocObject['status']) {
-                            this.displayDocStatus = status['viewValue'];
-                          }
-                        }
-                      }
-                    }
-                  );
-              }
-            }
-          }
-        }
-      }
-    }
-
-
-  }
 
   // ngOnDestroy() {
   //   sessionStorage.removeItem('selectedEpisodeId');
@@ -371,6 +344,7 @@ export class WorkScreenComponent implements OnInit {
   sortHistory() {
     this.historyToDisplay.sort(function(a, b) {
       if (a['lastUpdated'] && b['lastUpdated']) {
+        console.log(typeof(new Date(b['lastUpdated']).getTime()));
         return (
           new Date(b['lastUpdated']).getTime() -
           new Date(a['lastUpdated']).getTime()
@@ -383,6 +357,12 @@ export class WorkScreenComponent implements OnInit {
     this.summary['patientFHIRID'] = patient['id'];
     this.summary['clientName'] = this.utilService.getNameFromResource(patient);
     this.summary['clientDOB'] = patient['birthDate'];
+
+    if (patient['identifier']) {
+      patient['identifier'].forEach(identifier => {
+          this.summary['employeePRI'] = identifier['value'];
+      });
+    }
     patient.extension.forEach(extension => {
       if (extension.url === 'https://bcip.smilecdr.com/fhir/workplace') {
         this.summary['clientDepartment'] = extension.valueString;
@@ -401,8 +381,9 @@ export class WorkScreenComponent implements OnInit {
   }
 
   processQuestionnaireResponseForSummary(questionnaireResponse) {
+    this.summary['serviceRequestId'] = questionnaireResponse['id'];
+    this.summary['serviceRequestSubmittedDate'] = questionnaireResponse['meta']['lastUpdated'];
     questionnaireResponse.item.forEach(item => {
-
       if (item['linkId'] === 'PSOHPSERV') {
         for (const answer of item['answer']) {
           if (answer['valueCoding']) {
@@ -621,74 +602,30 @@ export class WorkScreenComponent implements OnInit {
           this.enableWorkListUpdate = !this.enableWorkListUpdate;
         });
   }
-  // TODO - revisit functionality with updated logic after March 1st
-  // onCheckListChangeStatus(cheklistItem) {
 
-  //   const newAnswer = new FHIR.Answer;
-  //   const itemTime = new FHIR.Answer;
-  //   const onHoldAnswer = new FHIR.Answer;
-
-  //   const statusArray =
-  //   ['on-hold', 'waiting', 'validated', 'scheduled', 'assigned', 'work-completed'];
-
-  //   itemTime.valueDate = this.utilService.getCurrentDate();
-  //   newAnswer.valueBoolean = cheklistItem['value'];
-
-  //   onHoldAnswer.valueBoolean = !cheklistItem['value'];
-  //   // onHoldAnswer.valueDate = this.utilService.getCurrentDate();
-
-  //   if (statusArray.indexOf(cheklistItem['statusChanger']) > -1 ) {
-  //     if (cheklistItem['statusChanger'] === 'on-hold') {
-  //       const onHoldFound = this.statusObject['item'].find(item => {
-  //         return item['text'].toLowerCase() === 'on-hold';
-  //       });
-  //       if (!onHoldFound) {
-  //         const onHoldItem = new FHIR.Item;
-  //         onHoldItem.linkId = '0';
-  //         onHoldItem.text = 'On-Hold';
-  //         onHoldItem.answer = [onHoldAnswer, itemTime];
-  //       }
-  //       this.statusObject['item'].forEach(item => {
-  //         if (item['text'].toLowerCase() === 'on-hold' ) {
-  //             item['answer'] = [onHoldAnswer, itemTime];
-  //         } else {
-  //           const falseAnswer = new FHIR.Answer;
-  //           falseAnswer.valueBoolean = false;
-  //           item['answer'] = [falseAnswer];
-  //         }
-  //       });
-  //     }
-
-  //     if (cheklistItem['statusChanger'] !== 'on-hold') {
-  //       const onHoldFound = this.statusObject['item'].find(item => {
-  //         console.log('checking on hold status ', item['text'].toLowerCase() !== 'on-hold');
-  //         return item['text'].toLowerCase() !== 'on-hold';
-  //       });
-  //       // if (!onHoldFound) {
-  //       //   const onHoldItem = new FHIR.Item;
-  //       //   onHoldItem.linkId = '0';
-  //       //   onHoldItem.text = this.titleCase.transform(cheklistItem['statusChanger']);
-  //       //   onHoldItem.answer = [newAnswer, itemTime];
-  //       // }
-  //       this.statusObject['item'].forEach(item => {
-  //         if (item['text'].toLowerCase() == cheklistItem['statusChanger'] ) {
-  //             item['answer'] = [newAnswer, itemTime];
-  //         } else {
-  //           const falseAnswer = new FHIR.Answer;
-  //           falseAnswer.valueBoolean = false;
-  //           item['answer'] = [falseAnswer];
-  //         }
-  //       });
-  //     }
-  //   }
-
-  //   this.staffService.updateStatusList(this.statusObject['id'], JSON.stringify(this.statusObject)).subscribe(
-  //     data => {
-  //       console.log('UPDATED', data);
-  //       this.statusObject = data;
-  //     }
-  //   );
-  // }
+  updateCurrentProgress() {
+    if (this.currentProgressFormGroup.valid) {
+      if (this.checkListDocObject) {
+        this.checkListDocObject['status'] = this.currentProgressFormGroup.get('currentProgress').value;
+        this.staffService
+        .updateDocumentsChecklist(
+          this.checkListDocObject['id'],
+          JSON.stringify(this.checkListDocObject)
+        )
+        .subscribe(data => {
+          if (data) {
+            console.log('UPDATED', data);
+            this.checkListDocObject = data;
+            this.checkDocStatusViewText();
+            this.currentProgressFormGroup.reset();
+          }
+        },
+        error => {
+          console.log(error);
+        });
+      }
+    }
+  }
 
   processListOfDependents(patientLinkId) {
     this.staffService
@@ -718,51 +655,91 @@ export class WorkScreenComponent implements OnInit {
       );
   }
 
-  enableStatusFormGroup() {
-    this.showStatusFormGroup = !this.showStatusFormGroup;
-    this.statusFormGroup = this.formBuilder.group({
+  enableMilestoneFormGroup() {
+    // this.showMilestoneFormGroup = !this.showMilestoneFormGroup;
+    this.milestoneFormGroup = this.formBuilder.group({
       status: new FormControl(''),
       statusNote: new FormControl('')
     });
   }
 
-  changeStatusToSelected() {
+  changeMilestoneToSelected() {
     const itemAnswer = new FHIR.Answer();
-    const itemTime = new FHIR.Answer();
-    const itemReason = new FHIR.Answer();
-
-    const selectedStatus = this.statusFormGroup.get('status').value;
-    this.milestoneForDisplay = selectedStatus;
-    itemTime.valueDate = this.utilService.getCurrentDate();
-    itemReason.valueString = this.statusFormGroup.get('statusNote').value;
-    this.statusObject['item'].forEach(element => {
-      if (element['text'] === selectedStatus) {
-        itemAnswer.valueBoolean = true;
-
-        element['answer'] = [];
-        element['answer'][0] = itemAnswer;
-        element['answer'][1] = itemTime;
-        element['answer'][2] = itemReason;
+    const dateTime = moment();
+    const selectedStatus = this.milestoneFormGroup.get('status').value;
+    this.milestoneObject['item'].forEach(element => {
+      if (element['linkId'] === selectedStatus) {
+        if (!element['text']) {
+          element['text'] = '';
+        }
+        if (!element['answer']) {
+          element['answer'] = [];
+          itemAnswer.valueDateTime = dateTime.format();
+          element['answer'].push(itemAnswer);
+        }
+        if (element['answer']) {
+          element['answer'].forEach(timeFound => {
+            if (timeFound['valueDateTime']) {
+              timeFound['valueDateTime'] = dateTime.format();
+            }
+          });
+        }
+        element['text'] = this.milestoneFormGroup.get('statusNote').value;
         console.log('matched', element['answer']);
       }
-      if (element['text'] !== selectedStatus) {
-        element['answer'] = [];
-        // itemAnswer.valueBoolean = false;
-        // element['answer'][0] = itemAnswer;
-        // element['answer'][1] = itemTime;
-        console.log('unmatched', element['answer']);
-      }
+
     });
-    this.showStatusFormGroup = !this.showStatusFormGroup;
+    this.showMilestoneFormGroup = !this.showMilestoneFormGroup;
     this.staffService
       .updateStatusList(
-        this.statusObject['id'],
-        JSON.stringify(this.statusObject)
+        this.milestoneObject['id'],
+        JSON.stringify(this.milestoneObject)
       )
       .subscribe(data => {
         console.log(data);
-        this.statusObject = data;
+        this.milestoneObject = data;
+        // console.log(this.sortMilestone());
+        this.sortMilestone();
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.milestoneFormGroup.patchValue({status: null});
+        this.milestoneFormGroup.patchValue({statusNote: null});
+        this.milestoneFormGroup.reset();
       });
+  }
+
+  sortMilestone() {
+    if (this.milestoneObject) {
+      const arr = [];
+      this.milestoneObject.item.forEach(element => {
+        if (element.answer) {
+          arr.push(element);
+        }
+      });
+      console.log(arr);
+      arr.sort(function(a, b) {
+        if (a['answer'] && b['answer']) {
+          if (a['answer'][0]['valueDateTime'] && b['answer'][0]['valueDateTime']) {
+            return (
+              new Date(b['answer'][0]['valueDateTime']).getTime() -
+              new Date(a['answer'][0]['valueDateTime']).getTime()
+            );
+          }
+        }
+      });
+
+      const temp = arr[0];
+      if (arr[0]['answer'][0]['valueDateTime']) {
+
+        const timeVariable = this.utilService.convertUTCForDisplay(arr[0]['answer'][0]['valueDateTime']);
+        temp['displayTime'] = timeVariable;
+      }
+     this.milestoneForDisplay = temp;
+
+    }
   }
 
   captureStatusReasonInput(event) {
@@ -1123,73 +1100,52 @@ export class WorkScreenComponent implements OnInit {
     });
   }
 
-  checkIfAssociatedStatusListExists() {
+  checkIfAssociatedMilestoneListExists() {
     this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
       if (data) {
         if (data['total'] === 0) {
-          console.log('nothing here, creating status skeleton');
-          this.newStatusList();
+          console.log('nothing here, creating milestone skeleton');
+          this.newMilestoneList();
         } else {
           data['entry'].forEach(entry => {
-            this.statusObject = entry['resource'];
-            if (this.statusObject['item']) {
-              for (const item of this.statusObject['item']) {
-                if (item['answer']) {
-                  if (item['answer'][0]['valueBoolean'] === true) {
-                    console.log(item['text']);
-                    this.milestoneForDisplay = item['text'];
-                  }
-                }
-              }
-            }
+            this.milestoneObject = entry['resource'];
+            this.sortMilestone();
           });
         }
       }
     });
   }
 
-  newStatusList() {
+  newMilestoneList() {
     const statusQResponse = new FHIR.QuestionnaireResponse();
     const statusReference = new FHIR.Reference();
     const statusContextReference = new FHIR.Reference();
     const statusIdentifier = new FHIR.Identifier();
-    const statusItemOne = new FHIR.Item();
-    const statusItemTwo = new FHIR.Item();
-    const statusItemThree = new FHIR.Item();
-    const statusItemFour = new FHIR.Item();
-    const statusItemFive = new FHIR.Item();
-    const statusItemSix = new FHIR.Item();
-    const statusItemSeven = new FHIR.Item();
+    const milestoneItemOne = new FHIR.Item();
+    const milestoneItemTwo = new FHIR.Item();
+    const milestoneItemThree = new FHIR.Item();
+    const milestoneItemFour = new FHIR.Item();
+    const milestoneItemFive = new FHIR.Item();
+    const milestoneItemSix = new FHIR.Item();
     const statusItemAnswer = new FHIR.Answer();
+    statusItemAnswer.valueCoding = new FHIR.Coding();
 
-    statusItemAnswer.valueBoolean = false;
+    milestoneItemOne.linkId = 'Validated';
 
-    statusItemOne.linkId = '1';
-    statusItemOne.text = 'Validated';
-    // statusItemOne.answer = [statusItemAnswer];
+    milestoneItemTwo.linkId = 'Scheduled';
 
-    statusItemTwo.linkId = '2';
-    statusItemTwo.text = 'Scheduled';
-    // statusItemTwo.answer = [statusItemAnswer];
+    milestoneItemThree.linkId = 'Assigned';
 
-    statusItemThree.linkId = '3';
-    statusItemThree.text = 'Assigned';
-    // statusItemThree.answer = [statusItemAnswer];
+    milestoneItemFour.linkId = 'Work-Completed';
 
-    statusItemFour.linkId = '4';
-    statusItemFour.text = 'Work-Completed';
-    // statusItemFour.answer = [statusItemAnswer];
+    milestoneItemFive.linkId = 'Closed';
 
-    statusItemFive.linkId = '5';
-    statusItemFive.text = 'Closed';
-    // statusItemFive.answer = [statusItemAnswer];
-
-    statusItemSix.linkId = '0';
-    statusItemSix.text = 'Received';
-    // statusItemSix.answer = [statusItemAnswer];
-    statusItemAnswer.valueBoolean = true;
-
-
+    milestoneItemSix.linkId = 'Received';
+    // milestoneItemSix.text = 'Received at ' + this.summary['serviceRequestSubmittedDate'];
+    statusItemAnswer.valueCoding.code = this.utilService.getCurrentDateTime();
+    statusItemAnswer.valueCoding.system = 'https://bcip.smilecdr.com/fhir/WorkOrderMlestone';
+    statusItemAnswer.valueCoding.display = 'Received at ' + this.utilService.getCurrentDateTime();
+    milestoneItemSix.answer = [statusItemAnswer];
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     statusIdentifier.value = 'STATUS';
@@ -1200,12 +1156,12 @@ export class WorkScreenComponent implements OnInit {
     statusQResponse.status = 'in-progress';
     statusQResponse.context = statusContextReference;
     statusQResponse.item = [
-      statusItemOne,
-      statusItemTwo,
-      statusItemThree,
-      statusItemFour,
-      statusItemFive,
-      statusItemSix
+      milestoneItemOne,
+      milestoneItemTwo,
+      milestoneItemThree,
+      milestoneItemFour,
+      milestoneItemFive,
+      milestoneItemSix
     ];
 
     console.log(statusQResponse);
@@ -1214,7 +1170,7 @@ export class WorkScreenComponent implements OnInit {
       .createStatusList(JSON.stringify(statusQResponse))
       .subscribe(data => {
         console.log('POST SUCCESSFUL', data);
-        this.statusObject = data;
+        this.milestoneObject = data;
       });
   }
 
@@ -1227,20 +1183,22 @@ export class WorkScreenComponent implements OnInit {
           if (data['entry']) {
             data['entry'].forEach(element => {
               this.checkListDocObject = element['resource'];
-              this.checkDocListStatus();
-
-              // this.determineWorkOrderStatus(this.checkListDocObject);
-              for (const status of this.statusSelectionList) {
-                if (status['value'] === this.checkListDocObject['status']) {
-                  this.displayDocStatus = status['viewValue'];
-                }
+              this.checkDocStatusViewText();
+              if (this.checkListDocObject['item']) {
+                this.checkListDocObject['item'].forEach(item => {
+                  if (item.answer) {
+                    item.value = true;
+                  } else {
+                    item.value = false;
+                  }
+                });
               }
               if (!this.checkListDocObject['item']) {
                 this.checkListDocObject['item'] = [];
               }
-
             });
           } else {
+            // This scenario means status is In-POGRESS
             this.newDocChecklist();
           }
         }
@@ -1289,6 +1247,10 @@ export class WorkScreenComponent implements OnInit {
       selection: new FormControl('')
     });
   }
+
+
+  // checkDocListStatus(obj) {
+  // }
 
   saveDoc($event) {
     this.addDocument($event);
@@ -1402,16 +1364,9 @@ export class WorkScreenComponent implements OnInit {
 
       newReference.reference = 'DocumentReference/' + data;
       newAnswer.valueReference = newReference;
-      newAnswerBoolean.valueBoolean = true;
-      console.log(
-        newReference.reference,
-        this.checkListDocObject,
-        selectedValue
-      );
       this.checkListDocObject['item'].forEach(itemFound => {
         if (itemFound['text'] === selectedValue['text']) {
-          selectedValue['answer'][0] = newAnswerBoolean;
-          selectedValue['answer'][1] = newAnswer;
+          selectedValue['answer'][0] = newAnswer;
           itemFound = selectedValue;
 
           console.log('match!,', this.checkListDocObject['id']);
@@ -1590,10 +1545,9 @@ export class WorkScreenComponent implements OnInit {
     if (this.checkListItemGroup.get('document').value) {
       itemToAdd.linkId = this.checkListDocObject['item'].length + 1;
       itemToAdd.text = this.checkListItemGroup.get('document').value;
-      itemBoolAnswer.valueBoolean = false;
-      itemToAdd.answer = [itemBoolAnswer];
-      this.checkListDocObject['status'] = 'stopped';
       this.checkListDocObject['item'].push(itemToAdd);
+      this.checkListDocObject['status'] = 'stopped';
+
       this.staffService
         .updateDocumentsChecklist(
           this.checkListDocObject['id'],
@@ -1603,42 +1557,33 @@ export class WorkScreenComponent implements OnInit {
           if (data) {
             console.log('UPDATED', data);
             this.checkListDocObject = data;
-            for (const status of this.statusSelectionList) {
-              if (status['value'] === this.checkListDocObject['status']) {
-                this.displayDocStatus = status['viewValue'];
-              }
-            }
+            this.changeDocumentListStatus();
             this.showChecklistForm = !this.showChecklistForm;
           }
+        },
+        error => {
+          console.log(error);
         });
     }
   }
 
-  docChecklistItemStateChange() {
-    this.staffService
-      .updateDocumentsChecklist(
-        this.checkListDocObject['id'],
-        JSON.stringify(this.checkListDocObject)
-      )
-      .subscribe(data => {
-        if (data) {
-          console.log('UPDATED', data);
-          this.checkListDocObject = data;
-        }
-      });
+  onDockChecklistItemChange(index) {
+    this.indexOfDocCheckListItems.push(index);
   }
 
-  updateDocumentsCheckedOff(item, event) {
+
+  updateDocumentsCheckedOff(itemPassed, event, index) {
+    console.log(this.checkListDocObject['item'][index]);
     const docAnswer = new FHIR.Answer();
     const docReference = new FHIR.Reference();
+    this.checkListDocObject['status'] = 'amended';
 
     docReference.reference = event;
     docAnswer.valueReference = docReference;
     this.checkListDocObject['item'].forEach(itemFound => {
-      if (itemFound['linkId'] === item['linkId']) {
-        item['answer'][1] = docAnswer;
-        itemFound = item;
-        this.checkListDocObject['status'] = 'amended';
+      if (itemFound['linkId'] === itemPassed['linkId']) {
+        itemFound['answer'] = [];
+        itemFound['answer'].push(docAnswer);
         this.staffService
           .updateDocumentsChecklist(
             this.checkListDocObject['id'],
@@ -1648,11 +1593,15 @@ export class WorkScreenComponent implements OnInit {
             if (data) {
               console.log('UPDATED', data);
               this.checkListDocObject = data;
-              for (const status of this.statusSelectionList) {
-                if (status['value'] === this.checkListDocObject['status']) {
-                  this.displayDocStatus = status['viewValue'];
+              this.changeDocumentListStatus();
+              this.checkDocStatusViewText();
+              this.checkListDocObject['item'].forEach(item => {
+                if (item.answer) {
+                  item.value = true;
+                } else {
+                  item.value = false;
                 }
-              }
+              });
             }
           },
           error => {
@@ -1660,6 +1609,85 @@ export class WorkScreenComponent implements OnInit {
           });
       }
     });
+  }
+
+  checkDocStatusViewText() {
+    for (const status of this.statusSelectionList) {
+      if (this.checkListDocObject) {
+        if (this.checkListDocObject['status'] === status['value']) {
+          this.displayDocStatus = status['viewValue'];
+        }
+      }
+    }
+  }
+
+  changeDocumentListStatus() {
+    if (this.checkListDocObject) {
+      if (this.checkListDocObject['status'] !== 'amended') {
+
+        if (this.checkListDocObject['item'] && this.checkListDocObject['status']) {
+          const lengthOfItemArray = this.checkListDocObject['item'].length;
+          let currentAmountOfAnsweredItems = 0;
+          this.checkListDocObject['item'].forEach(itemFound => {
+            if (itemFound['answer']) {
+              currentAmountOfAnsweredItems++;
+            }
+          });
+          if (currentAmountOfAnsweredItems === lengthOfItemArray) {
+            this.checkListDocObject['status'] = 'completed';
+          } else {
+            this.checkListDocObject['status'] = 'stopped';
+          }
+          this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
+            data => {
+              if (data) {
+                this.checkListDocObject = data;
+                this.checkDocStatusViewText();
+                this.checkListDocObject['item'].forEach(item => {
+                  if (item.answer) {
+                    item.value = true;
+                  } else {
+                    item.value = false;
+                  }
+                });
+              }
+            }
+          );
+        }
+      }
+    }
+  }
+
+  changeDocStatusFromActionRequired(incomingFile) {
+    this.checkListDocObject['status'] = 'stopped';
+    if (incomingFile['content']['attachment']['contentType'] !== 'pdf') {
+      this.downloadFile(incomingFile);
+    } else {
+      this.previewFile(incomingFile);
+    }
+    this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
+      data => {
+        if (data) {
+        this.checkListDocObject = data;
+        this.changeDocumentListStatus();
+          this.checkListDocObject['item'].forEach(item => {
+            if (item.answer) {
+              item.value = true;
+            } else {
+              item.value = false;
+            }
+          });
+        }
+      }
+    );
+  }
+
+  hideIfFileIsClinicalToNonClinicians(data) {
+    if (data['docCategory'].toLowerCase() === 'clinical' && sessionStorage.getItem('userRole') !== 'clinician') {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   downloadFile(incomingFile) {
@@ -1713,25 +1741,6 @@ export class WorkScreenComponent implements OnInit {
       window.open(fileLink.href);
     }
   }
-
-  // determineWorkOrderStatus(data) {
-  //   console.log(data);
-  //   let counter = 0;
-  //   const itemList = data['item'];
-  //   const numberOfItems = itemList.length;
-  //   itemList.forEach(item => {
-  //     if (item['answer'].length > 1 && item['answer'][0]['valueBoolean'] === true) {
-  //       console.log(item);
-  //     } else {
-  //       counter++;
-  //     }
-  //   });
-  //   if (counter > 1) {
-  //     this.displayDocStatus = 'ACTION-REQURIED';
-  //   } else {
-  //     this.displayDocStatus = 'WAITING';
-  //   }
-  // }
 
   /* Document Functions (end) */
 

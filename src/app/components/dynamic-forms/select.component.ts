@@ -9,7 +9,8 @@ import { FieldConfig } from './field-config.interface';
   <div [class]='config.elementClass'>
       <div
         [formGroup]="group">
-        <label class="label-name">{{ config.label }}</label>
+        <label class="label-name" *ngIf="config.required">{{ config.label }} (Required)</label>
+        <label class="label-name" *ngIf="!config.required">{{ config.label }}</label>
         <select [formControlName]="config.name" class="form-control">
           <option value="">{{ config.placeholder }}</option>
           <option *ngFor="let option of config.options">

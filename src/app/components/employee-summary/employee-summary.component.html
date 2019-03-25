@@ -8,7 +8,8 @@
       Client Record</button>
 
     <ng-template #backButton>
-      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Cancel Edit</button>
+      <button type="button" class="btn regular-dark-button float-right" (click)="editEmployeeToggle()">Cancel
+        Edit</button>
     </ng-template>
   </div>
 
@@ -26,26 +27,24 @@
       <div *ngIf="selected">
 
         <div class="row">
-          <div class="col-6" *ngIf='selected.dateCreated'>
+          <div class="col" *ngIf='selected.dateCreated'>
             <label>Date Created</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['dateCreated'] | date: 'dd-MM-yyyy'}}</textarea>
           </div>
-
-
-          <div class="col-6" *ngIf='selected.createdBy'>
+          <div class="col" *ngIf='selected.createdBy'>
             <label>Created By</label>
             <textarea type="text" class="form-control" rows="1" readonly>{{selected['createdBy']}}</textarea>
           </div>
         </div>
 
         <div class="row" *ngIf='selected.dateModified'>
-          <div class="col-6">
+          <div class="col">
             <label>Date Modified</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['dateModified'] | date: 'dd-MM-yyyy'}}</textarea>
           </div>
 
 
-          <div class="col-6" *ngIf='selected.modifiedBy'>
+          <div class="col" *ngIf='selected.modifiedBy'>
             <label>Modified By</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['modifiedBy']}}</textarea>
           </div>
@@ -177,14 +176,23 @@
 
         <div class="row">
           <div class="col-6" *ngIf="selected['crossref1']">
+            <label>Cross Reference</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref1']['valueString']}}</textarea>
+          </div>
+          <div class="col-6" *ngIf="!selected['crossref1']">
             <div>
               <label>Cross Reference</label>
-              <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref1']['valueString']}}</textarea>
+              <textarea type="text" class="form-control" rows="1" disabled> - </textarea>
             </div>
           </div>
+
           <div class="col-6" *ngIf="selected['crossref2']">
             <label>Cross Reference</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['crossref2']['valueString']}}</textarea>
+          </div>
+          <div class="col-6" *ngIf="!selected['crossref2']">
+            <label>Cross Reference</label>
+            <textarea type="text" class="form-control" rows="1" disabled> - </textarea>
           </div>
         </div>
       </div>
@@ -298,7 +306,7 @@
           <div class="col">
 
 
-            <label for="givenName">First Name</label>
+            <label for="givenName">First Name (Required)</label>
             <input type="text" class="form-control" formControlName="givenName" id="givenName" name="givenName"
               placeholder="selected['given']">
 
@@ -310,7 +318,7 @@
             </div>
           </div>
           <div class="col">
-            <label for="familyName">Last Name</label>
+            <label for="familyName">Last Name (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
               required>
 
@@ -328,7 +336,7 @@
           <div class="col">
             <div class="form-group">
 
-              <label for="dob">Date of Birth</label>
+              <label for="dob">Date of Birth (Required)</label>
               <input class="form-control" type="text" placeholder="Datepicker" formControlName="dob" id="dob"
                 bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red>
 
@@ -369,7 +377,7 @@
 
         <div class="row">
           <div class="col">
-            <label for="email">Email</label>
+            <label for="email">Email (Required)</label>
             <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email"
               required>
             <div *ngIf="employeeFormGroup.controls['email'].invalid
@@ -380,7 +388,7 @@
             </div>
           </div>
           <div class="col">
-            <label for="phoneNumber">Phone Number</label>
+            <label for="phoneNumber">Phone Number (Required)</label>
             <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber"
               required>
             <div *ngIf="employeeFormGroup.controls['phoneNumber'].invalid
@@ -394,7 +402,7 @@
 
         <div class="row">
           <div class="col">
-            <label for="addressStreet">Street Address</label>
+            <label for="addressStreet">Street Address (Required)</label>
             <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet" id="addressStreet"
               required>
             <div *ngIf="employeeFormGroup.controls['addressStreet'].invalid
@@ -405,7 +413,7 @@
             </div>
           </div>
           <div class="col">
-            <label for="addressCity">City</label>
+            <label for="addressCity">City (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="addressCity" id="addressCity"
               required>
             <div *ngIf="employeeFormGroup.controls['addressCity'].invalid
@@ -419,7 +427,7 @@
 
         <div class="row">
           <div class="col-3">
-            <label for="addressProv">Province</label>
+            <label for="addressProv">Province (Required)</label>
             <select class="form-control" formControlName="addressProv" id="addressProv" required>
               <option *ngFor="let province of provinces" [value]="province.value">
                 {{province.viewValue}}
@@ -433,7 +441,7 @@
             </select>
           </div>
           <div class="col-3">
-            <label for="addressPcode">Postal Code</label>
+            <label for="addressPcode">Postal Code (Required)</label>
             <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode" id="addressPcode"
               required>
             <div *ngIf="employeeFormGroup.controls['addressPcode'].invalid
@@ -444,7 +452,7 @@
             </div>
           </div>
           <div class="col-6">
-            <label for="addressCountry">Country</label>
+            <label for="addressCountry">Country (Required)</label>
             <input type="text" class="form-control" formControlName="addressCountry" id="addressCountry" required>
             <div *ngIf="employeeFormGroup.controls['addressCountry'].invalid
               && (employeeFormGroup.controls['addressCountry'].touched || employeeFormGroup.controls['addressCountry'].dirty)">
@@ -467,7 +475,7 @@
 
         <div class="row">
           <div class="col">
-            <label for="jobTitle">Job Title</label>
+            <label for="jobTitle">Job Title (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle"
               required>
             <div *ngIf="employeeFormGroup.controls['jobTitle'].invalid
@@ -478,7 +486,7 @@
             </div>
           </div>
           <div class="col">
-            <label for="id">Associated Employee PRI</label>
+            <label for="id">Associated Employee PRI (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id" required>
             <div *ngIf="employeeFormGroup.controls['id'].invalid
               && (employeeFormGroup.controls['id'].touched || employeeFormGroup.controls['id'].dirty)">
@@ -491,10 +499,10 @@
 
         <div class="row">
           <div class="col">
-            <label for="departmentName">Derpartment Name</label>
+            <label for="departmentName">Department Name</label>
             <select class="form-control" formControlName="departmentName" id="departmentName" required>
-              <option *ngFor="let dept of department" [value]="dept">
-                {{dept}}
+              <option *ngFor="let dept of employeeDepartmentList" [value]="dept.value">
+                {{dept.text}}
               </option>
             </select>
             <div *ngIf="employeeFormGroup.controls['departmentName'].invalid
@@ -504,11 +512,13 @@
               </div>
             </div>
           </div>
+
           <div class="col">
             <label for="departmentBranch">Department Branch</label>
             <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
-              <option *ngFor="let branch of branches" [value]="branch">
-                {{branch}}
+              <option value="">(Select)</option>
+              <option *ngFor="let item of jobLocationList" [value]="item.value">
+                {{item.text}}
               </option>
             </select>
             <div *ngIf="employeeFormGroup.controls['departmentBranch'].invalid
@@ -518,6 +528,7 @@
               </div>
             </div>
           </div>
+
         </div>
 
         <div class="row">
