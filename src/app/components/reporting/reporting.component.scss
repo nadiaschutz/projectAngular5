@@ -1,0 +1,42 @@
+.container {
+    border-radius: 3px;
+    box-shadow: 1px 2px 6px 0 rgba(123, 123, 123, 0.5);
+    background-color: var(--white);
+    margin-top: 50px;
+    padding: 20px;
+}
+
+button:focus {
+    background: rgba(57, 142, 242, 0.08);
+    color: #0d6ad3;
+}
+
+.special-button {
+    padding: 6px 10px;
+}
+
+.range {
+    margin-left: 20px;
+}
+
+.sample-section {
+    margin-top: 20px;
+}
+
+.date-picker {
+    width: 200px;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.end-date {
+    margin-left: 10px;
+}
+
+.export {
+    margin-top: 25px;
+}
+
+.data-set {
+    width: 50%;
+}

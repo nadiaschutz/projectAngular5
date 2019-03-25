@@ -77,6 +77,7 @@ import { SchedulerComponent } from './components/staff/clinical/scheduler/schedu
 import { CancelRequestComponent } from './components/staff/cancel-request/cancel-request.component';
 import { NewServReqService } from './service/new-serv-req.service';
 import { DependentComponent } from './components/dependent/dependent.component';
+import { ReportingComponent } from './components/reporting/reporting.component';
 import { AddNewClientDepartmentComponent } from './components/add-new-client-department/add-new-client-department.component';
 
 const routes: Routes = [
@@ -136,6 +137,7 @@ const routes: Routes = [
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
+  { path: 'reporting', component: ReportingComponent, canActivate: [AuthGuardService]},
   { path: '', component: AuthComponent }
 ];
 
@@ -195,6 +197,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AssessmentFunctionComponent,
     SchedulerComponent,
     CancelRequestComponent,
+    ReportingComponent,
     AddNewClientDepartmentComponent
 
   ],

@@ -35,6 +35,10 @@ export class StaffService {
     return this.http.get(environment.queryURI + '/CarePlan?status=draft', {headers: this.getHeaders()});
   }
 
+  fetchAllCarePlans() {
+    return this.http.get(environment.queryURI + '/CarePlan?status=active', {headers: this.getHeaders()});
+  }
+
   saveCarePlan(carePlanData) {
     return this.http.post(environment.queryURI + '/CarePlan', carePlanData, {headers: this.getPostHeaders()});
   }
@@ -47,6 +51,13 @@ export class StaffService {
     return this.http.get(environment.queryURI + '/CarePlan?context=' + episodeOfCareId, {headers: this.getHeaders()});
   }
 
+  getCarePlanFromAssessmentType(assessmentType) {
+    console.log(environment.queryURI +
+      '/CarePlan?status=active&identifier=' + assessmentType);
+    return this.http.get<FHIR.CarePlan>(environment.queryURI +
+      '/CarePlan?status=active&identifier=' + assessmentType, {headers: this.getHeaders()});
+  }
+
   updateCarePlan(id, carePlanData) {
     return this.http.put(environment.queryURI + '/CarePlan/' + id, carePlanData, {headers: this.getPostHeaders()});
   }
@@ -55,11 +66,20 @@ export class StaffService {
     return this.http.get(environment.queryURI + '/QuestionnaireResponse?identifier=SERVREQ', {headers: this.getHeaders()});
   }
 
+  getQuestionnaireResponseFromEpisodeOfCareId(episodeOfCareId) {
+    return this.http.get(environment.queryURI +
+      '/QuestionnaireResponse?identifier=SERVREQ&context=' + episodeOfCareId, {headers: this.getHeaders()});
+  }
+
   saveEpisodeOfCare(data) {
     return this.http.post<FHIR.EpisodeOfCare>(environment.queryURI + '/EpisodeOfCare', data, {headers: this.getPostHeaders()});
   }
 
   getAllEpisodeOfCare() {
+    return this.http.get(environment.queryURI + '/EpisodeOfCare', {headers: this.getHeaders()});
+  }
+
+  getAllEpisodeOfCareAndRelatedData() {
     return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*', {headers: this.getHeaders()});
   }
 
@@ -68,9 +88,14 @@ export class StaffService {
     + episodeOfCareId, {headers: this.getHeaders()});
   }
 
+  getSampleEpisodeOfCareAndRelatedData(episodeOfCareId) {
+    return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*&_id='
+    + episodeOfCareId, {headers: this.getHeaders()});
+  }
+
    getEpisodeOfCareEagerLoading(episodeOfCareId) {
     return  this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_id='
-        + episodeOfCareId, { headers: this.getHeaders() })
+        + episodeOfCareId, { headers: this.getHeaders() });
    }
 
   getAllPractitioners() {
@@ -258,6 +283,14 @@ export class StaffService {
 
   saveProcedureRequest(procedureRequestData) {
     return this.http.post(environment.queryURI + '/ProcedureRequest', procedureRequestData, {headers: this.getPostHeaders()});
+  }
+
+  getAllProcedureRequests() {
+    return this.http.get(environment.queryURI + '/ProcedureRequest', {headers: this.getHeaders()});
+  }
+
+  getProcedureRequestFromIdentifier(identifier: string) {
+    return this.http.get(environment.queryURI + '/ProcedureRequest?identifier=' + identifier, {headers: this.getHeaders()});
   }
 
   saveClinicalQuestionnaireResponse(data) {

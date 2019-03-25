@@ -35,6 +35,7 @@
     "bootstrap-select": "^1.13.5",
     "class-transformer": "^0.1.9",
     "core-js": "^2.5.4",
+    "export-to-csv": "^0.2.1",
     "font-awesome": "^4.7.0",
     "html2canvas": "^1.0.0-alpha.12",
     "jquery": "^3.3.1",

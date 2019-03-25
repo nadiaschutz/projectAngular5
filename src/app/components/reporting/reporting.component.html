@@ -1,0 +1,125 @@
+<div class="container">
+  <h5>Reporting</h5>
+
+  <form [formGroup]="reportingFormGroup" novalidate>
+
+    <!-- {{reportingFormGroup.value | json}} -->
+    <div>
+  
+      <!-- Date Range selection -->
+      <div class="sample-section">
+        <h6>SELECT DATE RANGE</h6>
+
+        <div class="row">
+          <div class="col-6">
+            <button class="btn special-button">Year</button>
+            <button class="btn special-button range">Quarter</button>
+            <button class="btn special-button range">Month</button>
+          </div>
+          <div class="col-6">
+            <label for="dateRange">Date Range From</label>
+            <input type="text" placeholder="Select Date Range" class="form-control date-picker" bsDaterangepicker [bsConfig]="datePickerConfig" formControlName="dateRange" id="dateRange" [bsConfig]='datePickerConfig' red>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Select Sample -->
+      <div class="sample-section">
+        <h6>SELECT SAMPLE</h6>
+  
+        <div>
+
+          <div class="row">
+            <div class="col">
+                <label for="psohpService">PSOHP Service</label>
+                <select class="form-control" formControlName="psohpService" id="psohpService" (change)="psohpChanged()">
+                    <option value="">(Select)</option>
+                    <option *ngFor="let item of psohpList" [value]="item.value">
+                        {{item.text}}
+                    </option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="assesmentType">Assesment Type</label>
+                <select class="form-control" formControlName="assesmentType" id="assesmentType" (change)="assessTypeChanged()">
+                    <option value="">(Select)</option>
+                    <option *ngFor="let item of assesmentTypeList" [value]="item.value">
+                        {{item.text}}
+                    </option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="assesmentCat">Assesment CAT</label>
+                <select class="form-control" formControlName="assesmentCat" id="assesmentCat" (change)="assessCATChanged()">
+                    <option value="">(Select)</option>
+                    <option *ngFor="let item of assesmentCatList" [value]="item.value">
+                        {{item.text}}
+                    </option>
+                </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label for="region">Region</label>
+              <select name="region" id="region" formControlName="region" class="form-control">
+              <option *ngFor="let region of regions">
+                <span>{{region}}</span>
+              </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="department">Department</label>
+              <select name="department" id="department" formControlName="department" class="form-control">
+              <option *ngFor="let department of clientDepartments">
+                <span>{{department}}</span>
+              </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label for="status">Status</label>
+              <select name="status" id="status" formControlName="status" class="form-control">
+              <option *ngFor="let status of statuses">
+                <span>{{status}}</span>
+              </option>
+              </select>
+            </div>
+            <div class="col">
+              <label for="milestone">Milestone</label>
+              <select name="milestone" id="milestone" formControlName="milestone" class="form-control">
+              <option *ngFor="let milestone of milestones">
+                <span>{{milestone}}</span>
+              </option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+  
+      </div>
+  
+      <!-- Select Data Set -->
+      <div class="sample-section">
+        <h6>SELECT DATA SET</h6>
+
+        <div class="row">
+          <div class="col">
+            <label for="dataSet">Data Set</label>
+            <select name="dataSet" id="dataSet" formControlName="dataSet" class="form-control data-set">
+            <option *ngFor="let dataSet of dataSets">
+              <span>{{dataSet}}</span>
+            </option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+      <button (click)="export()" class="export btn special-button">Export</button>
+    </div>
+
+  </form>
+
+</div>
