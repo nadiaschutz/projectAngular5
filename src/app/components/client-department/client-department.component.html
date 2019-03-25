@@ -177,8 +177,8 @@
     <h6>Create Client Department & Branches</h6>
   </div>
 
-  <!-- <div *ngIf="!addClientDepartment"> -->
-  <div>
+  <div *ngIf="!departmentBranchAdded">
+    <!-- <div> -->
     <div class="button-section">
       <button (click)="addNewClientDepartment()" class="btn special-button">
         Add new Client Department</button>
@@ -192,32 +192,8 @@
     </div>
 
   </div>
-
-  <!-- <div *ngIf="addClientDepartment">
-    <div class="row">
-      <div class="col-md-8">
-        <input type="text" name="clientDepartmentName" id="clientDepartmentName" class="form-control " placeholder="Enter Client Department Name"
-          [(ngModel)]="clientDepartmentName" />
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-8">
-        <div class="alert alert-success" *ngIf="clientDepartmentCreationSuccess">
-          <strong>Client Department: {{clientDepartmentName}} added successfully</strong>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-8">
-        <div class="button-section">
-          <button (click)="createClientDepartment()" class="btn special-button" *ngIf="!clientDepartmentCreationSuccess">
-            Add new Client Department</button>
-          <button (click)="backToCreateBranch()" class="btn special-button">
-            Back</button>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
-
+  <div *ngIf='departmentBranchAdded'>
+    <p>New Department Branch Was Created Successfully</p>
+    <button class="btn regular-button" type="button" (click)="onOk()">OK</button>
+  </div>
 </div>

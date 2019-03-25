@@ -29,6 +29,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
 
   districtOffices = [];
+  departmentBranchAdded = false;
 
 
 
@@ -44,13 +45,13 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
 
   provinces = [
-    'Alberta' ,
+    'Alberta',
     'British Columbia',
-    'Manitoba' ,
-    'New Brunswick' ,
+    'Manitoba',
+    'New Brunswick',
     'Newfoundland and Labrador',
     'Northwest Territories',
-    'Nova Scotia' ,
+    'Nova Scotia',
     'Nunavut',
     'Ontario',
     'Prince Edward Island',
@@ -347,10 +348,32 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
     // console.log(branchLocation);
     console.log(JSON.stringify(branchLocation));
 
+    // this.userService
+    //   .saveClientDepartmentBranch(JSON.stringify(branchLocation))
+    //   .subscribe(res => console.log(res));
+
+
+
     this.userService
       .saveClientDepartmentBranch(JSON.stringify(branchLocation))
-      .subscribe(res => console.log(res));
+      .subscribe(
+        data => this.handleSuccessOnSubmit(data),
+        error => this.handleError(error)
+      );
+
   }
+
+  handleSuccessOnSubmit(data) {
+    if (data) {
+      this.departmentBranchAdded = true;
+      console.log(data);
+    }
+  }
+
+  onOk() {
+    this.router.navigateByUrl('/dashboard');
+  }
+
 
   // To save location data, then return the location to reference
   createDepartmentBranch(data) {
