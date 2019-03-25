@@ -343,7 +343,7 @@ export class ReportingComponent implements OnInit {
         });
         this.processCarePlan(arr);
       } else {
-        this.processCarePlan(arr);
+        this.processCarePlan(this.carePlanList);
       }
     }
     if (this.reportingFormGroup.value.dataSet === 'Diagnostics Test' ||
