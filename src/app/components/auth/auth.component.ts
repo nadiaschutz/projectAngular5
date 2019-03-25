@@ -24,7 +24,7 @@ export class AuthComponent implements OnInit {
   versionNumber;
   ngOnInit() {
 
-    this.versionNumber = '0.7.19';
+    this.versionNumber = '0.7.24';
 
     if (this.oauthService.getAccessToken()) {
       this.router.navigateByUrl('/dashboard');

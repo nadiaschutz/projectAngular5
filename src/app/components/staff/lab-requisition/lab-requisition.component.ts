@@ -11,6 +11,7 @@ import {PatientService} from '../../../service/patient.service';
 import { formatDate } from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
 import * as moment from 'moment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-lab-requisition',
@@ -78,6 +79,7 @@ export class LabRequisitionComponent implements OnInit {
   constructor(private staffService: StaffService,
               private patientService: PatientService,
               private route: ActivatedRoute,
+              private router: Router,
               private userService: UserService,
               private utilService: UtilService,
               private formBuilder: FormBuilder) { }
@@ -508,5 +510,7 @@ export class LabRequisitionComponent implements OnInit {
         });
     }
 
-
+    viewDetailedContext() {
+      this.router.navigateByUrl('/staff/work-screen');
+    }
 }
