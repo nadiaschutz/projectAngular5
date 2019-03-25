@@ -248,11 +248,7 @@ export class LabRequisitionComponent implements OnInit {
                         const req = {
                             'linkId': resource['item'].length + 1,
                             'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            'answer': [
-                                {
-                                    'valueBoolean': false
-                                }
-                            ]
+                           
                         } ;
 
                         resource['item'].push(req);
@@ -261,11 +257,7 @@ export class LabRequisitionComponent implements OnInit {
                         resource['item'] = [{
                             'linkId': '1',
                             'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            'answer': [
-                                {
-                                    'valueBoolean': false
-                                }
-                            ]
+                           
                         }];
                     }
 
@@ -394,11 +386,7 @@ export class LabRequisitionComponent implements OnInit {
                         const req = {
                             'linkId': resource['item'].length + 1,
                             'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            'answer': [
-                                {
-                                    'valueBoolean': false
-                                }
-                            ]
+                            
                         } ;
 
                         resource['item'].push(req);
@@ -407,11 +395,7 @@ export class LabRequisitionComponent implements OnInit {
                         resource['item'] = [{
                             'linkId': '1',
                             'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            'answer': [
-                                {
-                                    'valueBoolean': false
-                                }
-                            ]
+                            
                         }];
                     }
 
