@@ -1766,10 +1766,8 @@ export class WorkScreenComponent implements OnInit {
   }
 
   redirectToScheduler() {
-    if (sessionStorage.getItem('userRole') === 'clinician') {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
       this.router.navigateByUrl('/staff/clinical/scheduler');
-    }
   }
 
   redirectToAssessmentSelected(event) {

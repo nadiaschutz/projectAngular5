@@ -938,8 +938,7 @@
               Changes</button>
             <button class="btn regular-button function-buttons col-4 button-padding" (click)="saveCarePlan()">Save
               Changes</button>
-            <!-- <button class="btn regular-button function-buttons col-3 button-padding" (click)="redirectToCloseScreen()">Close
-              Order</button> -->
+
           </div>
         </div>
 
@@ -977,6 +976,7 @@
           <p>{{assignedAdmin}}</p>
         </div>
       </div>
+
       <div class="card">
         <div class="card-body">
           <label class="card-title"><strong>Override Document Status</strong></label>
@@ -985,7 +985,7 @@
             <section class="form-section">
               <div class="row">
                 <div class="col">
-                  <label for="currentProgress">Department Branch</label>
+                  <label for="currentProgress">Select a document status</label>
                   <select class="form-control" formControlName="currentProgress" id="currentProgress" required>
                     <option value="">(Select)</option>
                     <option *ngFor="let item of statusSelectionList" [value]="item.value">
@@ -1001,15 +1001,22 @@
                 </div>
               </div>
               <div class="row">
-                  <div class="col justify-content-center">
-                      <button class="btn milestone-menu-button" style="min-width: 100%" [disabled]="!currentProgressFormGroup.valid" (click)="updateCurrentProgress()">Update Progress</button>
-                  </div>
+                <div class="col justify-content-center">
+                  <button class="btn milestone-menu-button" style="min-width: 100%" [disabled]="!currentProgressFormGroup.valid"
+                    (click)="updateCurrentProgress()">Update Progress</button>
+                </div>
               </div>
             </section>
           </form>
         </div>
       </div>
-
+      <div class="card">
+        <div class="card-body">
+          <label class="card-title"><strong>Close Work Order</strong></label>
+          <button class="btn milestone-menu-button" style="min-width: 100%" (click)="redirectToCloseScreen()">Close
+            Order</button>
+        </div>
+      </div>
       <div class="card">
         <div class="card-body">
           <label class="card-title"><strong>Summary</strong></label>
