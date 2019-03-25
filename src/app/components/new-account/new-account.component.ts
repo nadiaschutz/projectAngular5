@@ -483,8 +483,22 @@ export class NewAccountComponent implements OnInit {
    * @param data
    */
   populateDeptNames(data: any) {
+    const arrToSort = [];
     data.entry.forEach(element => {
-      this.deptName.push(element.resource);
+      console.log(element.resource);
+      arrToSort.push(element.resource);
+    });
+
+    this.deptName = arrToSort.sort((obj1, obj2) => {
+      const textA = obj1.name.toUpperCase();
+      const textB = obj2.name.toUpperCase();
+      if (textA > textB) {
+        return 1;
+      }
+      if (textA < textB) {
+        return -1;
+      }
+      return 0;
     });
   }
 
