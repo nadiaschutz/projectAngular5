@@ -171,7 +171,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       type: 'select',
       label: 'Provinces & Territories',
       options: this.provinces,
-      placeholder: 'Enter P & T',
+      placeholder: 'Select Provinces & Territories',
       name: 'province',
       required: true,
       validation: [Validators.required]

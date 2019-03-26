@@ -162,8 +162,16 @@ export class ServReqMainComponent implements OnInit {
 
 
   populateDeptNames(data: any) {
+    const arrToSort = [];
     data.entry.forEach(element => {
-      this.departmentList.push(element['resource']['name']);
+      arrToSort.push(element['resource']['name']);
+    });
+    this.departmentList = arrToSort.sort((a, b) => {
+      const textA = a.toUpperCase();
+      const textB = b.toUpperCase();
+      if (textA < textB) { return -1; }
+      if (textA > textB) { return 1; }
+      return 0;
     });
   }
 

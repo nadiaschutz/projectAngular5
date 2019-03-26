@@ -230,10 +230,21 @@ export class DashboardComponent implements OnInit {
 
 
   populateDeptNames(data: any) {
+    const arrToSort = [];
     data.entry.forEach(element => {
-      this.listOfDepartments.push(element['resource']['name']);
+      arrToSort.push(element['resource']['name']);
+    });
+
+    this.listOfDepartments = arrToSort.sort((a, b) => {
+      const textA = a.toUpperCase();
+      const textB = b.toUpperCase();
+      if (textA < textB) { return -1; }
+      if (textA > textB) { return 1; }
+      return 0;
     });
   }
+
+
 
   // run on button 'refresh'
   refreshSearch() {
