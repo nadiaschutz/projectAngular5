@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as FHIR from '../../interface/FHIR';
 import * as SMILE from '../../interface/SMILE';
+import { AdminHomeScreenService } from 'src/app/service/admin-home-screen.service';
 
 export interface AccountType {
   value: string;
@@ -57,7 +58,8 @@ export class NewAccountComponent implements OnInit {
     public translate: TranslateService,
     private userService: UserService,
     private router: Router,
-    private titleCase: TitleCasePipe
+    private titleCase: TitleCasePipe,
+    private adminHomeScreenService: AdminHomeScreenService,
   ) { }
 
   accountTypes: AccountType[] = [
@@ -113,10 +115,10 @@ export class NewAccountComponent implements OnInit {
     /**
      * Initializes the list of branches from our system
      */
-    this.userService.fetchAllDepartmentBranches().subscribe(
-      data => this.populateDeptBranches(data),
-      error => this.handleError(error)
-    );
+    // this.userService.fetchAllDepartmentBranches().subscribe(
+    //   data => this.populateDeptBranches(data),
+    //   error => this.handleError(error)
+    // );
 
     /**
      * Builds the form object that is used in the component.
@@ -521,13 +523,58 @@ export class NewAccountComponent implements OnInit {
    * stored on the server to link to a Practitioner.
    * @param data
    */
-  populateDeptBranches(data: any) {
-    console.log(data.entry);
-    data.entry.forEach(element => {
-      console.log(element.resource);
-      this.deptBranch.push(element.resource);
-    });
+  // populateDeptBranches(data: any) {
+  //   console.log(data.entry);
+  //   data.entry.forEach(element => {
+  //     console.log(element.resource);
+  //     this.deptBranch.push(element.resource);
+  //   });
+  // }
+
+  change(val): void {
+
+    if (val !== '') {
+      // get job locations dropdown items
+      this.adminHomeScreenService.getJobLocations({ organization: val })
+        .subscribe(locations => {
+          console.log('job list =>', locations);
+          this.deptBranch = this.extractKeyValuePairsFromBundle(locations);
+          // this.employeeFormGroup.get('departmentBranch').enable();
+          console.log(this.deptBranch);
+        },
+          (err) => {
+            console.log('Job locations list error => ', err);
+          });
+    } else {
+      // this.employeeFormGroup.get('departmentBranch').disable();
+      this.deptBranch = [];
+    }
+
   }
+
+  extractKeyValuePairsFromBundle(bundle) {
+    if (bundle && bundle['entry']) {
+      const bundleEntries = bundle['entry'];
+
+      const list = bundleEntries.map(item => {
+        if (item && item.resource) {
+          const temp = {
+            value: item.resource.resourceType + '/' + item.resource.id,
+            text: item.resource.name
+          };
+
+          return temp;
+        }
+        return { value: null, text: null };
+      });
+
+      return list;
+    }
+
+    return [];
+  }
+
+
 
   /**
    * Displays the error message from the server in the case a subscription fails.
