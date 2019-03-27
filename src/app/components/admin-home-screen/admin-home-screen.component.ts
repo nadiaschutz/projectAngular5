@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import {
-    FormBuilder,
-    FormGroup,
-    FormControl
+  FormBuilder,
+  FormGroup,
+  FormControl
 } from '@angular/forms';
 
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -262,7 +262,7 @@ export class AdminHomeScreenComponent implements OnInit {
       dob: new FormControl(''),
       pri: new FormControl(''),
       employeeDepartment: new FormControl(''),
-      jobLocation: new FormControl({ value: '', disabled: true}),
+      jobLocation: new FormControl({ value: '', disabled: true }),
       psohpService: new FormControl(null),
       assesmentType: new FormControl(null),
       assesmentCat: new FormControl(null),
@@ -293,8 +293,8 @@ export class AdminHomeScreenComponent implements OnInit {
     this.assesmentCatList = [];
 
     // reset
-    this.adminHomeFormGroup.patchValue({assesmentType: null});
-    this.adminHomeFormGroup.patchValue({assesmentCat: null});
+    this.adminHomeFormGroup.patchValue({ assesmentType: null });
+    this.adminHomeFormGroup.patchValue({ assesmentCat: null });
   }
 
   assessTypeChanged() {
@@ -303,7 +303,7 @@ export class AdminHomeScreenComponent implements OnInit {
     this.assesmentCatList = temp;
 
     // reset
-    this.adminHomeFormGroup.patchValue({assesmentCat: null});
+    this.adminHomeFormGroup.patchValue({ assesmentCat: null });
   }
 
   assessCATChanged() {
@@ -332,9 +332,9 @@ export class AdminHomeScreenComponent implements OnInit {
               this.jobLocationList = this.extractKeyValuePairsFromBundle(locations);
               this.adminHomeFormGroup.get('jobLocation').enable();
             },
-            (err) => {
-              console.log('Job locations list error => ', err);
-            });
+              (err) => {
+                console.log('Job locations list error => ', err);
+              });
         } else {
           this.adminHomeFormGroup.get('jobLocation').disable();
           this.jobLocationList = [];
@@ -380,7 +380,7 @@ export class AdminHomeScreenComponent implements OnInit {
     // console.log(form.value['psohpService']);
     let code = '';
     if (form.value['assesmentCat']) {
-      code = form.value['assesmentCat'] ;
+      code = form.value['assesmentCat'];
     }
     if (form.value['psohpService'] === 'FTWORK' || form.value['psohpService'] === 'IMREVW') {
       code = form.value['psohpService'];
@@ -398,7 +398,7 @@ export class AdminHomeScreenComponent implements OnInit {
       queryObj['_id'] = form.value.serviceRequest;
     }
     if (form.value.dateRange && Array.isArray(form.value.dateRange) && form.value.dateRange.length === 2 &&
-        moment(form.value.dateRange[0]).isValid() && moment(form.value.dateRange[1]).isValid()) {
+      moment(form.value.dateRange[0]).isValid() && moment(form.value.dateRange[1]).isValid()) {
       queryObj['1dup-context.date'] = 'ge' + moment(form.value.dateRange[0]).format(this.DATE_FORMAT); // form
       queryObj['2dup-context.date'] = 'le' + moment(form.value.dateRange[1]).format(this.DATE_FORMAT); // to
     }
@@ -416,13 +416,13 @@ export class AdminHomeScreenComponent implements OnInit {
           bundle['entry'].forEach(element => {
             const resource = element.resource;
             if (resource.resourceType === 'QuestionnaireResponse') {
-                this.qrList.push(resource);
+              this.qrList.push(resource);
             } else if (resource.resourceType === 'EpisodeOfCare') {
-                this.eocList.push(resource);
+              this.eocList.push(resource);
             } else if (resource.resourceType === 'Patient') {
-                this.patList.push(resource);
+              this.patList.push(resource);
             } else if (resource.resourceType === 'Practitioner') {
-                this.practList.push(resource);
+              this.practList.push(resource);
             }
           });
 
@@ -430,47 +430,47 @@ export class AdminHomeScreenComponent implements OnInit {
           this.mapRenderingList();
         }
       },
-      (err) => console.log(err),
-      () => {
-        // now get tasks data based on EpisodeOfCares in internal db
+        (err) => console.log(err),
+        () => {
+          // now get tasks data based on EpisodeOfCares in internal db
 
-        // first we get all the id's for EpisodeOfCares
-        const eocIds = this.eocList.map(item => item.id);
+          // first we get all the id's for EpisodeOfCares
+          const eocIds = this.eocList.map(item => item.id);
 
-        if (eocIds && Array.isArray(eocIds) && eocIds.length > 0) {
-          const queryObject = {
-            '_has:QuestionnaireResponse:context:identifier': 'SERVREQ',
-            '_revinclude': 'Task:context',
-            '_include': '*',
-            '_id': eocIds.join(',')
-          };
+          if (eocIds && Array.isArray(eocIds) && eocIds.length > 0) {
+            const queryObject = {
+              '_has:QuestionnaireResponse:context:identifier': 'SERVREQ',
+              '_revinclude': 'Task:context',
+              '_include': '*',
+              '_id': eocIds.join(',')
+            };
 
-          this.adminHomeScreenService.searchEOC(queryObject)
-            .subscribe((bundle) => {
-              console.log('Search bundle EOC =>', bundle);
+            this.adminHomeScreenService.searchEOC(queryObject)
+              .subscribe((bundle) => {
+                console.log('Search bundle EOC =>', bundle);
 
-              if (bundle && bundle['entry']) {
-                // we loop through all the entries
-                // for each entry, check what resource it is. and add it to the internal arr of tems
-                bundle['entry'].forEach(element => {
-                  const resource = element.resource;
-                  if (resource.resourceType === 'Task') {
-                    this.tasksList.push(resource);
-                  } else if (resource.resourceType === 'Practitioner') {
-                    this.taskPractList.push(resource);
-                  }
+                if (bundle && bundle['entry']) {
+                  // we loop through all the entries
+                  // for each entry, check what resource it is. and add it to the internal arr of tems
+                  bundle['entry'].forEach(element => {
+                    const resource = element.resource;
+                    if (resource.resourceType === 'Task') {
+                      this.tasksList.push(resource);
+                    } else if (resource.resourceType === 'Practitioner') {
+                      this.taskPractList.push(resource);
+                    }
+                  });
+
+                  // create our service request obj to render for UI comp
+                  this.mapTaskRenderingList();
+                }
+              },
+                err => console.log(err),
+                () => {
+                  console.log('completed search Eoc');
                 });
-
-                // create our service request obj to render for UI comp
-                this.mapTaskRenderingList();
-              }
-            },
-            err => console.log(err),
-            () => {
-              console.log('completed search Eoc');
-            });
-        }
-      });
+          }
+        });
   }
 
   clear() {
@@ -508,13 +508,13 @@ export class AdminHomeScreenComponent implements OnInit {
           list['entry'].forEach(element => {
             const resource = element.resource;
             if (resource.resourceType === 'QuestionnaireResponse') {
-                this.qrList.push(resource);
+              this.qrList.push(resource);
             } else if (resource.resourceType === 'EpisodeOfCare') {
-                this.eocList.push(resource);
+              this.eocList.push(resource);
             } else if (resource.resourceType === 'Patient') {
-                this.patList.push(resource);
+              this.patList.push(resource);
             } else if (resource.resourceType === 'Practitioner') {
-                this.practList.push(resource);
+              this.practList.push(resource);
             }
           });
 
@@ -522,9 +522,9 @@ export class AdminHomeScreenComponent implements OnInit {
           this.mapRenderingList();
         }
       },
-      err => {
-        console.log(err);
-      });
+        err => {
+          console.log(err);
+        });
   }
 
   getTasksForQRs() {
@@ -575,16 +575,29 @@ export class AdminHomeScreenComponent implements OnInit {
   }
 
   getAndSetDepartmentList() {
+    let arrToSort = [];
     this.adminHomeScreenService.getDepartmentNames()
       .subscribe(bundle => {
         console.log('employee department => ', bundle);
-        this.employeeDepartmentList = this.extractKeyValuePairsFromBundle(bundle);
+        arrToSort = this.extractKeyValuePairsFromBundle(bundle);
+
+        this.employeeDepartmentList = arrToSort.sort((obj1, obj2) => {
+          const textA = obj1.text.toUpperCase();
+          const textB = obj2.text.toUpperCase();
+          if (textA > textB) {
+            return 1;
+          }
+          if (textA < textB) {
+            return -1;
+          }
+          return 0;
+        });
       },
-      (err) => console.log('Employee Department list error', err));
+        (err) => console.log('Employee Department list error', err));
   }
 
   getAndSetLocations() {
-    
+
     this.datePickerConfig = Object.assign(
       {},
       { containerClass: 'theme-dark-blue', dateInputFormat: this.DATE_FORMAT, rangeInputFormat: this.DATE_FORMAT }
@@ -673,9 +686,9 @@ export class AdminHomeScreenComponent implements OnInit {
     const form = this.adminHomeFormGroup.value;
 
     if (form.dateRange !== '' || form.dob !== '' || form.employeeDepartment !== '' ||
-        form.firstName !== '' || form.lastName !== '' || form.pri !== '' ||
-        form.assesmentCat !== '' || form.assesmentType !== '' || form.psohpService !== '' ||
-        form.serviceRequest !== '') {
+      form.firstName !== '' || form.lastName !== '' || form.pri !== '' ||
+      form.assesmentCat !== '' || form.assesmentType !== '' || form.psohpService !== '' ||
+      form.serviceRequest !== '') {
       valueFilled = true;
     }
 
