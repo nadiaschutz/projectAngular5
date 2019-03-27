@@ -203,7 +203,7 @@ export class EmployeeComponent implements OnInit {
     this.employeeFormGroup.get('departmentName').setValue(this.currentUserDepartment);
     this.employeeFormGroup.get('departmentBranch').setValue(this.currentUserBranch);
 
-      this.onChanges();
+    this.onChanges();
     this.getAndSetDepartmentList();
 
   }
@@ -261,31 +261,48 @@ export class EmployeeComponent implements OnInit {
   }
 
   getAndSetDepartmentList() {
+    let arrToSort = [];
     this.adminHomeScreenService.getDepartmentNames()
       .subscribe(bundle => {
         console.log('employee department => ', bundle);
-        this.employeeDepartmentList = this.extractKeyValuePairsFromBundle(bundle);
+        arrToSort = this.extractKeyValuePairsFromBundle(bundle);
+        console.log(arrToSort);
+        this.employeeDepartmentList = arrToSort.sort((obj1, obj2) => {
+          const textA = obj1.text.toUpperCase();
+          const textB = obj2.text.toUpperCase();
+          if (textA > textB) {
+            return 1;
+          }
+          if (textA < textB) {
+            return -1;
+          }
+          return 0;
+        });
+
+
       },
-      (err) => console.log('Employee Department list error', err));
+        (err) => console.log('Employee Department list error', err));
   }
 
   onChanges(): void {
-
+    console.log(this.employeeFormGroup.get('departmentName'));
 
     // listen to one aprticular field for form change
     this.employeeFormGroup.get('departmentName')
       .valueChanges
-      .pipe(distinctUntilChanged((a, b) => {
-        return JSON.stringify(a) === JSON.stringify(b);
-      }))
+      // .pipe(distinctUntilChanged((a, b) => {
+      //   return JSON.stringify(a) === JSON.stringify(b);
+      // }))
       .subscribe(val => {
         if (val !== '') {
+          console.log(val);
           // get job locations dropdown items
           this.adminHomeScreenService.getJobLocations({ organization: val })
             .subscribe(locations => {
               console.log('job list =>', locations);
               this.jobLocationList = this.extractKeyValuePairsFromBundle(locations);
               this.employeeFormGroup.get('departmentBranch').enable();
+              console.log(this.jobLocationList);
             },
               (err) => {
                 console.log('Job locations list error => ', err);
@@ -297,7 +314,9 @@ export class EmployeeComponent implements OnInit {
       });
   }
 
- 
+
+
+
   // Sets the employee when called. Builds a new Patient object, along with associated
   // objects, generates a unique ID to link patient resources (useful for linking)
   // employees & dependents
@@ -366,27 +385,27 @@ export class EmployeeComponent implements OnInit {
     ).value;
 
 
-      let deptText = '';
-      let branchText = '';
-      this.employeeDepartmentList.forEach(item => {
-        if (item['value'] === this.employeeFormGroup.get('departmentName').value) {
-          deptText = item['text'];
-        }
-      });
+    let deptText = '';
+    let branchText = '';
+    this.employeeDepartmentList.forEach(item => {
+      if (item['value'] === this.employeeFormGroup.get('departmentName').value) {
+        deptText = item['text'];
+      }
+    });
 
-      this.jobLocationList.forEach(branch => {
-        if (branch['value'] === this.employeeFormGroup.get('departmentBranch').value) {
-          branchText = branch['text'];
-        }
-      });
-      this.employee_extension_workplace.url =
-        'https://bcip.smilecdr.com/fhir/workplace';
-      this.employee_extension_workplace.valueString = deptText;
+    this.jobLocationList.forEach(branch => {
+      if (branch['value'] === this.employeeFormGroup.get('departmentBranch').value) {
+        branchText = branch['text'];
+      }
+    });
+    this.employee_extension_workplace.url =
+      'https://bcip.smilecdr.com/fhir/workplace';
+    this.employee_extension_workplace.valueString = deptText;
 
 
-      this.employee_extension_branch.url =
-        'https://bcip.smilecdr.com/fhir/branch';
-      this.employee_extension_branch.valueString = branchText;
+    this.employee_extension_branch.url =
+      'https://bcip.smilecdr.com/fhir/branch';
+    this.employee_extension_branch.valueString = branchText;
 
 
     // Cross Reference One extension

@@ -43,10 +43,10 @@
               <div class="col">
                 <label for="department" class="label-name">Client Department</label>
                 <select class="form-control" [(ngModel)]="clientDepartment" (ngModelChange)="clientDepartment = $event"
-                  name="department">
+                  name="department" (change)="change(clientDepartment)">
                   <option [ngValue]="null">Select</option>
-                  <option *ngFor="let department of listOfDepartments" [value]="department">
-                    {{department}}
+                  <option *ngFor="let department of listOfDepartments" [value]="department.id">
+                    {{department.name}}
                   </option>
                 </select>
               </div>
@@ -56,8 +56,8 @@
                 <select class="form-control" [(ngModel)]="branch" (ngModelChange)="branch = $event" name="branch">
 
                   <option [ngValue]="null">Select</option>
-                  <option *ngFor="let eachBranch of listOfBranches" [value]="eachBranch.name">
-                    {{eachBranch.name}}
+                  <option *ngFor="let eachBranch of listOfBranches" [value]="eachBranch.value">
+                    {{eachBranch.text}}
                   </option>
                 </select>
               </div>
