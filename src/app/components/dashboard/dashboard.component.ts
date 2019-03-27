@@ -10,6 +10,7 @@ import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { formatDate } from '@angular/common';
 import { Client } from '../models/item.model';
 import { e } from '@angular/core/src/render3';
+import { AdminHomeScreenService } from 'src/app/service/admin-home-screen.service';
 
 export interface AccountElement {
   type: string;
@@ -131,7 +132,8 @@ export class DashboardComponent implements OnInit {
     private patientService: PatientService,
     private router: Router,
     private utilService: UtilService,
-    private bsDatepickerConfig: BsDatepickerConfig
+    private bsDatepickerConfig: BsDatepickerConfig,
+    private adminHomeScreenService: AdminHomeScreenService,
   ) {
     this.minDate = new Date();
     this.maxDate = new Date();
@@ -157,10 +159,10 @@ export class DashboardComponent implements OnInit {
     /**
  * Initializes the list of branches from our system
  */
-    this.userService.fetchAllDepartmentBranches().subscribe(
-      data => this.populateDeptBranches(data),
-      error => this.handleError(error)
-    );
+    // this.userService.fetchAllDepartmentBranches().subscribe(
+    //   data => this.populateDeptBranches(data),
+    //   error => this.handleError(error)
+    // );
 
 
     // this.sortUsersObjects();
@@ -178,11 +180,11 @@ export class DashboardComponent implements OnInit {
     this.getAllData();
   }
 
-  populateDeptBranches(data: any) {
-    data.entry.forEach(element => {
-      this.listOfBranches.push(element.resource);
-    });
-  }
+  // populateDeptBranches(data: any) {
+  //   data.entry.forEach(element => {
+  //     this.listOfBranches.push(element.resource);
+  //   });
+  // }
 
 
   dataSearch() {
@@ -231,19 +233,70 @@ export class DashboardComponent implements OnInit {
 
   populateDeptNames(data: any) {
     const arrToSort = [];
+    console.log(data);
     data.entry.forEach(element => {
-      arrToSort.push(element['resource']['name']);
+      arrToSort.push(
+        {
+          name: element['resource']['name'],
+          id: 'Organization/' + element['resource']['id']
+        });
     });
 
-    this.listOfDepartments = arrToSort.sort((a, b) => {
-      const textA = a.toUpperCase();
-      const textB = b.toUpperCase();
-      if (textA < textB) { return -1; }
-      if (textA > textB) { return 1; }
+    this.listOfDepartments = arrToSort.sort((obj1, obj2) => {
+      const textA = obj1.name.toUpperCase();
+      const textB = obj2.name.toUpperCase();
+      if (textA > textB) {
+        return 1;
+      }
+      if (textA < textB) {
+        return -1;
+      }
       return 0;
     });
   }
 
+  change(val): void {
+
+    if (val !== '') {
+      // get job locations dropdown items
+      this.adminHomeScreenService.getJobLocations({ organization: val })
+        .subscribe(locations => {
+          console.log('job list =>', locations);
+          this.listOfBranches = this.extractKeyValuePairsFromBundle(locations);
+          // this.employeeFormGroup.get('departmentBranch').enable();
+          console.log(this.listOfBranches);
+        },
+          (err) => {
+            console.log('Job locations list error => ', err);
+          });
+    } else {
+      // this.employeeFormGroup.get('departmentBranch').disable();
+      this.listOfBranches = [];
+    }
+
+  }
+
+  extractKeyValuePairsFromBundle(bundle) {
+    if (bundle && bundle['entry']) {
+      const bundleEntries = bundle['entry'];
+
+      const list = bundleEntries.map(item => {
+        if (item && item.resource) {
+          const temp = {
+            value: item.resource.resourceType + '/' + item.resource.id,
+            text: item.resource.name
+          };
+
+          return temp;
+        }
+        return { value: null, text: null };
+      });
+
+      return list;
+    }
+
+    return [];
+  }
 
 
   // run on button 'refresh'
