@@ -79,7 +79,8 @@
     <div class="row">
       <div class="col">
         <label for="role">Role (Required)</label>
-        <select class="form-control" formControlName="role" id="role" required>
+        <select class="form-control" formControlName="role" id="role" required [(ngModel)]="role">
+          <option value="placeholder" disabled>Select</option>
           <option *ngFor="let roles of roleTypes" [value]="roles.value">
             {{roles.viewValue}}
           </option>
@@ -132,7 +133,9 @@
     <div class="row">
       <div class="col">
         <label for="regionalOffice">Regional Office</label>
-        <select class="form-control" formControlName="regionalOffice" id="regionalOffice">
+        <select class="form-control" formControlName="regionalOffice" id="regionalOffice" [(ngModel)]="regionalOffice">
+          <option value="placeholder" disabled>Select</option>
+          <!-- <option [ngValue]="null">Select</option> -->
           <option *ngFor="let regionalOffice of regionalOffices" [value]="regionalOffice.id">
             {{regionalOffice.name}}
           </option>
@@ -146,7 +149,8 @@
       </div>
       <div class="col">
         <label for="districtOffice">District Office</label>
-        <select class="form-control" formControlName="districtOffice" id="districtOffice">
+        <select class="form-control" formControlName="districtOffice" id="districtOffice" [(ngModel)]="districtOffice">
+          <option value="placeholder" disabled>Select</option>
           <option *ngFor="let districtOffice of districtOffices" [value]="districtOffice.id">
             {{districtOffice.name}}
           </option>
@@ -163,7 +167,8 @@
     <div class="row">
       <div class="col">
         <label for="departmentName">Department Name (Required)</label>
-        <select class="form-control" formControlName="departmentName" id="departmentName" required>
+        <select class="form-control" formControlName="departmentName" id="departmentName" required [(ngModel)]="departmentName">
+          <option value="placeholder" disabled>Select</option>
           <option *ngFor="let department of deptName" [value]="department.id">
             {{department.name}}
           </option>
@@ -177,7 +182,8 @@
       </div>
       <div class="col">
         <label for="departmentBranch">Department Branch (Required)</label>
-        <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
+        <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required [(ngModel)]="departmentBranch">
+          <option value="placeholder" disabled>Select</option>
           <option *ngFor="let branch of deptBranch" [value]="branch.id">
             {{branch.name}}
           </option>

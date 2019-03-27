@@ -37,6 +37,11 @@ export interface RoleType {
 export class NewAccountComponent implements OnInit {
 
   accountFormGroup: FormGroup;
+  role;
+  regionalOffice;
+  districtOffice;
+  departmentName;
+  departmentBranch;
   regionalOffices = [];
   districtOffices = [];
   deptName = [];
@@ -72,6 +77,11 @@ export class NewAccountComponent implements OnInit {
 
   ngOnInit() {
 
+    this.regionalOffice = 'placeholder';
+    this.role = 'placeholder';
+    this.districtOffice = 'placeholder';
+    this.departmentName = 'placeholder';
+    this.departmentBranch = 'placeholder';
     /**
      * Initializes list for regional offices on our system
      */
@@ -131,7 +141,11 @@ export class NewAccountComponent implements OnInit {
       ]),
       role: new FormControl('', Validators.required),
       roleDescription: new FormControl('', Validators.required),
-      phoneNumber: new FormControl('', [Validators.required]),
+      phoneNumber: new FormControl('', [
+        Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(10)
+      ]),
       email: new FormControl('', [Validators.required, Validators.email]),
       regionalOffice: new FormControl('', Validators.required),
       districtOffice: new FormControl('', Validators.required),
