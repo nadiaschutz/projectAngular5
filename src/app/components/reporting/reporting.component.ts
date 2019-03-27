@@ -33,13 +33,13 @@ export class ReportingComponent implements OnInit {
   DATE_FORMAT = 'YYYY-MM-DD';
   regions = ['Select Region'];
   psohpTypes = ['Select Type', 'HACAT1', 'HACAT2', 'HACAT3', 'FTWORK',
-  'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC2', 'THCRC3'];
+    'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC2', 'THCRC3'];
   clientDepartments = ['Select Department'];
   statuses = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   milestones = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   reportingFormGroup: FormGroup;
   dataSets = ['Select Data Set', 'Service Request', 'Care Plan', 'Diagnostics Test',
-  'Consultation', 'Medical Information', 'Vaccines', 'Full Log'];
+    'Consultation', 'Medical Information', 'Vaccines', 'Full Log'];
   episodeOfCareList = [];
   questionnaireResponseList = [];
   patientsList = [];
@@ -266,8 +266,17 @@ export class ReportingComponent implements OnInit {
 
   getAllClientDeparments() {
     this.userService.fetchAllClientDepartments().subscribe(data => {
+      const arrToSort = [];
       data['entry'].forEach(element => {
-        this.clientDepartments.push(element.resource.name);
+        arrToSort.push(element.resource.name);
+
+        this.clientDepartments = arrToSort.sort((a, b) => {
+          const textA = a.toUpperCase();
+          const textB = b.toUpperCase();
+          if (textA < textB) { return -1; }
+          if (textA > textB) { return 1; }
+          return 0;
+        });
       });
     });
   }
@@ -347,8 +356,8 @@ export class ReportingComponent implements OnInit {
       }
     }
     if (this.reportingFormGroup.value.dataSet === 'Diagnostics Test' ||
-    this.reportingFormGroup.value.dataSet === 'Consultation' ||
-    this.reportingFormGroup.value.dataSet === 'Medical Information') {
+      this.reportingFormGroup.value.dataSet === 'Consultation' ||
+      this.reportingFormGroup.value.dataSet === 'Medical Information') {
       this.processProcedureRequestData(this.reportingFormGroup.value.dataSet);
     }
     // this.resetData();
@@ -368,12 +377,12 @@ export class ReportingComponent implements OnInit {
             temp['Careplan Activity No.'] = activity.detail.description;
             const latestProgressItem = activity.progress[activity.progress.length - 1];
             if (latestProgressItem.authorReference) {
-              temp ['User ID that completed the activity'] = latestProgressItem.authorReference;
+              temp['User ID that completed the activity'] = latestProgressItem.authorReference;
             } else {
-              temp ['User ID that completed the activity'] = '';
+              temp['User ID that completed the activity'] = '';
             }
             temp['Timestamp when activity was done'] =
-            this.utilService.getDateTime(latestProgressItem.time);
+              this.utilService.getDateTime(latestProgressItem.time);
             carePlanResultList.push(temp);
           }
         });
@@ -496,8 +505,8 @@ export class ReportingComponent implements OnInit {
     this.assesmentTypeList = temp;
     this.assesmentCatList = [];
     // reset
-    this.reportingFormGroup.patchValue({assesmentType: null});
-    this.reportingFormGroup.patchValue({assesmentCat: null});
+    this.reportingFormGroup.patchValue({ assesmentType: null });
+    this.reportingFormGroup.patchValue({ assesmentCat: null });
   }
 
   assessTypeChanged() {
@@ -505,7 +514,7 @@ export class ReportingComponent implements OnInit {
     const temp = this.typeNext.filter(p => p.type === assesTypeValue).map(item => item.value);
     this.assesmentCatList = temp;
     // reset
-    this.reportingFormGroup.patchValue({assesmentCat: null});
+    this.reportingFormGroup.patchValue({ assesmentCat: null });
   }
 
   assessCATChanged() {
