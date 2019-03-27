@@ -167,7 +167,8 @@
     <div class="row">
       <div class="col">
         <label for="departmentName">Department Name (Required)</label>
-        <select class="form-control" formControlName="departmentName" id="departmentName" required [(ngModel)]="departmentName">
+        <select class="form-control" formControlName="departmentName" id="departmentName" required [(ngModel)]="departmentName"
+          (change)="change(departmentName)">
           <option value="placeholder" disabled>Select</option>
           <option *ngFor="let department of deptName" [value]="department.id">
             {{department.name}}
@@ -185,7 +186,7 @@
         <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required [(ngModel)]="departmentBranch">
           <option value="placeholder" disabled>Select</option>
           <option *ngFor="let branch of deptBranch" [value]="branch.id">
-            {{branch.name}}
+            {{branch.text}}
           </option>
           <div *ngIf="accountFormGroup.controls['departmentBranch'].invalid 
                 && (accountFormGroup.controls['departmentBranch'].touched || accountFormGroup.controls['departmentBranch'].dirty)">
