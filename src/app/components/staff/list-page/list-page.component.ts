@@ -42,15 +42,18 @@ export class ListPageComponent implements OnInit {
 
   ngOnInit() {
     this.getAllAdmins();
-    this.staffService
-      .getAllUnassignedQuestionnaireResponses()
-      .subscribe(data => {
-        this.mapToEpisodeOfCare(data);
-        // this.getServiceTypeFromQuestionnaireResponse(data);
-        this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(episodes => {
-          this.buildEpisodeResponseObject(episodes);
-        });
-      });
+    this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(episodes => {
+      this.buildEpisodeResponseObject(episodes);
+    });
+    // this.staffService
+    //   .getAllUnassignedQuestionnaireResponses()
+    //   .subscribe(data => {
+    //     this.mapToEpisodeOfCare(data);
+    //     // this.getServiceTypeFromQuestionnaireResponse(data);
+    //     this.staffService.getAllEpisodeOfCareAndRelatedData().subscribe(episodes => {
+    //       this.buildEpisodeResponseObject(episodes);
+    //     });
+    //   });
     this.staffService.getAllTasks().subscribe(tasks => {
       if (tasks['entry']) {
         this.buildTaskResponseObject(tasks);

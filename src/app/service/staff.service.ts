@@ -31,8 +31,29 @@ export class StaffService {
     return this.http.put(environment.queryURI + '/EpisodeOfCare/' + id, data, {headers: this.getPostHeaders()});
   }
 
+  createQuestionnaireResponseAsync(data) {
+    return this.http.post(environment.queryURI + '/QuestionnaireResponse', data, {headers: this.getPostHeaders()}).toPromise();
+  }
+
+  updateQuestionnaireResponseAsync(data) {
+    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + data['id'], data,
+    {headers: this.getHeaders()}).toPromise();
+  }
+
+  changeRequest(data: any) {
+    return this.http.put(
+      environment.queryURI + '/QuestionnaireResponse/' + data['id'],
+      data,
+      { headers: this.getHeaders() }
+    );
+  }
+
   fetchAllCarePlanTemplates() {
     return this.http.get(environment.queryURI + '/CarePlan?status=draft', {headers: this.getHeaders()});
+  }
+
+  fetchAllCarePlanTemplatesAsync() {
+    return this.http.get(environment.queryURI + '/CarePlan?status=draft', {headers: this.getHeaders()}).toPromise();
   }
 
   fetchAllCarePlans() {
@@ -41,6 +62,10 @@ export class StaffService {
 
   saveCarePlan(carePlanData) {
     return this.http.post(environment.queryURI + '/CarePlan', carePlanData, {headers: this.getPostHeaders()});
+  }
+
+  saveCarePlanAsync(carePlanData) {
+    return this.http.post(environment.queryURI + '/CarePlan', carePlanData, {headers: this.getPostHeaders()}).toPromise();
   }
 
   getCarePlan(id) {
@@ -75,6 +100,10 @@ export class StaffService {
     return this.http.post<FHIR.EpisodeOfCare>(environment.queryURI + '/EpisodeOfCare', data, {headers: this.getPostHeaders()});
   }
 
+  saveEpisodeOfCareAsync(data) {
+    return this.http.post<FHIR.EpisodeOfCare>(environment.queryURI + '/EpisodeOfCare', data, {headers: this.getPostHeaders()}).toPromise();
+  }
+
   getAllEpisodeOfCare() {
     return this.http.get(environment.queryURI + '/EpisodeOfCare', {headers: this.getHeaders()});
   }
@@ -85,7 +114,7 @@ export class StaffService {
 
   getEpisodeOfCareAndRelatedData(episodeOfCareId) {
     return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*&_id='
-    + episodeOfCareId, {headers: this.getHeaders()});
+    + episodeOfCareId, {headers: this.getNoCacheHeaders()});
   }
 
   getSampleEpisodeOfCareAndRelatedData(episodeOfCareId) {

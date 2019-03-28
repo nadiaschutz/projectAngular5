@@ -16,6 +16,7 @@ import { ItemToSend } from '../models/itemToSend.model';
 import { PatientService } from 'src/app/service/patient.service';
 import { formatDate } from '@angular/common';
 import { DatePipe } from '@angular/common';
+import { StaffService } from '../../service/staff.service';
 
 import * as FHIR from '../../interface/FHIR';
 import { link } from 'fs';
@@ -202,7 +203,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     private userService: UserService,
     private patientService: PatientService,
     private oauthService: OAuthService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private staffService: StaffService
   ) {
 
   }
@@ -252,9 +254,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
 
   populateDeptNames(data: any) {
-    data.entry.forEach(element => {
-      if (element['resource']['name']) {
-        this.departmentList.push(element['resource']['name']);
+    data.entry.forEach(department => {
+      if (department['resource']['name']) {
+        this.departmentList.push(department['resource']['name']);
       }
     });
   }
@@ -490,7 +492,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
 
   // submit(value: { [name: string]: any }) {
-  submit() {
+  async submit() {
     // console.log(this.form.value);
     // console.log(this.form.getRawValue);
     const value = this.form.getRawValue;
@@ -602,13 +604,101 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.savingData();
 
     for (const request of this.itemsToSend) {
-      this.questionnaireService
-        .saveRequest(request)
-        .subscribe(
-          data => this.handleSuccessOnSave(data),
-          error => this.handleErrorOnSave(error)
-        );
+      const questionnaireResponse = await this.staffService.createQuestionnaireResponseAsync(request).catch(error => {
+        console.error(error);
+      });
+      this.formCreated = true;
+      this.createEpisodeOfCare(questionnaireResponse);
     }
+
+  }
+
+  async createEpisodeOfCare(questionnaireResponse) {
+    const episodeOfCare = new FHIR.EpisodeOfCare();
+    episodeOfCare.resourceType = 'EpisodeOfCare';
+    episodeOfCare.status = 'planned';
+
+    const type = new FHIR.CodeableConcept();
+    type.text = 'Episode of Care';
+    episodeOfCare.type = [type];
+
+    const managingOrganization = new FHIR.Reference();
+    managingOrganization.reference = 'Organization/NOHIS';
+
+    const patient = new FHIR.Reference();
+    patient.reference = questionnaireResponse.subject.reference;
+    episodeOfCare.patient = patient;
+
+    const period = new FHIR.Period();
+    period.start = formatDate(new Date(), 'yyyy-MM-dd', 'en');
+    episodeOfCare.period = period;
+
+    const createdEpisodeOfCare = await this.staffService.saveEpisodeOfCareAsync(JSON.stringify(episodeOfCare)).catch(error => {
+      console.error(error);
+    });
+    console.log(createdEpisodeOfCare);
+
+    // Updating Questionnaire response with the newly created episode of care's id as context
+    const reference = new FHIR.Reference();
+    reference.reference = '/EpisodeOfCare/' + createdEpisodeOfCare['id'];
+    questionnaireResponse['context'] = reference;
+    const updatedQR = await this.staffService.updateQuestionnaireResponseAsync(questionnaireResponse).catch(error => {
+      console.error(error);
+    });
+    console.log(updatedQR);
+    const psohpServiceType = this.getServiceTypeFromQuestionnaireResponse(questionnaireResponse);
+    this.createCarePlan(createdEpisodeOfCare, psohpServiceType);
+  }
+
+  async createCarePlan(episodeOfCare, psohpServiceType) {
+    if (psohpServiceType.length > 0) {
+      const carePlanTemplates = await this.staffService.fetchAllCarePlanTemplatesAsync();
+      for (const carePlanTemplateEntry of carePlanTemplates['entry']) {
+        const carePlanTemplate = carePlanTemplateEntry.resource;
+        if (psohpServiceType === carePlanTemplate['identifier'][0]['value']) {
+          console.log(psohpServiceType);
+          const carePlan = new FHIR.CarePlan();
+          carePlan.resourceType = 'CarePlan';
+          carePlan.status = 'active';
+          carePlan.intent = 'plan';
+          carePlan.subject = episodeOfCare.patient;
+
+          const episodeOfCareReference = new FHIR.Reference();
+          episodeOfCareReference.reference =
+            'EpisodeOfCare/' + episodeOfCare.id;
+          carePlan.context = episodeOfCareReference;
+
+          carePlan.activity = carePlanTemplate['activity'];
+          carePlan.description = carePlanTemplate['description'];
+          carePlan.identifier = carePlanTemplate['identifier'];
+
+          console.log(carePlan);
+          const createdCarePlan = await this.staffService.saveCarePlanAsync(JSON.stringify(carePlan)).catch(error => {
+            console.error(error);
+          });
+          console.log(createdCarePlan);
+        }
+      }
+    }
+  }
+
+  getServiceTypeFromQuestionnaireResponse(questionnaireResponse) {
+
+    let serviceType = '';
+    if (questionnaireResponse['item']) {
+      questionnaireResponse.item.forEach(item => {
+        if (item['linkId'] === 'PSOHPSERV') {
+          for (const answer of item['answer']) {
+            if (answer['valueCoding']) {
+              serviceType = answer['valueCoding']['code'];
+            }
+          }
+        }
+      });
+    } else {
+      console.log('buggy one', questionnaireResponse);
+    }
+    return serviceType;
 
   }
 
