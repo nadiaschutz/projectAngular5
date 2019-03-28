@@ -51,6 +51,7 @@ export class NewAccountComponent implements OnInit {
   confirmSubmit = false;
   successHeaderCheck;
   activateSubmitButton = null;
+  chargeback = false;
 
   constructor(
     private fb: FormBuilder,
@@ -153,6 +154,7 @@ export class NewAccountComponent implements OnInit {
       districtOffice: new FormControl('', Validators.required),
       departmentName: new FormControl('', Validators.required),
       departmentBranch: new FormControl('', Validators.required),
+      chargeback: new FormControl('', [])
     });
   }
 
@@ -195,6 +197,7 @@ export class NewAccountComponent implements OnInit {
      *
      * If uncesseful, it'll throw an error.
      */
+
 
     this.userService.savePractitioner(finalJSON).subscribe(
       data => {
@@ -283,8 +286,8 @@ export class NewAccountComponent implements OnInit {
     practitionerEmail.value = this.accountFormGroup.get('email').value;
 
     practitionerRef.reference = 'Practitioner/' + practitioner.id;
-    practitionerOrg.reference = 'Organization/' + this.accountFormGroup.get('regionalOffice').value;
-    practitionerLoc.reference = 'Location/' + this.accountFormGroup.get('districtOffice').value;
+    practitionerOrg.reference = 'Organization/' + this.regionalOffice;
+    practitionerLoc.reference = 'Location/' + this.districtOffice;
 
 
     practitionerCoding.system = 'https://bcip.smilecdr.com/fhir/practitionerrole';
@@ -359,6 +362,8 @@ export class NewAccountComponent implements OnInit {
     const practitionerCoding = new FHIR.Coding;
     const practitionerPhone = new FHIR.ContactPoint;
     const practitionerEmail = new FHIR.ContactPoint;
+    const practitionerChargeBack = new FHIR.CodeableConcept;
+    const practitionerChargeBackCoding = new FHIR.Coding;
 
     practitionerPhone.system = 'phone';
     practitionerPhone.use = 'work';
@@ -369,8 +374,17 @@ export class NewAccountComponent implements OnInit {
     practitionerEmail.value = this.accountFormGroup.get('email').value;
 
     practitionerRef.reference = 'Practitioner/' + practitioner.id;
-    practitionerOrg.reference = 'Organization/' + this.accountFormGroup.get('departmentName').value;
-    practitionerLoc.reference = 'Location/' + this.accountFormGroup.get('departmentBranch').value;
+    practitionerOrg.reference = 'Organization/' + this.regionalOffice;
+    practitionerLoc.reference = 'Location/' + this.districtOffice;
+
+
+    if (this.chargeback) {
+      practitionerChargeBackCoding.system = 'https://bcip.smilecdr.com/fhir/clientchargeback';
+      practitionerChargeBackCoding.code = 'CHARGEBACK';
+      practitionerChargeBackCoding.display = 'true';
+      practitionerChargeBack.text = 'Charge Back Client';
+      practitionerChargeBack.coding = [practitionerChargeBackCoding];
+    }
 
 
     practitionerCoding.system = 'https://bcip.smilecdr.com/fhir/practitionerrole';
@@ -412,6 +426,7 @@ export class NewAccountComponent implements OnInit {
 
     practitionerRole.telecom = [practitionerPhone, practitionerEmail];
     practitionerRole.organization = practitionerOrg;
+    practitionerRole.specialty = [practitionerChargeBack];
     practitionerRole.location = [practitionerLoc];
     practitionerRole.practitioner = practitionerRef;
     practitionerRole.resourceType = 'PractitionerRole';
@@ -446,8 +461,8 @@ export class NewAccountComponent implements OnInit {
       temp['phone'] = this.accountFormGroup.get('phoneNumber').value;
       temp['email'] = this.accountFormGroup.get('email').value;
       temp['roleDescription'] = this.accountFormGroup.get('roleDescription').value;
-      temp['regionalOffice'] = this.accountFormGroup.get('regionalOffice').value;
-      temp['districtOffice'] = this.accountFormGroup.get('districtOffice').value;
+      temp['regionalOffice'] = this.regionalOffice;
+      temp['districtOffice'] = this.districtOffice;
       temp['departmentName'] = this.accountFormGroup.get('departmentName').value;
       temp['departmentBranch'] = this.accountFormGroup.get('departmentBranch').value;
     }
@@ -501,7 +516,6 @@ export class NewAccountComponent implements OnInit {
   populateDeptNames(data: any) {
     const arrToSort = [];
     data.entry.forEach(element => {
-      console.log(element.resource);
       arrToSort.push(element.resource);
     });
 
@@ -530,17 +544,17 @@ export class NewAccountComponent implements OnInit {
   //     this.deptBranch.push(element.resource);
   //   });
   // }
+  updateCheckbox(e) {
+    this.chargeback = e.target.checked;
+  }
 
   change(val): void {
-
     if (val !== '') {
       // get job locations dropdown items
       this.adminHomeScreenService.getJobLocations({ organization: val })
         .subscribe(locations => {
           console.log('job list =>', locations);
           this.deptBranch = this.extractKeyValuePairsFromBundle(locations);
-          // this.employeeFormGroup.get('departmentBranch').enable();
-          console.log(this.deptBranch);
         },
           (err) => {
             console.log('Job locations list error => ', err);
@@ -549,7 +563,6 @@ export class NewAccountComponent implements OnInit {
       // this.employeeFormGroup.get('departmentBranch').disable();
       this.deptBranch = [];
     }
-
   }
 
   extractKeyValuePairsFromBundle(bundle) {

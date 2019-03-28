@@ -150,7 +150,7 @@
       <div class="col">
         <label for="districtOffice">District Office</label>
         <select class="form-control" formControlName="districtOffice" id="districtOffice" [(ngModel)]="districtOffice">
-          <option value="placeholder" disabled>Select</option>
+          <!-- <option value="placeholder" disabled>Select</option> -->
           <option *ngFor="let districtOffice of districtOffices" [value]="districtOffice.id">
             {{districtOffice.name}}
           </option>
@@ -197,22 +197,30 @@
         </select>
       </div>
     </div>
-
-
-    <div class="row button-row">
-      <div class="col">
-        <button class="btn regular-button" (click)="returnToEditInputs()">Back</button>
-        <button class="btn regular-button" (click)="disableInputsBeforeSubmission()">Next</button>
+    <div class="row">
+      <div class="col-6">
+        <div class="form-group">
+          <div class="chargeback-checkbox">
+            <input type="checkbox" id="chargeback" name="chargeback" class="form-check-input" formControlName="chargeback"
+              (change)="updateCheckbox($event)">
+            <label for="chargeback" class="form-check-label">Charge Back Client</label>
+          </div>
+        </div>
       </div>
-      <div class="col">
-        <button class="btn regular-button  float-right" (click)="createPractitioner()" [disabled]="!activateSubmitButton">Submit
-          Account Info</button>
-      </div>
-      <!-- <div *ngIf="confirmSubmit" class="float-right">  -->
-      <!-- </div> -->
-
     </div>
 
 
+
+
+    <div class="row">
+      <div class="col">
+        <div class="button-section line">
+          <button class="btn regular-dark-button float-right" [disabled]="!activateSubmitButton" (click)="createPractitioner()">Submit</button>
+
+          <button class="btn regular-button" (click)="returnToEditInputs()">Back</button>
+          <button class="btn regular-button" (click)="disableInputsBeforeSubmission()">Next</button>
+        </div>
+      </div>
+    </div>
   </form>
 </div>
