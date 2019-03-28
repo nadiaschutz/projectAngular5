@@ -185,12 +185,12 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
       required: true,
       validation: [Validators.required, Validators.maxLength(6), Validators.minLength(6)]
     },
-    {
-      type: 'checkbox',
-      label: 'Chargeback Client',
-      name: 'chargebackClient',
-      required: true,
-    },
+    // {
+    //   type: 'checkbox',
+    //   label: 'Charge Back Client',
+    //   name: 'chargebackClient',
+    //   required: true,
+    // },
     {
       type: 'line'
     },
@@ -287,10 +287,10 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
     const extension = [];
 
-    const chargeBackExtension = new FHIR.Extension();
-    chargeBackExtension.url = 'https://bcip.smilecdr.com/fhir/chargebackClient';
-    chargeBackExtension.valueBoolean = value.chargebackClient;
-    extension.push(chargeBackExtension);
+    // const chargeBackExtension = new FHIR.Extension();
+    // chargeBackExtension.url = 'https://bcip.smilecdr.com/fhir/chargebackClient';
+    // chargeBackExtension.valueBoolean = value.chargebackClient;
+    // extension.push(chargeBackExtension);
 
     const regionExtension = new FHIR.Extension();
     regionExtension.url = 'https:bcip.smilecdr.com/fhir/psohpRegion';
