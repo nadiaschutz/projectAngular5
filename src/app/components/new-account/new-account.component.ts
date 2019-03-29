@@ -4,9 +4,7 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  FormControl,
-  NgControlStatusGroup,
-  NgControl
+  FormControl
 } from '@angular/forms';
 
 import { HttpClient } from '@angular/common/http';
@@ -55,10 +53,8 @@ export class NewAccountComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private httpClient: HttpClient,
     public translate: TranslateService,
     private userService: UserService,
-    private router: Router,
     private titleCase: TitleCasePipe,
     private adminHomeScreenService: AdminHomeScreenService,
   ) { }
@@ -154,7 +150,8 @@ export class NewAccountComponent implements OnInit {
       districtOffice: new FormControl('', Validators.required),
       departmentName: new FormControl('', Validators.required),
       departmentBranch: new FormControl('', Validators.required),
-      chargeback: new FormControl('', [])
+      chargeback: new FormControl('', []),
+      lro: new FormControl('')
     });
   }
 
@@ -170,9 +167,7 @@ export class NewAccountComponent implements OnInit {
     const practitioner = new FHIR.Practitioner;
     const pracName = new FHIR.HumanName;
     const pracIdentifier = new FHIR.Identifier;
-    const pracEx = new FHIR.Extension;
 
-    practitioner.extension = [pracEx];
     // Set the identifier for the Practitioner
     pracIdentifier.system = 'https://bcip.smilecdr.com/smile/Practitioners';
     pracIdentifier.value = this.accountFormGroup.get('pri').value;
@@ -246,10 +241,8 @@ export class NewAccountComponent implements OnInit {
     smileUser.email = this.accountFormGroup.get('email').value;
     smileUser.password = this.accountFormGroup.get('password').value;
 
-    // Stringify the object for posting
     const finalJSON = JSON.stringify(smileUser);
 
-    // Call the user service to POST the user to the JSON Admin API endpoint
     this.userService.createAccount(finalJSON).subscribe(
       data => console.log('Success! Account Created!', data),
       error => this.handleError(error)
@@ -276,7 +269,10 @@ export class NewAccountComponent implements OnInit {
     const practitionerCoding = new FHIR.Coding;
     const practitionerPhone = new FHIR.ContactPoint;
     const practitionerEmail = new FHIR.ContactPoint;
-
+    const practitionerChargeBack = new FHIR.CodeableConcept;
+    const practitionerChargeBackCoding = new FHIR.Coding;
+    const practitionerLRO = new FHIR.CodeableConcept;
+    const practitionerLROCoding = new FHIR.Coding;
     practitionerPhone.system = 'phone';
     practitionerPhone.use = 'work';
     practitionerPhone.value = this.accountFormGroup.get('phoneNumber').value;
@@ -289,6 +285,19 @@ export class NewAccountComponent implements OnInit {
     practitionerOrg.reference = 'Organization/' + this.regionalOffice;
     practitionerLoc.reference = 'Location/' + this.districtOffice;
 
+    if (this.accountFormGroup.get('lro').value === true) {
+      practitionerLROCoding.system = 'https://bcip.smilecdr.com/fhir/lroclient';
+      practitionerLROCoding.code = 'LROCLIENT';
+      practitionerLROCoding.display = 'LRO Client';
+      practitionerLRO.coding = [practitionerLROCoding];
+    }
+
+    if (this.chargeback) {
+      practitionerChargeBackCoding.system = 'https://bcip.smilecdr.com/fhir/clientchargeback';
+      practitionerChargeBackCoding.code = 'CHARGEBACK';
+      practitionerChargeBackCoding.display = 'Charge Back Client';
+      practitionerChargeBack.coding = [practitionerChargeBackCoding];
+    }
 
     practitionerCoding.system = 'https://bcip.smilecdr.com/fhir/practitionerrole';
     practitionerCoding.display = this.titleCase.transform(
@@ -326,6 +335,15 @@ export class NewAccountComponent implements OnInit {
     practitionerCode.coding = [practitionerCoding];
     practitionerCode.text = this.accountFormGroup.get('roleDescription').value;
 
+    if (this.chargeback || this.accountFormGroup.get('lro').value === true) {
+      practitionerRole.specialty = [];
+      if (this.chargeback) {
+        practitionerRole.specialty.push(practitionerChargeBack);
+      }
+      if (this.accountFormGroup.get('lro').value === true) {
+        practitionerRole.specialty.push(practitionerLRO);
+      }
+    }
 
     practitionerRole.telecom = [practitionerPhone, practitionerEmail];
     practitionerRole.organization = practitionerOrg;
@@ -364,6 +382,8 @@ export class NewAccountComponent implements OnInit {
     const practitionerEmail = new FHIR.ContactPoint;
     const practitionerChargeBack = new FHIR.CodeableConcept;
     const practitionerChargeBackCoding = new FHIR.Coding;
+    const practitionerLRO = new FHIR.CodeableConcept;
+    const practitionerLROCoding = new FHIR.Coding;
 
     practitionerPhone.system = 'phone';
     practitionerPhone.use = 'work';
@@ -377,12 +397,17 @@ export class NewAccountComponent implements OnInit {
     practitionerOrg.reference = 'Organization/' + this.regionalOffice;
     practitionerLoc.reference = 'Location/' + this.districtOffice;
 
+    if (this.accountFormGroup.get('lro').value === true) {
+      practitionerLROCoding.system = 'https://bcip.smilecdr.com/fhir/lroclient';
+      practitionerLROCoding.code = 'LROCLIENT';
+      practitionerLROCoding.display = 'LRO Client';
+      practitionerLRO.coding = [practitionerLROCoding];
+    }
 
     if (this.chargeback) {
       practitionerChargeBackCoding.system = 'https://bcip.smilecdr.com/fhir/clientchargeback';
       practitionerChargeBackCoding.code = 'CHARGEBACK';
-      practitionerChargeBackCoding.display = 'true';
-      practitionerChargeBack.text = 'Charge Back Client';
+      practitionerChargeBackCoding.display = 'Charge Back Client';
       practitionerChargeBack.coding = [practitionerChargeBackCoding];
     }
 
@@ -423,10 +448,18 @@ export class NewAccountComponent implements OnInit {
     practitionerCode.coding = [practitionerCoding];
     practitionerCode.text = this.accountFormGroup.get('roleDescription').value;
 
+    if (this.chargeback || this.accountFormGroup.get('lro').value === true) {
+      practitionerRole.specialty = [];
+      if (this.chargeback) {
+        practitionerRole.specialty.push(practitionerChargeBack);
+      }
+      if (this.accountFormGroup.get('lro').value === true) {
+        practitionerRole.specialty.push(practitionerLRO);
+      }
+    }
 
     practitionerRole.telecom = [practitionerPhone, practitionerEmail];
     practitionerRole.organization = practitionerOrg;
-    practitionerRole.specialty = [practitionerChargeBack];
     practitionerRole.location = [practitionerLoc];
     practitionerRole.practitioner = practitionerRef;
     practitionerRole.resourceType = 'PractitionerRole';
