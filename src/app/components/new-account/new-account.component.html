@@ -54,8 +54,8 @@
     <div class="row">
       <div class="col">
         <label for="family">Last Name (Required)</label>
-        <input type="text" class="form-control" placeholder="Last Name" formControlName="family" id="family" name="family"
-          required>
+        <input type="text" class="form-control" placeholder="Last Name" formControlName="family" id="family"
+          name="family" required>
         <div *ngIf="accountFormGroup.controls['family'].invalid
                       && (accountFormGroup.controls['family'].touched || accountFormGroup.controls['family'].dirty)">
           <div class="error-message">
@@ -94,9 +94,10 @@
       </div>
       <div class="col">
         <label for="roleDescription">Role Description</label>
-        <input type="text" class="form-control" placeholder="Role Description" formControlName="roleDescription" id="roleDescription"
-          name="roleDescription">
-        <div *ngIf="accountFormGroup.controls['roleDescription'].errors
+        <input type="text" class="form-control" placeholder="Role Description" formControlName="roleDescription"
+          id="roleDescription" name="roleDescription">
+        <div
+          *ngIf="accountFormGroup.controls['roleDescription'].errors
                           && (accountFormGroup.controls['roleDescription'].touched || accountFormGroup.controls['roleDescription'].dirty)">
           <div class="error-message">
             Must be two or more characters long
@@ -110,7 +111,8 @@
         <label for="phoneNumber">Phone Number (Required)</label>
         <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber"
           name="phoneNumber" required>
-        <div *ngIf="accountFormGroup.controls['phoneNumber'].invalid
+        <div
+          *ngIf="accountFormGroup.controls['phoneNumber'].invalid
                         && (accountFormGroup.controls['phoneNumber'].touched || accountFormGroup.controls['phoneNumber'].dirty)">
           <div class="error-message">
             Must be 10 digits, no spaces or hyphens
@@ -119,8 +121,8 @@
       </div>
       <div class="col">
         <label for="email">Email (Required)</label>
-        <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email" name="email"
-          required>
+        <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email"
+          name="email" required>
         <div *ngIf="accountFormGroup.controls['email'].invalid
                           && (accountFormGroup.controls['email'].touched || accountFormGroup.controls['email'].dirty)">
           <div class="error-message">
@@ -139,7 +141,8 @@
           <option *ngFor="let regionalOffice of regionalOffices" [value]="regionalOffice.id">
             {{regionalOffice.name}}
           </option>
-          <div *ngIf="accountFormGroup.controls['regionalOffice'].invalid 
+          <div
+            *ngIf="accountFormGroup.controls['regionalOffice'].invalid 
               && (accountFormGroup.controls['regionalOffice'].touched || accountFormGroup.controls['regionalOffice'].dirty)">
             <div class="error-message">
               Cannot be blank
@@ -154,7 +157,8 @@
           <option *ngFor="let districtOffice of districtOffices" [value]="districtOffice.id">
             {{districtOffice.name}}
           </option>
-          <div *ngIf="accountFormGroup.controls['districtOffice'].invalid 
+          <div
+            *ngIf="accountFormGroup.controls['districtOffice'].invalid 
               && (accountFormGroup.controls['districtOffice'].touched || accountFormGroup.controls['districtOffice'].dirty)">
             <div class="error-message">
               Cannot be blank
@@ -167,13 +171,14 @@
     <div class="row">
       <div class="col">
         <label for="departmentName">Department Name (Required)</label>
-        <select class="form-control" formControlName="departmentName" id="departmentName" required [(ngModel)]="departmentName"
-          (change)="change(departmentName)">
+        <select class="form-control" formControlName="departmentName" id="departmentName" required
+          [(ngModel)]="departmentName" (change)="change(departmentName)">
           <option value="placeholder" disabled>Select</option>
           <option *ngFor="let department of deptName" [value]="department.id">
             {{department.name}}
           </option>
-          <div *ngIf="accountFormGroup.controls['departmentName'].invalid 
+          <div
+            *ngIf="accountFormGroup.controls['departmentName'].invalid 
                 && (accountFormGroup.controls['departmentName'].touched || accountFormGroup.controls['departmentName'].dirty)">
             <div class="error-message">
               Cannot be blank
@@ -183,12 +188,14 @@
       </div>
       <div class="col">
         <label for="departmentBranch">Department Branch (Required)</label>
-        <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required [(ngModel)]="departmentBranch">
+        <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required
+          [(ngModel)]="departmentBranch">
           <option value="placeholder" disabled>Select</option>
           <option *ngFor="let branch of deptBranch" [value]="branch.id">
             {{branch.text}}
           </option>
-          <div *ngIf="accountFormGroup.controls['departmentBranch'].invalid 
+          <div
+            *ngIf="accountFormGroup.controls['departmentBranch'].invalid 
                 && (accountFormGroup.controls['departmentBranch'].touched || accountFormGroup.controls['departmentBranch'].dirty)">
             <div class="error-message">
               Cannot be blank
@@ -199,23 +206,35 @@
     </div>
     <div class="row">
       <div class="col-6">
-        <div class="form-group">
-          <div class="chargeback-checkbox">
-            <input type="checkbox" id="chargeback" name="chargeback" class="form-check-input" formControlName="chargeback"
-              (change)="updateCheckbox($event)">
-            <label for="chargeback" class="form-check-label">Charge Back Client</label>
-          </div>
-        </div>
+        <table class="lro-section">
+          <tr>
+            <td class="td-adjust"><label>Is this an LRO Account?</label></td>
+            <td class="td-adjust"><label><input type="radio" [value]=true class="radio-button" formControlName="lro">Yes</label></td>
+            <td class="td-adjust"><label><input type="radio" [value]=false class="radio-button" formControlName="lro">No</label></td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-6">
+        <table>
+          <tr>
+            <td>
+              <label for="chargeback" class="form-check-label">Charge Back Client</label>
+            </td>
+            <td class="charge-back-checkbox">
+              <input type="checkbox" id="chargeback" name="chargeback"
+                formControlName="chargeback" (change)="updateCheckbox($event)">
+            </td>
+          </tr>
+        </table>
+
       </div>
     </div>
-
-
-
 
     <div class="row">
       <div class="col">
         <div class="button-section line">
-          <button class="btn regular-dark-button float-right" [disabled]="!activateSubmitButton" (click)="createPractitioner()">Submit</button>
+          <button class="btn regular-dark-button float-right" [disabled]="!activateSubmitButton"
+            (click)="createPractitioner()">Submit</button>
 
           <button class="btn regular-button" (click)="returnToEditInputs()">Back</button>
           <button class="btn regular-button" (click)="disableInputsBeforeSubmission()">Next</button>
