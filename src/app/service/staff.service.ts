@@ -345,7 +345,7 @@ export class StaffService {
   getAdministerededVaccinesFromServer(episodeOfCareId) {
     return this.http.get(
       environment.queryURI + '/Immunization?encounter.identifier=VACCINE-ENCOUNTER&encounter.episodeofcare='
-      + episodeOfCareId, {headers: this.getHeaders()});
+      + episodeOfCareId, {headers: this.getNoCacheHeaders()});
   }
 
   saveAssessment(data) {
@@ -357,7 +357,7 @@ export class StaffService {
   getObservation(episodeOfCareId) {
     return this.http.get(
       environment.queryURI + '/Immunization?encounter.identifier=ASSESSMENT-ENCOUNTER&encounter.episodeofcare='
-      + episodeOfCareId, {headers: this.getHeaders()});
+      + episodeOfCareId, {headers: this.getNoCacheHeaders()});
   }
 
   createAppointment(data) {

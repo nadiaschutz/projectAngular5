@@ -1,80 +1,160 @@
 {
     "list": [
         {
-            "code": "24",
+            "code": "1",
+            "display": "Anti Viral"
+        },
+        {
+            "code": "2",
             "display": "Anthrax"
         },
         {
-            "code": "27",
-            "display": "Botulinum Antitoxin"
+            "code": "3",
+            "display": "Botulium Tox. Pent (series of 3 doses)"
         },
         {
-            "code": "GNFLU",
-            "display": "Influenza"
+            "code": "4",
+            "display": "Chloriquine"
         },
         {
-            "code": "GNHEP",
-            "display": "Hepatitis B"
+            "code": "5",
+            "display": "Doxycycline Tablets Rx"
         },
         {
-            "code": "GNHPA",
-            "display": "Hepatitis A"
+            "code": "6",
+            "display": "Fluzone (Influenza)"
         },
         {
-            "code": "GNJEN",
-            "display": "Japanese Encephalitis"
+            "code": "7",
+            "display": "Havrix 720 Junior (Children - Series of 2 doses)"
         },
         {
-            "code": "67",
-            "display": "Malaria"
+            "code": "8",
+            "display": "Havrix 1440 Hepatitis A (Series of 2 doses)"
         },
         {
-            "code": "GNMEA",
+            "code": "9",
+            "display": "Hepatitis B (series of 3 doses)"
+        },
+        {
+            "code": "10",
+            "display": "Japanese Encephalitis (series of 3 doses)"
+        },
+        {
+            "code": "11",
+            "display": "Malaria Prophilaxis"
+        },
+        {
+            "code": "12",
+            "display": "Mantoux"
+        },
+        {
+            "code": "13",
+            "display": "Mantoux & Reading"
+        },
+        {
+            "code": "14",
+            "display": "Mantoux Reading only"
+        },
+        {
+            "code": "15",
+            "display": "Measles, Mumps, Rubella"
+        },
+        {
+            "code": "16",
             "display": "Measles"
         },
         {
-            "code": "GNMUM",
+            "code": "17",
+            "display": "Meningococcal ACY & W135"
+        },
+        {
+            "code": "18",
             "display": "Mumps"
         },
         {
-            "code": "GNMEN",
-            "display": "Meningococcal C"
+            "code": "19",
+            "display": "Paludrine"
         },
         {
-            "code": "GNRUB",
-            "display": "Rubella"
-        },
-        {
-            "code": "GNTET",
-            "display": "Tetanus"
-        },
-        {
-            "code": "GNVAR",
-            "display": "Varicella"
-        },
-        {
-            "code": "GNPOL",
-            "display": "Polio"
-        },
-        {
-            "code": "GNTET",
-            "display": "Tetanus"
-        },
-        {
-            "code": "90",
+            "code": "20",
             "display": "Rabies"
         },
         {
-            "code": "105",
-            "display": "Vaccinia (smallpox) diluted"
+            "code": "21",
+            "display": "Rubella"
         },
         {
-            "code": "75",
-            "display": "Vaccinia (smallpox)"
+            "code": "22",
+            "display": "Tetanus, Diphtheria, Polio (Adult)"
         },
         {
-            "code": "GNTET",
+            "code": "23",
+            "display": "Tetanus, Diphtheria, Polio (Child)"
+        },
+        {
+            "code": "24",
+            "display": "Tetanus"
+        },
+        {
+            "code": "25",
+            "display": "Polio"
+        },
+        {
+            "code": "26",
+            "display": "Rabies HDC (series of 3 doses)"
+        },
+        {
+            "code": "27",
+            "display": "Small Pox Vac. Virus GTT"
+        },
+        {
+            "code": "28",
+            "display": "Tetanus, Diphtheria"
+        },
+        {
+            "code": "29",
+            "display": "Typhoid (injectable)"
+        },
+        {
+            "code": "30",
+            "display": "Tickborne Encephalitis"
+        },
+        {
+            "code": "31",
+            "display": "Travel Medicine Prescriptions"
+        },
+        {
+            "code": "32",
+            "display": "Travel Medicine Consultation"
+        },
+        {
+            "code": "33",
+            "display": "Travellers Diarrhea"
+        },
+        {
+            "code": "34",
+            "display": "Twinrix Adult (Series of 3 doses)"
+        },
+        {
+            "code": "35",
+            "display": "Twinrix Child (Series of 3 doses)"
+        },
+        {
+            "code": "36",
+            "display": "Typhum V"
+        },
+        {
+            "code": "37",
+            "display": "Varicella"
+        },
+        {
+            "code": "38",
             "display": "Yellow Fever"
+        },
+        {
+            "code": "39",
+            "display": "Tuberculin Skin Test (TST)"
         }
     ]
 }
