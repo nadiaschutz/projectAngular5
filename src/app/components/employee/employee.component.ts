@@ -388,11 +388,6 @@ export class EmployeeComponent implements OnInit {
     this.router.navigateByUrl('/dashboard');
   }
 
-  returnIDFromResponse(data) {
-    console.log(data);
-    const tempID = this.userService.getEmployeeSummaryID(data.id);
-    return tempID;
-  }
   goToSummary() {
     this.router.navigateByUrl('/employeesummary');
   }
