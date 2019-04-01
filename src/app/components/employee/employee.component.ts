@@ -415,7 +415,7 @@ export class EmployeeComponent implements OnInit {
       if (this.employeeFormGroup.value.language.toLowerCase() === 'english') {
         languageCoding.code = 'en';
       } else {
-        languageCoding.code = 'en';
+        languageCoding.code = 'fr';
       }
       languageCoding.system = 'urn:ietf:bcp:47';
       languageCoding.display = this.employeeFormGroup.value.language;
