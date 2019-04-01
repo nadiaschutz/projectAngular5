@@ -324,7 +324,6 @@ export class ImmunizationScreenComponent implements OnInit {
     this.clinicalQuestionnaireArray.forEach(item => {
       const baseItem = new FHIR.Item();
       const codingAnswer = new FHIR.Answer();
-      const coding = new FHIR.Coding();
       // console.log(item['id']);
       baseItem.linkId = item['linkId'];
       baseItem.type = item['type'];
@@ -333,12 +332,10 @@ export class ImmunizationScreenComponent implements OnInit {
       baseItem.answer = [];
       baseItem.item = [];
 
-      coding.code = item['code'][0]['code'];
-      codingAnswer.valueCoding = coding;
 
       baseItem.answer.push(codingAnswer);
 
-      if (item['code'][0]['code'] === 'IMMUNREVQ4') {
+      if (item['linkId'] === 'IMMUNREVQ4') {
         const historyAnswer = new FHIR.Answer();
 
         if (this.clinicialFormGroup.get('historyNotes').value) {

@@ -125,7 +125,7 @@
         </div>
       </div>
       <div class="card-body" *ngFor="let item of questionnaireResponse['item']">
-        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ1'">
+        <div *ngIf="item['linkId']=== 'IMMUNREVQ1'">
           <ul class="clinical-checklist">
             <li>
               <label class="label-checklist">{{item.text | uppercase}}</label>
@@ -141,7 +141,7 @@
             </li>
           </ul>
         </div>
-        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ2'">
+        <div *ngIf="item['linkId'] === 'IMMUNREVQ2'">
           <ul class="clinical-checklist">
             <li>
               <label class="label-checklist">{{item.text | uppercase}}</label>
@@ -164,7 +164,7 @@
             </li>
           </ul>
         </div>
-        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ3'">
+        <div *ngIf="item['linkId'] === 'IMMUNREVQ3'">
           <ul class="clinical-checklist">
             <li>
               <label class="label-checklist">{{item.text | uppercase}}</label>
@@ -180,7 +180,7 @@
             </li>
           </ul>
         </div>
-        <div *ngIf="item['answer'][0]['valueCoding']['code'] === 'IMMUNREVQ4'" class="notes-row">
+        <div *ngIf="item['linkId'] === 'IMMUNREVQ4'" class="notes-row">
           <div class="clinical-checklist-items">
             <label class="label-checklist">{{item.text | uppercase}}</label>
             <!-- <form [formGroup]="clinicialFormGroup" novalidate>
