@@ -58,9 +58,6 @@ export class EmployeeComponent implements OnInit {
   showFailureMessage = false;
   failureMessage = '';
 
-  // Store a UUID to link Employee and Dependent objects
-  linkId;
-
   // list of  Languages
   languages = ['English', 'French'];
 
@@ -72,18 +69,9 @@ export class EmployeeComponent implements OnInit {
     'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
 
 
-  // list of countries
-  countries = ['Canada'];
-
   minDate: Date;
   maxDate: Date;
 
-  currentUserDepartment: string;
-  // currentUserDepartmentTEST = 'BARSIK';
-  currentUserBranch: string;
-
-
-  i;
   constructor(
     private fb: FormBuilder,
     public translate: TranslateService,
@@ -121,9 +109,6 @@ export class EmployeeComponent implements OnInit {
 
     this.showSuccessMessage = false;
     this.showFailureMessage = false;
-
-    this.currentUserDepartment = sessionStorage.getItem('userDept');
-    this.currentUserBranch = sessionStorage.getItem('userBranch');
     this.currentRole = sessionStorage.getItem('userRole');
     this.datePickerConfig = Object.assign({},
       {
@@ -133,7 +118,6 @@ export class EmployeeComponent implements OnInit {
       });
 
     this.dependentsArray = new Array();
-    this.i = 0;
     // Set Department List
 
     // Initialize Employee Form Group for DOM
@@ -185,39 +169,11 @@ export class EmployeeComponent implements OnInit {
 
     });
 
-    // tslint:disable-next-line:max-line-length
-    // Validators.pattern('[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY][0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ] ?[0-9][abceghjklmnprstvwxyzABCEGHJKLMNPRSTVWXYZ][0-9]')]),
-    this.employeeFormGroup.get('departmentName').setValue(this.currentUserDepartment);
-    this.employeeFormGroup.get('departmentBranch').setValue(this.currentUserBranch);
-
     this.onChanges();
     this.getAndSetDepartmentList();
 
   }
 
-
-  // callback function to set the branch list dropdown from the JSON included
-  // TODO: change implementation to load from list of organizations
-  setBranchList(data) {
-    this.branches = data.branchlist;
-  }
-
-  // callback function to set the department list dropdown from the JSON included
-  // TODO: change implementation to load from list of organizations
-  setDepartments(data) {
-    console.log(data.entry, this.department);
-
-    data.entry.forEach(element => {
-      this.department.push(element['resource']['name']);
-    });
-    // this.department = data.department;
-  }
-
-  // populateDeptNames(data: any) {
-  //   data.entry.forEach(element => {
-  //     this.departmentList.push(element['resource']['name']);
-  //   });
-  // }
 
   // callback function to handle errors
   handleError(error) {
@@ -313,7 +269,6 @@ export class EmployeeComponent implements OnInit {
       this.showFailureMessage = true;
       this.failureMessage = 'An employee with the same PRI exists';
     } else {
-      this.linkId = uuid();
       const employee = new FHIR.Patient;
       employee.resourceType = 'Patient';
 
@@ -373,7 +328,7 @@ export class EmployeeComponent implements OnInit {
       // Dependent extension
       const dependentExtension = new FHIR.Extension;
       dependentExtension.url = 'https://bcip.smilecdr.com/fhir/dependentlink';
-      dependentExtension.valueString = this.linkId;
+      dependentExtension.valueString = uuid();
       extensionsArray.push(dependentExtension);
 
       // Type extension
