@@ -19,6 +19,8 @@ import * as Employee from '../../interface/patient';
 import * as uuid from 'uuid';
 import { formatDate } from '@angular/common';
 import { distinctUntilChanged } from 'rxjs/operators';
+import { FHIRElement } from '../../interface/FHIR';
+import * as FHIR from '../../interface/FHIR';
 
 export interface AccountType {
   value: string;
@@ -73,6 +75,9 @@ export class EmployeeComponent implements OnInit {
   jobLocationList: NameValueLookup[] = [];
   employeeDepartmentList: NameValueLookup[] = [];
   currentRole;
+  showSuccessMessage = false;
+  showFailureMessage = false;
+  failureMessage = '';
 
   // Store a UUID to link Employee and Dependent objects
   linkId;
@@ -134,6 +139,9 @@ export class EmployeeComponent implements OnInit {
   ];
 
   ngOnInit() {
+
+    this.showSuccessMessage = false;
+    this.showFailureMessage = false;
 
     this.currentUserDepartment = sessionStorage.getItem('userDept');
     this.currentUserBranch = sessionStorage.getItem('userBranch');
@@ -314,206 +322,371 @@ export class EmployeeComponent implements OnInit {
       });
   }
 
+  async saveEmployee() {
+    const employeePRI = this.employeeFormGroup.value.id;
+    const employeeWithPRI = await this.patientService.getEmployeeWithPRIAsync(employeePRI);
+    if (employeeWithPRI['entry']) {
+      // An employee records exists with the same PRI
+      this.showSuccessMessage = false;
+      this.showFailureMessage = true;
+      this.failureMessage = 'An employee with the same PRI exists';
+    } else {
+      this.linkId = uuid();
+      const employee = new FHIR.Patient;
+      employee.resourceType = 'Patient';
 
+      // Identifier
+      const identifier = new FHIR.Identifier;
+      identifier.use = 'official';
+      identifier.system = 'https://bcip.smilecdr.com/fhir/employeeid';
+      identifier.value = this.employeeFormGroup.value.id;
+      employee.identifier = [identifier];
 
+      // Address
+      const address = new FHIR.Address;
+      address.city = this.employeeFormGroup.value.addressCity.trim();
+      address.line = [this.employeeFormGroup.value.addressStreet.trim()];
+      address.postalCode = this.employeeFormGroup.value.addressPcode.trim();
+      address.country = this.employeeFormGroup.value.addressCountry.trim();
+      address.state = this.employeeFormGroup.value.addressProv.trim();
+      employee.address = address;
+
+      // Extensions
+      const extensionsArray = [];
+
+      // Job Title
+      const jobTitleExtension = new FHIR.Extension;
+      jobTitleExtension.url = 'https://bcip.smilecdr.com/fhir/jobtile';
+      jobTitleExtension.valueString = this.employeeFormGroup.get('jobTitle').value;
+      extensionsArray.push(jobTitleExtension);
+
+      // Client Department
+      const departmentExtension = new FHIR.Extension;
+      const departmentReference = new FHIR.Reference;
+      departmentExtension.url = 'https://bcip.smilecdr.com/fhir/workplace';
+      departmentReference.reference = this.employeeFormGroup.get('departmentName').value;
+      departmentExtension.valueReference = departmentReference;
+      extensionsArray.push(departmentExtension);
+
+      // Branch
+      const branchExtension = new FHIR.Extension;
+      const branchReference = new FHIR.Reference;
+      branchReference.reference = this.employeeFormGroup.get('departmentBranch').value;
+      branchExtension.url = 'https://bcip.smilecdr.com/fhir/branch';
+      branchExtension.valueReference = branchReference;
+      extensionsArray.push(branchExtension);
+
+      // Cross Reference One extension
+      const crossRefOneExtension = new FHIR.Extension;
+      crossRefOneExtension.url = 'https://bcip.smilecdr.com/fhir/crossreferenceone';
+      crossRefOneExtension.valueString = this.employeeFormGroup.get('referenceOne').value;
+      extensionsArray.push(crossRefOneExtension);
+
+      // Cross Reference Two extension
+      const crossRefTwoExtension = new FHIR.Extension;
+      crossRefTwoExtension.url = 'https://bcip.smilecdr.com/fhir/crossreferencetwo';
+      crossRefTwoExtension.valueString = this.employeeFormGroup.get('referenceTwo').value;
+      extensionsArray.push(crossRefTwoExtension);
+
+      // Dependent extension
+      const dependentExtension = new FHIR.Extension;
+      dependentExtension.url = 'https://bcip.smilecdr.com/fhir/dependentlink';
+      dependentExtension.valueString = this.linkId;
+      extensionsArray.push(dependentExtension);
+
+      // Type extension
+      const employeeTypeExtension = new FHIR.Extension;
+      employeeTypeExtension.url = 'https://bcip.smilecdr.com/fhir/employeetype';
+      employeeTypeExtension.valueString = 'Employee';
+      extensionsArray.push(employeeTypeExtension);
+
+      employee.extension = extensionsArray;
+
+      // Employee name
+      const name = new FHIR.HumanName;
+      name.family = this.employeeFormGroup.value.familyName;
+      name.given = [this.employeeFormGroup.value.givenName];
+      employee.name = [name];
+
+      // Language
+      const communication = new FHIR.PatientCommunication;
+      const languageCodeableConcept = new FHIR.CodeableConcept;
+      const languageCoding = new FHIR.Coding;
+      if (this.employeeFormGroup.value.language.toLowerCase() === 'english') {
+        languageCoding.code = 'en';
+      } else {
+        languageCoding.code = 'en';
+      }
+      languageCoding.system = 'urn:ietf:bcp:47';
+      languageCoding.display = this.employeeFormGroup.value.language;
+      languageCodeableConcept.coding = [languageCoding];
+      communication.language = languageCodeableConcept;
+      employee.communication = [communication];
+
+      // Telecom
+      const phone = new FHIR.ContactPoint;
+      phone.system = 'phone';
+      phone.value = this.employeeFormGroup.value.phoneNumber;
+      phone.use = 'work';
+
+      const email = new FHIR.ContactPoint;
+      email.system = 'email';
+      email.value = this.employeeFormGroup.value.email;
+      email.use = 'work';
+
+      employee.telecom = [phone, email];
+
+      // Date of birth
+      employee.birthDate = formatDate(this.employeeFormGroup.value.dob, 'yyyy-MM-dd', 'en');
+      const employeeJSON = JSON.stringify(employee);
+      this.patientService.postPatientData(employeeJSON).subscribe(data => {
+        console.log(data);
+        this.showFailureMessage = false;
+        this.showSuccessMessage = true;
+      });
+    }
+  }
 
   // Sets the employee when called. Builds a new Patient object, along with associated
   // objects, generates a unique ID to link patient resources (useful for linking)
   // employees & dependents
 
-  setEmployee() {
-    // Generate unique ID to link new Dependents created
-    this.linkId = uuid();
-
-    // Initialize all objects being used for the Patient resource
-    this.employee = new Employee.Resource();
-    this.employee_name = new Employee.Name();
-    this.employee_address = new Employee.Address();
-    this.employee_language = new Employee.Language();
-    this.employee_language_coding = new Employee.Coding();
-    this.employee_communication = new Employee.Communication();
-    this.employee_identifier = new Employee.Identifier();
-    // this.employee_created_by = new Employee.Identifier();
-    this.employee_extension_jobtitle = new Employee.Extension();
-    this.employee_extension_workplace = new Employee.Extension();
-    this.employee_extension_branch = new Employee.Extension();
-    this.employee_extension_crossreferenceone = new Employee.Extension();
-    this.employee_extension_crossreferencetwo = new Employee.Extension();
-    this.employee_extension_dependentlink = new Employee.Extension();
-    this.employee_extension_type = new Employee.Extension();
-    this.employee_telecom_email = new Employee.Telecom();
-    this.employee_telecom_phone = new Employee.Telecom();
-
-    // Employee identifer
-
-    this.employee_identifier.use = 'official';
-    this.employee_identifier.value = this.employeeFormGroup.get('id').value;
-    this.employee_identifier.system =
-      'https://bcip.smilecdr.com/fhir/employeeid';
-
-
-    // created by
-
-    // this.employee_created_by
-
-    // Employee Address
-
-    this.employee_address.city = this.employeeFormGroup
-      .get('addressCity')
-      .value.trim();
-    this.employee_address.line = [
-      this.employeeFormGroup.get('addressStreet').value.trim()
-    ];
-    this.employee_address.postalCode = this.employeeFormGroup
-      .get('addressPcode')
-      .value.trim();
-    this.employee_address.country = this.employeeFormGroup
-      .get('addressCountry')
-      .value.trim();
-    this.employee_address.state = this.employeeFormGroup
-      .get('addressProv')
-      .value.trim();
-
-    // Extensions related to employment information
-
-    // Job title extension
-
-    this.employee_extension_jobtitle.url =
-      'https://bcip.smilecdr.com/fhir/jobtile';
-    this.employee_extension_jobtitle.valueString = this.employeeFormGroup.get(
-      'jobTitle'
-    ).value;
-
-
-    let deptText = '';
-    let branchText = '';
-    this.employeeDepartmentList.forEach(item => {
-      if (item['value'] === this.employeeFormGroup.get('departmentName').value) {
-        deptText = item['text'];
-      }
-    });
-
-    this.jobLocationList.forEach(branch => {
-      if (branch['value'] === this.employeeFormGroup.get('departmentBranch').value) {
-        branchText = branch['text'];
-      }
-    });
-    this.employee_extension_workplace.url =
-      'https://bcip.smilecdr.com/fhir/workplace';
-    this.employee_extension_workplace.valueString = deptText;
-
-
-    this.employee_extension_branch.url =
-      'https://bcip.smilecdr.com/fhir/branch';
-    this.employee_extension_branch.valueString = branchText;
-
-
-    // Cross Reference One extension
-
-    this.employee_extension_crossreferenceone.url =
-      'https://bcip.smilecdr.com/fhir/crossreferenceone';
-    this.employee_extension_crossreferenceone.valueString = this.employeeFormGroup.get(
-      'referenceOne'
-    ).value;
-
-    // Cross Reference Two extension
-
-    this.employee_extension_crossreferencetwo.url =
-      'https://bcip.smilecdr.com/fhir/crossreferencetwo';
-    this.employee_extension_crossreferencetwo.valueString = this.employeeFormGroup.get(
-      'referenceTwo'
-    ).value;
-
-    // Cross Reference One extension
-
-    this.employee_extension_dependentlink.url =
-      'https://bcip.smilecdr.com/fhir/dependentlink';
-    this.employee_extension_dependentlink.valueString = this.linkId;
-
-    // Type extension
-
-    this.employee_extension_type.url =
-      'https://bcip.smilecdr.com/fhir/employeetype';
-    this.employee_extension_type.valueString = 'Employee';
-
-    this.employee.extension = [
-      this.employee_extension_branch,
-      this.employee_extension_crossreferenceone,
-      this.employee_extension_dependentlink,
-      this.employee_extension_crossreferencetwo,
-      this.employee_extension_jobtitle,
-      this.employee_extension_workplace,
-      this.employee_extension_type
-    ];
-
-    // Employe Name
-
-    this.employee_name.family = this.employeeFormGroup.get('familyName').value;
-    this.employee_name.given = [this.employeeFormGroup.get('givenName').value];
-
-    // Language info
-
-    if (
-      this.employeeFormGroup.get('language').value.toLowerCase() === 'english'
-    ) {
-      this.employee_language_coding.code = 'en';
-      this.employee_language_coding.system = 'urn:ietf:bcp:47';
-      this.employee_language_coding.display = this.employeeFormGroup.get(
-        'language'
-      ).value;
+  async setEmployee() {
+    const employeePRI = this.employeeFormGroup.value.id;
+    const employee = await this.patientService.getEmployeeWithPRIAsync(employeePRI);
+    if (employee['entry']) {
+      // An employee records exists with the same PRI
+      this.showSuccessMessage = false;
+      this.showFailureMessage = true;
+      this.failureMessage = 'An employee with the same PRI exists';
     } else {
-      this.employee_language_coding.code = 'fr';
-      this.employee_language_coding.system = 'urn:ietf:bcp:47';
-      this.employee_language_coding.display = this.employeeFormGroup.get(
-        'language'
+      // Generate unique ID to link new Dependents created
+      this.linkId = uuid();
+
+      // Initialize all objects being used for the Patient resource
+      this.employee = new Employee.Resource();
+      this.employee_name = new Employee.Name();
+      this.employee_address = new Employee.Address();
+      this.employee_language = new Employee.Language();
+      this.employee_language_coding = new Employee.Coding();
+      this.employee_communication = new Employee.Communication();
+      this.employee_identifier = new Employee.Identifier();
+      // this.employee_created_by = new Employee.Identifier();
+      this.employee_extension_jobtitle = new Employee.Extension();
+      this.employee_extension_workplace = new Employee.Extension();
+      this.employee_extension_branch = new Employee.Extension();
+      this.employee_extension_crossreferenceone = new Employee.Extension();
+      this.employee_extension_crossreferencetwo = new Employee.Extension();
+      this.employee_extension_dependentlink = new Employee.Extension();
+      this.employee_extension_type = new Employee.Extension();
+      this.employee_telecom_email = new Employee.Telecom();
+      this.employee_telecom_phone = new Employee.Telecom();
+
+      // Employee identifer
+      this.employee_identifier.use = 'official';
+      this.employee_identifier.value = this.employeeFormGroup.get('id').value;
+      this.employee_identifier.system =
+        'https://bcip.smilecdr.com/fhir/employeeid';
+      // created by
+
+      // this.employee_created_by
+      // Employee Address
+      this.employee_address.city = this.employeeFormGroup
+        .get('addressCity')
+        .value.trim();
+      this.employee_address.line = [
+        this.employeeFormGroup.get('addressStreet').value.trim()
+      ];
+      this.employee_address.postalCode = this.employeeFormGroup
+        .get('addressPcode')
+        .value.trim();
+      this.employee_address.country = this.employeeFormGroup
+        .get('addressCountry')
+        .value.trim();
+      this.employee_address.state = this.employeeFormGroup
+        .get('addressProv')
+        .value.trim();
+
+      // Extensions related to employment information
+
+      // Job title extension
+
+      const extensionsArray = [];
+
+      const jobTitleExtension = new FHIR.Extension;
+      jobTitleExtension.url = 'https://bcip.smilecdr.com/fhir/jobtile';
+      jobTitleExtension.valueString = this.employeeFormGroup.get('jobTitle').value;
+      extensionsArray.push(jobTitleExtension);
+
+      // this.employee_extension_jobtitle.url =
+      //   'https://bcip.smilecdr.com/fhir/jobtile';
+      // this.employee_extension_jobtitle.valueString = this.employeeFormGroup.get(
+      //   'jobTitle'
+      // ).value;
+
+
+      // let deptText = '';
+      // this.employeeDepartmentList.forEach(item => {
+      //   if (item['value'] === this.employeeFormGroup.get('departmentName').value) {
+      //     deptText = item['text'];
+      //   }
+      // });
+
+      // let branchText = '';
+      // this.jobLocationList.forEach(branch => {
+      //   if (branch['value'] === this.employeeFormGroup.get('departmentBranch').value) {
+      //     branchText = branch['text'];
+      //   }
+      // });
+      // this.employee_extension_workplace.url =
+      //   'https://bcip.smilecdr.com/fhir/workplace';
+      // this.employee_extension_workplace.valueString = deptText;
+
+      // Setting the department
+      const departmentExtension = new FHIR.Extension;
+      const departmentReference = new FHIR.Reference;
+      departmentExtension.url = 'https://bcip.smilecdr.com/fhir/workplace';
+      departmentReference.reference = this.employeeFormGroup.get('departmentName').value;
+      departmentExtension.valueReference = departmentReference;
+      extensionsArray.push(departmentExtension);
+
+      // Setting the Branch
+      const branchExtension = new FHIR.Extension;
+      const branchReference = new FHIR.Reference;
+      branchReference.reference = this.employeeFormGroup.get('departmentBranch').value;
+      branchExtension.url = 'https://bcip.smilecdr.com/fhir/branch';
+      branchExtension.valueReference = branchReference;
+      extensionsArray.push(branchExtension);
+
+
+      // Cross Reference One extension
+      const crossRefOneExtension = new FHIR.Extension;
+      crossRefOneExtension.url = 'https://bcip.smilecdr.com/fhir/crossreferenceone';
+      crossRefOneExtension.valueString = this.employeeFormGroup.get('referenceOne').value;
+      extensionsArray.push(crossRefOneExtension);
+
+      // this.employee_extension_crossreferenceone.url =
+      //   'https://bcip.smilecdr.com/fhir/crossreferenceone';
+      // this.employee_extension_crossreferenceone.valueString = this.employeeFormGroup.get(
+      //   'referenceOne'
+      // ).value;
+
+      // Cross Reference Two extension
+      const crossRefTwoExtension = new FHIR.Extension;
+      crossRefTwoExtension.url = 'https://bcip.smilecdr.com/fhir/crossreferencetwo';
+      crossRefTwoExtension.valueString = this.employeeFormGroup.get('referenceTwo').value;
+      extensionsArray.push(crossRefTwoExtension);
+
+      // this.employee_extension_crossreferencetwo.url =
+      //   'https://bcip.smilecdr.com/fhir/crossreferencetwo';
+      // this.employee_extension_crossreferencetwo.valueString = this.employeeFormGroup.get(
+      //   'referenceTwo'
+      // ).value;
+
+      // Dependent extension
+      const dependentExtension = new FHIR.Extension;
+      dependentExtension.url = 'https://bcip.smilecdr.com/fhir/dependentlink';
+      dependentExtension.valueString = this.linkId;
+      extensionsArray.push(dependentExtension);
+
+      // this.employee_extension_dependentlink.url =
+      //   'https://bcip.smilecdr.com/fhir/dependentlink';
+      // this.employee_extension_dependentlink.valueString = this.linkId;
+
+      // Type extension
+      const employeeTypeExtension = new FHIR.Extension;
+      employeeTypeExtension.url = 'https://bcip.smilecdr.com/fhir/employeetype';
+      employeeTypeExtension.valueString = 'Employee';
+      extensionsArray.push(employeeTypeExtension);
+
+      // this.employee_extension_type.url =
+      //   'https://bcip.smilecdr.com/fhir/employeetype';
+      // this.employee_extension_type.valueString = 'Employee';
+
+      // this.employee.extension = [
+      //   this.employee_extension_branch,
+      //   this.employee_extension_crossreferenceone,
+      //   this.employee_extension_dependentlink,
+      //   this.employee_extension_crossreferencetwo,
+      //   this.employee_extension_jobtitle,
+      //   this.employee_extension_workplace,
+      //   this.employee_extension_type
+      // ];
+
+      this.employee.extension = extensionsArray;
+
+      // Employe Name
+
+      this.employee_name.family = this.employeeFormGroup.get('familyName').value;
+      this.employee_name.given = [this.employeeFormGroup.get('givenName').value];
+
+      // Language info
+
+      if (
+        this.employeeFormGroup.get('language').value.toLowerCase() === 'english'
+      ) {
+        this.employee_language_coding.code = 'en';
+        this.employee_language_coding.system = 'urn:ietf:bcp:47';
+        this.employee_language_coding.display = this.employeeFormGroup.get(
+          'language'
+        ).value;
+      } else {
+        this.employee_language_coding.code = 'fr';
+        this.employee_language_coding.system = 'urn:ietf:bcp:47';
+        this.employee_language_coding.display = this.employeeFormGroup.get(
+          'language'
+        ).value;
+      }
+
+      // Telecome (phone)
+
+      this.employee_telecom_phone.system = 'phone';
+      this.employee_telecom_phone.value = this.employeeFormGroup.get(
+        'phoneNumber'
       ).value;
+      this.employee_telecom_phone.use = 'work';
+
+      // Telecome (email)
+
+      this.employee_telecom_email.system = 'email';
+      this.employee_telecom_email.value = this.employeeFormGroup.get(
+        'email'
+      ).value;
+      this.employee_telecom_email.use = 'work';
+
+      this.employee.identifier = [this.employee_identifier];
+      this.employee_language.coding = [this.employee_language_coding];
+      this.employee_communication.language = this.employee_language;
+      this.employee.telecom = [
+        this.employee_telecom_phone,
+        this.employee_telecom_email
+      ];
+      this.employee.communication = [this.employee_communication];
+
+
+      this.employee.birthDate = this.employeeFormGroup.get('dob').value;
+      this.employee.birthDate = formatDate(this.employee.birthDate, 'yyyy-MM-dd', 'en');
+      this.employee.resourceType = 'Patient';
+      this.employee.name = this.employee_name;
+      this.employee.address = [this.employee_address];
+
+      // Stringify the final object
+      const finalJSON = JSON.stringify(this.employee);
+      console.log(this.employee);
+
+      // console.log(this.employeeFormGroup);
+      // this.router.navigate(['/dashboard']);
+
+      // console.log(this.employee)
+      // console.log( JSON.stringify(this.employee))
+
+      this.patientService.postPatientData(finalJSON).subscribe(data => {
+        const id = this.returnIDFromResponse(data);
+        // this.router.navigateByUrl('/clientsummary/' + data['id']);
+        this.showSuccessMessage = true;
+        this.showFailureMessage = false;
+      });
     }
-
-    // Telecome (phone)
-
-    this.employee_telecom_phone.system = 'phone';
-    this.employee_telecom_phone.value = this.employeeFormGroup.get(
-      'phoneNumber'
-    ).value;
-    this.employee_telecom_phone.use = 'work';
-
-    // Telecome (email)
-
-    this.employee_telecom_email.system = 'email';
-    this.employee_telecom_email.value = this.employeeFormGroup.get(
-      'email'
-    ).value;
-    this.employee_telecom_email.use = 'work';
-
-    this.employee.identifier = [this.employee_identifier];
-    this.employee_language.coding = [this.employee_language_coding];
-    this.employee_communication.language = this.employee_language;
-    this.employee.telecom = [
-      this.employee_telecom_phone,
-      this.employee_telecom_email
-    ];
-    this.employee.communication = [this.employee_communication];
-
-
-    this.employee.birthDate = this.employeeFormGroup.get('dob').value;
-    this.employee.birthDate = formatDate(this.employee.birthDate, 'yyyy-MM-dd', 'en');
-    this.employee.resourceType = 'Patient';
-    this.employee.name = this.employee_name;
-    this.employee.address = [this.employee_address];
-
-    // Stringify the final object
-    const finalJSON = JSON.stringify(this.employee);
-
-    // console.log(this.employeeFormGroup);
-    // this.router.navigate(['/dashboard']);
-
-    // console.log(this.employee)
-    // console.log( JSON.stringify(this.employee))
-
-    this.patientService.postPatientData(finalJSON).subscribe(data => {
-      this.returnIDFromResponse(data),
-        this.router.navigateByUrl('/clientsummary');
-    });
   }
 
 
@@ -523,6 +696,7 @@ export class EmployeeComponent implements OnInit {
   }
 
   returnIDFromResponse(data) {
+    console.log(data);
     const tempID = this.userService.getEmployeeSummaryID(data.id);
     return tempID;
   }

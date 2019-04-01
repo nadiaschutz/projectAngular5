@@ -112,6 +112,10 @@ export class StaffService {
     return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*', {headers: this.getHeaders()});
   }
 
+  getAllEpisodeOfCareAndRelatedDataAsync() {
+    return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*', {headers: this.getHeaders()}).toPromise();
+  }
+
   getEpisodeOfCareAndRelatedData(episodeOfCareId) {
     return this.http.get(environment.queryURI + '/EpisodeOfCare?_include=*&_revinclude=*&_id='
     + episodeOfCareId, {headers: this.getNoCacheHeaders()});

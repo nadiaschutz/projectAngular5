@@ -225,11 +225,17 @@
 
     <div class="col">
       <div class="button-section line">
-        <button class="btn regular-button float-right" [disabled]="!employeeFormGroup.valid" (click)="setEmployee()">Submit</button>
+        <button class="btn regular-button float-right" [disabled]="!employeeFormGroup.valid" (click)="saveEmployee()">Submit</button>
         <div class="valid-feedback">
           Success!
         </div>
-        <button class="btn regular-button" (click)="returnToDashboard()">Return to Dashboard</button>
+        <div *ngIf="showSuccessMessage">
+          <h6>Employee Record created successfully!!</h6>
+          <button class="btn regular-button" (click)="returnToDashboard()">Return to Dashboard</button>
+        </div>
+        <div *ngIf="showFailureMessage">
+          <h6>{{failureMessage}}</h6>
+        </div>
       </div>
     </div>
 
