@@ -635,9 +635,9 @@ export class Patient extends Resource implements Serializable<Patient> {
     identifier: Identifier[];
     active: boolean;
     name: HumanName[];
-    telecom: ContactPoint;
+    telecom: ContactPoint[];
     gender: Code;
-    birthDate: Date;
+    birthDate: string;
     address: Address;
     maritalStatus: CodeableConcept;
     contact: Contact[];

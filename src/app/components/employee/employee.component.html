@@ -7,7 +7,7 @@
 
 
 
-    <form [formGroup]="employeeFormGroup">
+    <form [formGroup]="employeeFormGroup" *ngIf="!showSuccessMessage" (ngSubmit)="saveEmployee()">
       <section class="form-section">
         <div class='header'>
           <h6>
@@ -219,17 +219,22 @@
         </div>
 
       </section>
+      <div class="button-section line">
+        <button class="btn regular-button float-right submit" type="submit" [disabled]="!employeeFormGroup.valid">Submit</button>
+      </div>
 
     </form>
 
 
     <div class="col">
-      <div class="button-section line">
-        <button class="btn regular-button float-right" [disabled]="!employeeFormGroup.valid" (click)="setEmployee()">Submit</button>
-        <div class="valid-feedback">
-          Success!
+      <div>
+        <div *ngIf="showSuccessMessage">
+          <strong>Employee Record created successfully!!</strong>
+          <button class="btn regular-button" (click)="returnToDashboard()">Return to Dashboard</button>
         </div>
-        <button class="btn regular-button" (click)="returnToDashboard()">Return to Dashboard</button>
+        <div *ngIf="showFailureMessage">
+          <strong>{{failureMessage}}</strong>
+        </div>
       </div>
     </div>
 

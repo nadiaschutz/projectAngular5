@@ -113,7 +113,7 @@ const routes: Routes = [
   { path: 'clientdepartment', component: ClientDepartmentComponent, canActivate: [AuthGuardService] },
   { path: 'addnewclientdepartment', component: AddNewClientDepartmentComponent, canActivate: [AuthGuardService] },
   { path: 'assigntasks', component: TasklistComponent, canActivate: [AuthGuardService] },
-  { path: 'clientsummary', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
+  { path: 'clientsummary/:clientId', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
   { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService] },
