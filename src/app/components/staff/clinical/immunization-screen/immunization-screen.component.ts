@@ -269,7 +269,7 @@ export class ImmunizationScreenComponent implements OnInit {
           this.questionnaireID = individualEntry['id'];
           individualEntry['item'].forEach(element => {
             const temp = {};
-            temp['id'] = element['linkId'];
+            temp['linkId'] = element['linkId'];
             temp['text'] = element['text'];
             temp['type'] = element['type'];
             temp['code'] = element['code'];
@@ -326,7 +326,7 @@ export class ImmunizationScreenComponent implements OnInit {
       const codingAnswer = new FHIR.Answer();
       const coding = new FHIR.Coding();
       // console.log(item['id']);
-      baseItem.linkId = item['id'];
+      baseItem.linkId = item['linkId'];
       baseItem.type = item['type'];
       // baseItem.code = item['code'];
       baseItem.text = item['text'];
