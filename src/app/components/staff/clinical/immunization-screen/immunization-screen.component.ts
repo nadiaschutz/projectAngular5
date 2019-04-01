@@ -16,106 +16,33 @@ import { TitleCasePipe } from '@angular/common';
   styleUrls: ['./immunization-screen.component.scss']
 })
 export class ImmunizationScreenComponent implements OnInit {
-  clinicalQuestionnaireArray = [];
+
   clinicialFormGroup: FormGroup;
   vaccinationFormGroup: FormGroup;
 
   showVaccineForm = false;
   switchClinicalChecklist = false;
   hasPreviousHistory = false;
+  checkboxHistoryFormDisabled = true;
+
   episodeOfCare;
   questionnaireID;
   questionnaireResponse;
   newNoteValue;
+  selectedVaccine;
+  serviceRequestSummary;
+
+
+  clinicalQuestionnaireArray = [];
+  administeredVaccines = [];
+  cliniciansList = [];
+  vaccineList = [];
 
   datePickerConfig: Partial<BsDatepickerConfig>;
 
   minDate: Date;
   maxDate: Date;
 
-  administeredVaccines = [];
-  vaccineList = [
-    {
-      code: '24',
-      display: 'Anthrax'
-    },
-    {
-      code: '27',
-      display: 'Botulinum Antitoxin'
-    },
-    {
-      code: 'GNFLU',
-      display: 'Influenza'
-    },
-    {
-      code: 'GNHEP',
-      display: 'Hepatitis B'
-    },
-    {
-      code: 'GNHPA',
-      display: 'Hepatitis A'
-    },
-    {
-      code: 'GNJEN',
-      display: 'Japanese Encephalitis'
-    },
-    {
-      code: '67',
-      display: 'Malaria'
-    },
-    {
-      code: 'GNMEA',
-      display: 'Measles'
-    },
-    {
-      code: 'GNMUM',
-      display: 'Mumps'
-    },
-    {
-      code: 'GNMEN',
-      display: 'Meningococcal C'
-    },
-    {
-      code: 'GNRUB',
-      display: 'Rubella'
-    },
-    {
-      code: 'GNTET',
-      display: 'Tetanus'
-    },
-    {
-      code: 'GNVAR',
-      display: 'Varicella'
-    },
-    {
-      code: 'GNPOL',
-      display: 'Polio'
-    },
-    {
-      code: 'GNTET',
-      display: 'Tetanus'
-    },
-    {
-      code: '90',
-      display: 'Rabies'
-    },
-    {
-      code: '105',
-      display: 'Vaccinia (smallpox) diluted'
-    },
-    {
-      code: '75',
-      display: 'Vaccinia (smallpox)'
-    },
-    {
-      code: 'GNTET',
-      display: 'Yellow Fever'
-    }
-  ];
-  cliniciansList = [];
-  selectedVaccine;
-  checkboxHistoryFormDisabled = true;
-  serviceRequestSummary;
 
   constructor(
     private staffService: StaffService,
@@ -147,6 +74,15 @@ export class ImmunizationScreenComponent implements OnInit {
     this.fetchAllClinicians();
     if (sessionStorage.getItem('userRole')) {
       if (sessionStorage.getItem('userRole') === 'clinician') {
+        this.staffService.getVaccineList().subscribe(
+          data => {
+            data['list'].forEach(vaccine => {
+              if (vaccine) {
+                this.vaccineList.push(vaccine);
+              }
+            });
+          }
+        );
         this.staffService
           .getAnyFHIRObjectByCustomQuery(
             'EpisodeOfCare/' + sessionStorage.getItem('selectedEpisodeId')
@@ -202,7 +138,6 @@ export class ImmunizationScreenComponent implements OnInit {
           .subscribe(
             data => {
               if (data) {
-                console.log(data);
                 if (data['total'] > 0) {
                   this.processClinicalQuestionnaireResponseForHistory(data);
                 } else {
@@ -266,9 +201,6 @@ export class ImmunizationScreenComponent implements OnInit {
         },
         error => {
           console.log(error);
-        },
-        () => {
-          console.log('we set them boys');
         }
       );
   }
@@ -601,7 +533,6 @@ export class ImmunizationScreenComponent implements OnInit {
     encounter.identifier.push(identifier);
     encounter.status = 'in-progress';
     encounter.resourceType = 'Encounter';
-    console.log(encounter);
 
     this.staffService.createEncounter(JSON.stringify(encounter)).subscribe(
       data => {

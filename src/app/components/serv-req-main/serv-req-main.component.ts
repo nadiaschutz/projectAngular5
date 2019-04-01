@@ -572,6 +572,9 @@ export class ServReqMainComponent implements OnInit {
     }
   }
 
+  setUpPatientDisplayName(data: any) {
+    this.patientService.getPatientDataByID(data['id']).subscribe()
+  } 
   // getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
   //   let result = '-';
   //   if (serviceRequestObj.item) {
