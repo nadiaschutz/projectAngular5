@@ -40,6 +40,10 @@ export class PatientService {
     return data;
   }
 
+  getEmployeeWithPRIAsync(pri) {
+    return this.httpClient.get(environment.queryURI + '/Patient?identifier=' + pri, {headers: this.getHeaders()}).toPromise();
+  }
+
   getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()

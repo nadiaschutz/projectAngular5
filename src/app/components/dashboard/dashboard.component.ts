@@ -77,11 +77,13 @@ export class DashboardComponent implements OnInit {
   minDate: Date;
   maxDate: Date;
   listOfDepartments = [];
+  listOfDepartmentsWithIdLookup = {};
   clientDepartment = null;
   employeeTypeArray = ['Employee', 'Dependent'];
   employeeType = null;
   branch = null;
   listOfBranches = [];
+  listOfBranchesWithIdLookup = {};
   // patientSubscription: subscription;
   displayedColumns: string[] = [
     'type',
@@ -159,10 +161,10 @@ export class DashboardComponent implements OnInit {
     /**
  * Initializes the list of branches from our system
  */
-    // this.userService.fetchAllDepartmentBranches().subscribe(
-    //   data => this.populateDeptBranches(data),
-    //   error => this.handleError(error)
-    // );
+    this.userService.fetchAllDepartmentBranches().subscribe(
+      data => this.populateBranches(data),
+      error => this.handleError(error)
+    );
 
 
     // this.sortUsersObjects();
@@ -227,14 +229,18 @@ export class DashboardComponent implements OnInit {
     // this.resetSearchParams();
   }
 
-
-
-
+  populateBranches(data) {
+    for (const location of data['entry']) {
+      const branch = location.resource;
+      this.listOfBranchesWithIdLookup[branch.id] = branch.name;
+    }
+  }
 
   populateDeptNames(data: any) {
     const arrToSort = [];
     console.log(data);
     data.entry.forEach(element => {
+      this.listOfDepartmentsWithIdLookup[element['resource']['id']] = element['resource']['name'];
       arrToSort.push(
         {
           name: element['resource']['name'],
@@ -425,7 +431,10 @@ export class DashboardComponent implements OnInit {
     if (clientObj['extension']) {
       clientObj['extension'].forEach(extension => {
         if (extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
-          result = extension.valueString;
+          if (extension.valueReference) {
+            const id = this.utilService.getIdFromReference(extension.valueReference.reference);
+            result = this.listOfDepartmentsWithIdLookup[id];
+          }
         }
       });
     }
@@ -451,7 +460,10 @@ export class DashboardComponent implements OnInit {
       clientObj['extension'].forEach(extension => {
 
         if (extension['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
-          result = extension.valueString;
+          if (extension.valueReference) {
+            const id = this.utilService.getIdFromReference(extension.valueReference.reference);
+            result = this.listOfBranchesWithIdLookup[id];
+          }
         }
       });
     }

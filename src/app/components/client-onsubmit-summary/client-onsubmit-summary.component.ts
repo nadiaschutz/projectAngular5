@@ -4,6 +4,7 @@ import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 
 import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-client-onsubmit-summary',
@@ -22,16 +23,19 @@ export class ClientOnsubmitSummaryComponent implements OnInit {
 
     private userService: UserService,
     private patientService: PatientService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
 
   ) { }
 
   ngOnInit() {
-    const id = this.userService.returnEmployeeSummaryID();
-    this.patientService.getPatientDataByID(id).subscribe(
-      data => this.loadEmployee(data),
-      error => this.handleError(error)
-    );
+    this.route.params.subscribe(params => {
+      const clientId = params['clientId'];
+      this.patientService.getPatientDataByID(clientId).subscribe(
+        data => this.loadEmployee(data),
+        error => this.handleError(error)
+      );
+    });
   }
 
 
