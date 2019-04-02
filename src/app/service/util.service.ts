@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { formatDate } from '@angular/common';
 import * as FHIR from '../interface/FHIR';
 import { QuestionnaireService } from '../service/questionnaire.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +12,7 @@ import { QuestionnaireService } from '../service/questionnaire.service';
 export class UtilService {
 
   constructor(
-    private questionnaireService: QuestionnaireService,
+    private questionnaireService: QuestionnaireService, private http: HttpClient, private oauthService: OAuthService
   ) { }
 
   switchSortChoice;
@@ -120,7 +123,6 @@ export class UtilService {
     return arrayToSort;
   }
 
-
   naturalCompare(a, b, choice: boolean) {
     const ax = [];
     const bx = [];
@@ -152,6 +154,34 @@ export class UtilService {
       return bx.length - ax.length;
     }
 
+  }
+
+  getResourceFromReferenceAsync(reference) {
+    return this.http.get(environment.queryURI + '/' + reference, {headers: this.getHeaders()}).toPromise();
+  }
+
+  getNoCacheHeaders() {
+    const headers = new HttpHeaders({
+      'Content-Type' : 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken(),
+      'Cache-Control': 'no-cache'
+    });
+    return headers;
+  }
+
+  getHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      Authorization: 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
+  }
+
+  getPostHeaders(): HttpHeaders {
+    const headers = new HttpHeaders({
+      'Content-Type' : 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
+    });
+    return headers;
   }
 
 }

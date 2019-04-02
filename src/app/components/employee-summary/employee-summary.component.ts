@@ -12,6 +12,7 @@ import { PatientService } from '../../service/patient.service';
 import { Router } from '@angular/router';
 import { QrequestService } from 'src/app/service/qrequest.service';
 import { AdminHomeScreenService } from '../../service/admin-home-screen.service';
+import { UtilService } from '../../service/util.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleCasePipe } from '@angular/common';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -109,7 +110,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     private patientService: PatientService,
     private adminHomeScreenService: AdminHomeScreenService,
     private router: Router,
-    private qrequestService: QrequestService
+    private qrequestService: QrequestService,
+    private utilService: UtilService
   ) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
@@ -237,7 +239,12 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       (err) => console.log('Employee Department list error', err));
   }
 
-  
+  async getNameFromReference(reference) {
+    const data = await this.utilService.getResourceFromReferenceAsync(reference);
+    const name = data['name'];
+    return name;
+  }
+
   onChanges(): void {
 
 
@@ -291,7 +298,11 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       if (extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
         temp['department'] = {};
         temp['department']['url'] = extension.url;
-        temp['department']['valueString'] = extension.valueString;
+        if (extension.valueReference) {
+          this.getNameFromReference(extension.valueReference.reference).then(name => {
+            temp['department']['valueString'] = name;
+          });
+        }
       }
     });
     data['extension'].forEach(extension => {
@@ -312,7 +323,11 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       if (extension['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
         temp['branch'] = {};
         temp['branch']['url'] = extension.url;
-        temp['branch']['valueString'] = extension.valueString;
+        if (extension.valueReference) {
+          this.getNameFromReference(extension.valueReference.reference).then(name => {
+            temp['branch']['valueString'] = name;
+          });
+        }
       }
     });
     data['extension'].forEach(extension => {
