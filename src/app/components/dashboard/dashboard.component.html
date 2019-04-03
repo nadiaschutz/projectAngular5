@@ -74,14 +74,14 @@
 
 
 
-    <!-- <div> -->
-    <div *ngIf="doNotShowZeroMessage">
+    <div>
+      <!-- <div *ngIf="doNotShowZeroMessage"> -->
       <h5>Clients</h5>
 
-      <div>
+      <!-- <div>
 
 
-        <div class="client-button-row" [ngClass]="roleInSession">
+          <div class="client-button-row" [ngClass]="roleInSession">
           <div>
             <div class="col">
               <button *ngIf="!enableAll" type="button" id="new-client-button" class="btn  float-right regular-dark-button "
@@ -104,8 +104,39 @@
         </div>
 
 
+      </div> -->
+
+
+
+      <div [ngClass]="roleInSession">
+        <div class="button-section">
+          <div class="row">
+            <div class="col">
+              <span *ngIf="doNotShowZeroMessage">
+                <button *ngIf="!enableAll" type="button" class="btn regular-dark-button float-right" style="margin-left: 15px;"
+                  (click)="enableAllFunction()">Show
+                  All Records
+                </button>
+                <button *ngIf="enableAll" type="button" class="btn regular-dark-button float-right" style="margin-left: 15px;"
+                  (click)="enableAllFunction()">Hide
+                  All Records
+                </button>
+
+              </span>
+              <span [ngClass]="roleInSession">
+                <button type="button" class="btn regular-dark-button float-right" (click)="newEmployeeButton()">New
+                  Client Record
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="table-container">
+
+
+
+
+      <div class="table-container" *ngIf="doNotShowZeroMessage">
         <table class="table table-hover table-custom">
           <!-- <table class="table table-hover"> -->
           <thead class="header-table ">
@@ -212,9 +243,9 @@
         </table>
 
       </div>
-    </div>
-    <div *ngIf="!doNotShowZeroMessage">
-      <h6>0 Results Found for "{{showParams}}"</h6>
+      <div *ngIf="!doNotShowZeroMessage">
+        <h6>0 Results Found for "{{showParams}}"</h6>
+      </div>
     </div>
 
   </div>
