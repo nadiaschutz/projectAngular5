@@ -394,8 +394,9 @@ export class NewAccountComponent implements OnInit {
     practitionerEmail.value = this.accountFormGroup.get('email').value;
 
     practitionerRef.reference = 'Practitioner/' + practitioner.id;
-    practitionerOrg.reference = 'Organization/' + this.regionalOffice;
-    practitionerLoc.reference = 'Location/' + this.districtOffice;
+    practitionerOrg.reference = 'Organization/' + this.accountFormGroup.get('departmentName').value;
+    practitionerLoc.reference = 'Location/' + this.accountFormGroup.get('departmentBranch').value;
+
 
     if (this.accountFormGroup.get('lro').value === true) {
       practitionerLROCoding.system = 'https://bcip.smilecdr.com/fhir/lroclient';

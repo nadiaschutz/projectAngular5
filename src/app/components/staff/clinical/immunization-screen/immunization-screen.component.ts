@@ -329,7 +329,8 @@ export class ImmunizationScreenComponent implements OnInit {
       baseItem.text = item['text'];
       baseItem.answer = [];
         if (item['code']) {
-          baseItem.answer.push(item['code']);
+          codingAnswer.valueCoding = item['code']
+          baseItem.answer.push(codingAnswer);
         }
       baseItem.item = [];
 
@@ -365,15 +366,11 @@ export class ImmunizationScreenComponent implements OnInit {
               answer.valueBoolean = true;
 
               itemToSave.answer.push(answer);
-              if (element['code']) {
-                itemToSave.answer.push(element['code']);
-              }
+         
             } else {
               answer.valueBoolean = false;
               itemToSave.answer.push(answer);
-              if (element['code']) {
-                itemToSave.answer.push(element['code']);
-              }
+            
             }
           }
 
@@ -387,6 +384,7 @@ export class ImmunizationScreenComponent implements OnInit {
             element['item'].forEach(nestedItem => {
               const nestedObj = new FHIR.Item();
               const nestedAnswer = new FHIR.Answer();
+              const nestedAnswerCode = new FHIR.Answer();
               nestedObj.linkId = nestedItem['linkId'];
               nestedObj.type = nestedItem['type'];
               nestedObj.text = nestedItem['text'];
