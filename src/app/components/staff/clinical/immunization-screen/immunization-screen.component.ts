@@ -324,16 +324,15 @@ export class ImmunizationScreenComponent implements OnInit {
     this.clinicalQuestionnaireArray.forEach(item => {
       const baseItem = new FHIR.Item();
       const codingAnswer = new FHIR.Answer();
-      // console.log(item['id']);
       baseItem.linkId = item['linkId'];
       baseItem.type = item['type'];
-      // baseItem.code = item['code'];
       baseItem.text = item['text'];
       baseItem.answer = [];
+        if (item['code']) {
+          baseItem.answer.push(item['code']);
+        }
       baseItem.item = [];
 
-
-      baseItem.answer.push(codingAnswer);
 
       if (item['linkId'] === 'IMMUNREVQ4') {
         const historyAnswer = new FHIR.Answer();
@@ -366,15 +365,22 @@ export class ImmunizationScreenComponent implements OnInit {
               answer.valueBoolean = true;
 
               itemToSave.answer.push(answer);
+              if (element['code']) {
+                itemToSave.answer.push(element['code']);
+              }
             } else {
               answer.valueBoolean = false;
               itemToSave.answer.push(answer);
+              if (element['code']) {
+                itemToSave.answer.push(element['code']);
+              }
             }
           }
 
           itemToSave.linkId = element['id'];
           itemToSave.text = element['text'];
           itemToSave.type = element['type'];
+
           itemToSave.item = [];
 
           if (element['item']) {
@@ -384,13 +390,20 @@ export class ImmunizationScreenComponent implements OnInit {
               nestedObj.linkId = nestedItem['linkId'];
               nestedObj.type = nestedItem['type'];
               nestedObj.text = nestedItem['text'];
+
               nestedObj.answer = [];
               if (nestedItem.checked) {
                 nestedAnswer.valueBoolean = true;
                 nestedObj.answer.push(nestedAnswer);
+                if (nestedItem['code']) {
+                  nestedObj.answer.push(nestedItem['code']);
+                }
               } else {
                 nestedAnswer.valueBoolean = false;
                 nestedObj.answer.push(nestedAnswer);
+                if (nestedItem['code']) {
+                  nestedObj.answer.push(nestedItem['code']);
+                }
               }
               itemToSave.item.push(nestedObj);
             });

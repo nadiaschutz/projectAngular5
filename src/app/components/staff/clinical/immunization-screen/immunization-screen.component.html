@@ -183,10 +183,7 @@
         <div *ngIf="item['linkId'] === 'IMMUNREVQ4'" class="notes-row">
           <div class="clinical-checklist-items">
             <label class="label-checklist">{{item.text | uppercase}}</label>
-            <!-- <form [formGroup]="clinicialFormGroup" novalidate>
-              <input type="text" name="historyNotes" id="historyNotes" formControlName="historyNotes" class="form-control"
-              placeholder="additional notes">
-            </form> -->
+
             <div *ngFor="let text of item['answer']">
               <div *ngIf="text['valueString']">
                 <p>{{text['valueString']}}</p>
@@ -195,7 +192,6 @@
             <div *ngIf="!checkboxHistoryFormDisabled">
               <label for="newNote">Add a note</label>
               <input type="text" class="form-control" placeholder="Enter" [(ngModel)]="newNoteValue" id="newNote" name="newNote">
-
             </div>
           </div>
         </div>
