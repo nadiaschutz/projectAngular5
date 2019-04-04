@@ -70,13 +70,13 @@ export class NewAccountComponent implements OnInit {
   ];
 
   roleTypes: RoleType[] = [
-    { value: 'Super User', viewValue: 'Super User' },
-    { value: 'Manager', viewValue: 'Manager' },
-    { value: 'Clinician', viewValue: 'Clinician' },
-    { value: 'Registry', viewValue: 'Registry' },
-    { value: 'Administrative Officer', viewValue: 'Administrative Officer' },
-    { value: 'Client Department', viewValue: 'Client Department' },
-    { value: 'Business User', viewValue: 'Business User' }
+    { value: 'superuser', viewValue: 'Super User' },
+    { value: 'manager', viewValue: 'Manager' },
+    { value: 'clinician', viewValue: 'Clinician' },
+    { value: 'registry', viewValue: 'Registry' },
+    { value: 'admin', viewValue: 'Administrative Officer' },
+    { value: 'clientdept', viewValue: 'Client Department' },
+    { value: 'businessuser', viewValue: 'Business User' }
   ];
 
   ngOnInit() {
@@ -119,7 +119,7 @@ export class NewAccountComponent implements OnInit {
         Validators.minLength(6)
       ]),
       role: new FormControl('', Validators.required),
-      roleDescription: new FormControl('', Validators.required),
+      roleDescription: new FormControl(''),
       phoneNumber: new FormControl('', [
         Validators.required,
         Validators.minLength(10),
@@ -336,33 +336,7 @@ export class NewAccountComponent implements OnInit {
       this.accountFormGroup.get('role').value
     );
 
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'superuser') {
-      practitionerCoding.code = 'superuser';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'manager') {
-      practitionerCoding.code = 'manager';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'clinician') {
-      practitionerCoding.code = 'clinician';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'registry') {
-      practitionerCoding.code = 'registry';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'administrativeofficer') {
-      practitionerCoding.code = 'admin';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'clientdepartment') {
-      practitionerCoding.code = 'clientdept';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'businessuser') {
-      practitionerCoding.code = 'businessuser';
-    }
+    practitionerCoding.code = this.accountFormGroup.get('role').value;
 
     practitionerCode.coding = [practitionerCoding];
     practitionerCode.text = this.accountFormGroup.get('roleDescription').value;
@@ -450,33 +424,7 @@ export class NewAccountComponent implements OnInit {
       this.accountFormGroup.get('role').value
     );
 
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'superuser') {
-      practitionerCoding.code = 'superuser';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'manager') {
-      practitionerCoding.code = 'manager';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'clinician') {
-      practitionerCoding.code = 'clinician';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'registry') {
-      practitionerCoding.code = 'registry';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'administrativeofficer') {
-      practitionerCoding.code = 'admin';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'clientdepartment') {
-      practitionerCoding.code = 'clientdept';
-    }
-
-    if (this.cleanRoleValue(this.accountFormGroup.get('role').value) === 'businessuser') {
-      practitionerCoding.code = 'businessuser';
-    }
+    practitionerCoding.code = this.accountFormGroup.get('role').value;
 
     practitionerCode.coding = [practitionerCoding];
     practitionerCode.text = this.accountFormGroup.get('roleDescription').value;
@@ -507,10 +455,6 @@ export class NewAccountComponent implements OnInit {
     );
   }
 
-  testfunction() {
-    // this.createPractitionerRoleForDepartments('123123');
-    console.log(this.accountFormGroup.get('regionalOffice').value, this.accountFormGroup.get)
-  }
   /**
    * Captures the response from the server after posting a Practitioner object,
    * only taking the ID, and name info from the form, to resue in other objects.
@@ -547,17 +491,6 @@ export class NewAccountComponent implements OnInit {
   }
 
   /**
-   * Takes in a Role string, and converts it to lowercase, making it easier to
-   * compare the value when applying condidtional logic. To keep values consistent,
-   * we also trim any spaces, in the off change we have a role with two words,
-   * such as Super User.
-   * @param role
-   */
-  cleanRoleValue(role: string) {
-    return role.toLowerCase().replace(/\s/g, '');
-  }
-
-  /**
    * Used in conjunction with the user service. Gets all Regional Offices
    * stored on the server to link to a Practitioner.
    * @param data
@@ -584,13 +517,7 @@ export class NewAccountComponent implements OnInit {
    * stored on the server to link to a Practitioner.
    * @param data
    */
-  // populateDeptBranches(data: any) {
-  //   console.log(data.entry);
-  //   data.entry.forEach(element => {
-  //     console.log(element.resource);
-  //     this.deptBranch.push(element.resource);
-  //   });
-  // }
+
   updateCheckbox(e) {
     this.chargeback = e.target.checked;
   }
@@ -599,7 +526,6 @@ export class NewAccountComponent implements OnInit {
   extractKeyValuePairsFromBundle(bundle) {
     if (bundle && bundle['entry']) {
       const bundleEntries = bundle['entry'];
-
       const list = bundleEntries.map(item => {
         if (item && item.resource) {
           const temp = {
@@ -614,11 +540,8 @@ export class NewAccountComponent implements OnInit {
 
       return list;
     }
-
     return [];
   }
-
-
 
   /**
    * Displays the error message from the server in the case a subscription fails.

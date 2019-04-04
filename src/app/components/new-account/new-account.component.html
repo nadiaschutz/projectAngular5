@@ -134,7 +134,7 @@
 
     <div class="row">
       <div class="col">
-        <label for="regionalOffice">Regional Office</label>
+        <label for="regionalOffice">Regional Office (Required)</label>
         <select class="form-control" formControlName="regionalOffice" id="regionalOffice">
           <option value="placeholder" disabled>Select</option>
           <!-- <option [ngValue]="null">Select</option> -->
@@ -151,7 +151,7 @@
         </select>
       </div>
       <div class="col">
-        <label for="districtOffice">District Office</label>
+        <label for="districtOffice">District Office (Required)</label>
         <select class="form-control" formControlName="districtOffice" id="districtOffice">
           <!-- <option value="placeholder" disabled>Select</option> -->
           <option *ngFor="let districtOffice of districtOffices" [value]="districtOffice.id">
@@ -227,8 +227,7 @@
 
       </div>
     </div>
-    <button class="btn regular-dark-button float-right" 
-    (click)="testfunction()">test</button>
+
     <div class="row">
       <div class="col">
         <div class="button-section line">
