@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import {
   FormBuilder,
   FormGroup,
@@ -9,11 +8,9 @@ import {
 
 import { distinctUntilChanged } from 'rxjs/operators';
 
-import { HttpClient } from '@angular/common/http';
 import { TitleCasePipe } from '@angular/common';
 import { UserService } from '../../service/user.service';
 
-import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import * as FHIR from '../../interface/FHIR';
 import * as SMILE from '../../interface/SMILE';
@@ -130,7 +127,7 @@ export class NewAccountComponent implements OnInit {
       districtOffice: new FormControl('', Validators.required),
       departmentName: new FormControl('', Validators.required),
       departmentBranch: new FormControl('', Validators.required),
-      chargeback: new FormControl('', []),
+      chargeback: new FormControl(''),
       lro: new FormControl('')
     });
 
@@ -238,7 +235,6 @@ export class NewAccountComponent implements OnInit {
           error => this.handleError(error)
         );
       }
-   
   }
 
   // Creates a Smile CDR user in the system. Note that this is not a FHIR object,
