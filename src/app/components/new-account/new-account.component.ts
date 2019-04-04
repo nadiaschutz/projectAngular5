@@ -7,6 +7,8 @@ import {
   FormControl
 } from '@angular/forms';
 
+import { distinctUntilChanged } from 'rxjs/operators';
+
 import { HttpClient } from '@angular/common/http';
 import { TitleCasePipe } from '@angular/common';
 import { UserService } from '../../service/user.service';
@@ -36,15 +38,18 @@ export interface RoleType {
 export class NewAccountComponent implements OnInit {
 
   accountFormGroup: FormGroup;
+
   role;
   regionalOffice;
   districtOffice;
   departmentName;
   departmentBranch;
+
   regionalOffices = [];
   districtOffices = [];
-  deptName = [];
-  deptBranch = [];
+  jobLocationList = [];
+  employeeDepartmentList = [];
+
   practitionerPieces = {};
   confirmSubmit = false;
   successHeaderCheck;
@@ -101,13 +106,6 @@ export class NewAccountComponent implements OnInit {
         error => this.handleError(error)
       );
 
-    /**
-     * Initializes the names of all departments on our system
-     */
-    this.userService.fetchAllDepartmentNames().subscribe(
-      data => this.populateDeptNames(data),
-      error => this.handleError(error)
-    );
 
     /**
      * Initializes the list of branches from our system
@@ -153,8 +151,60 @@ export class NewAccountComponent implements OnInit {
       chargeback: new FormControl('', []),
       lro: new FormControl('')
     });
+
+    this.onChanges();
+    this.getAndSetDepartmentList();
+
   }
 
+  onChanges(): void {
+    // listen to one aprticular field for form change
+    this.accountFormGroup.get('departmentName')
+      .valueChanges
+      // .pipe(distinctUntilChanged((a, b) => {
+      //   return JSON.stringify(a) === JSON.stringify(b);
+      // }))
+      .subscribe(val => {
+        if (val !== '') {
+          console.log(val);
+          // get job locations dropdown items
+          this.adminHomeScreenService.getJobLocations({ organization: val })
+            .subscribe(locations => {
+              this.jobLocationList = this.extractKeyValuePairsFromBundle(locations);
+              this.accountFormGroup.get('departmentBranch').enable();
+              console.log(this.jobLocationList);
+            },
+              (err) => {
+                console.log('Job locations list error => ', err);
+              });
+        } else {
+          this.accountFormGroup.get('departmentBranch').disable();
+          this.jobLocationList = [];
+        }
+      });
+  }
+
+
+  getAndSetDepartmentList() {
+    let arrToSort = [];
+    this.adminHomeScreenService.getDepartmentNames()
+      .subscribe(bundle => {
+        arrToSort = this.extractKeyValuePairsFromBundle(bundle);
+
+        this.employeeDepartmentList = arrToSort.sort((obj1, obj2) => {
+          const textA = obj1.name.toUpperCase();
+          const textB = obj2.name.toUpperCase();
+          if (textA > textB) {
+            return 1;
+          }
+          if (textA < textB) {
+            return -1;
+          }
+          return 0;
+        });
+      },
+        (err) => console.log('Employee Department list error', err));
+  }
   /**
    * This is the core piece to the New Account Component. Builds a Practitioner
    * FHIR object, populates the fields, makes a POST request, then takes the response,
@@ -393,10 +443,10 @@ export class NewAccountComponent implements OnInit {
     practitionerEmail.use = 'work';
     practitionerEmail.value = this.accountFormGroup.get('email').value;
 
-    practitionerRef.reference = 'Practitioner/' + practitioner.id;
-    practitionerOrg.reference = 'Organization/' + this.accountFormGroup.get('departmentName').value;
-    practitionerLoc.reference = 'Location/' + this.accountFormGroup.get('departmentBranch').value;
-
+    practitionerRef.reference = 'Practitioner/' + practitioner;
+    practitionerOrg.reference = this.accountFormGroup.get('departmentName').value;
+    practitionerLoc.reference = this.accountFormGroup.get('departmentBranch').value;
+    console.log( practitionerOrg.reference, practitionerLoc.reference, this.accountFormGroup.get('role').value );
 
     if (this.accountFormGroup.get('lro').value === true) {
       practitionerLROCoding.system = 'https://bcip.smilecdr.com/fhir/lroclient';
@@ -469,10 +519,14 @@ export class NewAccountComponent implements OnInit {
 
     const finalJSON = JSON.stringify(practitionerRole);
 
-    this.userService.savePractitionerRole(finalJSON).subscribe(
-      data => console.log('Success! A role has been assigned: ', data),
-      error => this.handleError(error)
-    );
+    // this.userService.savePractitionerRole(finalJSON).subscribe(
+    //   data => console.log('Success! A role has been assigned: ', data),
+    //   error => this.handleError(error)
+    // );
+  }
+
+  testfunction() {
+    this.createPractitionerRoleForDepartments('123123');
   }
   /**
    * Captures the response from the server after posting a Practitioner object,
@@ -543,30 +597,6 @@ export class NewAccountComponent implements OnInit {
   }
 
   /**
-   * Used in conjunction with the user service. Gets all Department Names
-   * stored on the server to link to a Practitioner.
-   * @param data
-   */
-  populateDeptNames(data: any) {
-    const arrToSort = [];
-    data.entry.forEach(element => {
-      arrToSort.push(element.resource);
-    });
-
-    this.deptName = arrToSort.sort((obj1, obj2) => {
-      const textA = obj1.name.toUpperCase();
-      const textB = obj2.name.toUpperCase();
-      if (textA > textB) {
-        return 1;
-      }
-      if (textA < textB) {
-        return -1;
-      }
-      return 0;
-    });
-  }
-
-  /**
    * Used in conjunction with the user service. Gets all Department Branches
    * stored on the server to link to a Practitioner.
    * @param data
@@ -582,22 +612,6 @@ export class NewAccountComponent implements OnInit {
     this.chargeback = e.target.checked;
   }
 
-  change(val): void {
-    if (val !== '') {
-      // get job locations dropdown items
-      this.adminHomeScreenService.getJobLocations({ organization: val })
-        .subscribe(locations => {
-          console.log('job list =>', locations);
-          this.deptBranch = this.extractKeyValuePairsFromBundle(locations);
-        },
-          (err) => {
-            console.log('Job locations list error => ', err);
-          });
-    } else {
-      // this.employeeFormGroup.get('departmentBranch').disable();
-      this.deptBranch = [];
-    }
-  }
 
   extractKeyValuePairsFromBundle(bundle) {
     if (bundle && bundle['entry']) {
@@ -606,8 +620,8 @@ export class NewAccountComponent implements OnInit {
       const list = bundleEntries.map(item => {
         if (item && item.resource) {
           const temp = {
-            value: item.resource.resourceType + '/' + item.resource.id,
-            text: item.resource.name
+            id: item.resource.resourceType + '/' + item.resource.id,
+            name: item.resource.name
           };
 
           return temp;
