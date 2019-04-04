@@ -157,10 +157,65 @@ export class UtilService {
 
   }
 
-  auditEventHandler() {
+  /**
+   * Records an event that takes place during each call to the server utilizing the 
+   * @param operation takes in a type of operation during an event (GET/POST/PUT/DELETE)
+   * @param resource the resource an operation is being acted on
+   */
+  recordEventHandler(operation, resource) {
+
+    const CRUD_TABLE = [
+      { id: '1', display: 'CREATE' },
+      { id: '2', display: 'READ' },
+      { id: '3', display: 'UPDATE' },
+      { id: '4', display: 'DELETE' },
+      { id: '5', display: 'EXECUTE' }
+    ];
+
     const auditEvent = new FHIR.AuditEvent;
     const agent = new FHIR.Agent;
+    const network = new FHIR.Network;
+    const source = new FHIR.Source;
+    const entity = new FHIR.Entity;
+    const pracReference = new FHIR.Reference;
+
+    auditEvent.agent = [];
+    auditEvent.entity = [];
+
+    entity.reference = new FHIR.Reference;
+    entity.reference.reference = resource['resourceType'] + '/' + resource['id'];
+    entity.type = new FHIR.Coding;
+    entity.type.system = 'http://hl7.org/fhir/resource-types';
+    entity.type.code = resource['resourceType'];
+
+    pracReference.reference = 'Practitioner/' + sessionStorage.getItem('userFHIRID');
+
+    for (const crudoperation of CRUD_TABLE) {
+      if (operation.toUpperCase() === crudoperation['display']) {
+        auditEvent.action = crudoperation['id'];
+      }
+    }
+
+    this.getIpAddress().subscribe(
+      data => {
+        network.address = data['ip'];
+        network.type = '2';
+      }
+    );
+
+    agent.userId = this.oauthService.getIdentityClaims()['sub'];
+    agent.network = network;
+    agent.reference = pracReference;
+    auditEvent.agent.push(agent);
+    auditEvent.entity.push(entity);
+    auditEvent.recorded = new Date();
+
+    console.log ('event', auditEvent);
     // agent.
+  }
+
+  getIpAddress() {
+    return this.http.get('https://api.ipify.org?format=json');
   }
 
   getResourceFromReferenceAsync(reference) {
