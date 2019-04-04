@@ -80,12 +80,6 @@ export class NewAccountComponent implements OnInit {
   ];
 
   ngOnInit() {
-
-    this.regionalOffice = 'placeholder';
-    this.role = 'placeholder';
-    this.districtOffice = 'placeholder';
-    this.departmentName = 'placeholder';
-    this.departmentBranch = 'placeholder';
     /**
      * Initializes list for regional offices on our system
      */
@@ -106,18 +100,6 @@ export class NewAccountComponent implements OnInit {
         error => this.handleError(error)
       );
 
-
-    /**
-     * Initializes the list of branches from our system
-     */
-    // this.userService.fetchAllDepartmentBranches().subscribe(
-    //   data => this.populateDeptBranches(data),
-    //   error => this.handleError(error)
-    // );
-
-    /**
-     * Builds the form object that is used in the component.
-     */
     this.accountFormGroup = this.fb.group({
       given: new FormControl('', [
         Validators.required,
@@ -158,12 +140,9 @@ export class NewAccountComponent implements OnInit {
   }
 
   onChanges(): void {
-    // listen to one aprticular field for form change
+    // listen to one particular field for form change
     this.accountFormGroup.get('departmentName')
       .valueChanges
-      // .pipe(distinctUntilChanged((a, b) => {
-      //   return JSON.stringify(a) === JSON.stringify(b);
-      // }))
       .subscribe(val => {
         if (val !== '') {
           console.log(val);
@@ -243,20 +222,23 @@ export class NewAccountComponent implements OnInit {
      * If uncesseful, it'll throw an error.
      */
 
-
-    this.userService.savePractitioner(finalJSON).subscribe(
-      data => {
-        this.successHeaderCheck = true;
-        this.disableInputsBeforeSubmission();
-        this.confirmSubmit = !this.confirmSubmit;
-        console.log('Success! A practitioner has been created: ', data);
-        this.capturePractitionerPieces(data);
-        this.createUser(this.practitionerPieces);
-        this.createPractitionerRoleForOffices(this.practitionerPieces);
-        this.createPractitionerRoleForDepartments(this.practitionerPieces);
-      },
-      error => this.handleError(error)
-    );
+     if (this.accountFormGroup.get('departmentName').value !== 'placeholder' || 
+      this.accountFormGroup.get('departmentBranch').value !== 'placeholder') {
+        this.userService.savePractitioner(finalJSON).subscribe(
+          data => {
+            this.successHeaderCheck = true;
+            this.disableInputsBeforeSubmission();
+            this.confirmSubmit = !this.confirmSubmit;
+            console.log('Success! A practitioner has been created: ', data);
+            this.capturePractitionerPieces(data);
+            this.createUser(this.practitionerPieces);
+            this.createPractitionerRoleForOffices(this.practitionerPieces);
+            this.createPractitionerRoleForDepartments(this.practitionerPieces);
+          },
+          error => this.handleError(error)
+        );
+      }
+   
   }
 
   // Creates a Smile CDR user in the system. Note that this is not a FHIR object,
@@ -331,9 +313,9 @@ export class NewAccountComponent implements OnInit {
     practitionerEmail.use = 'work';
     practitionerEmail.value = this.accountFormGroup.get('email').value;
 
-    practitionerRef.reference = 'Practitioner/' + practitioner.id;
-    practitionerOrg.reference = 'Organization/' + this.regionalOffice;
-    practitionerLoc.reference = 'Location/' + this.districtOffice;
+    practitionerRef.reference = 'Practitioner/' + practitioner['id'];
+    practitionerOrg.reference = 'Organization/' + this.accountFormGroup.get('regionalOffice').value;
+    practitionerLoc.reference = 'Location/' + this.accountFormGroup.get('districtOffice').value;
 
     if (this.accountFormGroup.get('lro').value === true) {
       practitionerLROCoding.system = 'https://bcip.smilecdr.com/fhir/lroclient';
@@ -443,7 +425,7 @@ export class NewAccountComponent implements OnInit {
     practitionerEmail.use = 'work';
     practitionerEmail.value = this.accountFormGroup.get('email').value;
 
-    practitionerRef.reference = 'Practitioner/' + practitioner;
+    practitionerRef.reference = 'Practitioner/' + practitioner['id'];
     practitionerOrg.reference = this.accountFormGroup.get('departmentName').value;
     practitionerLoc.reference = this.accountFormGroup.get('departmentBranch').value;
     console.log( practitionerOrg.reference, practitionerLoc.reference, this.accountFormGroup.get('role').value );
@@ -519,14 +501,15 @@ export class NewAccountComponent implements OnInit {
 
     const finalJSON = JSON.stringify(practitionerRole);
 
-    // this.userService.savePractitionerRole(finalJSON).subscribe(
-    //   data => console.log('Success! A role has been assigned: ', data),
-    //   error => this.handleError(error)
-    // );
+    this.userService.savePractitionerRole(finalJSON).subscribe(
+      data => console.log('Success! A role has been assigned: ', data),
+      error => this.handleError(error)
+    );
   }
 
   testfunction() {
-    this.createPractitionerRoleForDepartments('123123');
+    // this.createPractitionerRoleForDepartments('123123');
+    console.log(this.accountFormGroup.get('regionalOffice').value, this.accountFormGroup.get)
   }
   /**
    * Captures the response from the server after posting a Practitioner object,
@@ -549,8 +532,8 @@ export class NewAccountComponent implements OnInit {
       temp['phone'] = this.accountFormGroup.get('phoneNumber').value;
       temp['email'] = this.accountFormGroup.get('email').value;
       temp['roleDescription'] = this.accountFormGroup.get('roleDescription').value;
-      temp['regionalOffice'] = this.regionalOffice;
-      temp['districtOffice'] = this.districtOffice;
+      temp['regionalOffice'] = this.accountFormGroup.get('regionalOffice').value;
+      temp['districtOffice'] = this.accountFormGroup.get('districtOffice').value;
       temp['departmentName'] = this.accountFormGroup.get('departmentName').value;
       temp['departmentBranch'] = this.accountFormGroup.get('departmentBranch').value;
     }
