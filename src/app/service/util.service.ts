@@ -211,6 +211,14 @@ export class UtilService {
     auditEvent.recorded = new Date();
 
     console.log ('event', auditEvent);
+    this.saveAuditEvent(JSON.stringify(auditEvent)).subscribe(
+      data => {},
+      error => { console.log(error); },
+      () => {
+        console.log('an event has been triggered');
+      }
+    );
+
     // agent.
   }
 
@@ -222,6 +230,9 @@ export class UtilService {
     return this.http.get(environment.queryURI + '/' + reference, { headers: this.getHeaders() }).toPromise();
   }
 
+  saveAuditEvent(data) {
+    return this.http.post<FHIR.AuditEvent>(environment.queryURI + '/AuditEvent', data, {headers: this.getPostHeaders()});
+  }
   getNoCacheHeaders() {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
