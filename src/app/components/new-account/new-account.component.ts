@@ -219,8 +219,8 @@ export class NewAccountComponent implements OnInit {
      * If uncesseful, it'll throw an error.
      */
 
-     if (this.accountFormGroup.get('departmentName').value !== 'placeholder' || 
-      this.accountFormGroup.get('departmentBranch').value !== 'placeholder') {
+     if (this.accountFormGroup.get('departmentName').value &&
+      this.accountFormGroup.get('departmentBranch').value) {
         this.userService.savePractitioner(finalJSON).subscribe(
           data => {
             this.successHeaderCheck = true;

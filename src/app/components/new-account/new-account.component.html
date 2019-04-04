@@ -136,7 +136,7 @@
       <div class="col">
         <label for="regionalOffice">Regional Office (Required)</label>
         <select class="form-control" formControlName="regionalOffice" id="regionalOffice">
-          <option value="placeholder" disabled>Select</option>
+          <option value="">(Select)</option>
           <!-- <option [ngValue]="null">Select</option> -->
           <option *ngFor="let regionalOffice of regionalOffices" [value]="regionalOffice.id">
             {{regionalOffice.name}}
@@ -153,7 +153,7 @@
       <div class="col">
         <label for="districtOffice">District Office (Required)</label>
         <select class="form-control" formControlName="districtOffice" id="districtOffice">
-          <!-- <option value="placeholder" disabled>Select</option> -->
+          <option value="">(Select)</option>
           <option *ngFor="let districtOffice of districtOffices" [value]="districtOffice.id">
             {{districtOffice.name}}
           </option>
@@ -172,7 +172,7 @@
       <div class="col">
         <label for="departmentName">Department Name (Required)</label>
         <select class="form-control" formControlName="departmentName" id="departmentName" required>
-          <option value="placeholder">Select</option>
+          <option value="">(Select)</option>
           <option *ngFor="let department of employeeDepartmentList" [value]="department.id">
             {{department.name}}
           </option>
@@ -188,7 +188,7 @@
       <div class="col">
         <label for="departmentBranch">Department Branch (Required)</label>
         <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
-          <option value="placeholder">Select</option>
+          <option value="">(Select)</option>
           <option *ngFor="let branch of jobLocationList" [value]="branch.id">
             {{branch.name}}
           </option>
