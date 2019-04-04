@@ -13,6 +13,11 @@ export class PatientService {
       '/Patient/', { headers: this.getHeaders() });
   }
 
+  getAllPatientDataWithReferencesIncluded() {
+    return this.httpClient.get(environment.queryURI +
+      '/Patient/?_include=*', { headers: this.getHeaders() });
+  }
+
   getPatientDataByID(pid) {
     return this.httpClient.get(environment.queryURI +
       '/Patient/' + pid, { headers: this.getHeaders() });

@@ -12,6 +12,7 @@ import { PatientService } from '../../service/patient.service';
 import { Router } from '@angular/router';
 import { QrequestService } from 'src/app/service/qrequest.service';
 import { AdminHomeScreenService } from '../../service/admin-home-screen.service';
+import { UtilService } from '../../service/util.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TitleCasePipe } from '@angular/common';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -51,7 +52,9 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   deptBranch = [];
 
   jobLocationList: NameValueLookup[] = [];
+  jobLocationListWithIdLookup = {};
   employeeDepartmentList: NameValueLookup[] = [];
+  employeeDepartmentListWithIdLookup = {};
 
   confirmSubmit = false;
   successHeaderCheck;
@@ -109,7 +112,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     private patientService: PatientService,
     private adminHomeScreenService: AdminHomeScreenService,
     private router: Router,
-    private qrequestService: QrequestService
+    private qrequestService: QrequestService,
+    private utilService: UtilService
   ) {
     translate.addLangs(['en', 'fr']);
     translate.setDefaultLang('fr');
@@ -217,6 +221,13 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
             text: item.resource.name
           };
 
+          if (item.resource.resourceType === 'Organization') {
+            this.employeeDepartmentListWithIdLookup[item.resource.id] = item.resource.name;
+          }
+          if (item.resource.resourceType === 'Location') {
+            this.jobLocationListWithIdLookup[item.resource.id] = item.resource.name;
+          }
+
           return temp;
         }
         return { value: null, text: null };
@@ -237,10 +248,13 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       (err) => console.log('Employee Department list error', err));
   }
 
-  
+  async getNameFromReference(reference) {
+    const data = await this.utilService.getResourceFromReferenceAsync(reference);
+    const name = data['name'];
+    return name;
+  }
+
   onChanges(): void {
-
-
     // listen to one aprticular field for form change
     this.employeeFormGroup.get('departmentName')
       .valueChanges
@@ -267,7 +281,6 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   }
 
   populatePatientArray(data) {
-    console.log(data);
     this.linkID = '';
     // this.selected = data;
     const temp = {};
@@ -291,7 +304,11 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       if (extension['url'] === 'https://bcip.smilecdr.com/fhir/workplace') {
         temp['department'] = {};
         temp['department']['url'] = extension.url;
-        temp['department']['valueString'] = extension.valueString;
+        if (extension.valueReference) {
+          this.getNameFromReference(extension.valueReference.reference).then(name => {
+            temp['department']['valueString'] = name;
+          });
+        }
       }
     });
     data['extension'].forEach(extension => {
@@ -312,7 +329,11 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       if (extension['url'] === 'https://bcip.smilecdr.com/fhir/branch') {
         temp['branch'] = {};
         temp['branch']['url'] = extension.url;
-        temp['branch']['valueString'] = extension.valueString;
+        if (extension.valueReference) {
+          this.getNameFromReference(extension.valueReference.reference).then(name => {
+            temp['branch']['valueString'] = name;
+          });
+        }
       }
     });
     data['extension'].forEach(extension => {
@@ -586,6 +607,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
 
   editEmployeeToggle() {
     this.editEmployee = !this.editEmployee;
+    this.getAndSetDepartmentList();
     this.employeeFormGroup.controls['familyName'].patchValue(
       this.selected['family']
     );
@@ -641,6 +663,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
         new FormControl('', Validators.required)
       );
 
+      console.log(this.selected);
+
       this.employeeFormGroup.addControl(
         'departmentName',
         new FormControl('', Validators.required)
@@ -690,7 +714,6 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     }
 
     this.onChanges();
-    this.getAndSetDepartmentList();
   }
 
   updateEmployee() {
@@ -758,27 +781,31 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
 
       // Workplace extension
 
-      let deptText = '';
-      let branchText = '';
+      let deptValue = '';
+      let branchValue = '';
       this.employeeDepartmentList.forEach(item => {
         if (item['value'] === this.employeeFormGroup.get('departmentName').value) {
-          deptText = item['text'];
+          deptValue = item['value'];
         }
       });
 
       this.jobLocationList.forEach(branch => {
         if (branch['value'] === this.employeeFormGroup.get('departmentBranch').value) {
-          branchText = branch['text'];
+          branchValue = branch['value'];
         }
       });
       this.employee_extension_workplace.url =
         'https://bcip.smilecdr.com/fhir/workplace';
-      this.employee_extension_workplace.valueString = deptText;
+        const deptReference = {};
+        deptReference['reference'] = deptValue;
+      this.employee_extension_workplace.valueReference = deptReference;
 
 
       this.employee_extension_branch.url =
         'https://bcip.smilecdr.com/fhir/branch';
-      this.employee_extension_branch.valueString = branchText;
+        const branchReference = {};
+        branchReference['reference'] = branchValue;
+      this.employee_extension_branch.valueReference = branchReference;
 
       // Cross Reference One extension
 
