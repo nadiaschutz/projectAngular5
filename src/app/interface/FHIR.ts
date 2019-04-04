@@ -320,6 +320,11 @@ export class Payload extends BackboneElement {
     contentReference: Reference;
 }
 
+export class Network extends BackboneElement {
+    address: string;
+    type: string;
+}
+
 export class EnableWhen extends BackboneElement {
     question: string;
     hasAnswer: boolean;
@@ -563,6 +568,49 @@ export class Resource {
     // TODO - Solve Code structure, save language as a code
     language: string;
     extension: Extension[];
+}
+
+export class Agent extends BackboneElement {
+    role: CodeableConcept[];
+    reference: Reference;
+    userId: Identifier;
+    altId: string;
+    name: string;
+    requestor: boolean;
+    location: Reference;
+    policy: string[];
+    media: Coding;
+    /**
+     * Logical network location for application activity
+     */
+    network: Network;
+    /**
+     * Reason given for this user
+     */
+    purposeOfUse: CodeableConcept;
+}
+
+export class Source extends BackboneElement {
+    site: string;
+    identifier: Identifier;
+    type: Coding[];
+}
+
+export class EntityDetail extends BackboneElement {
+    type: string;
+    value: string;
+}
+export class Entity extends BackboneElement {
+    identifier: Identifier;
+    reference: Reference;
+    type: Coding;
+    role: Coding;
+    lifecycle: Coding;
+    securityLabel: Coding[];
+    name: string;
+    description: string;
+    query: string;
+    detail: EntityDetail[];
 }
 
 export class QuestionnaireResponse extends Resource implements Serializable<QuestionnaireResponse> {
@@ -1170,6 +1218,35 @@ export class Immunization extends Resource implements Serializable<Immunization>
     }
 }
 
+export class AuditEvent extends Resource implements Serializable<AuditEvent> {
+
+    type: Coding;
+    subtype: Coding[];
+    action: string;
+    recorded: Date;
+    outcome: string;
+    outcomeDesc: string;
+    purposeOfEvent: CodeableConcept[];
+    /**
+     * (Required) Actor involved in the event
+     */
+    agent: Agent[];
+    source: Source;
+    entity: Entity[];
+
+
+    deserialize(jsonObject: any): AuditEvent {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
 
 export class Bundle extends Resource implements Serializable<Bundle> {
 

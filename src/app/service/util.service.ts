@@ -12,7 +12,8 @@ import { environment } from '../../environments/environment';
 export class UtilService {
 
   constructor(
-    private questionnaireService: QuestionnaireService, private http: HttpClient, private oauthService: OAuthService
+    private http: HttpClient,
+    private oauthService: OAuthService
   ) { }
 
   switchSortChoice;
@@ -138,7 +139,7 @@ export class UtilService {
         if (nn) {
           return nn;
         }
-    }
+      }
       return ax.length - bx.length;
     }
 
@@ -150,19 +151,25 @@ export class UtilService {
         if (nn) {
           return nn;
         }
-    }
+      }
       return bx.length - ax.length;
     }
 
   }
 
+  auditEventHandler() {
+    const auditEvent = new FHIR.AuditEvent;
+    const agent = new FHIR.Agent;
+    // agent.
+  }
+
   getResourceFromReferenceAsync(reference) {
-    return this.http.get(environment.queryURI + '/' + reference, {headers: this.getHeaders()}).toPromise();
+    return this.http.get(environment.queryURI + '/' + reference, { headers: this.getHeaders() }).toPromise();
   }
 
   getNoCacheHeaders() {
     const headers = new HttpHeaders({
-      'Content-Type' : 'application/json',
+      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken(),
       'Cache-Control': 'no-cache'
     });
@@ -178,7 +185,7 @@ export class UtilService {
 
   getPostHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
-      'Content-Type' : 'application/json',
+      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
     });
     return headers;
