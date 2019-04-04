@@ -1,11 +1,9 @@
 import { Component, OnInit, OnChanges } from '@angular/core';
 //  trigger, style, state, transition, animate
-import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
-import { Router, ActivatedRoute } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { UserService } from '../../service/user.service';
-import { PatientService } from '../../service/patient.service';
 
 @Component({
   selector: 'app-auth',
@@ -24,7 +22,7 @@ export class AuthComponent implements OnInit {
   versionNumber;
   ngOnInit() {
 
-    this.versionNumber = '0.7.24';
+    this.versionNumber = '0.7.28';
 
     if (this.oauthService.getAccessToken()) {
       this.router.navigateByUrl('/dashboard');

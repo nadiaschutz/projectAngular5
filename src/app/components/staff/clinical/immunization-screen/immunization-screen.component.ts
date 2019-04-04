@@ -269,7 +269,7 @@ export class ImmunizationScreenComponent implements OnInit {
           this.questionnaireID = individualEntry['id'];
           individualEntry['item'].forEach(element => {
             const temp = {};
-            temp['id'] = element['linkId'];
+            temp['linkId'] = element['linkId'];
             temp['text'] = element['text'];
             temp['type'] = element['type'];
             temp['code'] = element['code'];
@@ -324,21 +324,18 @@ export class ImmunizationScreenComponent implements OnInit {
     this.clinicalQuestionnaireArray.forEach(item => {
       const baseItem = new FHIR.Item();
       const codingAnswer = new FHIR.Answer();
-      const coding = new FHIR.Coding();
-      // console.log(item['id']);
-      baseItem.linkId = item['id'];
+      baseItem.linkId = item['linkId'];
       baseItem.type = item['type'];
-      // baseItem.code = item['code'];
       baseItem.text = item['text'];
       baseItem.answer = [];
+        if (item['code']) {
+          codingAnswer.valueCoding = item['code']
+          baseItem.answer.push(codingAnswer);
+        }
       baseItem.item = [];
 
-      coding.code = item['code'][0]['code'];
-      codingAnswer.valueCoding = coding;
 
-      baseItem.answer.push(codingAnswer);
-
-      if (item['code'][0]['code'] === 'IMMUNREVQ4') {
+      if (item['linkId'] === 'IMMUNREVQ4') {
         const historyAnswer = new FHIR.Answer();
 
         if (this.clinicialFormGroup.get('historyNotes').value) {
@@ -369,31 +366,42 @@ export class ImmunizationScreenComponent implements OnInit {
               answer.valueBoolean = true;
 
               itemToSave.answer.push(answer);
+         
             } else {
               answer.valueBoolean = false;
               itemToSave.answer.push(answer);
+            
             }
           }
 
           itemToSave.linkId = element['id'];
           itemToSave.text = element['text'];
           itemToSave.type = element['type'];
+
           itemToSave.item = [];
 
           if (element['item']) {
             element['item'].forEach(nestedItem => {
               const nestedObj = new FHIR.Item();
               const nestedAnswer = new FHIR.Answer();
+              const nestedAnswerCode = new FHIR.Answer();
               nestedObj.linkId = nestedItem['linkId'];
               nestedObj.type = nestedItem['type'];
               nestedObj.text = nestedItem['text'];
+
               nestedObj.answer = [];
               if (nestedItem.checked) {
                 nestedAnswer.valueBoolean = true;
                 nestedObj.answer.push(nestedAnswer);
+                if (nestedItem['code']) {
+                  nestedObj.answer.push(nestedItem['code']);
+                }
               } else {
                 nestedAnswer.valueBoolean = false;
                 nestedObj.answer.push(nestedAnswer);
+                if (nestedItem['code']) {
+                  nestedObj.answer.push(nestedItem['code']);
+                }
               }
               itemToSave.item.push(nestedObj);
             });
