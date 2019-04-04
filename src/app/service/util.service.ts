@@ -165,11 +165,11 @@ export class UtilService {
   recordEventHandler(operation, resource) {
 
     const CRUD_TABLE = [
-      { id: '1', display: 'CREATE' },
-      { id: '2', display: 'READ' },
-      { id: '3', display: 'UPDATE' },
-      { id: '4', display: 'DELETE' },
-      { id: '5', display: 'EXECUTE' }
+      { id: 'C', display: 'CREATE' },
+      { id: 'R', display: 'READ' },
+      { id: 'U', display: 'UPDATE' },
+      { id: 'D', display: 'DELETE' },
+      { id: 'E', display: 'EXECUTE' }
     ];
 
     const auditEvent = new FHIR.AuditEvent;
@@ -181,6 +181,10 @@ export class UtilService {
 
     auditEvent.agent = [];
     auditEvent.entity = [];
+
+    source.site = 'Cloud';
+    source.identifier = new FHIR.Identifier;
+    source.identifier.value = environment.queryURI;
 
     entity.reference = new FHIR.Reference;
     entity.reference.reference = resource['resourceType'] + '/' + resource['id'];
@@ -209,8 +213,8 @@ export class UtilService {
     auditEvent.agent.push(agent);
     auditEvent.entity.push(entity);
     auditEvent.recorded = new Date();
-
-    console.log ('event', auditEvent);
+    auditEvent.source = source;
+    auditEvent.resourceType = 'AuditEvent';
     this.saveAuditEvent(JSON.stringify(auditEvent)).subscribe(
       data => {},
       error => { console.log(error); },
