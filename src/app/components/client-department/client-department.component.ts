@@ -66,7 +66,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
   clientDepartmentFormGroup: FormGroup;
   // departments = [];
   regionalOffices = [];
-  regionalOfficesWithId = {};
+  regionalOfficesWithId = [];
   clientDepartments = [];
   addClientDepartment = false;
   clientDepartmentName = '';
@@ -294,7 +294,13 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
 
     const regionExtension = new FHIR.Extension();
     regionExtension.url = 'https:bcip.smilecdr.com/fhir/psohpRegion';
-    regionExtension.valueString = 'Organization/' + value.region;
+    for (const region of this.regionalOfficesWithId) {
+      if (region.name === value.region) {
+        const reference = new FHIR.Reference;
+        reference.reference = 'Organization/' + region.id;
+        regionExtension.valueReference = reference;
+      }
+    }
     extension.push(regionExtension);
 
     branchLocation.extension = extension;
@@ -420,6 +426,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
   populateRegionalOffices(data: any) {
     data.entry.forEach(element1 => {
       this.regionalOffices.push(element1.resource.name);
+      this.regionalOfficesWithId.push({id: element1.resource.id, name: element1.resource.name});
     });
   }
 
