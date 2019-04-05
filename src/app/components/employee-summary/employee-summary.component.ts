@@ -203,6 +203,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       language: new FormControl('', Validators.required)
     });
 
+    // if (this.selected) {
+    // }
 
   }
 
@@ -281,8 +283,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   }
 
   populatePatientArray(data) {
-    this.linkID = '';
-    // this.selected = data;
+    // this.utilService.recordEventHandler('read', data);
+
     const temp = {};
 
     temp['dateModified'] = data['meta']['lastUpdated'];
@@ -368,7 +370,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     data['address'].forEach(address => {
       temp['address'].push(address);
     });
-
+    temp['resourceType'] = data['resourceType'];
     temp['communication'] = data['communication'];
 
     data['telecom'].forEach(telecom => {
@@ -387,6 +389,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       );
 
     this.selected = temp;
+
     console.log(this.selected);
     sessionStorage.setItem('emplType', this.selected['employeeType']['valueString']);
 

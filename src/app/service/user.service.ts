@@ -151,14 +151,7 @@ export class UserService {
       ).subscribe(
         user => {
           user['users'].forEach(element => {
-            if (
-              element['familyName'] ===
-              this.oauthService.getIdentityClaims()['family_name'] &&
-              element['givenName'] ===
-              this.oauthService.getIdentityClaims()['given_name'] &&
-              element['username'] ===
-              this.oauthService.getIdentityClaims()['sub']
-            ) {
+            if (this.checkIfUserExists(element)) {
               let pracID: any;
 
               if (element['defaultLaunchContexts']) {
@@ -212,14 +205,7 @@ export class UserService {
       ).subscribe(
         user => {
           user['users'].forEach(element => {
-            if (
-              element['familyName'] ===
-              this.oauthService.getIdentityClaims()['family_name'] &&
-              element['givenName'] ===
-              this.oauthService.getIdentityClaims()['given_name'] &&
-              element['username'] ===
-              this.oauthService.getIdentityClaims()['sub']
-            ) {
+            if (this.checkIfUserExists(element)) {
               let pracID: any;
               if (element['defaultLaunchContexts']) {
                 pracID = element['defaultLaunchContexts'][0]['resourceId'];
@@ -251,13 +237,8 @@ export class UserService {
         this.oauthService.getIdentityClaims()['sub']
       ).subscribe(
         user => {
-          const tempUser = this.oauthService.getIdentityClaims();
           user['users'].forEach(element => {
-            if (
-              element['familyName'] === tempUser['family_name'] &&
-              element['givenName'] === tempUser['given_name'] &&
-              element['username'] === tempUser['sub']
-            ) {
+            if (this.checkIfUserExists(element)) {
               let pracID: any;
               if (element['defaultLaunchContexts']) {
                 pracID = element['defaultLaunchContexts'][0]['resourceId'];
@@ -298,13 +279,8 @@ export class UserService {
         this.oauthService.getIdentityClaims()['sub']
       ).subscribe(
         user => {
-          const tempUser = this.oauthService.getIdentityClaims();
           user['users'].forEach(element => {
-            if (
-              element['familyName'] === tempUser['family_name'] &&
-              element['givenName'] === tempUser['given_name'] &&
-              element['username'] === tempUser['sub']
-            ) {
+            if (this.checkIfUserExists(element)) {
               let pracID: any;
               if (element['defaultLaunchContexts']) {
                 pracID = element['defaultLaunchContexts'][0]['resourceId'];
@@ -335,6 +311,15 @@ export class UserService {
         }
       );
     });
+  }
+
+  private checkIfUserExists(element: any) {
+    return element['familyName'] ===
+      this.oauthService.getIdentityClaims()['family_name'] &&
+      element['givenName'] ===
+      this.oauthService.getIdentityClaims()['given_name'] &&
+      element['username'] ===
+      this.oauthService.getIdentityClaims()['sub'];
   }
 
   setCurrentUserRole(data: string) {
