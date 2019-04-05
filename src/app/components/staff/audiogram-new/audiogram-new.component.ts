@@ -217,6 +217,36 @@ export class AudiogramNewComponent implements OnInit {
             const hearingLoss = new FHIR.CodeableConcept;
             const hearingLossCoding = new FHIR.Coding;
 
+            const leftEarComponent1 = new FHIR.Component;
+            const leftEarComponent2 = new FHIR.Component;
+            const leftEarComponent3 = new FHIR.Component;
+            const leftEarComponent4 = new FHIR.Component;
+            const leftEarComponent5 = new FHIR.Component;
+            const leftEarComponent6 = new FHIR.Component;
+            const leftEarComponent7 = new FHIR.Component;
+            const rightEarComponent1 = new FHIR.Component;
+            const rightEarComponent2 = new FHIR.Component;
+            const rightEarComponent3 = new FHIR.Component;
+            const rightEarComponent4 = new FHIR.Component;
+            const rightEarComponent5 = new FHIR.Component;
+            const rightEarComponent6 = new FHIR.Component;
+            const rightEarComponent7 = new FHIR.Component;
+
+            const rightEarComponent1Coding = new FHIR.Coding;
+            const rightEarComponent2Coding = new FHIR.Coding;
+            const rightEarComponent3Coding = new FHIR.Coding;
+            const rightEarComponent4Coding = new FHIR.Coding;
+            const rightEarComponent5Coding = new FHIR.Coding;
+            const rightEarComponent6Coding = new FHIR.Coding;
+            const rightEarComponent7Coding = new FHIR.Coding;
+            const leftEarComponent1Coding = new FHIR.Coding;
+            const leftEarComponent2Coding = new FHIR.Coding;
+            const leftEarComponent3Coding = new FHIR.Coding;
+            const leftEarComponent4Coding = new FHIR.Coding;
+            const leftEarComponent5Coding = new FHIR.Coding;
+            const leftEarComponent6Coding = new FHIR.Coding;
+            const leftEarComponent7Coding = new FHIR.Coding;
+
             audiogram.subject = new FHIR.Reference;
             audiogram.context = new FHIR.Reference;
             audiogram.device = new FHIR.Reference;
@@ -280,6 +310,108 @@ export class AudiogramNewComponent implements OnInit {
             if (this.selectedHearingLoss !== null) {
                 audiogram.category.push(hearingLoss);
             }
+
+            leftEarComponent1Coding.system = 'http://loinc.org';
+            leftEarComponent1Coding.code = '89024-4';
+            leftEarComponent1Coding.display = 'Hearing threshold 500 Hz Ear-L';
+            leftEarComponent1.code.coding = [leftEarComponent1Coding];
+            leftEarComponent1.valueString = this.audioGramFormGroup.get('leftk_5').value;
+
+            rightEarComponent1Coding.system = 'http://loinc.org';
+            rightEarComponent1Coding.code = '89025-1';
+            rightEarComponent1Coding.display = 'Hearing threshold 500 Hz Ear-R';
+            rightEarComponent1.code.coding = [rightEarComponent1Coding];
+            rightEarComponent1.valueString = this.audioGramFormGroup.get('right_0_5').value;
+
+
+            leftEarComponent2Coding.system = 'http://loinc.org';
+            leftEarComponent2Coding.code = '89016-0';
+            leftEarComponent2Coding.display = 'Hearing threshold 1000 Hz Ear-L';
+            leftEarComponent2.code.coding = [leftEarComponent2Coding];
+            leftEarComponent2.valueString = this.audioGramFormGroup.get('leftk1').value;
+
+            rightEarComponent2Coding.system = 'http://loinc.org';
+            rightEarComponent2Coding.code = '89017-8';
+            rightEarComponent2Coding.display = 'Hearing threshold 1000 Hz Ear-R';
+            rightEarComponent2.code.coding = [rightEarComponent2Coding];
+            rightEarComponent2.valueString = this.audioGramFormGroup.get('right_1k').value;
+
+            leftEarComponent3Coding.system = 'http://loinc.org';
+            leftEarComponent3Coding.code = '89018-6';
+            leftEarComponent3Coding.display = 'Hearing threshold 2000 Hz Ear-L';
+            leftEarComponent3.code.coding = [leftEarComponent3Coding];
+            leftEarComponent3.valueString = this.audioGramFormGroup.get('leftk2').value;
+
+            rightEarComponent3Coding.system = 'http://loinc.org';
+            rightEarComponent3Coding.code = '89019-4';
+            rightEarComponent3Coding.display = 'Hearing threshold 2000 Hz Ear-R';
+            rightEarComponent3.code.coding = [rightEarComponent3Coding];
+            rightEarComponent3.valueString = this.audioGramFormGroup.get('right_2k').value;
+
+            leftEarComponent4Coding.system = 'http://loinc.org';
+            leftEarComponent4Coding.code = '89020-2';
+            leftEarComponent4Coding.display = 'Hearing threshold 3000 Hz Ear-L';
+            leftEarComponent4.code.coding = [leftEarComponent4Coding];
+            leftEarComponent4.valueString = this.audioGramFormGroup.get('left3k').value;
+
+            rightEarComponent4Coding.system = 'http://loinc.org';
+            rightEarComponent4Coding.code = '89021-0';
+            rightEarComponent4Coding.display = 'Hearing threshold 3000 Hz Ear-R';
+            rightEarComponent4.code.coding = [rightEarComponent4Coding];
+            rightEarComponent4.valueString = this.audioGramFormGroup.get('right_3k').value;
+
+            leftEarComponent5Coding.system = 'http://loinc.org';
+            leftEarComponent5Coding.code = '89023-6';
+            leftEarComponent5Coding.display = 'Hearing threshold 4000 Hz Ear-L';
+            leftEarComponent5.code.coding = [leftEarComponent5Coding];
+            leftEarComponent5.valueString = this.audioGramFormGroup.get('left4k').value;
+
+            rightEarComponent5Coding.system = 'http://loinc.org';
+            rightEarComponent5Coding.code = '89021-0';
+            rightEarComponent5Coding.display = 'Hearing threshold 4000 Hz Ear-R';
+            rightEarComponent5.code.coding = [rightEarComponent5Coding];
+            rightEarComponent5.valueString = this.audioGramFormGroup.get('right_4k').value;
+
+            leftEarComponent6Coding.system = 'http://loinc.org';
+            leftEarComponent6Coding.code = '89026-9';
+            leftEarComponent6Coding.display = 'Hearing threshold 6000 Hz Ear-L';
+            leftEarComponent6.code.coding = [leftEarComponent6Coding];
+            leftEarComponent6.valueString = this.audioGramFormGroup.get('left6k').value;
+
+            rightEarComponent6Coding.system = 'http://loinc.org';
+            rightEarComponent6Coding.code = '89027-7';
+            rightEarComponent6Coding.display = 'Hearing threshold 4000 Hz Ear-R';
+            rightEarComponent6.code.coding = [rightEarComponent6Coding];
+            rightEarComponent6.valueString = this.audioGramFormGroup.get('right_6k').value;
+
+            leftEarComponent7Coding.system = 'http://loinc.org';
+            leftEarComponent7Coding.code = '89028-5';
+            leftEarComponent7Coding.display = 'Hearing threshold 8000 Hz Ear-L';
+            leftEarComponent7.code.coding = [leftEarComponent7Coding];
+            leftEarComponent7.valueString = this.audioGramFormGroup.get('left8k').value;
+
+            rightEarComponent7Coding.system = 'http://loinc.org';
+            rightEarComponent7Coding.code = '89029-3';
+            rightEarComponent7Coding.display = 'Hearing threshold 8000 Hz Ear-R';
+            rightEarComponent7.code.coding = [rightEarComponent7Coding];
+            rightEarComponent7.valueString = this.audioGramFormGroup.get('right_8k').value;
+
+            audiogram.component.push(
+                leftEarComponent1,
+                leftEarComponent2,
+                leftEarComponent3,
+                leftEarComponent4,
+                leftEarComponent5,
+                leftEarComponent6,
+                leftEarComponent7,
+                rightEarComponent1,
+                rightEarComponent2,
+                rightEarComponent3,
+                rightEarComponent4,
+                rightEarComponent5,
+                rightEarComponent6,
+                rightEarComponent7
+            );
             audiogram.device.reference = 'Device/' + deviceData['id'];
             audiogram.subject.reference = 'Patient/' + this.patient.id;
             audiogram.context.reference = 'EpisodeOfCare/' + this.eocId;
@@ -287,318 +419,11 @@ export class AudiogramNewComponent implements OnInit {
             audiogram.status = 'final';
             audiogram.extension = [extensionOne, extensionTwo];
             audiogram.resourceType = 'Observation';
-            const audiogramRequest = {
-                resourceType: null,
-                extension: [],
-                status: null,
-                category: [],
-                subject: {
-                    reference: null
-                },
-                context: {
-                    reference: null
-                },
-                issued: null,
-                device: {
-                    reference: null
-                },
-                component: []
-            };
 
-            if (deviceData) {
+            this.audiogramService.saveAudiogramRequest(JSON.stringify(audiogram)).subscribe(data => {
+                this.router.navigateByUrl('/staff/audiogram/' + this.eocId);
+            });
 
-
-                audiogramRequest.resourceType = 'Observation';
-
-                audiogramRequest.extension = [
-                    {
-                        url: 'http://nohis.gc.ca/examiner',
-                        valueString: this.audioGramFormGroup.get('examineID').value
-                    },
-                ];
-
-                if (this.audioGramFormGroup.get('locationOfTest').value && this.audioGramFormGroup.get('locationOfTest').value != '') {
-                    audiogramRequest.extension.push({
-                        'url': 'http://nohis.gc.ca/test-location',
-                        'valueReference': {
-                            'reference': 'Location/' + this.audioGramFormGroup.get('locationOfTest').value
-                        }
-                    });
-                }
-
-                audiogramRequest.status = 'final';
-
-                audiogramRequest.category = [
-                    {
-                        'coding': [
-                            {
-                                'system': 'http://hl7.org/fhir/observation-category',
-                                'code': 'exam',
-                                'display': 'Exam'
-                            }
-                        ],
-                        'text': 'Exam'
-                    },
-                    {
-                        'coding': [
-                            {
-                                'system': 'http://nohis.gc.ca/observation-type',
-                                'code': 'audiogram',
-                                'display': 'Audiogram'
-                            }
-                        ],
-                        'text': 'Audiogram'
-                    }
-                ];
-
-
-
-
-
-
-
-                if (this.selectedBaseLine === 'yes') {
-                    let componenet = {
-                        'coding': [
-                            {
-                                'system': 'http://nohis.gc.ca/observation-use',
-                                'code': 'baseline',
-                                'display': 'Baseline'
-                            }
-                        ],
-                        'text': 'Baseline'
-                    };
-
-                    audiogramRequest.category.push(componenet);
-                } else {
-                    audiogramRequest.category = audiogramRequest.category.filter(data => {
-                        if (data.text !== 'Baseline') {
-                            return data
-                        }
-                    });
-                }
-
-                let selectHearingLoss;
-
-                if (this.selectedHearingLoss === 'left') {
-                    selectHearingLoss = {
-                        'coding': [
-                            {
-                                'system': 'http://nohis.gc.ca/hearing-loss',
-                                'code': 'hearing-loss',
-                                'display': 'Hearing Loss'
-                            }
-                        ],
-                        'text': 'Left'
-                    }
-                } else {
-                    selectHearingLoss = {
-                        'coding': [
-                            {
-                                'system': 'http://nohis.gc.ca/hearing-loss',
-                                'code': 'hearing-loss',
-                                'display': 'Hearing Loss'
-                            }
-                        ],
-                        'text': 'Right'
-                    }
-                }
-
-                if (this.selectedHearingLoss !== null) {
-                    audiogramRequest.category.push(selectHearingLoss);
-                }
-
-
-                audiogramRequest.subject = {
-                    'reference': 'Patient/' + this.patient.id
-                };
-
-                audiogramRequest.context = {
-                    'reference': 'EpisodeOfCare/' + this.eocId
-                };
-
-                audiogramRequest.issued = this.audioGramFormGroup.get('issued').value;
-
-                audiogramRequest.device = {
-                    'reference': 'Device/' + deviceData['id']
-                };
-
-                audiogramRequest.component = [
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89024-4',
-                                    'display': 'Hearing threshold 500 Hz Ear-L'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('leftk_5').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89025-1',
-                                    'display': 'Hearing threshold 500 Hz Ear-R'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('right_0_5').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89016-0',
-                                    'display': 'Hearing threshold 1000 Hz Ear-L'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('leftk1').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89017-8',
-                                    'display': 'Hearing threshold 1000 Hz Ear-R'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('right_1k').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89018-6',
-                                    'display': 'Hearing threshold 2000 Hz Ear-L'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('leftk2').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89019-4',
-                                    'display': 'Hearing threshold 2000 Hz Ear-R'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('right_2k').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89020-2',
-                                    'display': 'Hearing threshold 3000 Hz Ear-L'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('left3k').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89021-0',
-                                    'display': 'Hearing threshold 3000 Hz Ear-R'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('right_3k').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89022-8',
-                                    'display': 'Hearing threshold 4000 Hz Ear-L'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('left4k').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89023-6',
-                                    'display': 'Hearing threshold 4000 Hz Ear-R'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('right_4k').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89026-9',
-                                    'display': 'Hearing threshold 6000 Hz Ear-L'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('left6k').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89027-7',
-                                    'display': 'Hearing threshold 6000 Hz Ear-R'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('right_6k').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89028-5',
-                                    'display': 'Hearing threshold 8000 Hz Ear-L'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('left8k').value
-                    },
-                    {
-                        'code': {
-                            'coding': [
-                                {
-                                    'system': 'http://loinc.org',
-                                    'code': '89029-3',
-                                    'display': 'Hearing threshold 8000 Hz Ear-R'
-                                }
-                            ]
-                        },
-                        'valueString': this.audioGramFormGroup.get('right_8k').value
-                    }
-                ];
-
-
-                this.audiogramService.saveAudiogramRequest(JSON.stringify(audiogramRequest)).subscribe(data => {
-                    this.router.navigateByUrl('/staff/audiogram/' + this.eocId);
-                });
-            } // end if
 
         });
 
