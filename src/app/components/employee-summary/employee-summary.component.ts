@@ -283,7 +283,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   }
 
   populatePatientArray(data) {
-    this.utilService.recordEventHandler('read', data);
+    // this.utilService.recordEventHandler('read', data);
 
     const temp = {};
 
