@@ -232,7 +232,12 @@ export class NewAccountComponent implements OnInit {
           this.createPractitionerRoleForOffices(this.practitionerPieces);
           this.createPractitionerRoleForDepartments(this.practitionerPieces);
         },
-        error => this.handleError(error)
+        error => {
+          this.handleError(error);
+        },
+        () => {
+          this.practitionerPieces = {};
+        }
       );
     }
   }
