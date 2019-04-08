@@ -96,7 +96,9 @@ export class NewAccountComponent implements OnInit {
         data => this.populateDistrictOffices(data),
         error => this.handleError(error)
       );
-
+      this.userService.getPermissionList().subscribe(role => {
+        console.log(role);
+      });
     this.accountFormGroup = this.fb.group({
       given: new FormControl('', [
         Validators.required,
@@ -123,8 +125,8 @@ export class NewAccountComponent implements OnInit {
         Validators.maxLength(10)
       ]),
       email: new FormControl('', [Validators.required, Validators.email]),
-      regionalOffice: new FormControl('', Validators.required),
-      districtOffice: new FormControl('', Validators.required),
+      regionalOffice: new FormControl(''),
+      districtOffice: new FormControl(''),
       departmentName: new FormControl('', Validators.required),
       departmentBranch: new FormControl('', Validators.required),
       chargeback: new FormControl(''),
@@ -391,7 +393,7 @@ export class NewAccountComponent implements OnInit {
     const practitionerChargeBackCoding = new FHIR.Coding;
     const practitionerLRO = new FHIR.CodeableConcept;
     const practitionerLROCoding = new FHIR.Coding;
-
+    const identifier = new FHIR.Identifier;
     practitionerPhone.system = 'phone';
     practitionerPhone.use = 'work';
     practitionerPhone.value = this.accountFormGroup.get('phoneNumber').value;
@@ -440,6 +442,9 @@ export class NewAccountComponent implements OnInit {
       }
     }
 
+    identifier.value = 'DEPT&BRANCH';
+
+    practitionerRole.identifier = [identifier];
     practitionerRole.telecom = [practitionerPhone, practitionerEmail];
     practitionerRole.organization = practitionerOrg;
     practitionerRole.location = [practitionerLoc];
