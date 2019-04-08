@@ -1090,7 +1090,7 @@ export class ProcedureRequest extends Resource implements Serializable<Procedure
 
 export class PractitionerRole extends Resource implements Serializable<PractitionerRole> {
 
-    identifier = Identifier[];
+    identifier: Identifier[];
     active: boolean;
     period: Period;
     practitioner: Reference;

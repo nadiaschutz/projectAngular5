@@ -96,9 +96,7 @@ export class NewAccountComponent implements OnInit {
         data => this.populateDistrictOffices(data),
         error => this.handleError(error)
       );
-      this.userService.getPermissionList().subscribe(role => {
-        console.log(role);
-      });
+
     this.accountFormGroup = this.fb.group({
       given: new FormControl('', [
         Validators.required,
@@ -248,6 +246,7 @@ export class NewAccountComponent implements OnInit {
     const smileUser = new SMILE.UserAccount;
 
     const launchContext = new SMILE.DefaultLaunchContext;
+    smileUser.authorities = [];
 
     this.userService.getPermissionList().subscribe(role => {
       if (role) {
@@ -258,7 +257,7 @@ export class NewAccountComponent implements OnInit {
             authorities.argument = permission['argument'];
           }
           authorities.permission = permission['permission'];
-          smileUser.authorities = [authorities];
+          smileUser.authorities.push(authorities);
         }
       }
     });

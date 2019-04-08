@@ -11,8 +11,8 @@ export class AssociatedResources {
 
 export class Authority {
 
-    argument: string;
     permission: string;
+    argument: string;
 }
 
 export class DefaultLaunchContext {
