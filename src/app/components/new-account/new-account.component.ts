@@ -254,8 +254,8 @@ export class NewAccountComponent implements OnInit {
           const authorities = new SMILE.Authority;
           if (permission['argument']) {
             authorities.argument = permission['argument'];
-            authorities.permission = permission['permission'];
           }
+          authorities.permission = permission['permission'];
           smileUser.authorities = [authorities];
         }
       }
