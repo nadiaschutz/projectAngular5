@@ -12,7 +12,8 @@ import { environment } from '../../environments/environment';
 export class UtilService {
 
   constructor(
-    private questionnaireService: QuestionnaireService, private http: HttpClient, private oauthService: OAuthService
+    private http: HttpClient,
+    private oauthService: OAuthService
   ) { }
 
   switchSortChoice;
@@ -138,7 +139,7 @@ export class UtilService {
         if (nn) {
           return nn;
         }
-    }
+      }
       return ax.length - bx.length;
     }
 
@@ -150,19 +151,95 @@ export class UtilService {
         if (nn) {
           return nn;
         }
-    }
+      }
       return bx.length - ax.length;
     }
 
   }
 
-  getResourceFromReferenceAsync(reference) {
-    return this.http.get(environment.queryURI + '/' + reference, {headers: this.getHeaders()}).toPromise();
+  /**
+   * Records an event that takes place during each call to the server utilizing the 
+   * @param operation takes in a type of operation during an event (GET/POST/PUT/DELETE)
+   * @param resource the resource an operation is being acted on
+   */
+  recordEventHandler(operation, resource) {
+
+    const CRUD_TABLE = [
+      { id: 'C', display: 'CREATE' },
+      { id: 'R', display: 'READ' },
+      { id: 'U', display: 'UPDATE' },
+      { id: 'D', display: 'DELETE' },
+      { id: 'E', display: 'EXECUTE' }
+    ];
+
+    const auditEvent = new FHIR.AuditEvent;
+    const agent = new FHIR.Agent;
+    const network = new FHIR.Network;
+    const source = new FHIR.Source;
+    const entity = new FHIR.Entity;
+    const pracReference = new FHIR.Reference;
+
+    auditEvent.agent = [];
+    auditEvent.entity = [];
+
+    source.site = 'Cloud';
+    source.identifier = new FHIR.Identifier;
+    source.identifier.value = environment.queryURI;
+
+    entity.reference = new FHIR.Reference;
+    entity.reference.reference = resource['resourceType'] + '/' + resource['id'];
+    entity.type = new FHIR.Coding;
+    entity.type.system = 'http://hl7.org/fhir/resource-types';
+    entity.type.code = resource['resourceType'];
+
+    pracReference.reference = 'Practitioner/' + sessionStorage.getItem('userFHIRID');
+
+    for (const crudoperation of CRUD_TABLE) {
+      if (operation.toUpperCase() === crudoperation['display']) {
+        auditEvent.action = crudoperation['id'];
+      }
+    }
+
+    this.getIpAddress().subscribe(
+      data => {
+        network.address = data['ip'];
+        network.type = '2';
+      }
+    );
+
+    agent.userId = this.oauthService.getIdentityClaims()['sub'];
+    agent.network = network;
+    agent.reference = pracReference;
+    auditEvent.agent.push(agent);
+    auditEvent.entity.push(entity);
+    auditEvent.recorded = new Date();
+    auditEvent.source = source;
+    auditEvent.resourceType = 'AuditEvent';
+    this.saveAuditEvent(JSON.stringify(auditEvent)).subscribe(
+      data => {},
+      error => { console.log(error); },
+      () => {
+        console.log('an event has been triggered');
+      }
+    );
+
+    // agent.
   }
 
+  getIpAddress() {
+    return this.http.get('https://api.ipify.org?format=json');
+  }
+
+  getResourceFromReferenceAsync(reference) {
+    return this.http.get(environment.queryURI + '/' + reference, { headers: this.getHeaders() }).toPromise();
+  }
+
+  saveAuditEvent(data) {
+    return this.http.post<FHIR.AuditEvent>(environment.queryURI + '/AuditEvent', data, {headers: this.getPostHeaders()});
+  }
   getNoCacheHeaders() {
     const headers = new HttpHeaders({
-      'Content-Type' : 'application/json',
+      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken(),
       'Cache-Control': 'no-cache'
     });
@@ -178,7 +255,7 @@ export class UtilService {
 
   getPostHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
-      'Content-Type' : 'application/json',
+      'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
     });
     return headers;

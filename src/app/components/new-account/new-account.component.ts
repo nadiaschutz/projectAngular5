@@ -258,6 +258,27 @@ export class NewAccountComponent implements OnInit {
         }
     }
 
+    if (this.accountFormGroup.get('departmentName').value &&
+      this.accountFormGroup.get('departmentBranch').value) {
+      this.userService.savePractitioner(finalJSON).subscribe(
+        data => {
+          this.successHeaderCheck = true;
+          this.disableInputsBeforeSubmission();
+          this.confirmSubmit = !this.confirmSubmit;
+          console.log('Success! A practitioner has been created: ', data);
+          this.capturePractitionerPieces(data);
+          this.createUser(this.practitionerPieces);
+          this.createPractitionerRoleForOffices(this.practitionerPieces);
+          this.createPractitionerRoleForDepartments(this.practitionerPieces);
+        },
+        error => {
+          this.handleError(error);
+        },
+        () => {
+          this.practitionerPieces = {};
+        }
+      );
+    }
   }
 
   // Creates a Smile CDR user in the system. Note that this is not a FHIR object,
@@ -267,16 +288,23 @@ export class NewAccountComponent implements OnInit {
 
     // Initialize FHIR Objects being used
     const smileUser = new SMILE.UserAccount;
-    const authorities = new SMILE.Authority;
-    const authoritiestwo = new SMILE.Authority;
+
     const launchContext = new SMILE.DefaultLaunchContext;
+    smileUser.authorities = [];
 
-    // Set the permissions for the user in question
-
-    //  TODO: create conditional logic to
-    //  add different permissions based on roles selected
-    authorities.permission = 'ROLE_SUPERUSER';
-    authoritiestwo.permission = 'ROLE_FHIR_CLIENT_SUPERUSER';
+    this.userService.getPermissionList().subscribe(role => {
+      if (role) {
+        const permissionSet = role[this.accountFormGroup.get('role').value];
+        for (const permission of permissionSet) {
+          const authorities = new SMILE.Authority;
+          if (permission['argument']) {
+            authorities.argument = permission['argument'];
+          }
+          authorities.permission = permission['permission'];
+          smileUser.authorities.push(authorities);
+        }
+      }
+    });
 
     // Set up the launch context of the user, this is used to link the
     //  acounnt with a Practitioner FHIR object
@@ -285,7 +313,6 @@ export class NewAccountComponent implements OnInit {
 
     // Add all data from the form and other objects to the base Smile User object
     smileUser.defaultLaunchContexts = [launchContext];
-    smileUser.authorities = [authorities, authoritiestwo];
     smileUser.givenName = this.accountFormGroup.get('given').value;
     smileUser.familyName = this.accountFormGroup.get('family').value;
     const username = smileUser.givenName.toLocaleLowerCase() + '.' + smileUser.familyName.toLocaleLowerCase();
@@ -411,7 +438,7 @@ export class NewAccountComponent implements OnInit {
     const practitionerChargeBackCoding = new FHIR.Coding;
     const practitionerLRO = new FHIR.CodeableConcept;
     const practitionerLROCoding = new FHIR.Coding;
-
+    const identifier = new FHIR.Identifier;
     practitionerPhone.system = 'phone';
     practitionerPhone.use = 'work';
     practitionerPhone.value = this.accountFormGroup.get('phoneNumber').value;
@@ -423,7 +450,7 @@ export class NewAccountComponent implements OnInit {
     practitionerRef.reference = 'Practitioner/' + practitioner['id'];
     practitionerOrg.reference = this.accountFormGroup.get('departmentName').value;
     practitionerLoc.reference = this.accountFormGroup.get('departmentBranch').value;
-    console.log( practitionerOrg.reference, practitionerLoc.reference, this.accountFormGroup.get('role').value );
+    console.log(practitionerOrg.reference, practitionerLoc.reference, this.accountFormGroup.get('role').value);
 
     if (this.accountFormGroup.get('lro').value === true) {
       practitionerLROCoding.system = 'https://bcip.smilecdr.com/fhir/lroclient';
@@ -460,6 +487,9 @@ export class NewAccountComponent implements OnInit {
       }
     }
 
+    identifier.value = 'DEPT&BRANCH';
+
+    practitionerRole.identifier = [identifier];
     practitionerRole.telecom = [practitionerPhone, practitionerEmail];
     practitionerRole.organization = practitionerOrg;
     practitionerRole.location = [practitionerLoc];

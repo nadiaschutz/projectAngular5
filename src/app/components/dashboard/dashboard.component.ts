@@ -128,13 +128,10 @@ export class DashboardComponent implements OnInit {
   public dpConfig: Partial<BsDatepickerConfig> = new BsDatepickerConfig();
 
   constructor(
-    private oauthService: OAuthService,
     private userService: UserService,
-    private httpClient: HttpClient,
     private patientService: PatientService,
     private router: Router,
     private utilService: UtilService,
-    private bsDatepickerConfig: BsDatepickerConfig,
     private adminHomeScreenService: AdminHomeScreenService,
   ) {
     this.minDate = new Date();

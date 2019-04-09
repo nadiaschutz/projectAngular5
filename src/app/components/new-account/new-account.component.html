@@ -186,8 +186,8 @@
         </select>
       </div>
       <div class="col">
-        <label for="departmentBranch">Department Branch (Required)</label>
-        <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required [disabled]="jobLocationList.length > 0">
+        <label for="departmentBranch">Department Location (Required)</label>
+        <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
           <option value="">(Select)</option>
           <option *ngFor="let branch of jobLocationList" [value]="branch.id">
             {{branch.name}}
