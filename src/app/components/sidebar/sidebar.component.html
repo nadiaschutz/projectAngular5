@@ -1,6 +1,8 @@
 <ul class="menu">
 
-  <div [ngClass]="roleInSession" *ngIf="roleInSession === 'admin' || roleInSession === 'clinician'">
+  <div [ngClass]="roleInSession" *ngIf="roleInSession === 'admin' || 
+                  roleInSession === 'registry' || 
+                  roleInSession === 'clinician'">
     <li (click)="adminHomeScreen()" class="menu-item">
       <a (click)="adminHomeScreen()">Home</a>
     </li>
@@ -10,12 +12,20 @@
       <a (click)="staffUI()">Home</a>
     </li>
   </div>
-  <div *ngIf="roleInSession !== 'admin' && roleInSession !== 'clinician' && roleInSession !== 'manager' && roleInSession !== 'superuser'">
+  <div *ngIf="roleInSession !== 'admin' && 
+              roleInSession !== 'clinician' && 
+              roleInSession !== 'manager' && 
+              roleInSession !== 'registry' && 
+              roleInSession !== 'superuser'">
     <li (click)="clientPage()" class="menu-item">
       <a (click)="clientPage()">Home</a>
     </li>
   </div>
-  <div *ngIf="roleInSession === 'admin' || roleInSession === 'clinician' || roleInSession === 'manager' || roleInSession === 'superuser'">
+  <div *ngIf="roleInSession === 'admin' || 
+              roleInSession === 'clinician' || 
+              roleInSession === 'manager' || 
+              roleInSession === 'registry' || 
+              roleInSession === 'superuser'">
     <li (click)="clientPage()" class="menu-item">
       <a (click)="clientPage()">Clients</a>
     </li>
@@ -25,18 +35,20 @@
       <a (click)="serviceRequestPage()">Service Requests</a>
     </li>
   </div>
-  <li (click)="districtOfficePage()" class="menu-item">
-    <a (click)="districtOfficePage()">PSOHP Offices</a>
-  </li>
-  <!-- <div [ngClass]="roleInSession"> -->
-  <li (click)="clientDepartmentPage()" class="menu-item">
-    <a>Client Department</a>
-  </li>
+  <div [ngClass]="roleInSession" *ngIf="roleInSession === 'superuser'">
+    <li (click)="districtOfficePage()" class="menu-item">
+      <a (click)="districtOfficePage()">PSOHP Offices</a>
+    </li>
+    <!-- <div [ngClass]="roleInSession"> -->
+    <li (click)="clientDepartmentPage()" class="menu-item">
+      <a>Client Department</a>
+    </li>
+  </div>
   <!-- </div> -->
   <li (click)="adviceRequestPage()" class="menu-item">
     <a (click)="adviceRequestPage()">Contact Us</a>
   </li>
-  <div [ngClass]="roleInSession" *ngIf="roleInSession !== 'clientdept'">
+  <div [ngClass]="roleInSession" *ngIf="roleInSession === 'superuser'">
     <li (click)="acccountCreation()" class="menu-item">
       <a (click)="acccountCreation()">Add New Account</a>
     </li>
