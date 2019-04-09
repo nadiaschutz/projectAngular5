@@ -1,17 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
-import { HttpClient, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { OAuthService, AuthConfig } from 'angular-oauth2-oidc';
+import { OAuthService } from 'angular-oauth2-oidc';
 import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 import { TranslateService } from '@ngx-translate/core';
 
-import * as Dependent from '../../interface/patient';
-import * as datepicker from 'js-datepicker';
-import * as uuid from 'uuid';
-
+import * as FHIR from '../../interface/FHIR';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { formatDate } from '@angular/common';
 
@@ -37,32 +34,10 @@ export class DependentComponent implements OnInit {
   maxDate;
 
   datePickerConfig: Partial<BsDatepickerConfig>;
-
-  // Declaration for Dependent form group object
-
-  dependentFormGroup: FormGroup;
-
-  // Dependent base object
-
-  dependent;
-
-  dependentsArray: any[];
-
-  // Store list of Departments
-
-  department: any;
-
-  // Store list of Branches
-
-  branches: any;
-
   employee;
-  employeeID;
-
-  // Link ID used to assign to Dependent
-
-  depLinkID;
-
+  dependentFormGroup: FormGroup;
+  showSuccessMessage = false;
+  showFailureMessage = false;
   constructor(
 
     private fb: FormBuilder,
@@ -81,16 +56,16 @@ export class DependentComponent implements OnInit {
     this.maxDate.setDate(this.maxDate.getDate());
   }
 
-  accountTypes: AccountType[] = [
-    { value: 'Employee', viewValue: 'Employee' },
-    { value: 'Dependent', viewValue: 'Dependent' }
-  ];
-
   languageList: LanguageType[] = [
     { value: 'English', viewValue: 'English' },
     { value: 'French', viewValue: 'French' },
 
   ];
+
+  provinces = ['Alberta', 'British Columbia',
+    'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
+    'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario',
+    'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
 
   ngOnInit() {
     this.datePickerConfig = Object.assign({},
@@ -100,55 +75,18 @@ export class DependentComponent implements OnInit {
         showWeekNumbers: false
       });
 
-    const id = this.userService.returnEmployeeSummaryID();
-
-    this.dependentsArray = new Array;
-
-    // Set Department List
-
-    this.userService.getDepartmentList().subscribe(
-      data => this.setDepartments(data),
-      error => this.handleError(error)
-    );
-
-    // Set Branch List
-
-    this.userService.getBranchList().subscribe(
-      data => this.setBranchList(data),
-      error => this.handleError(error)
-    );
-
-    if (id) {
-      this.patientService.getPatientDataByID(id).subscribe(
-        data => this.grabID(data),
-        error => this.handleError(error)
-      );
-    }
+    this.employee = JSON.parse(sessionStorage.getItem('patientSelected'));
 
     this.dependentFormGroup = this.fb.group({
 
-      // Last Name
       familyName: new FormControl('', [Validators.required, Validators.minLength(2)]),
-
-      // First Name
       givenName: new FormControl('', [Validators.required, Validators.minLength(2)]),
-
-      // Date of Birth
       dob: new FormControl('', Validators.required),
-
-      // Email
-      email: new FormControl('', [
-        Validators.required,
-        Validators.pattern(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/)
-      ]),
-
-      // Client's phone number (can be any number of their choosing)
+      email: new FormControl('', [Validators.required, Validators.email]),
       phoneNumber: new FormControl('', [
         Validators.required,
         Validators.pattern('^[+]?(?:[0-9]{2})?[0-9]{10}$')
       ]),
-
-      // Address section
       addressStreet: new FormControl('', Validators.required),
       addressCity: new FormControl('', Validators.required),
       addressProv: new FormControl('', Validators.required),
@@ -157,98 +95,71 @@ export class DependentComponent implements OnInit {
         Validators.minLength(6),
         Validators.maxLength(6)]),
       addressCountry: new FormControl('', Validators.required),
-
-      // Clients preferred language
       language: new FormControl(null, Validators.required),
     });
-
-
   }
 
   setDependent() {
 
-    // this.linkId = uuid();
+    const dependent = new FHIR.Patient;
+    const address = new FHIR.Address;
+    const dependentExtension = new FHIR.Extension;
+    const employeeTypeExtension = new FHIR.Extension;
+    const phone = new FHIR.ContactPoint;
+    const email = new FHIR.ContactPoint;
+    const name = new FHIR.HumanName;
+    const communication = new FHIR.PatientCommunication;
+    const languageCodeableConcept = new FHIR.CodeableConcept;
+    const languageCoding = new FHIR.Coding;
+    const extensionsArray = [];
 
-    this.dependent = new Dependent.Resource;
-    const dependent_name = new Dependent.Name;
-    const dependent_address = new Dependent.Address;
-    const dependent_language = new Dependent.Language;
-    const dependent_language_coding = new Dependent.Coding;
-    const dependent_communication = new Dependent.Communication;
-    const dependent_identifier = new Dependent.Identifier;
-    const dependent_telecom_email = new Dependent.Telecom;
-    const dependent_telecom_phone = new Dependent.Telecom;
-    const dependent_extension_dependentlink = new Dependent.Extension;
-    const dependent_extension_type = new Dependent.Extension;
+    dependentExtension.url = this.employee['linkId']['url'];
+    dependentExtension.valueString = this.employee['linkId']['valueString'];
 
+    employeeTypeExtension.url = 'https://bcip.smilecdr.com/fhir/employeetype';
+    employeeTypeExtension.valueString = 'Dependent';
 
+    extensionsArray.push(dependentExtension, employeeTypeExtension);
 
-    // Assign link ID to dependent
+    address.city = this.dependentFormGroup.get('addressCity').value;
+    address.line = [this.dependentFormGroup.get('addressStreet').value];
+    address.postalCode = this.dependentFormGroup.get('addressPcode').value;
+    address.country = this.dependentFormGroup.get('addressCountry').value;
+    address.state = this.dependentFormGroup.get('addressProv').value;
 
-    dependent_extension_dependentlink.url = 'https://bcip.smilecdr.com/fhir/dependentlink';
-    dependent_extension_dependentlink.valueString = this.employeeID;
-
-    // Save type of patient (dependent in this case)
-
-    // Type extension
-
-    dependent_extension_type.url = 'https://bcip.smilecdr.com/fhir/employeetype';
-    dependent_extension_type.valueString = 'Dependent';
-
-
-    // Dependent Address
-
-    dependent_address.city = this.dependentFormGroup.get('addressCity').value;
-    dependent_address.line = [this.dependentFormGroup.get('addressStreet').value];
-    dependent_address.postalCode = this.dependentFormGroup.get('addressPcode').value;
-    dependent_address.country = this.dependentFormGroup.get('addressCountry').value;
-    dependent_address.state = this.dependentFormGroup.get('addressProv').value;
-
-
-    // Employe Name
-
-    dependent_name.family = this.dependentFormGroup.get('familyName').value;
-    dependent_name.given = [this.dependentFormGroup.get('givenName').value];
-
-    // Language info
+    name.family = this.dependentFormGroup.get('familyName').value;
+    name.given = [this.dependentFormGroup.get('givenName').value];
 
     if (this.dependentFormGroup.get('language').value.toLowerCase() === 'english') {
-      dependent_language_coding.code = 'en';
-      dependent_language_coding.system = 'urn:ietf:bcp:47';
-      dependent_language_coding.display = this.dependentFormGroup.get('language').value;
+      languageCoding.code = 'en';
     } else {
-      dependent_language_coding.code = 'fr';
-      dependent_language_coding.system = 'urn:ietf:bcp:47';
-      dependent_language_coding.display = this.dependentFormGroup.get('language').value;
+      languageCoding.code = 'fr';
     }
+    languageCoding.system = 'urn:ietf:bcp:47';
+    languageCoding.display = this.dependentFormGroup.get('language').value;
+    languageCodeableConcept.coding = [languageCoding];
+    communication.language = languageCodeableConcept;
 
-    // Telecome (phone)
+    phone.system = 'phone';
+    phone.value = this.dependentFormGroup.get('phoneNumber').value;
+    phone.use = 'work';
 
-    dependent_telecom_phone.system = 'phone';
-    dependent_telecom_phone.value = this.dependentFormGroup.get('phoneNumber').value;
-    dependent_telecom_phone.use = 'work';
+    email.system = 'email';
+    email.value = this.dependentFormGroup.get('email').value;
+    email.use = 'work';
 
-    // Telecome (email)
-    this.dependent.extension = [dependent_extension_dependentlink, dependent_extension_type];
-    dependent_telecom_email.system = 'email';
-    dependent_telecom_email.value = this.dependentFormGroup.get('email').value;
-    dependent_telecom_email.use = 'work';
-    this.dependent.identifier = [dependent_identifier];
-    dependent_language.coding = [dependent_language_coding];
-    dependent_communication.language = dependent_language;
-    this.dependent.telecom = [dependent_telecom_phone, dependent_telecom_email];
-    this.dependent.communication = [dependent_communication];
-    this.dependent.birthDate = this.dependentFormGroup.get('dob').value;
-    this.dependent.birthDate = formatDate(this.dependent.birthDate, 'yyyy-MM-dd', 'en');
-    this.dependent.resourceType = 'Patient';
-    this.dependent.name = dependent_name;
-    this.dependent.address = [dependent_address];
+    dependent.extension = extensionsArray;
+    dependent.address = address;
+    dependent.name = [name];
+    dependent.telecom = [phone, email];
+    dependent.communication = [communication];
+    dependent.birthDate = formatDate(this.dependentFormGroup.get('dob').value, 'yyyy-MM-dd', 'en');
 
-    const finalJSON = JSON.stringify(this.dependent);
+    const finalJSON = JSON.stringify(dependent);
 
     this.patientService.postPatientData(finalJSON).subscribe(data => {
       this.returnIDFromResponse(data)
-      this.router.navigateByUrl('/clientsummary')
+      this.router.navigateByUrl('/clientsummary');
     });
   }
 
@@ -265,91 +176,8 @@ export class DependentComponent implements OnInit {
     this.router.navigate(['/employeeform']);
   }
 
-  setBranchList(data) {
-    this.branches = data.branchlist;
-  }
-
-  setDepartments(data) {
-    this.department = data.department;
-  }
-
   handleError(error) {
     console.log(error);
-  }
-
-  grabID(data) {
-
-    this.employee = data;
-    if (data) {
-      data.extension.forEach(element => {
-        if (element.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
-          this.employeeID = element.valueString;
-        }
-      });
-    }
-
-  }
-
-  assignIDtoDependent(data) {
-    this.depLinkID = data;
-  }
-
-  // Initialize a list of Patients in the system, allowing the user to select
-  // which Employee they can link to
-
-
-
-  get resourceType() {
-    return this.dependentFormGroup.get('resourceType');
-  }
-
-  get type() {
-    return this.dependentFormGroup.get('type');
-  }
-
-  get dob() {
-    return this.dependentFormGroup.get('dob');
-  }
-
-
-  get phoneNumber() {
-    return this.dependentFormGroup.get('phoneNumber');
-  }
-
-  get password() {
-    return this.dependentFormGroup.get('password');
-  }
-
-  get email() {
-    return this.dependentFormGroup.get('email');
-  }
-
-  get givenName() {
-    return this.dependentFormGroup.get('givenName');
-  }
-
-  get familyName() {
-    return this.dependentFormGroup.get('familyName');
-  }
-
-  get addressCity() {
-    return this.dependentFormGroup.get('addressCity');
-  }
-
-  get addressStreet() {
-    return this.dependentFormGroup.get('addressStreet');
-  }
-  get addressProv() {
-    return this.dependentFormGroup.get('addressProv');
-  }
-  get addressPcode() {
-    return this.dependentFormGroup.get('addressPcode');
-  }
-  get addressCountry() {
-    return this.dependentFormGroup.get('addressCountry');
-  }
-  get language() {
-    return this.dependentFormGroup.get('language');
   }
 
 }

@@ -153,6 +153,11 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   dateinform;
 
   ngOnInit() {
+
+    if (sessionStorage.getItem('patientSelected')) {
+      sessionStorage.removeItem('patientSelected');
+    }
+
     this.currentRole = sessionStorage.getItem('userRole');
 
     this.datePickerConfig = Object.assign({},
@@ -422,20 +427,13 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     console.log(event.target.value);
   }
 
-  addDependent() {
-    this.router.navigateByUrl('/dependentform');
-  }
+
 
   newServiceRequest() {
     this.router.navigate(['/newservicerequest']);
   }
   handleError(error) {
     console.log(error);
-  }
-
-  backToDashboard() {
-    sessionStorage.removeItem('patientSummaryId');
-    this.router.navigateByUrl('/dashboard');
   }
 
   populateDependentArray(data) {
@@ -580,33 +578,6 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   setDepartments(data) {
     this.department = data.department;
   }
-
-  /**
-   * TODO: Once employee object is refactored, implement these functions instead of the ones
-   * that pull data from the JSON file
-   */
-
-  // /**
-  //  * Used in conjunction with the user service. Gets all Department Names
-  //  * stored on the server to link to a Practitioner.
-  //  * @param data
-  //  */
-  // populateDeptNames(data: any) {
-  //   data.entry.forEach(element => {
-  //     this.deptName.push(element.resource);
-  //   });
-  // }
-
-  // /**
-  //  * Used in conjunction with the user service. Gets all Department Branches
-  //  * stored on the server to link to a Practitioner.
-  //  * @param data
-  //  */
-  // populateDeptBranches(data: any) {
-  //   data.entry.forEach(element => {
-  //     this.deptBranch.push(element.resource);
-  //   });
-  // }
 
   editEmployeeToggle() {
     this.editEmployee = !this.editEmployee;
@@ -923,12 +894,6 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     // Stringify the final object
     const finalJSON = JSON.stringify(this.employee);
 
-    // console.log(this.employeeFormGroup);
-    // this.router.navigate(['/dashboard']);
-
-    // console.log(this.employee)
-    // console.log( JSON.stringify(this.employee))
-
     this.patientService.updatePatient(this.selected['id'], finalJSON).subscribe(
       data => {
         console.log('POST SUCCESSFUL!', data);
@@ -987,5 +952,19 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       this.activateSubmitButton = true;
     }
     return this.activateSubmitButton;
+  }
+
+  backToDashboard() {
+    sessionStorage.removeItem('patientSummaryId');
+    this.router.navigateByUrl('/dashboard');
+  }
+
+  addDependent() {
+    console.log(this.selected);
+    const piecesToSave = {};
+    piecesToSave['id'] = this.selected['id'];
+    piecesToSave['linkId'] = this.selected['linkID'];
+    sessionStorage.setItem('patientSelected', JSON.stringify(piecesToSave));
+    this.router.navigateByUrl('/dependentform');
   }
 }

@@ -17,9 +17,10 @@
 
 
         <div class="row">
-          <div class="col">
+          <div class="col-3">
             <label for="givenName">First Name (Required)</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName" name="givenName">
+            <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName"
+              name="givenName">
 
             <div *ngIf="employeeFormGroup.controls['givenName'].invalid
             && (employeeFormGroup.controls['givenName'].touched || employeeFormGroup.controls['givenName'].dirty)">
@@ -28,7 +29,7 @@
               </div>
             </div>
           </div>
-          <div class="col">
+          <div class="col-3">
             <label for="familyName">Last Name (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
               required>
@@ -40,6 +41,13 @@
               </div>
             </div>
 
+          </div>
+          <div class="col">
+            <label for="id">Employee PRI (must be 9 digits)</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id">
+            <div class="invalid-feedback">
+              Must contain 9 numbers
+            </div>
           </div>
         </div>
 
@@ -57,6 +65,7 @@
           <div class="col">
             <label for="type">Preferred Language</label>
             <select class="form-control" formControlName="language" id="language" placeholder="Select a language">
+              <option value="">(Select)</option>
               <option *ngFor="let lang of languageList" [value]="lang.value">
                 {{lang.viewValue}}
               </option>
@@ -78,9 +87,6 @@
           </h6>
         </div>
 
-
-
-
         <div class="row">
           <div class="col">
             <label for="email">Email (Required)</label>
@@ -92,8 +98,8 @@
           </div>
           <div class="col">
             <label for="phoneNumber">Phone Number (Required)</label>
-            <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber" id="phoneNumber"
-              required>
+            <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber"
+              id="phoneNumber" required>
             <div class="invalid-feedback">
               Must be ten digits long, no spaces, characters or dashes
             </div>
@@ -103,8 +109,8 @@
         <div class="row">
           <div class="col">
             <label for="addressStreet">Street Address (Required)</label>
-            <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet" id="addressStreet"
-              required>
+            <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet"
+              id="addressStreet" required>
             <div class="invalid-feedback">
               Cannot be blank
             </div>
@@ -141,8 +147,8 @@
           </div>
           <div class="col-3">
             <label for="addressPcode">Postal Code (Required)</label>
-            <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode" id="addressPcode"
-              required>
+            <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode"
+              id="addressPcode" required>
             <div class="invalid-feedback">
               Cannot be blank
             </div>
@@ -169,35 +175,34 @@
 
         <div class="row">
           <div class="col">
-            <label for="jobTitle">Job Title (Required)</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle"
-              required>
-            <div class="invalid-feedback">
-              Cannot be blank
-            </div>
+            <label for="jobTitle">Job Title</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="jobTitle" id="jobTitle">
           </div>
-          <div class="col">
-            <label for="id">Associated Employee PRI (must be 9 digits)</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id">
-            <div class="invalid-feedback">
-              Must contain 9 numbers
-            </div>
+          <div class="col-3">
+            <label for="jobLevel">Job Level</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="jobLevel" id="jobTitle">
+
+          </div>
+          <div class="col-3">
+            <label for="jobClass">Job Class</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="jobClass" id="jobClass">
+            
           </div>
         </div>
 
         <div class="row">
           <div class="col">
-            <label for="departmentName">Department Name (Required)</label>
+            <label for="departmentName">Department Name</label>
             <select class="form-control" formControlName="departmentName" id="departmentName" required>
-              <!-- <option value="">{{currentUserDepartment}}</option> -->
-              <option *ngFor="let dept of employeeDepartmentList" [value]="dept.value">
+                <option value="">(Select)</option>
+                <option *ngFor="let dept of employeeDepartmentList" [value]="dept.value">
                 {{dept.text}}
               </option>
             </select>
           </div>
 
           <div class="col">
-            <label for="departmentBranch">Department Branch (Required)</label>
+            <label for="departmentBranch">Department Branch</label>
             <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
               <option value="">(Select)</option>
               <option *ngFor="let item of jobLocationList" [value]="item.value">
@@ -210,17 +215,20 @@
         <div class="row">
           <div class="col">
             <label for="referenceOne">Cross-reference No. 1</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne" id="referenceOne">
+            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceOne"
+              id="referenceOne">
           </div>
           <div class="col">
             <label for="referenceTwo">Cross-reference No. 2</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo" id="referenceTwo">
+            <input type="text" class="form-control" placeholder="Enter" formControlName="referenceTwo"
+              id="referenceTwo">
           </div>
         </div>
 
       </section>
       <div class="button-section line">
-        <button class="btn regular-button float-right submit" type="submit" [disabled]="!employeeFormGroup.valid">Submit</button>
+        <button class="btn  regular-dark-button  float-right submit" type="submit"
+          [disabled]="!employeeFormGroup.valid">Submit</button>
       </div>
 
     </form>
