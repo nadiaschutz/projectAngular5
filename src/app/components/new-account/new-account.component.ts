@@ -253,32 +253,16 @@ export class NewAccountComponent implements OnInit {
               this.showFailureMessage = false;
               this.showSuccessMessage = true;
             },
-            error => this.handleError(error)
+            error => {
+              this.handleError(error);
+            },
+            () => {
+              this.practitionerPieces = {};
+            }
           );
         }
     }
 
-    if (this.accountFormGroup.get('departmentName').value &&
-      this.accountFormGroup.get('departmentBranch').value) {
-      this.userService.savePractitioner(finalJSON).subscribe(
-        data => {
-          this.successHeaderCheck = true;
-          this.disableInputsBeforeSubmission();
-          this.confirmSubmit = !this.confirmSubmit;
-          console.log('Success! A practitioner has been created: ', data);
-          this.capturePractitionerPieces(data);
-          this.createUser(this.practitionerPieces);
-          this.createPractitionerRoleForOffices(this.practitionerPieces);
-          this.createPractitionerRoleForDepartments(this.practitionerPieces);
-        },
-        error => {
-          this.handleError(error);
-        },
-        () => {
-          this.practitionerPieces = {};
-        }
-      );
-    }
   }
 
   // Creates a Smile CDR user in the system. Note that this is not a FHIR object,
