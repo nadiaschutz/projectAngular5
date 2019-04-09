@@ -94,17 +94,26 @@ const routes: Routes = [
       departments: DepartmentListResolverService
     },
   },
-  { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
   {
     path: 'newadvicerequest',
-    component: NewServiceRequestNoClientComponent,
+    component: NewServiceRequestComponent,
+    canActivate: [AuthGuardService],
     resolve: {
-      fields: ContactUsFormResolverService,
-      departments: DepartmentListResolverService,
-      servreq: NewServReqService
+      fields: NewServReqService,
+      departments: DepartmentListResolverService
     },
-    canActivate: [AuthGuardService]
   },
+  { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
+  // {
+  //   path: 'newadvicerequest',
+  //   component: NewServiceRequestNoClientComponent,
+  //   resolve: {
+  //     fields: ContactUsFormResolverService,
+  //     departments: DepartmentListResolverService,
+  //     servreq: NewServReqService
+  //   },
+  //   canActivate: [AuthGuardService]
+  // },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService] },
   { path: 'district-office-add', component: DistrictOfficeAddComponent, canActivate: [AuthGuardService] },
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
@@ -125,19 +134,12 @@ const routes: Routes = [
   { path: 'staff/audiogram/detail/:eocId', component: AudiogramDetailComponent, canActivate: [AuthGuardService] },
   { path: 'staff/clinical/assessment-screen', component: AssessmentFunctionComponent, canActivate: [AuthGuardService] },
   { path: 'staff/clinical/scheduler', component: SchedulerComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
   { path: 'adminhome', component: AdminHomeScreenComponent, canActivate: [AuthGuardService] },
   { path: 'form-builder', component: FormBuilderComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService] },
   { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
-  { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
-  { path: 'reporting', component: ReportingComponent, canActivate: [AuthGuardService]},
+  { path: 'reporting', component: ReportingComponent, canActivate: [AuthGuardService] },
   { path: '', component: AuthComponent }
 ];
 

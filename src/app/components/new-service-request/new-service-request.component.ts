@@ -124,7 +124,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   departmentList = [];
   currentUserDepartment;
 
-  formId = 'TEST4';
+  // formId = 'TEST4';
   formCreated = false;
 
   responseId = null;
@@ -143,15 +143,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   today = new Date();
   todayPiped;
-  myDay;
-  dd: any;
-  mm: any;
-  yyyy: any;
-  time: any;
-  hr: any;
-  min: any;
-  sec: any;
-  msec: any;
+
 
   dependents = false;
   employeeType;
@@ -263,238 +255,14 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
 
 
-  /**
-   *
-   * @param $event
-   *s
-   * This function builds a new DocumentReference object,
-   * Inserts the appropriate data from the response into declared
-   * Objects, stringifies the object, and posts said string to the
-   * FHIR server.
-   */
-
-
-  // CHECK ME NOW!!!
-  // addDocument($event) {
-
-  //   const documentReference = new FHIR.DocumentReference;
-  //   const documentReferenceCodeableConcept = new FHIR.CodeableConcept;
-  //   const documentReferenceCoding = new FHIR.Coding;
-  //   const content = new FHIR.Content;
-  //   const contentAttachment = new FHIR.Attachment;
-  //   const contentCode = new FHIR.Coding;
-  //   let file;
-  //   let trimmedFile = '';
-  //   let size: number;
-  //   let type;
-  //   const date = new Date().toJSON();
-  //   const fileList = $event.target.files;
-  //   const reader = new FileReader();
-  //   if (fileList[0]) {
-  //     size = fileList[0].size;
-  //     type = fileList[0].type;
-  //     reader.readAsDataURL(fileList[0]);
-  //   }
-  //   const self = this;
-  //   reader.onloadend = function () {
-
-  //     file = reader.result;
-  //     trimmedFile = file.split(',').pop();
-
-  //     documentReference.resourceType = 'DocumentReference';
-
-  //     contentAttachment.size = size;
-  //     contentAttachment.contentType = type;
-  //     contentAttachment.data = trimmedFile;
-  //     contentAttachment.creation = date;
-  //     contentAttachment.title = fileList[0].name;
-
-  //     contentCode.code = 'urn:ihe:pcc:xphr:2007';
-  //     contentCode.display = 'Personal Health Records';
-
-  //     content.format = contentCode;
-  //     content.attachment = contentAttachment;
-
-  //     documentReferenceCoding.code = '51851-4';
-  //     documentReferenceCoding.system = 'http://loinc.org';
-  //     documentReferenceCoding.display = 'Administrative note';
-
-  //     documentReferenceCodeableConcept.coding = [documentReferenceCoding];
-  //     documentReferenceCodeableConcept.text = 'Administrative note';
-
-  //     documentReference.instant = date;
-  //     documentReference.type = documentReferenceCodeableConcept;
-  //     documentReference.content = [content];
-
-
-  //     self.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
-  //       data => self.documents = data,
-  //       error => self.handleError(error)
-  //     );
-  //     return reader.result;
-
-  //   };
-  //   reader.onerror = function (error) {
-  //     console.log('Error: ', error);
-  //   };
-
-  // }
-
-  // retrieveDocuments(data) {
-  //   this.documents.push(data);
-  // }
-
-  // downloadFile(incomingFile) {
-
-  //   const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
-
-  //   const byteNumbers = new Array(byteCharacters.length);
-  //   for (let index = 0; index < byteCharacters.length; index++) {
-  //     byteNumbers[index] = byteCharacters.charCodeAt(index);
-  //   }
-
-  //   const byteArray = new Uint8Array(byteNumbers);
-
-  //   const blob = new Blob([byteArray], { 'type': incomingFile['content'][0]['attachment']['contentType'] });
-
-  //   if (navigator.msSaveBlob) {
-  //     const filename = incomingFile['content'][0]['attachment']['title'];
-  //     navigator.msSaveBlob(blob, filename);
-  //   } else {
-  //     const fileLink = document.createElement('a');
-  //     fileLink.href = URL.createObjectURL(blob);
-  //     fileLink.setAttribute('visibility', 'hidden');
-  //     fileLink.download = incomingFile['content'][0]['attachment']['title'];
-  //     document.body.appendChild(fileLink);
-  //     fileLink.click();
-  //     document.body.removeChild(fileLink);
-  //   }
-
-
-  // const linkSource =
-  //   'data:' +
-  //   name['content'][0]['attachment']['contentType'] +
-  //   ';base64,' +
-  //   name['content'][0]['attachment']['data'];
-  // console.log(linkSource);
-  // const downloadLink = document.createElement('a');
-  // const fileName = name['content'][0]['attachment']['title'];
-
-  // downloadLink.href = linkSource;
-  // downloadLink.download = fileName;
-  // downloadLink.click();
-  // }
-
-  // convertBase64ToFile (data) {
-  //   const obj = data;
-  //   this.fileLink = [];
-  //   const binaryString = data.content[0].attachment.data;
-
-  //   const binary = atob(binaryString.replace(/\s/g, ''));
-  //   const len = binary.length;
-  //   const buffer = new ArrayBuffer(len);
-  //   const view = new Uint8Array(buffer);
-  //   for (let i = 0; i < len; i++) {
-  //       view[i] = binary.charCodeAt(i);
-  //   }
-
-  //   const blob = new Blob( [view], { type: data.content[0].attachment.contentType });
-  //   const fileOfBlob = new File ([blob], data.content[0].attachment.title );
-  //   const url = URL.createObjectURL(blob);
-  //   console.log('url: ', url);
-  //   this.fileLink.push(url);
-
-  // }
-
-
   onCancel() {
     sessionStorage.removeItem('patientSummaryId');
     this.router.navigate(['/servreqmain']);
   }
 
-  // onSave() {
-  //   // this.savingData();
-  //   const questionnaireResponse = new FHIR.QuestionnaireResponse;
-  //   const questionnaireIdentifier = new FHIR.Identifier;
-
-  //   questionnaireIdentifier.value = 'SERVREQ';
-  //   questionnaireResponse.resourceType = 'QuestionnaireResponse';
-  //   questionnaireResponse.identifier = questionnaireIdentifier;
-
-  //   const questionnaireReference = new FHIR.Reference;
-  //   questionnaireReference.reference = 'Questionnaire/' + this.formId;
-  //   questionnaireResponse.questionnaire = questionnaireReference;
-
-
-  //   questionnaireResponse.status = 'in-progress';
-
-  //   questionnaireResponse.authored = new Date;
-
-  //   const subjectReference = new FHIR.Reference;
-  //   subjectReference.reference = 'Patient/' + this.clientId;
-  //   subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
-  //   questionnaireResponse.subject = subjectReference;
-
-  //   const items = [];
-
-  //   for (const questions of this.questionsList) {
-  //     for (const question of questions) {
-  //       if (question['answer'] && question['answer'].length > 0) {
-
-  //         const item = new FHIR.QuestionnaireResponseItem;
-  //         if (!question['enableWhen']) {
-  //           item.linkId = question['linkId'];
-  //           item.text = question['text'];
-  //           item.answer = this.fetchAnswer(question);
-  //           items.push(item);
-  //         } else if (question['enableWhen'] && question['enabled']) {
-  //           item.linkId = question['linkId'];
-  //           item.text = question['text'];
-  //           item.answer = this.fetchAnswer(question);
-  //           items.push(item);
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   if (this.documentReference) {
-  //     const documentItem = new FHIR.QuestionnaireResponseItem;
-  //     documentItem.linkId = this.documentReference['linkId'];
-  //     documentItem.text = this.documentReference['text'];
-  //     documentItem.answer = this.fetchAnswer(this.documentReference);
-
-  //     items.push(documentItem);
-  //   }
-  //   questionnaireResponse.item = items;
-  //   this.questionnaireService.saveRequest(questionnaireResponse).subscribe(
-  //     data => this.handleSuccessOnSave(data),
-  //     error => this.handleErrorOnSave(error)
-  //   );
-  // }
-
-  // fetchAnswer(question): FHIR.Answer[] {
-  //   const answerArray = new Array<FHIR.Answer>();
-  //   const answer = new FHIR.Answer;
-  //   if (question['type'] === 'choice' || question['type'] === 'text') {
-  //     answer.valueString = question['answer'];
-  //   }
-  //   if (question['type'] === 'boolean') {
-  //     answer.valueBoolean = question['answer'];
-  //   }
-  //   if (question['type'] === 'Reference') {
-  //     const answerReference = new FHIR.Reference;
-  //     answerReference.reference = question['answer'];
-  //     answer.valueReference = answerReference;
-  //   }
-  //   answerArray.push(answer);
-  //   return answerArray;
-  // }
-
 
   // submit(value: { [name: string]: any }) {
   async submit() {
-    // console.log(this.form.value);
-    // console.log(this.form.getRawValue);
     const value = this.form.getRawValue;
     const list = Object.entries(value)
       .filter(([key]) => key.includes('dependent'))
@@ -512,20 +280,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
     }
 
-    // // console.log('ITEMS on submit before change', this.items);
-    // for (const [name, value] of Object.entries(values))
-    //   if (itemsByLinkId.has(name)) {
-    //     const indivElem = itemsByLinkId.get(name)
-    //     indivElem.answer = value
-    //     if (typeof value === "string" && codeByDisplay.has(value))
-    //       indivElem.code = codeByDisplay.get(value)
-    //   }
 
-
-    // const flatCodes = new Set()
-    // for (const code of this.listOfCodes)
-    //   for (const co of code) flatCodes.add(co)
-    // console.log('ITEMS on submit before change', this.items);
 
     this.items.forEach(indivElem => {
 
@@ -584,13 +339,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         }
       });
 
-
-      // if (foundItem) {
-      //   foundItem.answer = resultItem.answer;
-      //   foundItem.code = resultItem.code;
-      //   foundItem.system = resultItem.system;
-      //   foundItem.text = resultItem.text;
-      // }
       if (item.linkId === resultItem.linkId) {
         item.answer = resultItem.answer;
         item.code = resultItem.code;
@@ -702,58 +450,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   }
 
-  onEdit() {
-    this.disableInputsForReview = false;
-  }
-
   backToDashboard() {
     this.router.navigateByUrl('/dashboard');
   }
 
   savingData() {
-    // this.getDate();
-
-    // const questionnaireResponse = new FHIR.QuestionnaireResponse;
-    // const questionnaireIdentifier = new FHIR.Identifier;
-
-    // questionnaireIdentifier.value = 'SERVREQ';
-
-    // questionnaireResponse.resourceType = 'QuestionnaireResponse';
-
-    // const questionnaireReference = new FHIR.Reference;
-    // questionnaireReference.reference = 'Questionnaire/' + this.formId;
-
-    // questionnaireResponse.status = 'in-progress';
-
-    // questionnaireResponse.authored = new Date;
-
-    // const subjectReference = new FHIR.Reference;
-    // subjectReference.reference = 'Patient/' + this.clientId;
-    // subjectReference.display = this.clientGivenName + ' ' + this.clientFamilyName;
-
-    // questionnaireResponse.identifier = questionnaireIdentifier;
-    // questionnaireResponse.subject = subjectReference;
-
-    // const items = [];
-
-    // for (const questions of this.questionsList) {
-    //   for (const question of questions) {
-    //     const item = new FHIR.QuestionnaireResponseItem;
-    //     if (!question['enableWhen']) {
-    //       item.linkId = question['linkId'];
-    //       item.text = question['text'];
-    //       item.answer = question['answer'];
-    //       items.push(item);
-    //     } else if (question['enableWhen'] && question['enabled']) {
-    //       item.linkId = question['linkId'];
-    //       item.text = question['text'];
-    //       item.answer = question['answer'];
-    //       items.push(item);
-    //     }
-    //   }
-    // }
-
-
     // getting itemReference
     this.questionnaireService.newDocumentSubject.subscribe(
       data => this.getDocument(data),
@@ -1246,14 +947,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
 
       this.form.setDisabled('submit', true);
-      // this.form.setDisabled('1', true);
-      // this.form.setDisabled('14', true);
-      // this.form.setReadOnly('AUTHOR', true);
-      this.form.setValue('AUTHOR', this.userName);
-
-      this.form.setValue('USERDEPT', this.currentUserDepartment);
-      this.form.setDisabled('USERDEPT', true);
-      this.form.setValue('DATECR', this.todayPiped);
+      if (this.router.url.indexOf('/newservicerequest') > -1) {
+        this.form.setValue('AUTHOR', this.userName);
+        this.form.setValue('USERDEPT', this.currentUserDepartment);
+        this.form.setDisabled('USERDEPT', true);
+        this.form.setValue('DATECR', this.todayPiped);
+      }
 
     });
 
@@ -1262,18 +961,19 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     // this.addDiv();
   }
 
+
+  // checks FHIR data for items with enableWhen and changes show/hide class on the form based on enableWhen options
   public checkEnableWhen(value, index) {
     console.log(this.form);
     // console.log(this.form.value.ASSESTYPE);
     this.config.forEach(elemOfConfig => {
-      if (this.form.value.ASSESTYPE === 'Pre-Placement' && this.userRole === 'clientdept') {
-        // console.log(elemOfConfig);
-
-        this.form.setDisabled('USERDEPT', false);
-
-      } else {
-        this.form.setDisabled('USERDEPT', true);
-        this.form.setValue('USERDEPT', this.currentUserDepartment);
+      if (this.router.url.indexOf('/newservicerequest') > -1) {
+        if (this.form.value.ASSESTYPE === 'Pre-Placement' && this.userRole === 'clientdept') {
+          this.form.setDisabled('USERDEPT', false);
+        } else {
+          this.form.setDisabled('USERDEPT', true);
+          this.form.setValue('USERDEPT', this.currentUserDepartment);
+        }
       }
       if (elemOfConfig.enableWhen) {
 
