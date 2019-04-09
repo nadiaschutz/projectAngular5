@@ -613,6 +613,15 @@ export class Entity extends BackboneElement {
     detail: EntityDetail[];
 }
 
+export class Udi extends BackboneElement {
+    deviceIdentifier: string;
+    name: string;
+    jurisdiction: string;
+    carrierHRF: string;
+    carrierAIDC: any;
+    issuer: string;
+    entryType: string;
+}
 export class QuestionnaireResponse extends Resource implements Serializable<QuestionnaireResponse> {
     identifier: Identifier;
     basedOn: Reference[];
@@ -1081,6 +1090,7 @@ export class ProcedureRequest extends Resource implements Serializable<Procedure
 
 export class PractitionerRole extends Resource implements Serializable<PractitionerRole> {
 
+    identifier: Identifier[];
     active: boolean;
     period: Period;
     practitioner: Reference;
@@ -1122,6 +1132,39 @@ export class Practitioner extends Resource implements Serializable<Practitioner>
     communication: CodeableConcept[];
 
     deserialize(jsonObject: any): Practitioner {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+export class Device extends Resource implements Serializable<Device> {
+
+    identifier: Identifier[];
+    udi: Udi;
+    status: string;
+    type: CodeableConcept;
+    lotNumber: string;
+    manufacturer: string;
+    manufacturerDate: Date;
+    expirationDate: Date;
+    model: string;
+    version: string;
+    patient: Reference;
+    owner: Reference;
+    contact: ContactPoint[];
+    location: Reference;
+    url: string;
+    note: Annotation[];
+    safety: CodeableConcept[];
+
+    deserialize(jsonObject: any): Device {
         const that = this;
         Object.entries(jsonObject).forEach(function (value) {
             if (!(typeof value[1] === 'object')) {

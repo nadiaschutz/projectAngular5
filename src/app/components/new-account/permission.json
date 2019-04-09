@@ -1,0 +1,354 @@
+{
+  "businessuser": [
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "Organization"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "PractitionerRole"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "Location"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "Patient"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "Practitioner"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "QuestionnaireResponse"
+    }
+  ],
+  "clientdept": [
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "Organization"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "PractitionerRole"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "Location"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "Patient"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "Practitioner"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "QuestionnaireResponse"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "Questionnaire"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "DocumentReference"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Patient"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "EpisodeOfCare"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "QuestionnaireResponse"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "CarePlan"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "DocumentReference"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Communication"
+    }
+  ],
+  "registry": [
+    {
+      "permission": "FHIR_ALL_READ"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Patient"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Immunization"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Encounter"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "EpisodeOfCare"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Observation"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "ProcessRequest"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "QuestionnaireResponse"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "CarePlan"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Communication"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Task"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Appointment"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Slot"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "ProcedureRequest"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Device"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "DocumentReference"
+    }
+  ],
+  "clinician": [
+    {
+      "permission": "FHIR_ALL_READ"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Patient"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Immunization"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Encounter"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "EpisodeOfCare"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Observation"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "ProcessRequest"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "QuestionnaireResponse"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "CarePlan"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Communication"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Task"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Appointment"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Slot"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "ProcedureRequest"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Device"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "DocumentReference"
+    }
+  ],
+  "admin": [
+    {
+      "permission": "FHIR_ALL_READ"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Patient"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Immunization"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Encounter"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "EpisodeOfCare"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Observation"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "ProcessRequest"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "QuestionnaireResponse"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "CarePlan"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Communication"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Task"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Appointment"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Slot"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "ProcedureRequest"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Device"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "DocumentReference"
+    }
+  ],
+  "manager": [
+    {
+      "permission": "FHIR_ALL_READ"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Patient"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Immunization"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Encounter"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "EpisodeOfCare"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Observation"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "ProcessRequest"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "QuestionnaireResponse"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "CarePlan"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Communication"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Task"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Appointment"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Slot"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "ProcedureRequest"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "Device"
+    },
+    {
+      "permission": "FHIR_WRITE_ALL_OF_TYPE",
+      "argument": "DocumentReference"
+    }
+  ],
+  "superuser": [
+    {
+      "permission": "ROLE_SUPERUSER"
+    },
+    {
+      "permission": "ROLE_FHIR_CLIENT_SUPERUSER"
+    }
+  ]
+}

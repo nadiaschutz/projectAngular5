@@ -14,20 +14,19 @@
               <div class="col">
                 <label for="firstName" class="label-name">First Name</label>
                 <input type="text" name="firstName" id="firstName" class="form-control 
-                    field-box-name"
-                  placeholder="Enter" [(ngModel)]="givenName.data">
+                    field-box-name" placeholder="Enter" [(ngModel)]="givenName.data">
               </div>
               <div class="col">
                 <label for="familyName" class="label-name">Last Name</label>
                 <input type="text" name="familyName" id="familyName" class="form-control 
-                      field-box-name"
-                  placeholder="Enter" [(ngModel)]="familyName.data">
+                      field-box-name" placeholder="Enter" [(ngModel)]="familyName.data">
               </div>
             </div>
             <div class="row">
               <div class="col">
                 <label for="clientid" class="label-name">Employee PRI</label>
-                <input type="text" name="clientid" id="clientid" class="form-control" placeholder="Enter" [(ngModel)]="clientId.data">
+                <input type="text" name="clientid" id="clientid" class="form-control" placeholder="Enter"
+                  [(ngModel)]="clientId.data">
               </div>
               <div class="col">
                 <label for="dob" class="label-name">Date of Birth</label>
@@ -113,12 +112,12 @@
           <div class="row">
             <div class="col">
               <span *ngIf="doNotShowZeroMessage">
-                <button *ngIf="!enableAll" type="button" class="btn regular-dark-button float-right" style="margin-left: 15px;"
-                  (click)="enableAllFunction()">Show
+                <button *ngIf="!enableAll" type="button" class="btn regular-dark-button float-right"
+                  style="margin-left: 15px;" (click)="enableAllFunction()">Show
                   All Records
                 </button>
-                <button *ngIf="enableAll" type="button" class="btn regular-dark-button float-right" style="margin-left: 15px;"
-                  (click)="enableAllFunction()">Hide
+                <button *ngIf="enableAll" type="button" class="btn regular-dark-button float-right"
+                  style="margin-left: 15px;" (click)="enableAllFunction()">Hide
                   All Records
                 </button>
 

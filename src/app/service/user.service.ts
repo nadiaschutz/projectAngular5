@@ -351,6 +351,10 @@ export class UserService {
     return this.httpClient.get<JSON>('../../assets/branchlist.json');
   }
 
+  getPermissionList() {
+    return this.httpClient.get<JSON>('/src/app/components/new-account/permission.json');
+  }
+
   fetchAllDistrictOffices() {
     return this.httpClient.get(environment.queryURI + '/Location', {
       headers: this.getHeaders()
