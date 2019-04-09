@@ -292,6 +292,12 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
     // chargeBackExtension.valueBoolean = value.chargebackClient;
     // extension.push(chargeBackExtension);
 
+    const identifier = new FHIR.Identifier;
+    identifier.use = 'official';
+    identifier.system = 'https://bcip.smilecdr.com/fhir/department-location';
+    identifier.value = 'department-location';
+    branchLocation.identifier = [identifier];
+
     const regionExtension = new FHIR.Extension();
     regionExtension.url = 'https:bcip.smilecdr.com/fhir/psohpRegion';
     for (const region of this.regionalOfficesWithId) {

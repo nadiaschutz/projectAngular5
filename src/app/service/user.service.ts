@@ -367,7 +367,7 @@ export class UserService {
   }
 
   fetchAllDistrictOffices() {
-    return this.httpClient.get(environment.queryURI + '/Location', {
+    return this.httpClient.get(environment.queryURI + '/Location?identifier=psohp-location', {
       headers: this.getHeaders()
     });
   }

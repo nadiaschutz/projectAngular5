@@ -93,7 +93,7 @@ export class AdminHomeScreenService {
     // console.log(query);
 
     return this.http.get(
-      environment.queryURI + '/Location?' + query,
+      environment.queryURI + '/Location?identifier=department-location&' + query,
       { headers: this.getHeaders() }
     );
   }

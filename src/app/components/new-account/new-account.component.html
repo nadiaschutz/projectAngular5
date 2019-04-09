@@ -134,7 +134,7 @@
 
     <div class="row">
       <div class="col">
-        <label for="regionalOffice">Regional Office (Required)</label>
+        <label for="regionalOffice">Regional Office</label>
         <select class="form-control" formControlName="regionalOffice" id="regionalOffice">
           <option value="">(Select)</option>
           <!-- <option [ngValue]="null">Select</option> -->
@@ -151,7 +151,7 @@
         </select>
       </div>
       <div class="col">
-        <label for="districtOffice">District Office (Required)</label>
+        <label for="districtOffice">District Office</label>
         <select class="form-control" formControlName="districtOffice" id="districtOffice">
           <option value="">(Select)</option>
           <option *ngFor="let districtOffice of districtOffices" [value]="districtOffice.id">
@@ -187,7 +187,7 @@
       </div>
       <div class="col">
         <label for="departmentBranch">Department Branch (Required)</label>
-        <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
+        <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required [disabled]="jobLocationList.length > 0">
           <option value="">(Select)</option>
           <option *ngFor="let branch of jobLocationList" [value]="branch.id">
             {{branch.name}}
@@ -240,4 +240,16 @@
       </div>
     </div>
   </form>
+
+  
+  <div class="row">
+    <div *ngIf="showSuccessMessage">
+      <strong>Account created successfully!!</strong>
+      <!-- <button class="btn regular-button" (click)="returnToDashboard()">Return to Dashboard</button> -->
+    </div>
+    <div *ngIf="showFailureMessage">
+      <strong>{{failureMessage}}</strong>
+    </div>
+  </div>
+
 </div>
