@@ -192,6 +192,12 @@ export class DistrictOfficeAddComponent implements AfterViewInit, OnInit {
     districtOffice.resourceType = 'Location';
     districtOffice.name = value.officeName;
 
+    const identifier = new FHIR.Identifier;
+    identifier.use = 'official';
+    identifier.system = 'https://bcip.smilecdr.com/fhir/psohp-location';
+    identifier.value = 'psohp-location';
+    districtOffice.identifier = [identifier];
+
     districtOffice.status = new FHIR.Code('active').code;
 
     const organizationReference = new FHIR.Reference;

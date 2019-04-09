@@ -240,4 +240,16 @@
       </div>
     </div>
   </form>
+
+  
+  <div class="row">
+    <div *ngIf="showSuccessMessage">
+      <strong>Account created successfully!!</strong>
+      <!-- <button class="btn regular-button" (click)="returnToDashboard()">Return to Dashboard</button> -->
+    </div>
+    <div *ngIf="showFailureMessage">
+      <strong>{{failureMessage}}</strong>
+    </div>
+  </div>
+
 </div>
