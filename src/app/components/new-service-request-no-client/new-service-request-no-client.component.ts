@@ -32,8 +32,20 @@ import { e } from '@angular/core/src/render3';
 // const httpOptions = {
 //   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
 // };
-
 class TextInput {
+  static create(event: FieldConfig) {
+    return {
+      type: event.type,
+      label: event.label,
+      inputType: event.inputType,
+      name: event.name,
+      typeElem: event.typeElem,
+    };
+  }
+}
+
+
+class CommentInput {
   static create(event: FieldConfig) {
     return {
       type: event.type,
