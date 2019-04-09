@@ -124,7 +124,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   departmentList = [];
   currentUserDepartment;
 
-  // formId = 'TEST4';
+  formId;
   formCreated = false;
 
   responseId = null;
@@ -202,6 +202,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    if (this.router.url.indexOf('/newservicerequest') > -1) {
+      this.formId = 'TEST4';
+    } else {
+      this.formId = '1953';
+    }
     this.userRole = sessionStorage.getItem('userRole');
     console.log('userRole', this.userRole);
     this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
