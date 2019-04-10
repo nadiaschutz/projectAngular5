@@ -29,8 +29,8 @@
     <div class="row">
 
       <div class="col">
-        <label for="pri">Employee PRI (Required)</label>
-        <input type="text" class="form-control" placeholder="PRI" formControlName="pri" id="pri" name="pri" required>
+        <label for="pri">Employee PRI</label>
+        <input type="text" class="form-control" placeholder="PRI" formControlName="pri" id="pri" name="pri">
         <div *ngIf="accountFormGroup.controls['pri'].invalid
                   && (accountFormGroup.controls['pri'].touched || accountFormGroup.controls['pri'].dirty)">
           <div class="error-message">

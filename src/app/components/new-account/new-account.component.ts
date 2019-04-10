@@ -115,7 +115,6 @@ export class NewAccountComponent implements OnInit {
         Validators.minLength(2)
       ]),
       pri: new FormControl('', [
-        Validators.required,
         Validators.minLength(9),
         Validators.maxLength(9)
       ]),
