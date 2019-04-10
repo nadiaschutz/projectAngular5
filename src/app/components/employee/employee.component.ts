@@ -138,21 +138,15 @@ export class EmployeeComponent implements OnInit {
       ]),
       addressCountry: new FormControl('', [Validators.required]),
       language: new FormControl('', Validators.required),
-      jobLevel: new FormControl(''),
-      jobClass: new FormControl(''),
-      // PRI (handled in Patient with an extension)
       id: new FormControl('', [
         Validators.minLength(9),
         Validators.maxLength(9)
       ]),
-
-      // Job title (handled in Patient with an extension)
       jobTitle: new FormControl(''),
-      // Department they work in (handled in Patient with an extension)
+      jobLevel: new FormControl(''),
+      jobClass: new FormControl(''),
       departmentName: new FormControl(''),
-      // Branch they work in (handled in Patient with an extension)
       departmentBranch: new FormControl(''),
-      // References related to the employee (handled in Patient with an extension)
       referenceOne: new FormControl(''),
       referenceTwo: new FormControl('')
 
@@ -303,13 +297,13 @@ export class EmployeeComponent implements OnInit {
         extensionsArray.push(jobTitleExtension);
       }
 
-      if (this.employeeFormGroup.get('jobTitle').value) {
+      if (this.employeeFormGroup.get('jobLevel').value) {
         jobLevelExtension.url = 'https://bcip.smilecdr.com/fhir/joblevel';
         jobLevelExtension.valueString = this.employeeFormGroup.get('jobLevel').value;
         extensionsArray.push(jobLevelExtension);
       }
 
-      if (this.employeeFormGroup.get('jobTitle').value) {
+      if (this.employeeFormGroup.get('jobClass').value) {
         jobClassExtension.url = 'https://bcip.smilecdr.com/fhir/jobclass';
         jobClassExtension.valueString = this.employeeFormGroup.get('jobClass').value;
         extensionsArray.push(jobClassExtension);

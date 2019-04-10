@@ -15,7 +15,7 @@
 
   </div>
 
-  <div class="main-header">
+  <div *ngIf="selected" class="main-header">
     <h5>Client Summary</h5>
     <h6>CLIENT DEPARTMENT > {{selected['given']}} {{selected['family']}}</h6>
   </div>
@@ -57,18 +57,38 @@
         </div>
 
 
-        <div class="row">
-          <div class="col-6">
+        <div class="row" *ngIf="selected['employeeType']['valueString'] === 'Employee'">
+          <div class="col-3">
             <label>First Name</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['given']}}</textarea>
           </div>
+          <div class="col-3">
+            <label>Last Name</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['family']}}</textarea>
+          </div>
+
+          <div class="col-6" *ngIf="selected['identifier']['value']">
+            <label>Employee PRI</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['identifier']['value']}}</textarea>
+          </div>
+          <div class="col-6" *ngIf="!selected['identifier']['value']">
+            <label>Employee PRI</label>
+            <textarea type="text" class="form-control" rows="1" disabled> - </textarea>
+          </div>
 
 
-          <div class="col-6">
+        </div>
+        <div class="row" *ngIf="selected['employeeType']['valueString'] !== 'Employee'">
+          <div class="col">
+            <label>First Name</label>
+            <textarea type="text" class="form-control" rows="1" disabled>{{selected['given']}}</textarea>
+          </div>
+          <div class="col">
             <label>Last Name</label>
             <textarea type="text" class="form-control" rows="1" disabled>{{selected['family']}}</textarea>
           </div>
         </div>
+
       </div>
 
 
@@ -157,15 +177,29 @@
       <div *ngIf="selected">
         <div class="row">
           <div class="col-6">
+            <label>Job Title</label>
+            <textarea type="text" class="form-control" rows="1"
+              disabled>{{selected['jobtitle']['valueString']}}</textarea>
+          </div>
+          <div class="col-3" *ngIf="selected['jobLevel']">
+            <label>Job Level</label>
+            <textarea type="text" class="form-control" rows="1"
+              disabled>{{selected['jobLevel']['valueString']}}</textarea>
+          </div>
+          <div class="col-3" *ngIf="!selected['jobLevel']">
+            <label>Job Level</label>
+            <textarea type="text" class="form-control" rows="1" disabled>-</textarea>
+          </div>
+          <div class="col-3" *ngIf="selected['jobClass']">
             <div>
-              <label>Job Title</label>
+              <label>Job Class</label>
               <textarea type="text" class="form-control" rows="1"
-                disabled>{{selected['jobtitle']['valueString']}}</textarea>
+                disabled>{{selected['jobClass']['valueString']}}</textarea>
             </div>
           </div>
-          <div class="col-6">
-            <label>Employee PRI</label>
-            <textarea type="text" class="form-control" rows="1" disabled>{{selected['identifier']['value']}}</textarea>
+          <div class="col-3" *ngIf="!selected['jobClass']">
+            <label>Job Class</label>
+            <textarea type="text" class="form-control" rows="1" disabled>-</textarea>
           </div>
         </div>
         <div class="row">
@@ -177,7 +211,7 @@
             </div>
           </div>
           <div class="col-6">
-            <label>Employing Department Branch</label>
+            <label>Employing Department Location</label>
             <textarea type="text" class="form-control" rows="1"
               disabled>{{selected['branch']['valueString']}}</textarea>
           </div>
@@ -305,7 +339,7 @@
   </div>
 
   <div *ngIf="selected && editEmployee">
- 
+
     <form [formGroup]="employeeFormGroup" novalidate>
       <section class="form-section">
         <div class='header'>
@@ -315,7 +349,7 @@
 
         </div>
         <div class="row">
-          <div class="col">
+          <div class="col-3">
 
 
             <label for="givenName">First Name (Required)</label>
@@ -329,7 +363,7 @@
               </div>
             </div>
           </div>
-          <div class="col">
+          <div class="col-3">
             <label for="familyName">Last Name (Required)</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
               required>
@@ -342,6 +376,16 @@
               </div>
             </div>
 
+          </div>
+          <div class="col-6">
+            <label for="id">Associated Employee PRI (Required)</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id" required>
+            <div *ngIf="employeeFormGroup.controls['id'].invalid
+                  && (employeeFormGroup.controls['id'].touched || employeeFormGroup.controls['id'].dirty)">
+              <div class="error-message">
+                Must be nine digits long
+              </div>
+            </div>
           </div>
         </div>
 
@@ -505,21 +549,21 @@
               </div>
             </div>
           </div>
-          <div class="col">
-            <label for="id">Associated Employee PRI (Required)</label>
-            <input type="text" class="form-control" placeholder="Enter" formControlName="id" id="id" required>
-            <div *ngIf="employeeFormGroup.controls['id'].invalid
-              && (employeeFormGroup.controls['id'].touched || employeeFormGroup.controls['id'].dirty)">
-              <div class="error-message">
-                Must be nine digits long
-              </div>
-            </div>
+          <div class="col-3">
+            <label for="jobLevel">Job Level</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="jobLevel" id="jobTitle">
+
+          </div>
+          <div class="col-3">
+            <label for="jobClass">Job Class</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="jobClass" id="jobClass">
+
           </div>
         </div>
 
         <div class="row">
           <div class="col">
-            <label for="departmentName">Department Name</label>
+            <label for="departmentName">Department Name (Required)</label>
             <select class="form-control" formControlName="departmentName" id="departmentName" required>
               <option *ngFor="let dept of employeeDepartmentList" [value]="dept.value">
                 {{dept.text}}
@@ -535,7 +579,7 @@
           </div>
 
           <div class="col">
-            <label for="departmentBranch">Department Branch</label>
+            <label for="departmentBranch">Department Location (Required)</label>
             <select class="form-control" formControlName="departmentBranch" id="departmentBranch" required>
               <option value="">(Select)</option>
               <option *ngFor="let item of jobLocationList" [value]="item.value">
