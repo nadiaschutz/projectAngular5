@@ -11,7 +11,7 @@ interface HTMLAnchorElement {
 @Component({
   selector: 'form-documents',
   template: `
-  <div [class]="config.class">
+  <div [class]="config.elementClass">
   <section class="form-section last-element">
                 <div class="table-list">
 
