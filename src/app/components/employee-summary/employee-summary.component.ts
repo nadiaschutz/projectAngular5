@@ -18,7 +18,6 @@ import { TitleCasePipe } from '@angular/common';
 import { distinctUntilChanged } from 'rxjs/operators';
 import * as FHIR from '../../interface/FHIR';
 
-import * as Employee from '../../interface/patient';
 import { formatDate } from '@angular/common';
 // import { Language } from 'src/app/interface/employee';
 export interface LanguageType {

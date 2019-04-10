@@ -7,9 +7,6 @@ import {
   FormControl
 } from '@angular/forms';
 
-import { OAuthService } from 'angular-oauth2-oidc';
-
-import { UserService } from '../../service/user.service';
 import { PatientService } from '../../service/patient.service';
 import { AdminHomeScreenService } from '../../service/admin-home-screen.service';
 
