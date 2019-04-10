@@ -125,6 +125,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   currentUserDepartment;
 
   formId;
+  servReqType;
   formCreated = false;
 
   responseId = null;
@@ -204,9 +205,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     if (this.router.url.indexOf('/newservicerequest') > -1) {
       this.formId = 'TEST4';
+      this.servReqType = 'SERVREQ';
     } else {
       this.formId = '1953';
+      this.servReqType = 'CONTUS';
     }
+
     this.userRole = sessionStorage.getItem('userRole');
     console.log('userRole', this.userRole);
     this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
@@ -847,13 +851,24 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     }
     console.log('CONFIG AFTER DEPENDENTS PUSH', this.configuration);
 
-
+    if (this.servReqType === 'CONTUS') {
+      this.configuration.push(
+        {
+          type: 'doc',
+          elementClass: 'documents enable-when-hide',
+          name: 'doc'
+        }
+      );
+    } else {
+      this.configuration.push(
+        {
+          type: 'doc',
+          elementClass: 'documents enable-when-show',
+          name: 'doc'
+        }
+      );
+    }
     this.configuration.push(
-      {
-        type: 'doc',
-        class: 'documents',
-        name: 'doc'
-      },
       {
         type: 'line',
         name: 'line'
@@ -864,6 +879,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         label: 'Submit'
       }
     );
+
+
 
     this.config = this.configuration;
 
@@ -952,7 +969,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
 
       this.form.setDisabled('submit', true);
-      if (this.router.url.indexOf('/newservicerequest') > -1) {
+      if (this.servReqType === 'SERVREQ') {
         this.form.setValue('AUTHOR', this.userName);
         this.form.setValue('USERDEPT', this.currentUserDepartment);
         this.form.setDisabled('USERDEPT', true);
@@ -970,9 +987,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   // checks FHIR data for items with enableWhen and changes show/hide class on the form based on enableWhen options
   public checkEnableWhen(value, index) {
     console.log(this.form);
+    console.log(value, index);
+
     // console.log(this.form.value.ASSESTYPE);
     this.config.forEach(elemOfConfig => {
-      if (this.router.url.indexOf('/newservicerequest') > -1) {
+      if (this.servReqType === 'SERVREQ') {
         if (this.form.value.ASSESTYPE === 'Pre-Placement' && this.userRole === 'clientdept') {
           this.form.setDisabled('USERDEPT', false);
         } else {
@@ -980,6 +999,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           this.form.setValue('USERDEPT', this.currentUserDepartment);
         }
       }
+
       if (elemOfConfig.enableWhen) {
 
 
@@ -1030,6 +1050,18 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
                   });
                 });
               }
+            }
+          }
+        }
+      } else {
+        if (index === 'SERVTP') {
+          if (value === 'Request to NOHIS Superuser') {
+            if (elemOfConfig.type === 'doc') {
+              elemOfConfig.elementClass = 'documents enable-when-hide';
+            }
+          } else {
+            if (elemOfConfig.type === 'doc') {
+              elemOfConfig.elementClass = 'documents enable-when-show';
             }
           }
         }
