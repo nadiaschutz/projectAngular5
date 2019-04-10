@@ -391,6 +391,13 @@ export class UserService {
     );
   }
 
+  fetchAllDepartmentNamesAsync() {
+    return this.httpClient.get(
+      environment.queryURI + '/Organization?type=CLIENTDEPT',
+      { headers: this.getHeaders() }
+    ).toPromise();
+  }
+
   fetchAllDepartmentBranches() {
     return this.httpClient.get(
       environment.queryURI + '/Location?type=DEPTBRANCH',

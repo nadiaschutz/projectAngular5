@@ -158,6 +158,8 @@ export class DashboardComponent implements OnInit {
     /**
  * Initializes the list of branches from our system
  */
+    this.setDepartmetnAndPatientData();
+
     this.userService.fetchAllDepartmentBranches().subscribe(
       data => this.populateBranches(data),
       error => this.handleError(error)
@@ -166,17 +168,7 @@ export class DashboardComponent implements OnInit {
 
     // this.sortUsersObjects();
     this.checkIfEnableCursor();
-
-
-    // get all departments from server
-    this.userService
-      .fetchAllDepartmentNames()
-      .subscribe(
-        data => this.populateDeptNames(data),
-        error => this.handleError(error)
-      );
     // get initiall patients from server
-    this.getAllData();
   }
 
   // populateDeptBranches(data: any) {
@@ -191,9 +183,6 @@ export class DashboardComponent implements OnInit {
     if (this.dateOfBirth.data) {
       this.dateOfBirth.data = formatDate(this.dateOfBirth.data, 'yyyy-MM-dd', 'en');
     }
-
-
-
 
     this.arrOfVar.forEach((element, index) => {
       if (element.data !== null) {
@@ -233,10 +222,10 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  populateDeptNames(data: any) {
+  async setDepartmetnAndPatientData() {
+    const data = await this.userService.fetchAllDepartmentNamesAsync();
     const arrToSort = [];
-    console.log(data);
-    data.entry.forEach(element => {
+    data['entry'].forEach(element => {
       this.listOfDepartmentsWithIdLookup[element['resource']['id']] = element['resource']['name'];
       arrToSort.push(
         {
@@ -256,6 +245,7 @@ export class DashboardComponent implements OnInit {
       }
       return 0;
     });
+    this.getAllData();
   }
 
   change(val): void {
