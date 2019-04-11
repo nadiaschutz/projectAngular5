@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
+import { NewServiceRequestComponent } from "../new-service-request/new-service-request.component";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'form-input',
@@ -11,7 +13,7 @@ import { FieldConfig } from './field-config.interface';
         [formGroup]="group">
         <label class="label-name" *ngIf="config.required">{{ config.label }} (Required)</label>
         <label class="label-name" *ngIf="!config.required">{{ config.label }}</label>
-        <select [formControlName]="config.name" class="form-control">
+        <select [formControlName]="config.name" class="form-control" (change)='callMe($event.target.value, config.name)'>
           <option value="">{{ config.placeholder }}</option>
           <option *ngFor="let option of config.options">
             {{ option }}
@@ -28,8 +30,12 @@ import { FieldConfig } from './field-config.interface';
 export class SelectComponent implements Field {
   config: FieldConfig;
   group: FormGroup;
+  constructor(private comp: NewServiceRequestComponent, private router: Router) { }
 
-  //   if(config.elementClass === 'enable-when-hide') {
+  public callMe(value, index): void {
+    if (this.router.url.indexOf('/newservicerequest') > -1 || this.router.url.indexOf('/newadvicerequest') > -1) {
+      this.comp.checkEnableWhen(value, index);
+    }
+  }
 
-  // }
 }

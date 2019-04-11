@@ -40,15 +40,9 @@ export class CheckboxComponent implements Field {
 
   public callMe(value, index): void {
     // console.log(this.router);
-    if (this.router.url.indexOf('/newservicerequest') > -1) {
+    if (this.router.url.indexOf('/newservicerequest') > -1 || this.router.url.indexOf('/newadvicerequest') > -1) {
       this.comp.checkEnableWhen(value, index);
     }
   }
 }
-// <div class="demo-full-width margin-top" [formGroup]="group" >
-// <mat-checkbox [formControlName]="field.name">{{field.label}}</mat-checkbox>
-// </div>
 
-
-// (change) = "f($event.target.checked)"
-// (change) = "f($event.target.checked)"
