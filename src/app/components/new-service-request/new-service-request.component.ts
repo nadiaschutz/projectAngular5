@@ -29,7 +29,7 @@ import { FieldConfig } from '../dynamic-forms/field-config.interface';
 import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
 import { CustomValidator } from '../dynamic-forms/custom-validator';
 import { FileDetector } from 'protractor';
-import { ValueAddress } from 'src/app/interface/organization';
+import { ValueAddress, ValueCoding } from 'src/app/interface/organization';
 import { element } from '@angular/core/src/render3/instructions';
 import { e } from '@angular/core/src/render3';
 import { runInThisContext } from 'vm';
@@ -87,30 +87,30 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   // };
 
   // tslint:disable-next-line:max-line-length
-  listOfCode = ['HACAT1', 'HACAT2', 'HACAT3', 'FTWORK', 'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC3', 'THREC3', 'IMREVW'];
-  listOfCodes = [
-    ['HA', 'PREP', 'HACAT1'],
-    ['HA', 'PREP', 'HACAT2'],
-    ['HA', 'PREP', 'HACAT3'],
-    ['HA', 'PERIOD', 'HACAT1'],
-    ['HA', 'PERIOD', 'HACAT2'],
-    ['HA', 'PERIOD', 'HACAT3'],
+  // listOfCode = ['HACAT1', 'HACAT2', 'HACAT3', 'FTWORK', 'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC3', 'THREC3', 'IMREVW'];
+  // listOfCodes = [
+  //   ['HA', 'PREP', 'HACAT1'],
+  //   ['HA', 'PREP', 'HACAT2'],
+  //   ['HA', 'PREP', 'HACAT3'],
+  //   ['HA', 'PERIOD', 'HACAT1'],
+  //   ['HA', 'PERIOD', 'HACAT2'],
+  //   ['HA', 'PERIOD', 'HACAT3'],
 
-    ['SUPER', 'SUBUYB'],
-    ['SUPER', 'SUREMG'],
-    ['SUPER', 'SUSURB'],
+  //   ['SUPER', 'SUBUYB'],
+  //   ['SUPER', 'SUREMG'],
+  //   ['SUPER', 'SUSURB'],
 
-    ['PTH', 'THSOTT'],
-    ['PTH', 'THPPC1'],
-    ['PTH', 'THPPC3'],
-    ['PTH', 'THCRC1'],
-    ['PTH', 'THCRC3'],
-    ['PTH', 'THREC3'],
+  //   ['PTH', 'THSOTT'],
+  //   ['PTH', 'THPPC1'],
+  //   ['PTH', 'THPPC3'],
+  //   ['PTH', 'THCRC1'],
+  //   ['PTH', 'THCRC3'],
+  //   ['PTH', 'THREC3'],
 
-    ['FTWORK'],
-    ['IMREVW']
+  //   ['FTWORK'],
+  //   ['IMREVW']
 
-  ];
+  // ];
   options = [];
 
   style = 'col-11';
@@ -203,6 +203,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+
+    // sets the formId based on url (serv request || contact us pages )
     if (this.router.url.indexOf('/newservicerequest') > -1) {
       this.formId = 'TEST4';
       this.servReqType = 'SERVREQ';
@@ -239,6 +241,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     console.log(this.dependentsList);
   }
 
+  // adds a wrapper div to the form fields for styling
   wrap() {
     const x = $('.field-holder-2 form-input');
     for (let i = 0; i < x.length; i++) {
@@ -246,6 +249,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // adds division to the form fields for styling
   addDiv() {
     const sections = $('.dynamic-form .' + this.style);
     for (let i = 0; i < sections.length; i += 2) {
@@ -253,7 +257,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     }
   }
 
-
+  // sets departments for select field
   populateDeptNames(data: any) {
     data.entry.forEach(department => {
       if (department['resource']['name']) {
@@ -270,9 +274,13 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
 
-  // submit(value: { [name: string]: any }) {
+  // submits the form
   async submit() {
+    // gets all the values of each fields, including null
     const value = this.form.getRawValue;
+    let codeItem: any = null;
+
+    // dependent in values
     const list = Object.entries(value)
       .filter(([key]) => key.includes('dependent'))
       .map(([key, val]) => ({
@@ -290,9 +298,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     }
 
 
-
+    // assigns Code and Answer to items
     this.items.forEach(indivElem => {
-
       // tslint:disable-next-line:forin
       for (const key in value) {
         if (value.hasOwnProperty(key)) {
@@ -312,52 +319,26 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     // console.log('ITEMS on submit after change', this.items);
 
-
-    const selectItems = [];
-    let resultItem;
-    this.items.forEach((indivElem) => {
-      if (typeof indivElem.answer === 'string') {
-        this.listOfCodes.forEach(code => {
-          code.forEach((co) => {
-            if (indivElem.code === co) {
-              if (selectItems.indexOf(indivElem) < 0) {
-                selectItems.push(indivElem);
-              }
-            }
-          });
-        });
+    // adds PSOHPCODE item into the the arr of items
+    this.items.forEach(item => {
+      if (item.code.indexOf('-PSOHPCODE') > -1) {
+        codeItem = {
+          answer: item.code.substring(0, item.code.indexOf('-')),
+          code: item.code.substring(0, item.code.indexOf('-')),
+          linkId: 'PSOHPCODE',
+          system: 'https://bcip.smilecdr.com/fhir/PSOHPCODE'
+        };
+        // tslint:disable-next-line:max-line-length
+        item.code = item.code.substring(0, item.code.indexOf('-'));
       }
     });
 
-    // console.log(selectItems);
+    // pushes extra PSOHPCODE item into itmes arr
+    if (codeItem) {
+      this.items.push(codeItem);
+    }
 
-
-    resultItem = {
-      answer: selectItems.map(x => x.answer).join('-'),
-      code: selectItems[selectItems.length - 1].code,
-      linkId: selectItems[0].linkId,
-      system: selectItems[0].system,
-      text: selectItems[0].text,
-    };
-
-
-    this.items.forEach((item) => {
-      selectItems.forEach((select, index) => {
-        if (index > 0) {
-          this.items = this.items.filter(filtered => filtered.linkId !== select.linkId);
-        }
-      });
-
-      if (item.linkId === resultItem.linkId) {
-        item.answer = resultItem.answer;
-        item.code = resultItem.code;
-        item.system = resultItem.system;
-        item.text = resultItem.text;
-      }
-
-    });
-
-    // this.disableInputsForReview = true;
+    // prepares data for sending to the server
     this.savingData();
 
     for (const request of this.itemsToSend) {
@@ -444,7 +425,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     let serviceType = '';
     if (questionnaireResponse['item']) {
       questionnaireResponse.item.forEach(item => {
-        if (item['linkId'] === 'PSOHPSERV') {
+        if (item['linkId'] === 'PSOHPCODE') {
           for (const answer of item['answer']) {
             if (answer['valueCoding']) {
               serviceType = answer['valueCoding']['code'];
@@ -496,70 +477,96 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   createItemToSend(id, givenName, famName) {
 
+    if (this.servReqType === 'SERVREQ') {
 
-    this.itemToSend = {
-      resourceType: 'QuestionnaireResponse',
-      questionnaire: {
-        reference: 'Questionnaire/' + this.formId
-      },
-      status: 'in-progress',
-      authored: new Date,
-      identifier: {
-        value: 'SERVREQ'
-      },
-      subject: {
-        reference: 'Patient/' + id,
-        display: givenName + ' ' + famName
-      },
-      item: []
-    };
+      this.itemToSend = {
+        resourceType: 'QuestionnaireResponse',
+        questionnaire: {
+          reference: 'Questionnaire/' + this.formId
+        },
+        status: 'in-progress',
+        authored: new Date,
+        identifier: {
+          value: 'SERVREQ'
+        },
+        subject: {
+          reference: 'Patient/' + id,
+          display: givenName + ' ' + famName
+        },
+        item: []
+      };
+
+    } else {
+      this.itemToSend = {
+        resourceType: 'QuestionnaireResponse',
+        questionnaire: {
+          reference: 'Questionnaire/' + this.formId
+        },
+        status: 'in-progress',
+        authored: new Date,
+        identifier: {
+          value: 'SERVREQ'
+        },
+        item: []
+      };
+    }
+
 
     this.itemsToSend.push(this.itemToSend);
 
-
   }
 
+
+  // takes items from items arr and pushes into itemToSend in digestible format
   mapItemToItems() {
     const itemsFiltered = this.items.filter(itemToStay => itemToStay.answer !== null);
     this.itemToSend.item = itemsFiltered.map(el => {
-
-
       if (el.linkId !== '') {
-
-        return {
-          linkId: el.linkId,
-          text: el.text,
-          answer:
-            el.text === 'Document' ? [
-              {
-                valueReference: {
-                  reference: el.answer
-                }
-              }
-            ] :
-              typeof (el.answer) === 'boolean' ? [
+        if (el.text) {
+          return {
+            linkId: el.linkId,
+            text: el.text,
+            answer:
+              el.text === 'Document' ? [
                 {
-                  valueCoding: {
-                    code: el.code,
-                    system: el.system,
-                    display: el.answer
+                  valueReference: {
+                    reference: el.answer
                   }
                 }
               ] :
-                typeof (el.answer) === 'string' ? [
+                typeof (el.answer) === 'boolean' ? [
                   {
                     valueCoding: {
                       code: el.code,
                       system: el.system,
                       display: el.answer
                     }
-                  },
-                  // {
-                  //   valueString: el.answer
-                  // }
+                  }
                 ] :
-                  null
-        };
+                  typeof (el.answer) === 'string' ? [
+                    {
+                      valueCoding: {
+                        code: el.code,
+                        system: el.system,
+                        display: el.answer
+                      }
+                    }
+                  ] :
+                    null
+          };
+        } else {
+          return {
+            linkId: el.linkId,
+            answer: [
+              {
+                valueCoding: {
+                  code: el.code,
+                  system: el.system,
+                }
+              }
+            ]
+          };
+        }
 
       }
 
@@ -578,6 +585,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
 
+  // turns questionarie data into arr of form fields (shows those fields on the form)
+  /**
+  if you get an error on dynamic-form.components.ts, there are 95% chances that the issue is not in dynamic-form.components.ts but in data representation, or data absence ===> look into getFormData(data){}
+  **/
   getFormData(data) {
     this.qrequest = data.item;
     console.log('QREQ', this.qrequest);
@@ -647,7 +658,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             const enableWhen = this.populateEnableWhenObj(el);
 
             return {
-              type: 'selectSr',
+              type: 'select',
               typeElem: el.code[1].code,
               label: el.text,
               name: el.linkId,
@@ -727,7 +738,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
 
         const options = [];
-
+        // sets this.options for Code
         el.option.forEach(el1 => {
           this.options.push(
             {
@@ -744,7 +755,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         if (el.code[0].code === 'OHAGOCC' || el.code[0].code === 'ENVMODIF' || el.code[0].code === 'EXPMODIF') {
           console.log(el.code[0].code);
           return {
-            type: 'selectSr',
+            type: 'select',
             typeElem: el.code[1].code,
             label: el.text,
             name: el.linkId,
@@ -761,7 +772,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         } else {
           const enableWhenQ = [];
           return {
-            type: 'selectSr',
+            type: 'select',
             typeElem: el.code[1].code,
             label: el.text,
             name: el.linkId,
@@ -828,6 +839,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       }
     });
 
+    // checks for dependents and shows on the form
     if (this.dependentsList.length > 0) {
       this.dependentsList.forEach((dependent, index) => {
         const enableWhen = [{
@@ -851,6 +863,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     }
     console.log('CONFIG AFTER DEPENDENTS PUSH', this.configuration);
 
+    // styling and buttons
     if (this.servReqType === 'CONTUS') {
       this.configuration.push(
         {
@@ -884,7 +897,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     this.config = this.configuration;
 
-    // maping part of the data from the server to item
+    // maping part of the data from the server to this.items
     this.items = this.qrequest.map(el => ({
       ...this.item,
       linkId: el.linkId,
@@ -933,31 +946,24 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       type: 'comment',
       label: data.text,
       name: data.linkId,
-      typeElem: data.code[1].code,
-      // enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
-      // enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.code : false,
+      typeElem: data.code[1].code
     });
   }
 
 
-  // options: options,
-  // validation: [Validators.required]
-
   selectField(data) {
     return SelectField.create({
-      type: 'selectSr',
+      type: 'select',
       typeElem: data.code[1].code,
       label: data.text,
       inputType: 'text',
       placeholder: 'Select an option',
       name: data.linkId,
-      validation: [Validators.required],
-      // enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
-      // enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.display : false,
+      validation: [Validators.required]
     });
   }
-  /************************************************/
-  // settingFunction() {
+
+  // setting function. sets values and the form after form showing up on page
   ngAfterViewInit() {
     setTimeout(() => {
       let previousValid = this.form.valid;
@@ -986,11 +992,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   // checks FHIR data for items with enableWhen and changes show/hide class on the form based on enableWhen options
   public checkEnableWhen(value, index) {
-    console.log(this.form);
-    console.log(value, index);
-
     // console.log(this.form.value.ASSESTYPE);
     this.config.forEach(elemOfConfig => {
+
+      // checks for form type and sets disabled particular fields
       if (this.servReqType === 'SERVREQ') {
         if (this.form.value.ASSESTYPE === 'Pre-Placement' && this.userRole === 'clientdept') {
           this.form.setDisabled('USERDEPT', false);
@@ -1004,7 +1009,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
 
         for (const formElem of elemOfConfig.enableWhen) {
+          // checks the form field(index) with code of the question
           if (index === formElem.enableWhenQ) {
+            // checks the field answer  with code of the answer
             if (value === formElem.enableWhenA) {
               // console.log(elemOfConfig);
               elemOfConfig.elementClass = 'enable-when-show';
@@ -1029,6 +1036,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
                 }
               }
               return;
+
+
+              // hides form fields
             } else {
               elemOfConfig.flag = false;
               elemOfConfig.elementClass = 'enable-when-hide';
@@ -1069,37 +1079,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     });
 
   }
-
-  // public checkEnableWhen(value, index) {
-  //   this.config.forEach(el => {
-  //     if (el.enableWhenA && el.enableWhenQ) {
-  //       if (index === el.enableWhenQ) {
-
-  //         if (value === el.enableWhenA) {
-
-  //           el.elementClass = 'enable-when-show';
-  //           el.flag = true;
-
-  //         } else {
-  //           el.flag = false;
-  //           el.elementClass = 'enable-when-hide';
-  //           this.form.setValue(el.name, null);
-  //           this.config.forEach(elem => {
-  //             if (elem.enableWhenA && elem.enableWhenQ) {
-  //               if (el.name === elem.enableWhenQ && elem.elementClass === 'enable-when-show') {
-  //                 elem.elementClass = 'enable-when-hide';
-  //                 this.form.setValue(elem.name, null);
-  //               }
-  //             }
-
-  //           });
-  //         }
-  //       }
-  //     }
-  //   });
-  // }
-
-
 
 
   handleError(error) {

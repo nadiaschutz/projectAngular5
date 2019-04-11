@@ -6,11 +6,11 @@ import { FieldConfig } from './field-config.interface';
 import { InputComponent } from './input.component';
 import { ButtonComponent } from './button.component';
 import { SelectComponent } from './select.component';
-import { SelectSrComponent } from './select-sr.component';
+// import { SelectSrComponent } from './select-sr.component';
 import { DateComponent } from './date.component';
 // import { RadiobuttonComponent } from './radiobutton.component';
 import { CheckboxComponent } from './checkbox.component';
-import { CheckboxSrComponent } from './checkbox-sr.component';
+// import { CheckboxSrComponent } from './checkbox-sr.component';
 import { LineComponent } from './line.component';
 import { HeaderComponent } from './header.component';
 import { DocComponent } from './doc.components';
@@ -23,12 +23,12 @@ const components = {
   comment: CommentComponent,
   button: ButtonComponent,
   select: SelectComponent,
-  selectSr: SelectSrComponent,
+  // selectSr: SelectSrComponent,
   date: DateComponent,
   depend: DependFormComponent,
   // radiobutton: RadiobuttonComponent,
   checkbox: CheckboxComponent,
-  checkboxSr: CheckboxSrComponent,
+  // checkboxSr: CheckboxSrComponent,
   line: LineComponent,
   header: HeaderComponent,
   doc: DocComponent
