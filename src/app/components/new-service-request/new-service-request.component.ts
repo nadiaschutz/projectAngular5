@@ -989,8 +989,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   public checkEnableWhen(value, index) {
     // console.log(this.form.value.ASSESTYPE);
     this.config.forEach(elemOfConfig => {
-      // console.log(elemOfConfig);
-
       // checks for form type and sets disabled particular fields
       if (this.servReqType === 'SERVREQ') {
         if (this.form.value.ASSESTYPE === 'Pre-Placement' && this.userRole === 'clientdept') {
@@ -1002,16 +1000,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       }
 
       if (elemOfConfig.enableWhen) {
-
-
-
         for (const formElem of elemOfConfig.enableWhen) {
-          console.log(elemOfConfig.enableWhen);
           // checks the form field(index) with code of the question
           if (index === formElem.enableWhenQ) {
             // checks the field answer  with code of the answer
             if (value === formElem.enableWhenA) {
-              console.log(elemOfConfig);
               elemOfConfig.elementClass = 'enable-when-show';
               // elemOfConfig.flag = true;
               if (elemOfConfig.typeElem !== 'BOOL') {
@@ -1053,6 +1046,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               elemOfConfig.elementClass = 'enable-when-hide';
               this.form.removeRequired(elemOfConfig.name);
               this.form.setValue(elemOfConfig.name, null);
+              this.form.setPristine(elemOfConfig.name);
               if (elemOfConfig.options) {
                 elemOfConfig.options.forEach(option => {
                   this.config.forEach(configElement => {
@@ -1063,6 +1057,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
                           configElement.validation = undefined;
                           this.form.removeRequired(configElement.name);
                           this.form.setValue(configElement.name, null);
+                          this.form.setPristine(configElement.name);
                         }
                       });
                     }
