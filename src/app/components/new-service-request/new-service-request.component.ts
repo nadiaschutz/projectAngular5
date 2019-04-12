@@ -973,14 +973,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           this.form.setDisabled('submit', !previousValid);
         }
       });
-
       this.form.setDisabled('submit', true);
-
       this.form.setValue('AUTHOR', this.userName);
       this.form.setValue('USERDEPT', this.currentUserDepartment);
       this.form.setValue('DATECR', this.todayPiped);
-
-
     });
 
     // if you want to style 2 form fields per a row do these :
@@ -993,6 +989,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   public checkEnableWhen(value, index) {
     // console.log(this.form.value.ASSESTYPE);
     this.config.forEach(elemOfConfig => {
+      // console.log(elemOfConfig);
 
       // checks for form type and sets disabled particular fields
       if (this.servReqType === 'SERVREQ') {
@@ -1007,31 +1004,44 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       if (elemOfConfig.enableWhen) {
 
 
+
         for (const formElem of elemOfConfig.enableWhen) {
+          console.log(elemOfConfig.enableWhen);
           // checks the form field(index) with code of the question
           if (index === formElem.enableWhenQ) {
             // checks the field answer  with code of the answer
             if (value === formElem.enableWhenA) {
-              // console.log(elemOfConfig);
+              console.log(elemOfConfig);
               elemOfConfig.elementClass = 'enable-when-show';
-              elemOfConfig.flag = true;
+              // elemOfConfig.flag = true;
               if (elemOfConfig.typeElem !== 'BOOL') {
 
 
                 if (elemOfConfig.typeElem === 'PHONE') {
-                  console.log(elemOfConfig.type);
-                  this.form.setRequired(elemOfConfig.name, [
-                    Validators.required,
-                    Validators.pattern(
-                      '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-                    )
-                  ]);
+                  if (elemOfConfig.required) {
+                    this.form.setRequired(elemOfConfig.name, [
+                      Validators.required,
+                      Validators.pattern(
+                        '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
+                      )
+                    ]);
+                  } else {
+                    this.form.setRequired(elemOfConfig.name, [
+                      Validators.pattern(
+                        '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
+                      )
+                    ]);
+                  }
                 } else if (elemOfConfig.typeElem === 'EMAIL') {
-                  console.log(elemOfConfig.type);
-                  this.form.setRequired(elemOfConfig.name, [Validators.required, Validators.email]);
+                  if (elemOfConfig.required) {
+                    this.form.setRequired(elemOfConfig.name, [Validators.required, Validators.email]);
+                  } else {
+                    this.form.setRequired(elemOfConfig.name, [Validators.email]);
+                  }
                 } else {
-
-                  this.form.setRequired(elemOfConfig.name, [Validators.required]);
+                  if (elemOfConfig.required) {
+                    this.form.setRequired(elemOfConfig.name, [Validators.required]);
+                  }
                 }
               }
               return;
