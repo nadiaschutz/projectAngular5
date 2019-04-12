@@ -151,6 +151,7 @@ export class DependentComponent implements OnInit {
     dependent.extension = extensionsArray;
     dependent.address = address;
     dependent.name = [name];
+    dependent.resourceType = 'Patient';
     dependent.telecom = [phone, email];
     dependent.communication = [communication];
     dependent.birthDate = formatDate(this.dependentFormGroup.get('dob').value, 'yyyy-MM-dd', 'en');
@@ -158,7 +159,7 @@ export class DependentComponent implements OnInit {
     const finalJSON = JSON.stringify(dependent);
 
     this.patientService.postPatientData(finalJSON).subscribe(data => {
-      this.returnIDFromResponse(data)
+      this.returnIDFromResponse(data);
       this.router.navigateByUrl('/clientsummary');
     });
   }

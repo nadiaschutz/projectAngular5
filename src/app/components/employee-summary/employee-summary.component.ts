@@ -193,10 +193,6 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
       language: new FormControl('', Validators.required)
     });
 
-    this.onChanges();
-    this.getAndSetDepartmentList();
-
-
   }
 
   ngOnDestroy() {
@@ -308,7 +304,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     });
     data['extension'].forEach(extension => {
       if (extension['url'] === 'https://bcip.smilecdr.com/fhir/jobtitle' ||
-      extension['url'] === 'https://bcip.smilecdr.com/fhir/jobtile') {
+        extension['url'] === 'https://bcip.smilecdr.com/fhir/jobtile') {
         temp['jobtitle'] = {};
         temp['jobtitle']['url'] = extension.url;
         temp['jobtitle']['valueString'] = extension.valueString;
@@ -605,7 +601,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     });
 
     if (this.selected['employeeType']['valueString'] === 'Employee') {
-      
+
       this.employeeFormGroup.addControl(
         'id',
         new FormControl('', [
@@ -685,7 +681,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
           this.selected['crossref2']['valueString']
         );
       }
-     this.getAndSetDepartmentList();
+      this.getAndSetDepartmentList();
 
     }
 
