@@ -975,12 +975,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       });
 
       this.form.setDisabled('submit', true);
-      if (this.servReqType === 'SERVREQ') {
-        this.form.setValue('AUTHOR', this.userName);
-        this.form.setValue('USERDEPT', this.currentUserDepartment);
-        this.form.setDisabled('USERDEPT', true);
-        this.form.setValue('DATECR', this.todayPiped);
-      }
+
+      this.form.setValue('AUTHOR', this.userName);
+      this.form.setValue('USERDEPT', this.currentUserDepartment);
+      this.form.setValue('DATECR', this.todayPiped);
+
 
     });
 
