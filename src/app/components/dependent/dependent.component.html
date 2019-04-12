@@ -1,6 +1,6 @@
 <div class='container'>
   <div class="main-header">
-    <h5>clients</h5>
+    <h5>Employee</h5>
     <h6>client department > Create Employee & Dependent Records</h6>
   </div>
   <div>
@@ -15,148 +15,150 @@
         </div>
 
         <div class="row">
-            <div class="col">
-              <label for="givenName">First Name (Required)</label>
-              <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName"
-                name="givenName">
-  
-              <div *ngIf="dependentFormGroup.controls['givenName'].invalid
+          <div class="col">
+            <label for="givenName">First Name (Required)</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="givenName" id="givenName"
+              name="givenName">
+
+            <div *ngIf="dependentFormGroup.controls['givenName'].invalid
               && (dependentFormGroup.controls['givenName'].touched || dependentFormGroup.controls['givenName'].dirty)">
-                <div class="error-message">
-                  Must be two or more characters long
-                </div>
+              <div class="error-message">
+                Must be two or more characters long
               </div>
             </div>
-            <div class="col">
-              <label for="familyName">Last Name (Required)</label>
-              <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
-                required>
-  
-              <div *ngIf="dependentFormGroup.controls['familyName'].invalid
+          </div>
+          <div class="col">
+            <label for="familyName">Last Name (Required)</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="familyName" id="familyName"
+              required>
+
+            <div
+              *ngIf="dependentFormGroup.controls['familyName'].invalid
               && (dependentFormGroup.controls['familyName'].touched || dependentFormGroup.controls['familyName'].dirty)">
-                <div class="error-message">
-                  Must be two or more characters long
-                </div>
+              <div class="error-message">
+                Must be two or more characters long
               </div>
-  
             </div>
+
           </div>
-  
-          <div class="row">
-            <div class="col">
-              <div class="form-group">
-                <label for="dob">Date of Birth (Required)</label>
-                <input class="form-control" type="text" placeholder="Datepicker" formControlName="dob" id="dob"
-                  bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red required>
-                <div class="invalid-feedback">
-                  Cannot be blank
-                </div>
-              </div>
-            </div>
-            <div class="col">
-              <label for="type">Preferred Language</label>
-              <select class="form-control" formControlName="language" id="language" placeholder="Select a language">
-                <option *ngFor="let lang of languageList" [value]="lang.value">
-                  {{lang.viewValue}}
-                </option>
-                <div class="invalid-feedback">
-                  Cannot be blank
-                </div>
-              </select>
-            </div>
-          </div>
-  
-  
-        </section>
-  
-  
-        <section class="form-section">
-          <div class='header'>
-            <h6>
-              Contact & Address Information
-            </h6>
-          </div>
-  
-  
-  
-  
-          <div class="row">
-            <div class="col">
-              <label for="email">Email (Required)</label>
-              <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email"
-                required>
-              <div class="invalid-feedback">
-                Must be of format: email@email.com
-              </div>
-            </div>
-            <div class="col">
-              <label for="phoneNumber">Phone Number (Required)</label>
-              <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber"
-                id="phoneNumber" required>
-              <div class="invalid-feedback">
-                Must be ten digits long, no spaces, characters or dashes
-              </div>
-            </div>
-          </div>
-  
-          <div class="row">
-            <div class="col">
-              <label for="addressStreet">Street Address (Required)</label>
-              <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet"
-                id="addressStreet" required>
-              <div class="invalid-feedback">
-                Cannot be blank
-              </div>
-            </div>
-            <div class="col">
-              <label for="addressCity">City (Required)</label>
-              <input type="text" class="form-control" placeholder="Enter" formControlName="addressCity" id="addressCity"
-                required>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="dob">Date of Birth (Required)</label>
+              <input class="form-control" type="text" placeholder="Datepicker" formControlName="dob" id="dob"
+                bsDatepicker [bsConfig]='datePickerConfig' [minDate]="minDate" [maxDate]="maxDate" red required>
               <div class="invalid-feedback">
                 Cannot be blank
               </div>
             </div>
           </div>
-  
-          <div class="row">
-            <div class="col-3">
-              <label for="addressProv">Province (Required)</label>
-              <select class="form-control" formControlName="addressProv" placeholder="Enter" required>
-                  <option value="">(Select)</option>
-                  <option *ngFor="let province of provinces" [value]="province">
-                  {{province}}
-                </option>
-              </select>
-  
-  
-  
+          <div class="col">
+            <label for="type">Preferred Language</label>
+            <select class="form-control" formControlName="language" id="language" placeholder="Select a language">
+              <option *ngFor="let lang of languageList" [value]="lang.value">
+                {{lang.viewValue}}
+              </option>
               <div class="invalid-feedback">
                 Cannot be blank
               </div>
-            </div>
-            <div class="col-3">
-              <label for="addressPcode">Postal Code (Required)</label>
-              <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode"
-                id="addressPcode" required>
-              <div class="invalid-feedback">
-                Cannot be blank
-              </div>
-            </div>
-            <div class="col-6">
-              <label for="addressCountry">Country (Required)</label>
-              <input type="text" class="form-control" formControlName="addressCountry" id="addressCountry" required>
-              <div class="invalid-feedback">
-                Cannot be blank
-              </div>
+            </select>
+          </div>
+        </div>
+
+
+      </section>
+
+
+      <section class="form-section">
+        <div class='header'>
+          <h6>
+            Contact & Address Information
+          </h6>
+        </div>
+
+
+
+
+        <div class="row">
+          <div class="col">
+            <label for="email">Email (Required)</label>
+            <input type="text" class="form-control" placeholder="sample@email.com" formControlName="email" id="email"
+              required>
+            <div class="invalid-feedback">
+              Must be of format: email@email.com
             </div>
           </div>
-        </section>
+          <div class="col">
+            <label for="phoneNumber">Phone Number (Required)</label>
+            <input type="text" class="form-control" placeholder="0000000000" formControlName="phoneNumber"
+              id="phoneNumber" required>
+            <div class="invalid-feedback">
+              Must be ten digits long, no spaces, characters or dashes
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="addressStreet">Street Address (Required)</label>
+            <input type="text" class="form-control" placeholder="123 Lane" formControlName="addressStreet"
+              id="addressStreet" required>
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+          <div class="col">
+            <label for="addressCity">City (Required)</label>
+            <input type="text" class="form-control" placeholder="Enter" formControlName="addressCity" id="addressCity"
+              required>
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-3">
+            <label for="addressProv">Province (Required)</label>
+            <select class="form-control" formControlName="addressProv" placeholder="Enter" required>
+              <option value="">(Select)</option>
+              <option *ngFor="let province of provinces" [value]="province">
+                {{province}}
+              </option>
+            </select>
+
+
+
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+          <div class="col-3">
+            <label for="addressPcode">Postal Code (Required)</label>
+            <input type="text" class="form-control" placeholder="M1P1P1" formControlName="addressPcode"
+              id="addressPcode" required>
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+          <div class="col-6">
+            <label for="addressCountry">Country (Required)</label>
+            <input type="text" class="form-control" formControlName="addressCountry" id="addressCountry" required>
+            <div class="invalid-feedback">
+              Cannot be blank
+            </div>
+          </div>
+        </div>
+      </section>
 
 
       <div class="row">
         <div class="col">
           <div class="button-section line">
-            <button class="btn regular-dark-button" (click)="setDependent()" [disabled]="!dependentFormGroup.valid">Submit
+            <button class="btn regular-dark-button" (click)="setDependent()"
+              [disabled]="!dependentFormGroup.valid">Submit
               Dependent</button>
             <div class="valid-feedback">
               Success!

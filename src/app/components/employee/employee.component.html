@@ -1,6 +1,6 @@
 <div class="container">
   <div class="main-header">
-    <h5>clients</h5>
+    <h5>Employee</h5>
     <h6>client department > Create Employee & Dependent Records</h6>
   </div>
   <div id="content-form">
@@ -11,7 +11,7 @@
       <section class="form-section">
         <div class='header'>
           <h6>
-            Client Information
+            Employee Information
           </h6>
         </div>
 
@@ -186,7 +186,7 @@
           <div class="col-3">
             <label for="jobClass">Job Class</label>
             <input type="text" class="form-control" placeholder="Enter" formControlName="jobClass" id="jobClass">
-            
+
           </div>
         </div>
 
@@ -194,8 +194,8 @@
           <div class="col">
             <label for="departmentName">Department Name</label>
             <select class="form-control" formControlName="departmentName" id="departmentName" required>
-                <option value="">(Select)</option>
-                <option *ngFor="let dept of employeeDepartmentList" [value]="dept.value">
+              <option value="">(Select)</option>
+              <option *ngFor="let dept of employeeDepartmentList" [value]="dept.value">
                 {{dept.text}}
               </option>
             </select>
