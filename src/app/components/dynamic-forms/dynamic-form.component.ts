@@ -83,6 +83,7 @@ export class DynamicFormComponent implements OnInit, OnChanges {
     return this.fb.control({ disabled, value }, validation);
   }
 
+
   handleSubmit(event: Event) {
     event.preventDefault();
     event.stopPropagation();
@@ -119,6 +120,10 @@ export class DynamicFormComponent implements OnInit, OnChanges {
   removeRequired(name: string) {
     this.form.controls[name].clearValidators();
     this.form.controls[name].updateValueAndValidity();
+  }
+
+  setPristine(name: string) {
+    this.form.controls[name].markAsPristine();
   }
 
 
