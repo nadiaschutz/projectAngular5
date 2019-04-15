@@ -22,6 +22,19 @@ export class ReportingService {
       '/QuestionnaireResponse?context=' + episodeOfCareId, {headers: this.getHeaders()}).toPromise();
   }
 
+  fetchEpisodeOfCareFromSearchParams(searchParams) {
+    return this.httpClient.get(environment.queryURI + '/EpisodeOfCare' + searchParams, {headers: this.getHeaders()}).toPromise();
+  }
+
+  fetchCarePlanFromSearchParams(searchParams) {
+    return this.httpClient.get(environment.queryURI + '/CarePlan' + searchParams, {headers: this.getHeaders()}).toPromise();
+  }
+
+  fetchServReqAlongWithPatients() {
+    return this.httpClient.get(environment.queryURI +
+      '/QuestionnaireResponse?identifier=SERVREQ&_include=QuestionnaireResponse:subject', {headers: this.getHeaders()}).toPromise();
+  }
+
   getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       Authorization: 'Bearer ' + this.oauthService.getAccessToken()

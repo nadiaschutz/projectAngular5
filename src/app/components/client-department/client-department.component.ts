@@ -299,7 +299,7 @@ export class ClientDepartmentComponent implements OnInit, AfterViewInit {
     branchLocation.identifier = [identifier];
 
     const regionExtension = new FHIR.Extension();
-    regionExtension.url = 'https:bcip.smilecdr.com/fhir/psohpRegion';
+    regionExtension.url = 'https://bcip.smilecdr.com/fhir/psohpRegion';
     for (const region of this.regionalOfficesWithId) {
       if (region.name === value.region) {
         const reference = new FHIR.Reference;

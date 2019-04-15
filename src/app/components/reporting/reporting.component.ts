@@ -14,6 +14,7 @@ import {
 import * as ReportingInterfaces from '../../interface/reporting-interfaces';
 import { Reporting } from '../../interface/reporting';
 import { Organization } from '../../interface/FHIR';
+import * as moment from 'moment';
 
 
 export interface NameValueLookup {
@@ -31,15 +32,23 @@ export class ReportingComponent implements OnInit {
   serviceRequestData = [];
   datePickerConfig: Partial<BsDatepickerConfig>;
   DATE_FORMAT = 'YYYY-MM-DD';
-  regions = ['Select Region'];
+  dateRange = {};
+  dateRangeYear = false;
+  dateRangeQuarter = false;
+  dateRangeMonth = false;
+  dateRangeButtonSelected = false;
+  dateRangeCalendarSelected = false;
+  regions = [];
   psohpTypes = ['Select Type', 'HACAT1', 'HACAT2', 'HACAT3', 'FTWORK',
-    'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC2', 'THCRC3'];
+  'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC2', 'THCRC3'];
   clientDepartments = ['Select Department'];
   statuses = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   milestones = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   reportingFormGroup: FormGroup;
-  dataSets = ['Select Data Set', 'Service Request', 'Care Plan', 'Diagnostics Test',
-    'Consultation', 'Medical Information', 'Vaccines', 'Full Log'];
+  dataSets = ['Select Data Set', 'Service Request', 'Care Plan', 'Requisition',
+  'Vaccines', 'Full Log'];
+  fullLogTypes = ['Select Full Log', 'Dependents', 'Assign', 'Task'];
+  showFullLogTypes = false;
   episodeOfCareList = [];
   questionnaireResponseList = [];
   patientsList = [];
@@ -230,7 +239,7 @@ export class ReportingComponent implements OnInit {
   // Get data to populate dropdowns for Regions/Types/Department/Category/Status/Milestones
 
   ngOnInit() {
-    this.preLoadServiceRequestData();
+    // this.preLoadServiceRequestData();
     this.initializeDatePicker();
     this.getAllRegions();
     this.getAllClientDeparments();
@@ -238,14 +247,15 @@ export class ReportingComponent implements OnInit {
       psohpService: new FormControl(null),
       assesmentType: new FormControl(null),
       assesmentCat: new FormControl(null),
-      region: new FormControl(''),
-      department: new FormControl(''),
+      region: new FormControl(null),
+      department: new FormControl(null),
       status: new FormControl(''),
       milestone: new FormControl(''),
       serviceRequest: new FormControl(''),
       vaccines: new FormControl(''),
       dataSet: new FormControl(''),
-      dateRange: new FormControl('')
+      dateRange: new FormControl(''),
+      fullLogType: new FormControl('')
     });
   }
 
@@ -259,7 +269,7 @@ export class ReportingComponent implements OnInit {
   getAllRegions() {
     this.userService.fetchAllRegionalOffices().subscribe(data => {
       data['entry'].forEach(element => {
-        this.regions.push(element.resource.name);
+        this.regions.push({name: element.resource.name, value: 'Organization/' + element.resource.id});
       });
     });
   }
@@ -269,16 +279,182 @@ export class ReportingComponent implements OnInit {
       const arrToSort = [];
       data['entry'].forEach(element => {
         arrToSort.push(element.resource.name);
-
-        this.clientDepartments = arrToSort.sort((a, b) => {
-          const textA = a.toUpperCase();
-          const textB = b.toUpperCase();
-          if (textA < textB) { return -1; }
-          if (textA > textB) { return 1; }
-          return 0;
-        });
+      });
+      this.clientDepartments = arrToSort.sort((a, b) => {
+        const textA = a.toUpperCase();
+        const textB = b.toUpperCase();
+        if (textA < textB) { return -1; }
+        if (textA > textB) { return 1; }
+        return 0;
       });
     });
+  }
+
+  onDataSetChange() {
+    const selectedDataSet = this.reportingFormGroup.value.dataSet;
+    if (selectedDataSet === 'Full Log') {
+      this.showFullLogTypes = true;
+    } else {
+      this.showFullLogTypes = false;
+    }
+  }
+
+  onCalendarChange() {
+    this.dateRangeYear = false;
+    this.dateRangeQuarter = false;
+    this.dateRangeMonth = false;
+    this.dateRangeCalendarSelected = true;
+  }
+
+  setDateRangeFromButtons(selectedType) {
+    const currentDate = this.utilService.getCurrentDate();
+    this.dateRange['to'] = currentDate;
+    const fromDate = new Date(currentDate);
+    if (selectedType === 'Year') {
+      this.dateRangeYear = true;
+      this.dateRangeQuarter = false;
+      this.dateRangeMonth = false;
+      this.dateRangeCalendarSelected = false;
+      this.reportingFormGroup.patchValue({ dateRange: null });
+      fromDate.setFullYear(fromDate.getFullYear() - 1);
+    } else if (selectedType === 'Quarter') {
+      this.dateRangeYear = false;
+      this.dateRangeQuarter = true;
+      this.dateRangeMonth = false;
+      this.dateRangeCalendarSelected = false;
+      this.reportingFormGroup.patchValue({ dateRange: null });
+      fromDate.setMonth(fromDate.getMonth() - 3);
+    } else if (selectedType === 'Month') {
+      this.dateRangeYear = false;
+      this.dateRangeQuarter = false;
+      this.dateRangeMonth = true;
+      this.dateRangeCalendarSelected = false;
+      this.reportingFormGroup.patchValue({ dateRange: null });
+      fromDate.setMonth(fromDate.getMonth() - 1);
+    }
+    this.dateRange['from'] = this.utilService.getDate(fromDate);
+  }
+
+  async buildQueryParameters() {
+    let searchParameters = '?_include=*&_revinclude=*';
+    const region = this.reportingFormGroup.value.region;
+    if (region) {
+      searchParameters += '&patient:Patient.branch.psohpRegion.name=' + region;
+    }
+    const department = this.reportingFormGroup.value.department;
+    if (department) {
+      searchParameters += '&patient:Patient.workplace.name=' + department;
+    }
+    if (this.dateRangeYear || this.dateRangeQuarter || this.dateRangeMonth) {
+      searchParameters += '&date=ge' + this.dateRange['from'] + '&date=le' + this.dateRange['to'];
+    }
+    if (this.reportingFormGroup.value.dateRange &&
+      Array.isArray(this.reportingFormGroup.value.dateRange) &&
+      this.reportingFormGroup.value.dateRange.length === 2 &&
+      moment(this.reportingFormGroup.value.dateRange[0]).isValid() &&
+      moment(this.reportingFormGroup.value.dateRange[1]).isValid()) {
+        searchParameters +=
+      '&date=ge' + moment(this.reportingFormGroup.value.dateRange[0]).format(this.DATE_FORMAT) +
+      '&date=le' + moment(this.reportingFormGroup.value.dateRange[1]).format(this.DATE_FORMAT);
+    }
+    const dataSet = this.reportingFormGroup.value.dataSet;
+    if (dataSet) {
+      if (dataSet === 'Service Request') {
+        const data = await this.reportingService.fetchEpisodeOfCareFromSearchParams(searchParameters);
+        this.processEpisodeAndRelatedData(data);
+      }
+      if (dataSet === 'Care Plan') {
+        // Query for Episode of Care by including CarePlan and Questionnaire Response
+        const data = await this.reportingService.fetchCarePlanFromSearchParams(searchParameters);
+        this.processCarePlanAndRelatedData(data);
+      }
+      if (dataSet === 'Requisition') {
+        // Check the type of requisition and query
+      }
+      if (dataSet === 'Full Log') {
+        const fullLogType = this.reportingFormGroup.value.fullLogType;
+        if (fullLogType === 'Dependents') {
+          // Query for dependents
+          const data = await this.reportingService.fetchServReqAlongWithPatients();
+          this.processServReqDataForFullLogDependents(data);
+        } else if (fullLogType === 'Assign') {
+          // Query for Assign
+        } else if (fullLogType === 'Task') {
+          // Query for Tasks
+        }
+      }
+    }
+  }
+
+  processServReqDataForFullLogDependents(data) {
+    const patientList = [];
+    const fhirIdToNames = {};
+    const dependentList = [];
+    const questionnaireResponseList = [];
+    data['entry'].forEach(element => {
+      const resource = element.resource;
+      if (resource.resourceType === 'Patient') {
+        let isPatientAnEmployee = false;
+        let dependentlink = '';
+        const name = this.utilService.getNameFromResource(resource);
+        fhirIdToNames[resource.id] = name;
+        resource.extension.forEach(extension => {
+          if (extension.url === 'https://bcip.smilecdr.com/fhir/employeetype') {
+            if (extension.valueString === 'Employee') {
+              isPatientAnEmployee = true;
+            }
+            if (extension.valueString === 'Dependent') {
+              isPatientAnEmployee = false;
+            }
+          }
+          if (extension.url === 'https://bcip.smilecdr.com/fhir/dependentlink') {
+            dependentlink = extension.valueString;
+          }
+        });
+        if (isPatientAnEmployee) {
+          // Patient List has patient FHIR id as key and dependent link as value
+          patientList[resource.id] = dependentlink;
+        } else {
+          // Dependent List has dependent link as key and patient FHIR id as value
+          if (dependentList[dependentlink]) {
+            dependentList[dependentlink].push(resource.id);
+          } else {
+            dependentList[dependentlink] = [];
+            dependentList[dependentlink].push(resource.id);
+          }
+        }
+      }
+      // QuestionnaireResponseList has the QR id as key and value as patient ID
+      if (resource.resourceType === 'QuestionnaireResponse') {
+        if (resource.subject) {
+          questionnaireResponseList[resource.id] = this.utilService.getIdFromReference(resource.subject.reference);
+        }
+      }
+    });
+    const resultList = [];
+    for (const patientId of Object.keys(patientList)) {
+      const employeeName = fhirIdToNames[patientId];
+      const dependents = dependentList[patientList[patientId]];
+      for (const questionnaireResponseId of Object.keys(questionnaireResponseList)) {
+        const temp = {};
+        if (questionnaireResponseList[questionnaireResponseId] === patientId) {
+          temp['Service Request ID'] = questionnaireResponseId;
+          temp['Employee Name'] = employeeName;
+          temp['Dependent Name'] = '-';
+        }
+        if (dependents && dependents.length > 0) {
+          for (const dependentId of dependents) {
+            if (questionnaireResponseList[questionnaireResponseId] === dependentId) {
+              temp['Service Request ID'] = questionnaireResponseId;
+              temp['Employee Name'] = employeeName;
+              temp['Dependent Name'] = fhirIdToNames[dependentId];
+            }
+          }
+        }
+        resultList.push(temp);
+      }
+    }
+    this.exportToCSV(resultList);
   }
 
   preLoadServiceRequestData() {
@@ -315,17 +491,6 @@ export class ReportingComponent implements OnInit {
     }
   }
 
-  async testAwait() {
-    const episodeData = await this.reportingService.fetchAllEpisodeOfCare();
-    const questionnaireResponseList = [];
-    for (const episode of episodeData['entry']) {
-      const questionnaireResponses = await this.reportingService.fetchQuestionnaireResponseFromEpisodeOfCare(episode.resource.id);
-      for (const questionnaireResponse of questionnaireResponses['entry']) {
-        console.log(questionnaireResponse.resource);
-      }
-    }
-  }
-
   export() {
     let assessmentCode = '';
     if (this.reportingFormGroup.get('assesmentCat').value !== null) {
@@ -350,9 +515,9 @@ export class ReportingComponent implements OnInit {
             arr.push(carePlan);
           }
         });
-        this.processCarePlan(arr);
+        // this.processCarePlan(arr);
       } else {
-        this.processCarePlan(this.carePlanList);
+        // this.processCarePlan(this.carePlanList);
       }
     }
     if (this.reportingFormGroup.value.dataSet === 'Diagnostics Test' ||
@@ -363,21 +528,49 @@ export class ReportingComponent implements OnInit {
     // this.resetData();
   }
 
-  processCarePlan(carePlans) {
-    console.log(carePlans);
-    if (carePlans.length > 0) {
+  processCarePlanAndRelatedData(data) {
+    data['entry'].forEach(element => {
+      if (element.resource.resourceType === 'EpisodeOfCare') {
+        this.episodeOfCareList.push(element.resource);
+      }
+      if (element.resource.resourceType === 'QuestionnaireResponse') {
+        this.questionnaireResponseList.push(element.resource);
+      }
+      if (element.resource.resourceType === 'Patient') {
+        this.patientsList.push(element.resource);
+      }
+      if (element.resource.resourceType === 'Practitioner') {
+        this.practitionerList.push(element.resource);
+      }
+      if (element.resource.resourceType === 'CarePlan') {
+        this.carePlanList.push(element.resource);
+      }
+    });
+    this.processCarePlan();
+  }
+
+  processCarePlan() {
+    if (this.carePlanList.length > 0) {
       const carePlanResultList = [];
-      carePlans.forEach(carePlan => {
-        const episodeOfCareId = this.utilService.getIdFromReference(carePlan.context.reference);
+      this.carePlanList.forEach(carePlan => {
+        let episodeOfCareId = '';
+        if (carePlan.context) {
+          episodeOfCareId = this.utilService.getIdFromReference(carePlan.context.reference);
+        }
         carePlan.activity.forEach(activity => {
           if (activity.detail.status === 'completed' && activity.progress) {
             const temp = {};
-            temp['Service Request Id'] = this.associatedEoCAndQResponseIds[episodeOfCareId];
+            if (episodeOfCareId !== '') {
+              temp['Service Request Id'] = this.associatedEoCAndQResponseIds[episodeOfCareId];
+            } else {
+              temp['Service Request Id'] = '';
+            }
             temp['Careplan Code'] = carePlan.id;
             temp['Careplan Activity No.'] = activity.detail.description;
             const latestProgressItem = activity.progress[activity.progress.length - 1];
             if (latestProgressItem.authorReference) {
-              temp['User ID that completed the activity'] = latestProgressItem.authorReference;
+              temp['User ID that completed the activity'] =
+              this.utilService.getIdFromReference(latestProgressItem.authorReference.reference);
             } else {
               temp['User ID that completed the activity'] = '';
             }
@@ -439,6 +632,27 @@ export class ReportingComponent implements OnInit {
     });
   }
 
+  processEpisodeAndRelatedData(data) {
+    data['entry'].forEach(element => {
+      if (element.resource.resourceType === 'EpisodeOfCare') {
+        this.episodeOfCareList.push(element.resource);
+      }
+      if (element.resource.resourceType === 'QuestionnaireResponse') {
+        this.questionnaireResponseList.push(element.resource);
+      }
+      if (element.resource.resourceType === 'Patient') {
+        this.patientsList.push(element.resource);
+      }
+      if (element.resource.resourceType === 'Practitioner') {
+        this.practitionerList.push(element.resource);
+      }
+      if (element.resource.resourceType === 'CarePlan') {
+        this.carePlanList.push(element.resource);
+      }
+    });
+    this.processServiceRequestData();
+  }
+
   processServiceRequestData() {
     this.episodeOfCareList.forEach(episode => {
       const temp = {};
@@ -479,9 +693,11 @@ export class ReportingComponent implements OnInit {
         this.serviceRequestData.push(temp);
       }
     });
+    this.exportToCSV(this.serviceRequestData);
   }
 
   exportToCSV(data) {
+    console.log(data);
     if (Array.isArray(data)) {
       const options = {
         fieldSeparator: ',',
