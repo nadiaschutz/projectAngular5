@@ -117,6 +117,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   configuration;
   userName;
   userRole;
+  userLRO = false;
   loaded = false;
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   config: FieldConfig[] = [];
@@ -212,7 +213,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       this.formId = '1953';
       this.servReqType = 'CONTUS';
     }
-
+    this.userLRO = JSON.parse(sessionStorage.getItem('userLRO'));
     this.userRole = sessionStorage.getItem('userRole');
     console.log('userRole', this.userRole);
     this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
@@ -770,7 +771,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           };
         } else {
-          const enableWhenQ = [];
           return {
             type: 'select',
             typeElem: el.code[1].code,
@@ -788,11 +788,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           };
         }
       } else if (el.code[1].code === 'BOOL') {
+        const enableWhen = this.populateEnableWhenObj(el);
         if (el.code[0].code === 'DEPENDINV') {
           // console.log(this.dependentsList);
           if (this.dependentsList.length < 1) {
-            console.log('this.dependentsList.length < 1');
-
             return {
               type: 'checkbox',
               label: el.text + ' (Disabled)',
@@ -811,14 +810,38 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               label: el.text,
               name: el.linkId,
               typeElem: el.code[1].code,
+              enableWhen: el.enableWhen ? enableWhen : false,
+              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+              value: el.enableWhen ? null : false,
+              disabled: false
+            };
+          }
+        } else if (el.code[0].code === 'LROREQ') {
+          if (!this.userLRO) {
+            console.log('!this.userLro');
+            return {
+              type: 'checkbox',
+              label: el.text + ' (Disabled)',
+              name: el.linkId,
+              typeElem: el.code[1].code,
+              enableWhen: el.enableWhen ? enableWhen : false,
+              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+              value: el.enableWhen ? null : false,
+              disabled: true
+            };
+          } else {
+            return {
+              type: 'checkbox',
+              label: el.text,
+              name: el.linkId,
+              typeElem: el.code[1].code,
+              enableWhen: el.enableWhen ? enableWhen : false,
               elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
               value: el.enableWhen ? null : false,
               disabled: false
             };
           }
         } else {
-
-          const enableWhen = this.populateEnableWhenObj(el);
           return {
             type: 'checkbox',
             label: el.text,
