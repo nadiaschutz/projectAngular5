@@ -171,6 +171,9 @@ export class UserService {
                             }
                           });
                         });
+                        if (individualEntry['specialty']) {
+                          this.setUserLro(individualEntry['specialty'][0]['coding'][0]['code']);
+                        }
                       });
                     }
                   }
@@ -224,6 +227,8 @@ export class UserService {
       );
     });
   }
+
+
 
   /**
    * Queries the server, and finds a PractitionerRole object
@@ -324,6 +329,13 @@ export class UserService {
 
   setCurrentUserRole(data: string) {
     sessionStorage.setItem('userRole', data);
+  }
+  setUserLro(data: string) {
+    if (data === 'LROCLIENT') {
+      sessionStorage.setItem('userLRO', 'true');
+    } else {
+      sessionStorage.setItem('userLRO', 'false');
+    }
   }
 
   setCurrentUserFHIRID(data: string) {
