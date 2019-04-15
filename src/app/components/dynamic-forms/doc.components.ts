@@ -89,7 +89,6 @@ export class DocComponent implements Field {
   docFormGroup: FormGroup;
   fileTypeList = [
     { value: 'ADMINISTRATIVE', viewValue: 'ADMINISTRATIVE' },
-    { value: 'CLINICAL', viewValue: 'CLINICAL' },
     { value: 'INVOICE', viewValue: 'INVOICE' },
     { value: 'PSOHP-FORM', viewValue: 'PSOHP-FORM' },
     { value: 'OTHER', viewValue: 'OTHER' }
