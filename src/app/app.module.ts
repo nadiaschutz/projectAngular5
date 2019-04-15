@@ -26,7 +26,6 @@ import { EmployeeComponent } from './components/employee/employee.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { NewServiceRequestComponent } from './components/new-service-request/new-service-request.component';
-import { NewServiceRequestNoClientComponent } from './components/new-service-request-no-client/new-service-request-no-client.component';
 import { EmployeeSummaryComponent } from './components/employee-summary/employee-summary.component';
 import { ClientDepartmentComponent } from './components/client-department/client-department.component';
 import { LabRequisitionComponent } from './components/staff/lab-requisition/lab-requisition.component';
@@ -64,7 +63,6 @@ import { DynamicFieldDirective } from './components/dynamic-forms/dynamic-field.
 import { DynamicFormComponent } from './components/dynamic-forms/dynamic-form.component';
 import { DemoComponent } from './components/demo/demo.component';
 
-import { ContactUsFormResolverService } from './service/contact-us-form-resolver.service';
 
 import { DepartmentListResolverService } from './service/department-list-resolver.service';
 import { FormBuilderComponent } from './components/form-builder/form-builder.component';
@@ -158,7 +156,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     NavbarComponent,
     SidebarComponent,
     NewServiceRequestComponent,
-    NewServiceRequestNoClientComponent,
     ServReqMainComponent,
     SummaryPageComponent,
     ClientDepartmentComponent,
