@@ -351,6 +351,10 @@ export class UserService {
     return this.httpClient.get<JSON>('../../assets/branchlist.json');
   }
 
+  getPermissionListAsync() {
+    return this.httpClient.get<JSON>('/src/app/components/new-account/permission.json').toPromise();
+  }
+
   getPermissionList() {
     return this.httpClient.get<JSON>('/src/app/components/new-account/permission.json');
   }

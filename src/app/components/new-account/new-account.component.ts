@@ -94,7 +94,6 @@ export class NewAccountComponent implements OnInit {
         data => this.populateRegionalOffices(data),
         error => this.handleError(error)
       );
-
     /**
      * Initializes list for district offices on our system
      */
@@ -235,31 +234,31 @@ export class NewAccountComponent implements OnInit {
        * If uncesseful, it'll throw an error.
        */
 
-       if (this.accountFormGroup.get('departmentName').value &&
+      if (this.accountFormGroup.get('departmentName').value &&
         this.accountFormGroup.get('departmentBranch').value) {
-          this.userService.savePractitioner(finalJSON).subscribe(
-            data => {
-              this.successHeaderCheck = true;
-              this.disableInputsBeforeSubmission();
-              this.confirmSubmit = !this.confirmSubmit;
-              console.log('Success! A practitioner has been created: ', data);
-              this.capturePractitionerPieces(data);
-              this.createUser(this.practitionerPieces);
-              if (this.accountFormGroup.get('regionalOffice').value) {
-                this.createPractitionerRoleForOffices(this.practitionerPieces);
-              }
-              this.createPractitionerRoleForDepartments(this.practitionerPieces);
-              this.showFailureMessage = false;
-              this.showSuccessMessage = true;
-            },
-            error => {
-              this.handleError(error);
-            },
-            () => {
-              this.practitionerPieces = {};
+        this.userService.savePractitioner(finalJSON).subscribe(
+          data => {
+            this.successHeaderCheck = true;
+            this.disableInputsBeforeSubmission();
+            this.confirmSubmit = !this.confirmSubmit;
+            console.log('Success! A practitioner has been created: ', data);
+            this.capturePractitionerPieces(data);
+            this.createUser(data);
+            if (this.accountFormGroup.get('regionalOffice').value) {
+              this.createPractitionerRoleForOffices(this.practitionerPieces);
             }
-          );
-        }
+            this.createPractitionerRoleForDepartments(this.practitionerPieces);
+            this.showFailureMessage = false;
+            this.showSuccessMessage = true;
+          },
+          error => {
+            this.handleError(error);
+          },
+          () => {
+            this.practitionerPieces = {};
+          }
+        );
+      }
     }
 
   }
@@ -268,51 +267,69 @@ export class NewAccountComponent implements OnInit {
   // but is linked to & related to a FHIR object (specifically Practitioner), based
   // on the FHIR object's ID.
   createUser(practitioner: any) {
+    this.mapAuthorities().then(
+      authorities => {
+        const smileUser = new SMILE.UserAccount;
+        const launchContext = new SMILE.DefaultLaunchContext;
 
-    // Initialize FHIR Objects being used
-    const smileUser = new SMILE.UserAccount;
+        launchContext.contextType = 'practitioner';
+        launchContext.resourceId = practitioner['id'];
+        smileUser.defaultLaunchContexts = [launchContext];
 
-    const launchContext = new SMILE.DefaultLaunchContext;
-    smileUser.authorities = [];
+        smileUser.authorities = authorities;
+        smileUser.givenName = this.accountFormGroup.get('given').value;
+        smileUser.familyName = this.accountFormGroup.get('family').value;
+        const username = this.accountFormGroup.get('given').value.toLocaleLowerCase() + '.'
+        + this.accountFormGroup.get('family').value.toLocaleLowerCase();
+        // smileUser.username = this.accountFormGroup.get('pri').value;
+        smileUser.username = username;
+        smileUser.email = this.accountFormGroup.get('email').value;
+        smileUser.password = this.accountFormGroup.get('password').value;
 
-    this.userService.getPermissionList().subscribe(role => {
-      if (role) {
-        const permissionSet = role[this.accountFormGroup.get('role').value];
-        for (const permission of permissionSet) {
-          const authorities = new SMILE.Authority;
-          if (permission['argument']) {
-            authorities.argument = permission['argument'];
-          }
-          authorities.permission = permission['permission'];
-          smileUser.authorities.push(authorities);
-        }
+        const finalJSON = JSON.stringify(smileUser);
+        console.log(finalJSON, smileUser);
+
+        this.userService.createAccount(finalJSON).subscribe(
+          data => console.log('Success! Account Created!', data),
+          error => this.handleError(error)
+        );
       }
-    });
-
+    );
     // Set up the launch context of the user, this is used to link the
     //  acounnt with a Practitioner FHIR object
-    launchContext.contextType = 'practitioner';
-    launchContext.resourceId = practitioner['id'];
-
-    // Add all data from the form and other objects to the base Smile User object
-    smileUser.defaultLaunchContexts = [launchContext];
-    smileUser.givenName = this.accountFormGroup.get('given').value;
-    smileUser.familyName = this.accountFormGroup.get('family').value;
-    const username = smileUser.givenName.toLocaleLowerCase() + '.' + smileUser.familyName.toLocaleLowerCase();
-    // smileUser.username = this.accountFormGroup.get('pri').value;
-    smileUser.username = username;
-    smileUser.email = this.accountFormGroup.get('email').value;
-    smileUser.password = this.accountFormGroup.get('password').value;
-
-    const finalJSON = JSON.stringify(smileUser);
-
-    this.userService.createAccount(finalJSON).subscribe(
-      data => console.log('Success! Account Created!', data),
-      error => this.handleError(error)
-    );
 
   }
 
+  async mapAuthorities() {
+
+    const authorityList = new Array<SMILE.Authority>();
+    const selectedRole = this.accountFormGroup.get('role').value;
+
+    await this.userService.getPermissionListAsync().then(
+      role => {
+        if (role) {
+          const permissionSet = role[selectedRole];
+          if (permissionSet) {
+            for (const permission of permissionSet) {
+              const authorities = new SMILE.Authority;
+              authorities.permission = permission['permission'];
+              if (permission['argument']) {
+                authorities.argument = permission['argument'];
+              }
+              authorityList.push(authorities);
+            }
+          }
+        }
+      }).catch(
+        error => {
+          console.log(error);
+        }
+      );
+    console.log(authorityList);
+
+    return authorityList;
+
+  }
   /**
    * Craetes a PractionerRole that is associated with a Practitioner. Important
    * for describing futher details of the Practitioner (workplace, time & availability,
