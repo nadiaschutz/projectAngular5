@@ -12,15 +12,15 @@
 
         <div class="row">
           <div class="col-6">
-            <button class="btn special-button">Year</button>
-            <button class="btn special-button range">Quarter</button>
-            <button class="btn special-button range">Month</button>
+            <button class="btn special-button select-range" (click)="setDateRangeFromButtons('Year')" [ngClass]="{'activated':dateRangeYear}">Year</button>
+            <button class="btn special-button range" (click)="setDateRangeFromButtons('Quarter')"  [ngClass]="{'activated':dateRangeQuarter}">Quarter</button>
+            <button class="btn special-button range" (click)="setDateRangeFromButtons('Month')" [ngClass]="{'activated':dateRangeMonth}">Month</button>
           </div>
           <div class="col-6">
             <label for="dateRange">Date Range From</label>
             <input type="text" placeholder="Select Date Range" class="form-control date-picker" bsDaterangepicker
               [bsConfig]="datePickerConfig" formControlName="dateRange" id="dateRange" [bsConfig]='datePickerConfig'
-              red>
+              red (click)="onCalendarChange()">
           </div>
         </div>
       </div>
@@ -65,18 +65,17 @@
             <div class="col">
               <label for="region">Region</label>
               <select name="region" id="region" formControlName="region" class="form-control">
-                <option *ngFor="let region of regions">
-                  <span>{{region}}</span>
-                </option>
+              <option *ngFor="let region of regions" [value]="region.value">
+                <span>{{region.name}}</span>
+              </option>
               </select>
             </div>
             <div class="col">
               <label for="department">Department</label>
               <select name="department" id="department" formControlName="department" class="form-control">
-                <option [ngValue]="null">Select Department</option>
-                <option *ngFor="let department of clientDepartments">
-                  <span>{{department}}</span>
-                </option>
+              <option *ngFor="let department of clientDepartments">
+                <span>{{department}}</span>
+              </option>
               </select>
             </div>
           </div>
@@ -111,16 +110,24 @@
         <div class="row">
           <div class="col">
             <label for="dataSet">Data Set</label>
-            <select name="dataSet" id="dataSet" formControlName="dataSet" class="form-control data-set">
-              <option *ngFor="let dataSet of dataSets">
-                <span>{{dataSet}}</span>
-              </option>
+            <select name="dataSet" id="dataSet" formControlName="dataSet" class="form-control" (change)="onDataSetChange()">
+            <option *ngFor="let dataSet of dataSets">
+              <span>{{dataSet}}</span>
+            </option>
+            </select>
+          </div>
+          <div class="col" *ngIf="showFullLogTypes">
+            <label for="fullLogType">Type of Full Log</label>
+            <select name="fullLogType" id="fullLogType" formControlName="fullLogType" class="form-control">
+            <option *ngFor="let fullLogType of fullLogTypes">
+              <span>{{fullLogType}}</span>
+            </option>
             </select>
           </div>
         </div>
 
       </div>
-      <button (click)="export()" class="export btn special-button">Export</button>
+      <button (click)="buildQueryParameters()" class="export btn special-button">Export</button>
     </div>
 
   </form>
