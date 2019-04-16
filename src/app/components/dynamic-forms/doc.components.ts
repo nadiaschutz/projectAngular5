@@ -168,7 +168,7 @@ export class DocComponent implements Field {
         'filetype'
       ).value;
 
-      documentReference.instant = date;
+      documentReference.indexed = new Date();
       documentReference.type = documentReferenceCodeableConcept;
       documentReference.content = [content];
 

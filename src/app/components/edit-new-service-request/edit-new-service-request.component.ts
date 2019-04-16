@@ -524,7 +524,7 @@ export class EditNewServiceRequestComponent implements OnInit {
       documentReferenceCodeableConcept.coding = [documentReferenceCoding];
       documentReferenceCodeableConcept.text = 'Administrative note';
 
-      documentReference.instant = date;
+      documentReference.indexed = new Date();
       documentReference.type = documentReferenceCodeableConcept;
       documentReference.content = [content];
 

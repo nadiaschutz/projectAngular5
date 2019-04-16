@@ -176,7 +176,7 @@ export class StaffService {
 
   getAllDocumentReferencesByAnEncounter(query: any) {
     return this.http.get(environment.queryURI + '/DocumentReference?encounter=' + query, {
-      headers: this.getHeaders()
+      headers: this.getNoCacheHeaders()
     });
   }
 
@@ -219,22 +219,26 @@ export class StaffService {
   }
 
   getDocumentsBasedOnEncounter() {
-    return this.http.get(environment.queryURI + '/Encounter', {headers: this.getHeaders()});
+    return this.http.get(environment.queryURI + '/Encounter', {headers: this.getNoCacheHeaders()});
   }
 
   createEncounter(encounter: any) {
     return this.http.post(environment.queryURI + '/Encounter', encounter,  {headers: this.getPostHeaders()});
   }
 
+  createEncounterAsync(encounter: any) {
+    return this.http.post(environment.queryURI + '/Encounter', encounter,  {headers: this.getPostHeaders()}).toPromise();
+  }
+
   postDataFile(data: string) {
     return this.http.post(environment.queryURI + '/DocumentReference/', data, {
-      headers: this.getHeaders()
+      headers: this.getPostHeaders()
     });
   }
 
   getDocumentsChecklist(context) {
     return this.http.get(environment.queryURI + '/QuestionnaireResponse?context=' + context + '&identifier=RDCL', {
-      headers: this.getHeaders()
+      headers: this.getNoCacheHeaders()
     });
   }
 
@@ -245,8 +249,8 @@ export class StaffService {
     }
 
   updateDocumentFile(id, doc) {
-    return this.http.put(environment.queryURI + '/QuestionnaireResponse/' + id , doc, {
-      headers: this.getHeaders()
+    return this.http.put(environment.queryURI + '/DocumentReference/' + id , doc, {
+      headers: this.getPostHeaders()
     });
   }
 
