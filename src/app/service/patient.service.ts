@@ -49,6 +49,10 @@ export class PatientService {
     return this.httpClient.get(environment.queryURI + '/Patient?identifier=' + pri, {headers: this.getHeaders()}).toPromise();
   }
 
+  getUserWithPRIAsync(pri) {
+    return this.httpClient.get(environment.queryURI + '/Practitioner?identifier=' + pri, {headers: this.getHeaders()}).toPromise();
+  }
+
   getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       'Authorization': 'Bearer ' + this.oauthService.getAccessToken()
@@ -75,6 +79,6 @@ export class PatientService {
 
     QuestionnaireResponse(resourceType , id) {
         return this.httpClient.get<JSON>(environment.queryURI +
-            '/QuestionnaireResponse?context=' + resourceType + '/' + id +'&identifier=SERVREQ', { headers: this.getHeaders() });
+            '/QuestionnaireResponse?context=' + resourceType + '/' + id + '&identifier=SERVREQ', { headers: this.getHeaders() });
     }
 }

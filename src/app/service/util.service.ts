@@ -158,7 +158,7 @@ export class UtilService {
   }
 
   /**
-   * Records an event that takes place during each call to the server utilizing the 
+   * Records an event that takes place during each call to the server utilizing the
    * @param operation takes in a type of operation during an event (GET/POST/PUT/DELETE)
    * @param resource the resource an operation is being acted on
    */
@@ -237,6 +237,21 @@ export class UtilService {
   saveAuditEvent(data) {
     return this.http.post<FHIR.AuditEvent>(environment.queryURI + '/AuditEvent', data, {headers: this.getPostHeaders()});
   }
+
+  async getUserPRIFromFHIRId(fhirId) {
+    let pri = '';
+    await this.http.get(environment.queryURI + '/Practitioner/' + fhirId, {headers: this.getHeaders()}).toPromise().then(data => {
+      data['identifier'].forEach(identifier => {
+        if (identifier.system === 'https://bcip.smilecdr.com/smile/Practitioners') {
+          pri = identifier.value;
+        }
+      });
+    }).catch(error => {
+      console.log(error);
+    });
+    return pri;
+  }
+
   getNoCacheHeaders() {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',

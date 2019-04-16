@@ -38,16 +38,16 @@ export class ReportingComponent implements OnInit {
   dateRangeMonth = false;
   dateRangeButtonSelected = false;
   dateRangeCalendarSelected = false;
-  regions = [];
+  regions = [{name: 'Select Region', value: null}];
   psohpTypes = ['Select Type', 'HACAT1', 'HACAT2', 'HACAT3', 'FTWORK',
   'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC2', 'THCRC3'];
   clientDepartments = ['Select Department'];
   statuses = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   milestones = ['Select Status', 'RECEIVED', 'VALIDATED', 'ASSIGNED', 'SCHEDULED', 'WORK COMPLETED', 'CLOSED'];
   reportingFormGroup: FormGroup;
-  dataSets = ['Select Data Set', 'Service Request', 'Care Plan', 'Requisition',
+  dataSets = ['Select Data Set', 'Service Request', 'Care Plan',
   'Vaccines', 'Full Log'];
-  fullLogTypes = ['Select Full Log', 'Dependents', 'Assign', 'Task'];
+  fullLogTypes = ['Select Full Log', 'Dependents', 'Assign', 'Task', 'Requisition'];
   showFullLogTypes = false;
   episodeOfCareList = [];
   questionnaireResponseList = [];
@@ -230,7 +230,8 @@ export class ReportingComponent implements OnInit {
   // For Labs/Vaccines, query the respective resources
 
   constructor(private staffService: StaffService, private userService: UserService,
-    private fb: FormBuilder, private utilService: UtilService, private reportingService: ReportingService) { }
+    private fb: FormBuilder, private utilService: UtilService,
+    private reportingService: ReportingService) { }
 
   // This screen needs a date range picker: year, quarter, and month
   // a date picker: start date and end date
@@ -276,16 +277,19 @@ export class ReportingComponent implements OnInit {
 
   getAllClientDeparments() {
     this.userService.fetchAllClientDepartments().subscribe(data => {
-      const arrToSort = [];
+      let arrToSort = [];
       data['entry'].forEach(element => {
         arrToSort.push(element.resource.name);
       });
-      this.clientDepartments = arrToSort.sort((a, b) => {
+      arrToSort = arrToSort.sort((a, b) => {
         const textA = a.toUpperCase();
         const textB = b.toUpperCase();
         if (textA < textB) { return -1; }
         if (textA > textB) { return 1; }
         return 0;
+      });
+      arrToSort.forEach(department => {
+        this.clientDepartments.push(department);
       });
     });
   }
@@ -381,8 +385,35 @@ export class ReportingComponent implements OnInit {
           // Query for Assign
         } else if (fullLogType === 'Task') {
           // Query for Tasks
+          const data = await this.reportingService.fetchTasks();
+          this.processDataForFullLogTask(data);
         }
       }
+    }
+  }
+
+  processDataForFullLogTask(data) {
+    if (data['entry']) {
+      const resultList = [];
+      data['entry'].forEach(element => {
+        const task = element.resource;
+        const temp = {};
+        temp['Service Request ID'] = this.utilService.getIdFromReference(task.context.reference);
+        temp['Task ID'] = task.id;
+        temp['Date Created'] = task['authoredOn'];
+        const assignorFHIRId = this.utilService.getIdFromReference(task.requester.agent.reference);
+        this.utilService.getUserPRIFromFHIRId(assignorFHIRId).then(pri => {
+          temp['Assignor User ID'] = pri;
+        });
+        if (task.status === 'completed') {
+          temp['Date Closed'] = this.utilService.getDate(task.meta.lastUpdated);
+        } else {
+          temp['Date Closed'] = this.utilService.getDate(task.meta.lastUpdated);
+        }
+        temp['Result'] = task['status'];
+        resultList.push(temp);
+      });
+      this.exportToCSV(resultList);
     }
   }
 
@@ -441,6 +472,7 @@ export class ReportingComponent implements OnInit {
           temp['Service Request ID'] = questionnaireResponseId;
           temp['Employee Name'] = employeeName;
           temp['Dependent Name'] = '-';
+          resultList.push(temp);
         }
         if (dependents && dependents.length > 0) {
           for (const dependentId of dependents) {
@@ -448,10 +480,10 @@ export class ReportingComponent implements OnInit {
               temp['Service Request ID'] = questionnaireResponseId;
               temp['Employee Name'] = employeeName;
               temp['Dependent Name'] = fhirIdToNames[dependentId];
+              resultList.push(temp);
             }
           }
         }
-        resultList.push(temp);
       }
     }
     this.exportToCSV(resultList);

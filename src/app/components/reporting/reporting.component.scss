@@ -45,3 +45,10 @@ button:focus {
     background-color: #398ef2;
     color: white;
 }
+
+button:focus {
+    background-color: #398ef2;
+    color: white;
+    outline: none;
+    box-shadow: none;
+}
