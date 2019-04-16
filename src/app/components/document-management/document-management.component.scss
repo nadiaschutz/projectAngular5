@@ -1,0 +1,49 @@
+.card {
+    min-width: 100%;
+}
+
+.row {
+    padding-top: 10px;
+}
+
+.summary-card {
+    margin-top: 31px;
+}
+
+.top-row {
+    margin-bottom: 30px;
+}
+
+.top-item-label {
+    font-size: 12px;
+    display: block;
+    color: #626262;
+}
+
+.bottom-item-label {
+    font-size: 16px;
+    color: #333333;
+}
+
+.summary-item {
+    padding-right: 20px;
+    display: inline-block;
+}
+
+.checbox-section {
+    text-align: center; /* center checkbox horizontally */
+    vertical-align: middle; /* center checkbox vertically */
+    padding-right: 27px;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.special-text {
+    color: #0d6ad3;
+}
+
+.disabled {
+    background-color: #f7f7f7;
+}

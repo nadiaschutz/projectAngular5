@@ -72,8 +72,6 @@ export class ImmunizationScreenComponent implements OnInit {
     );
     let enableClinicalPiece = false;
     this.fetchAllClinicians();
-    if (sessionStorage.getItem('userRole')) {
-      if (sessionStorage.getItem('userRole') === 'clinician') {
         this.staffService.getVaccineList().subscribe(
           data => {
             data['list'].forEach(vaccine => {
@@ -165,8 +163,6 @@ export class ImmunizationScreenComponent implements OnInit {
               enableClinicalPiece = true;
             }
           );
-      }
-    }
   }
 
   processServiceRequestForSummary() {

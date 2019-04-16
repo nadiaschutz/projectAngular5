@@ -547,6 +547,7 @@ export class Item extends BackboneElement {
     prefix: string;
     text: string;
     type: Code;
+    subject: Reference;
     enableWhen: EnableWhen[];
     required: boolean;
     repeats: boolean;
@@ -726,7 +727,7 @@ export class DocumentReference extends Resource implements Serializable<Document
     description: string;
     author: Reference[];
     content: Content[];
-    instant: string;
+    indexed: Date;
     context: Context;
     // TODO - add rest of the fields from the spec
     deserialize(jsonObject: any): DocumentReference {

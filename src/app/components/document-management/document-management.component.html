@@ -1,0 +1,155 @@
+<div class="container">
+
+
+
+  <!-- <div class="edit-button-row">
+    <button type="button" class="btn regular-dark-button float-right" (click)="viewDetailedContext()">
+      View Detailed Context
+    </button>
+  </div> -->
+
+  <!-- <div>
+    &lt; Return to Work Screen
+  </div> -->
+  <div class="main-header">
+    <h5>Document Management</h5>
+  </div>
+
+
+  <div class="row top-row">
+    <div class="col-6">
+      <form [formGroup]="docFormGroup" #formDirective="ngForm">
+        <div class="row">
+          <label for="filename">Document Name</label>
+          <input type="text" name="filename" id="filename" formControlName="filename" class="form-control" 
+            placeholder="Enter Document Name">
+          <div
+            *ngIf="docFormGroup.controls['filename'].invalid && (docFormGroup.controls['filename'].touched || docFormGroup.controls['filename'].dirty)">
+            <div class="error-message">
+              Title cannot be empty
+            </div>
+          </div>
+
+        </div>
+        <div class="row">
+          <label for="filetype">Select document category</label>
+          <select name="filetype" id="filetype" formControlName="filetype" class="form-control" >
+            <option *ngFor="let fileSelection of fileTypeList" [value]="fileSelection.value">
+              <span> {{fileSelection.viewValue}} </span>
+            </option>
+          </select>
+          <div
+            *ngIf="docFormGroup.controls['filetype'].invalid
+                                 && (docFormGroup.controls['filetype'].touched || docFormGroup.controls['filetype'].dirty)">
+            <div class="error-message">
+              Please make a selection
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn regular-dark-button" (click)="addRequiredDocumentItemToChecklist()"
+            [disabled]="!docFormGroup.valid" style="margin-right: 5px">
+            Save Checklist Item to List</button>
+            <button class="btn regular-dark-button" (click)="resetForm()">
+            Cancel</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-6">
+      <div class="card summary-card">
+        <div class="card-body">
+          <div class="summary-item">
+            <label class="top-item-label">Name</label>
+            <span class="bottom-item-label" *ngIf="serviceRequestSummary">{{serviceRequestSummary['name']}}</span>
+          </div>
+          <div class="summary-item">
+            <label class="top-item-label">Service Request ID</label>
+            <span class="bottom-item-label" *ngIf="serviceRequestSummary">{{serviceRequestSummary['serviceId']}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="row">
+    
+  </div> -->
+
+  <div class="row">
+    Current Status: <span class="special-text"> {{displayDocStatus}}</span>  
+    <!-- table-hover -->
+    <table class="table ">
+      <thead class="header-table">
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Document Name</th>
+          <th scope="col">Date Added</th>
+          <th scope="col">Added By</th>
+          <th scope="col">Category</th>
+          <th scope="col">Date Uploaded</th>
+          <th scope="col">Uploaded By</th>
+          <th scope="col">Clinician Reviewed</th>
+        </tr>
+      </thead>
+      <tbody class="body-table">
+        <tr *ngFor="let item of docListForTable" >
+          <td><span class="btn regular-button btn-file" [ngClass]="{'clickable': !item['documentReference'], 'disabled': item['documentReference']}" (change)='createEncounterObjectToLinkToEpisodeOfCare($event, item)'>
+              Upload<input type="file" [disabled]="item['documentReference']">
+            </span>
+          </td>
+          <td *ngIf="item['name']" [ngClass]="{'clickable': item['documentReference'], 'special-text': item['documentReference']}" (click)="getFileReference(item['documentReference'])">{{item['name']}}</td>
+          <td *ngIf="!item['name']"> - </td>
+          <td *ngIf="item['dateAdded']">{{item['dateAdded']}}</td>
+          <td *ngIf="!item['dateAdded']"> - </td>
+          <td *ngIf="item['addedBy']">{{item['addedBy']}}</td>
+          <td *ngIf="!item['addedBy']"> - </td>
+          <td *ngIf="item['type']">{{item['type']}}</td>
+          <td *ngIf="!item['type']"> - </td>
+          <td *ngIf="item['dateUploaded']">{{item['dateUploaded']}}</td>
+          <td *ngIf="!item['dateUploaded']"> - </td>
+          <td *ngIf="item['uploadedBy']">{{item['uploadedBy']}}</td>
+          <td *ngIf="!item['uploadedBy']"> - </td>
+          <td class="checbox-section "><input type="checkbox" [checked]="item['validated']" (change)='validateClinicalDocument(item)' [disabled]="!enableCheckboxForClinicians(item)"></td>
+        </tr>
+      </tbody>
+    </table>
+
+
+  </div>
+
+
+
+
+  <!-- <div class="card">
+  <div class="card-body">
+    <label class="card-title"><strong>Override Document Status</strong></label>
+
+    <form [formGroup]="currentProgressFormGroup">
+      <section class="form-section">
+        <div class="row">
+          <div class="col">
+            <label for="currentProgress">Select a document status</label>
+            <select class="form-control" formControlName="currentProgress" id="currentProgress" required>
+              <option value="">(Select)</option>
+              <option *ngFor="let item of statusSelectionList" [value]="item.value">
+                {{item.viewValue}}
+              </option>
+            </select>
+            <div *ngIf="currentProgressFormGroup.controls['currentProgress'].invalid
+                  && (currentProgressFormGroup.controls['currentProgress'].touched || currentProgressFormGroup.controls['currentProgress'].dirty)">
+              <div class="error-message">
+                Cannot be blank
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col justify-content-center">
+            <button class="btn milestone-menu-button" style="min-width: 100%" [disabled]="!currentProgressFormGroup.valid"
+              (click)="updateCurrentProgress()">Update Progress</button>
+          </div>
+        </div>
+      </section>
+    </form>
+  </div>
+</div> -->

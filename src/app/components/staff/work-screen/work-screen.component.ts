@@ -14,9 +14,6 @@ import * as moment from 'moment';
 })
 export class WorkScreenComponent implements OnInit {
   @Input() progressBarValue = 0;
-  // @Input() otherValue = 100;
-
-  documentChecklistItemsList = [];
 
   carePlanActivities = [];
   summary = {} as any;
@@ -26,19 +23,14 @@ export class WorkScreenComponent implements OnInit {
   carePlan = {};
   showTaskForm = false;
   showNoteForm = false;
-  showDocForm = false;
   showChecklistForm = false;
   showSelectionOfDocsForm = false;
   showShowDocListField = false;
   showMilestoneFormGroup = false;
   taskFormGroup: FormGroup;
   noteFormGroup: FormGroup;
-  docFormGroup: FormGroup;
-  checkListItemGroup: FormGroup;
   selectionOfDocsGroup: FormGroup;
   milestoneFormGroup: FormGroup;
-  currentProgressFormGroup: FormGroup;
-  checkListDocObject;
   milestoneObject;
   episodeOfCareId = '';
   practitioners = [];
@@ -53,7 +45,6 @@ export class WorkScreenComponent implements OnInit {
   showOnlyDocs = false;
   collapseFlag = false;
   enableWorkListUpdate = true;
-  displayDocStatus;
   milestoneForDisplay;
   encounterd;
   currentPractitionerFHIRIDInSession;
@@ -61,7 +52,6 @@ export class WorkScreenComponent implements OnInit {
   dependentList = [];
   clinicalQuestionnaireArray = [];
   documentsList = [];
-  uploadedDocument;
   serviceRequestInfoObject;
 
   assignedAdmin = '';
@@ -73,6 +63,7 @@ export class WorkScreenComponent implements OnInit {
   showClinicalFunctions = false;
   clinicalAssignmentTask = {};
   showSpinner = false;
+
   fileTypeList = [
     { value: 'ADMINISTRATIVE', viewValue: 'ADMINISTRATIVE' },
     { value: 'CLINICAL', viewValue: 'CLINICAL' },
@@ -87,11 +78,7 @@ export class WorkScreenComponent implements OnInit {
     { value: 'TURBTEST', viewValue: 'Turberculosis' }
   ];
 
-  statusSelectionList = [
-    { value: 'stopped', viewValue: 'WAITING' },
-    { value: 'amended', viewValue: 'ACTION-REQUIRED' },
-    { value: 'completed', viewValue: 'IN-PROGRESS' }
-  ];
+
 
   milestoneSelectionList = [
     { value: 'Validated', viewValue: 'Validated' },
@@ -113,16 +100,11 @@ export class WorkScreenComponent implements OnInit {
   ngOnInit() {
 
     this.enableMilestoneFormGroup();
-    this.checkDocStatusViewText();
-    this.currentProgressFormGroup = this.formBuilder.group({
-      currentProgress: new FormControl('')
-    });
+
     this.currentPractitionerFHIRIDInSession = sessionStorage.getItem(
       'userFHIRID'
     );
-    if (sessionStorage.getItem('userRole') === 'clinician') {
       this.showClinicalFunctions = true;
-    }
     this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
     this.userService.fetchCurrentRole();
     this.staffService.getAllPractitioners().subscribe(
@@ -130,11 +112,9 @@ export class WorkScreenComponent implements OnInit {
         this.subscribePractitioners(data);
         this.fetchAllClinicians();
         this.fetchAllData();
-        this.loadFilesRelatedToWorkOrder();
       },
       error => console.error(error)
     );
-    this.checkIfAssociatedDocCheckListExists();
     this.checkIfAssociatedMilestoneListExists();
   }
 
@@ -603,29 +583,7 @@ export class WorkScreenComponent implements OnInit {
         });
   }
 
-  updateCurrentProgress() {
-    if (this.currentProgressFormGroup.valid) {
-      if (this.checkListDocObject) {
-        this.checkListDocObject['status'] = this.currentProgressFormGroup.get('currentProgress').value;
-        this.staffService
-        .updateDocumentsChecklist(
-          this.checkListDocObject['id'],
-          JSON.stringify(this.checkListDocObject)
-        )
-        .subscribe(data => {
-          if (data) {
-            console.log('UPDATED', data);
-            this.checkListDocObject = data;
-            this.checkDocStatusViewText();
-            this.currentProgressFormGroup.reset();
-          }
-        },
-        error => {
-          console.log(error);
-        });
-      }
-    }
-  }
+
 
   processListOfDependents(patientLinkId) {
     this.staffService
@@ -812,7 +770,6 @@ export class WorkScreenComponent implements OnInit {
     this.showTaskForm = true;
     this.showNoteForm = false;
     this.showNewTool = false;
-    this.showDocForm = false;
     this.taskFormGroup = this.formBuilder.group({
       description: new FormControl(''),
       assignTo: new FormControl(''),
@@ -820,23 +777,8 @@ export class WorkScreenComponent implements OnInit {
     });
   }
 
-  openDocForm() {
-    this.showDocForm = true;
-    this.showTaskForm = false;
-    this.showNoteForm = false;
-    this.showNewTool = false;
-    this.docFormGroup = this.formBuilder.group({
-      filename: new FormControl(''),
-      filetype: new FormControl(''),
-      checkListItem: new FormControl(''),
-      instruction: new FormControl('')
-      // instruction: new FormControl('')
-    });
-  }
-
   openNoteForm() {
     this.showNoteForm = true;
-    this.showDocForm = false;
     this.showTaskForm = false;
     this.showNewTool = false;
     this.noteFormGroup = this.formBuilder.group({
@@ -1052,33 +994,6 @@ export class WorkScreenComponent implements OnInit {
     });
   }
 
-  createEncounterObjectToLinkToEpisodeOfCare() {
-    const encounter = new FHIR.Encounter();
-    const episodeOfCareReference = new FHIR.Reference();
-    const patientInEpisodeOfCare = new FHIR.Reference();
-
-    episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
-    patientInEpisodeOfCare.reference =
-      'Patient/' + this.summary['patientFHIRID'];
-
-    encounter.subject = patientInEpisodeOfCare;
-    encounter.episodeOfCare = [episodeOfCareReference];
-    encounter.resourceType = 'Encounter';
-
-    const encounterStringified = JSON.stringify(encounter);
-
-    if (patientInEpisodeOfCare.reference !== null) {
-      this.staffService.createEncounter(encounterStringified).subscribe(
-        data => {
-          this.postDocumentObject(data['id']);
-        },
-        error => {
-          console.log(error);
-        }
-      );
-    }
-  }
-
   setupAuthorNameForDisplay() {
     this.documentsList.forEach(docObject => {
       if (docObject['author']) {
@@ -1176,521 +1091,6 @@ export class WorkScreenComponent implements OnInit {
 
   /* Documents Functions */
 
-  checkIfAssociatedDocCheckListExists() {
-    this.staffService.getDocumentsChecklist(this.episodeOfCareId).subscribe(
-      data => {
-        if (data) {
-          if (data['entry']) {
-            data['entry'].forEach(element => {
-              this.checkListDocObject = element['resource'];
-              this.checkDocStatusViewText();
-              if (this.checkListDocObject['item']) {
-                this.checkListDocObject['item'].forEach(item => {
-                  if (item.answer) {
-                    item.value = true;
-                  } else {
-                    item.value = false;
-                  }
-                });
-              }
-              if (!this.checkListDocObject['item']) {
-                this.checkListDocObject['item'] = [];
-              }
-            });
-          } else {
-            // This scenario means status is In-POGRESS
-            this.newDocChecklist();
-          }
-        }
-      },
-      error => {
-        console.log(error);
-      }
-    );
-  }
-
-  newDocChecklist() {
-    const checkListQResponse = new FHIR.QuestionnaireResponse();
-    const checklistReference = new FHIR.Reference();
-    const checklistContextReference = new FHIR.Reference();
-    const checklistIdentifier = new FHIR.Identifier();
-
-    checklistReference.reference = 'Questionnaire/13019';
-    checklistContextReference.reference =
-      'EpisodeOfCare/' + this.episodeOfCareId;
-    checklistIdentifier.value = 'RDCL';
-
-    checkListQResponse.identifier = checklistIdentifier;
-    checkListQResponse.resourceType = 'QuestionnaireResponse';
-    checkListQResponse.questionnaire = checklistReference;
-    checkListQResponse.status = 'in-progress';
-    checkListQResponse.context = checklistContextReference;
-
-    this.staffService
-      .createDocumentsChecklist(JSON.stringify(checkListQResponse))
-      .subscribe(
-        data => {
-          console.log('POST SUCCESSFUL', data);
-          this.checkListDocObject = data;
-          this.checkListDocObject['item'] = [];
-        },
-        error => {
-          console.log(error);
-        }
-      );
-  }
-
-  newDocChecklistItem() {
-    this.showChecklistForm = !this.showChecklistForm;
-    this.checkListItemGroup = this.formBuilder.group({
-      document: new FormControl(''),
-      selection: new FormControl('')
-    });
-  }
-
-
-  // checkDocListStatus(obj) {
-  // }
-
-  saveDoc($event) {
-    this.addDocument($event);
-  }
-  // Documents Features
-
-  /**
-   * This functiom takes in a file, grabs various details relating to the file, and converts it
-   * into a DocumentReference FHIR object
-   * @param $event File event from browser
-   */
-  addDocument($event) {
-    const documentReference = new FHIR.DocumentReference();
-    const documentReferenceCodeableConcept = new FHIR.CodeableConcept();
-    const content = new FHIR.Content();
-    const contentAttachment = new FHIR.Attachment();
-    let file;
-    let trimmedFile = '';
-    let size: number;
-    let type;
-    const date = this.utilService.getCurrentDate();
-    console.log(date);
-    const fileList = $event.target.files;
-    const reader = new FileReader();
-    if (fileList[0]) {
-      size = fileList[0].size;
-      type = fileList[0].type;
-      reader.readAsDataURL(fileList[0]);
-    }
-    const that = this;
-    reader.onloadend = function() {
-      file = reader.result;
-      trimmedFile = file.split(',').pop();
-      documentReference.resourceType = 'DocumentReference';
-      contentAttachment.size = size;
-      contentAttachment.contentType = type;
-      contentAttachment.data = trimmedFile;
-      contentAttachment.creation = date;
-
-      content.attachment = contentAttachment;
-
-      documentReference.instant = date;
-      documentReference.type = documentReferenceCodeableConcept;
-      documentReference.content = [content];
-
-      that.uploadedDocument = documentReference;
-
-      return reader.result;
-    };
-
-    reader.onerror = function(error) {
-      console.log('ERROR: ', error);
-    };
-  }
-
-  postDocumentObject(encounterID) {
-    const documentReferenceCodeableConcept = new FHIR.CodeableConcept();
-    const documentReferenceAuthor = new FHIR.Reference();
-
-    documentReferenceAuthor.reference =
-      'Practitioner/' + sessionStorage.getItem('userFHIRID');
-
-    documentReferenceCodeableConcept.text = this.docFormGroup.get(
-      'filetype'
-    ).value;
-
-    this.uploadedDocument.type = documentReferenceCodeableConcept;
-    this.uploadedDocument.content[0].attachment[
-      'title'
-    ] = this.docFormGroup.get('filename').value;
-    this.uploadedDocument.author = [documentReferenceAuthor];
-
-    this.uploadedDocument['description'] = this.docFormGroup.get(
-      'instruction'
-    ).value;
-
-    const encounterLinkingObject = new FHIR.Reference();
-    const encounterContext = new FHIR.Context();
-    encounterLinkingObject.reference = 'Encounter/' + encounterID;
-
-    this.showSpinner = true;
-    // this.showDocForm = false;
-
-    encounterContext.encounter = encounterLinkingObject;
-    this.uploadedDocument.context = encounterContext;
-    this.staffService.postDataFile(this.uploadedDocument).subscribe(
-      data => {
-        this.createDocumentItemForServiceRequest(data);
-        this.associateDocumentWithChecklistItemOnUpload(data['id']);
-        // this.showDocForm = true;
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        this.showDocForm = false;
-        setTimeout(() => {
-          this.showSpinner = false;
-          this.docFormGroup.reset();
-          location.reload();
-        }, 500);
-      }
-    );
-  }
-
-  associateDocumentWithChecklistItemOnUpload(data) {
-    if (this.docFormGroup.get('checkListItem').value && data) {
-      const newAnswer = new FHIR.Answer();
-      const newReference = new FHIR.Reference();
-      const selectedValue = this.docFormGroup.get('checkListItem').value;
-
-      newReference.reference = 'DocumentReference/' + data;
-      newAnswer.valueReference = newReference;
-      this.checkListDocObject['item'].forEach(itemFound => {
-        if (itemFound['text'] === selectedValue['text']) {
-            selectedValue['answer'] = [];
-            selectedValue['answer'].push(newAnswer);
-            itemFound = selectedValue;
-
-          console.log('match!,', this.checkListDocObject['id']);
-
-          this.staffService
-            .updateDocumentsChecklist(
-              this.checkListDocObject['id'],
-              JSON.stringify(this.checkListDocObject)
-            )
-            .subscribe(
-              newList => {
-                this.showSpinner = true;
-                if (newList) {
-                  console.log('UPDATED', newList);
-                  this.checkListDocObject = newList;
-                }
-              },
-              error => {
-                console.log(error);
-              },
-              () => {
-                location.reload();
-              }
-            );
-        }
-      });
-    }
-  }
-
-  createDocumentItemForServiceRequest(document) {
-    if (this.serviceRequestInfoObject['item']) {
-      console.log(this.serviceRequestInfoObject['item']);
-    }
-
-    console.log(this.serviceRequestInfoObject);
-    const linkID = this.serviceRequestInfoObject['item'].length;
-
-    const newDocumentItemObject = new FHIR.Item();
-    const newDocumentObjectReference = new FHIR.Reference();
-    const newDocumentItemObjectAnswer = new FHIR.Answer();
-
-    newDocumentObjectReference.reference =
-      'DocumentReference/' + document['id'];
-
-    newDocumentItemObjectAnswer.valueReference = newDocumentObjectReference;
-
-    newDocumentItemObject.answer = [newDocumentItemObjectAnswer];
-    newDocumentItemObject.linkId = linkID.toString();
-    newDocumentItemObject.text = 'Document';
-
-    // this.addItemToServiceRequest(newDocumentItemObject);
-  }
-
-  addItemToServiceRequest(item) {
-    this.serviceRequestInfoObject['item'].forEach(itemFound => {
-      if (itemFound['text'].toLowerCase() === 'document') {
-        console.log(itemFound);
-      }
-    });
-    this.serviceRequestInfoObject['item'].push(item);
-    this.staffService
-      .updateServiceRequest(
-        this.serviceRequestInfoObject['id'],
-        this.serviceRequestInfoObject
-      )
-      .subscribe(
-        data => {
-          this.serviceRequestInfoObject = data;
-          // this.showDocForm = false;
-          console.log(data);
-        },
-        error => console.log(error)
-      );
-  }
-
-  loadFilesRelatedToWorkOrder() {
-    console.log('finding files');
-    this.staffService
-      .getAllEncountersReferencedByAnEpisodeOfCare(this.episodeOfCareId)
-      .subscribe(encounters => {
-        if (encounters) {
-          if (encounters['entry']) {
-            encounters['entry'].forEach(encounter => {
-              const tempEncounterId = encounter['resource']['id'];
-              this.staffService
-                .getAllDocumentReferencesByAnEncounter(tempEncounterId)
-                .subscribe(docs => {
-                  if (docs['entry']) {
-                    docs['entry'].forEach(docFound => {
-                      const temp = {};
-                      temp['type'] = 'doc';
-                      console.log(docFound['type']);
-                      temp['categoryType'] =
-                        docFound['resource']['type']['text'];
-                      if (docFound['resource']['description']) {
-                        temp['description'] =
-                          docFound['resource']['description'];
-                      }
-                      temp['docID'] = docFound['resource']['id'];
-                      temp['docReference'] =
-                        'DocumentReference/' + docFound['resource']['id'];
-                      temp['dateCreated'] =
-                        docFound['resource']['content'][0]['attachment'][
-                          'creation'
-                        ];
-                      temp['fileFullName'] =
-                        docFound['resource']['content'][0]['attachment'][
-                          'title'
-                        ] +
-                        '.' +
-                        docFound['resource']['content'][0]['attachment'][
-                          'contentType'
-                        ]
-                          .split('/')
-                          .pop();
-                      temp['filetype'] = docFound['resource']['content'][0][
-                        'attachment'
-                      ]['contentType']
-                        .split('/')
-                        .pop();
-                      temp['title'] =
-                        docFound['resource']['content'][0]['attachment'][
-                          'title'
-                        ];
-                      temp['docCategory'] =
-                        docFound['resource']['type']['text'];
-                      temp['content'] = docFound['resource']['content'][0];
-                      temp['context'] = docFound['resource']['context'];
-                      if (docFound['resource']['author']) {
-                        temp['author'] =
-                          docFound['resource']['author'][0]['reference'];
-                      }
-                      temp['lastUpdated'] =
-                        docFound['resource']['meta']['lastUpdated'];
-                      if (
-                        temp['categoryType']
-                          .toLowerCase()
-                          .includes('clinical') &&
-                        sessionStorage.getItem('userRole') === 'clinician'
-                      ) {
-                        this.history.push(temp);
-                        this.documentsList.push(temp);
-                      }
-                      if (
-                        !temp['categoryType']
-                          .toLowerCase()
-                          .includes('clinical') &&
-                        sessionStorage.getItem('userRole') !== 'clinician'
-                      ) {
-                        this.history.push(temp);
-                        this.documentsList.push(temp);
-                      }
-                      if (
-                        !temp['categoryType']
-                          .toLowerCase()
-                          .includes('clinical') &&
-                        sessionStorage.getItem('userRole') === 'clinician'
-                      ) {
-                        this.history.push(temp);
-                        this.documentsList.push(temp);
-                      }
-                      this.setupAuthorNameForDisplay();
-                      console.log(temp);
-                    });
-                  }
-                });
-            });
-          }
-        }
-      });
-  }
-
-  saveItemToQResponse() {
-    const itemToAdd = new FHIR.Item();
-    const itemBoolAnswer = new FHIR.Answer();
-    if (this.checkListItemGroup.get('document').value) {
-      itemToAdd.linkId = this.checkListDocObject['item'].length + 1;
-      itemToAdd.text = this.checkListItemGroup.get('document').value;
-      this.checkListDocObject['item'].push(itemToAdd);
-      this.checkListDocObject['status'] = 'stopped';
-
-      this.staffService
-        .updateDocumentsChecklist(
-          this.checkListDocObject['id'],
-          JSON.stringify(this.checkListDocObject)
-        )
-        .subscribe(data => {
-          if (data) {
-            console.log('UPDATED', data);
-            this.checkListDocObject = data;
-            this.changeDocumentListStatus();
-            this.showChecklistForm = !this.showChecklistForm;
-          }
-        },
-        error => {
-          console.log(error);
-        });
-    }
-  }
-
-  onDockChecklistItemChange(index) {
-    this.indexOfDocCheckListItems.push(index);
-  }
-
-
-  updateDocumentsCheckedOff(itemPassed, event, index) {
-    console.log(this.checkListDocObject['item'][index]);
-    const docAnswer = new FHIR.Answer();
-    const docReference = new FHIR.Reference();
-    this.checkListDocObject['status'] = 'amended';
-
-    docReference.reference = event;
-    docAnswer.valueReference = docReference;
-    this.checkListDocObject['item'].forEach(itemFound => {
-      if (itemFound['linkId'] === itemPassed['linkId']) {
-        itemFound['answer'] = [];
-        itemFound['answer'].push(docAnswer);
-        this.staffService
-          .updateDocumentsChecklist(
-            this.checkListDocObject['id'],
-            JSON.stringify(this.checkListDocObject)
-          )
-          .subscribe(data => {
-            if (data) {
-              console.log('UPDATED', data);
-              this.checkListDocObject = data;
-              this.changeDocumentListStatus();
-              this.checkDocStatusViewText();
-              this.checkListDocObject['item'].forEach(item => {
-                if (item.answer) {
-                  item.value = true;
-                } else {
-                  item.value = false;
-                }
-              });
-            }
-          },
-          error => {
-            console.log(error);
-          });
-      }
-    });
-  }
-
-  checkDocStatusViewText() {
-    for (const status of this.statusSelectionList) {
-      if (this.checkListDocObject) {
-        if (this.checkListDocObject['status'] === status['value']) {
-          this.displayDocStatus = status['viewValue'];
-        }
-      }
-    }
-  }
-
-  changeDocumentListStatus() {
-    if (this.checkListDocObject) {
-      if (this.checkListDocObject['status'] !== 'amended') {
-
-        if (this.checkListDocObject['item'] && this.checkListDocObject['status']) {
-          const lengthOfItemArray = this.checkListDocObject['item'].length;
-          let currentAmountOfAnsweredItems = 0;
-          this.checkListDocObject['item'].forEach(itemFound => {
-            if (itemFound['answer']) {
-              currentAmountOfAnsweredItems++;
-            }
-          });
-          if (currentAmountOfAnsweredItems === lengthOfItemArray) {
-            this.checkListDocObject['status'] = 'completed';
-          } else {
-            this.checkListDocObject['status'] = 'stopped';
-          }
-          this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
-            data => {
-              if (data) {
-                this.checkListDocObject = data;
-                this.checkDocStatusViewText();
-                this.checkListDocObject['item'].forEach(item => {
-                  if (item.answer) {
-                    item.value = true;
-                  } else {
-                    item.value = false;
-                  }
-                });
-              }
-            }
-          );
-        }
-      }
-    }
-  }
-
-  changeDocStatusFromActionRequired(incomingFile) {
-    this.checkListDocObject['status'] = 'stopped';
-    if (incomingFile['content']['attachment']['contentType'] !== 'pdf') {
-      this.downloadFile(incomingFile);
-    } else {
-      this.previewFile(incomingFile);
-    }
-    this.staffService.updateDocumentsChecklist(this.checkListDocObject['id'], JSON.stringify(this.checkListDocObject)).subscribe(
-      data => {
-        if (data) {
-        this.checkListDocObject = data;
-        this.changeDocumentListStatus();
-          this.checkListDocObject['item'].forEach(item => {
-            if (item.answer) {
-              item.value = true;
-            } else {
-              item.value = false;
-            }
-          });
-        }
-      }
-    );
-  }
-
-  hideIfFileIsClinicalToNonClinicians(data) {
-    if (data['docCategory'].toLowerCase() === 'clinical' && sessionStorage.getItem('userRole') !== 'clinician') {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   downloadFile(incomingFile) {
     const byteCharacters = atob(incomingFile['content']['attachment']['data']);
     const byteNumbers = new Array(byteCharacters.length);
@@ -1756,10 +1156,8 @@ export class WorkScreenComponent implements OnInit {
   }
 
   redirectToAssessment() {
-    if (sessionStorage.getItem('userRole') === 'clinician') {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
       this.router.navigateByUrl('/staff/clinical/assessment-screen');
-    }
   }
 
   redirectToCloseScreen () {
@@ -1773,7 +1171,6 @@ export class WorkScreenComponent implements OnInit {
   }
 
   redirectToAssessmentSelected(event) {
-    if (sessionStorage.getItem('userRole') === 'clinician') {
       console.log(event);
       if (event === 'IMMUNIZATION') {
         this.router.navigateByUrl('/staff/clinical/immunization-screen');
@@ -1781,14 +1178,15 @@ export class WorkScreenComponent implements OnInit {
       if (event === 'AUDIOGRAM') {
         this.router.navigateByUrl('/staff/audiogram/' + this.episodeOfCareId);
       }
+      if (event === 'DOCUMENTS') {
+        this.router.navigateByUrl('/staff/document-management');
+      }
       if (event === 'TURBTEST') {
       }
-    }
   }
 
   collapseCard() {
     this.collapseFlag = !this.collapseFlag;
     console.log(this.collapseFlag);
-    // return collapse;
   }
 }

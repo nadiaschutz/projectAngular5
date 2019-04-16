@@ -65,6 +65,7 @@ import { DemoComponent } from './components/demo/demo.component';
 
 
 import { DepartmentListResolverService } from './service/department-list-resolver.service';
+
 import { FormBuilderComponent } from './components/form-builder/form-builder.component';
 import { ImmunizationScreenComponent } from './components/staff/clinical/immunization-screen/immunization-screen.component';
 import { AudiogramComponent } from './components/staff/audiogram/audiogram.component';
@@ -77,6 +78,7 @@ import { NewServReqService } from './service/new-serv-req.service';
 import { DependentComponent } from './components/dependent/dependent.component';
 import { ReportingComponent } from './components/reporting/reporting.component';
 import { AddNewClientDepartmentComponent } from './components/add-new-client-department/add-new-client-department.component';
+import { DocumentManagementComponent } from './components/document-management/document-management.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -132,7 +134,7 @@ const routes: Routes = [
   { path: 'staff/audiogram/detail/:eocId', component: AudiogramDetailComponent, canActivate: [AuthGuardService] },
   { path: 'staff/clinical/assessment-screen', component: AssessmentFunctionComponent, canActivate: [AuthGuardService] },
   { path: 'staff/clinical/scheduler', component: SchedulerComponent, canActivate: [AuthGuardService] },
-  { path: 'list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/document-management', component: DocumentManagementComponent, canActivate: [AuthGuardService] },
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
   { path: 'adminhome', component: AdminHomeScreenComponent, canActivate: [AuthGuardService] },
   { path: 'form-builder', component: FormBuilderComponent, canActivate: [AuthGuardService] },
@@ -179,7 +181,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     HeaderComponent,
     DateComponent,
     DocComponent,
-    // RadiobuttonComponent,
     CheckboxComponent,
     // CheckboxSrComponent,
     DynamicFieldDirective,
@@ -197,7 +198,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     SchedulerComponent,
     CancelRequestComponent,
     ReportingComponent,
-    AddNewClientDepartmentComponent
+    AddNewClientDepartmentComponent,
+    DocumentManagementComponent
 
   ],
   imports: [
