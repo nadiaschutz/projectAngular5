@@ -242,7 +242,22 @@ export class EmployeeComponent implements OnInit {
   // employees & dependents
   async saveEmployee() {
     const employeePRI = this.employeeFormGroup.value.id;
-    const employeeWithPRI = await this.patientService.getEmployeeWithPRIAsync(employeePRI);
+
+    let employeeWithPRI = {};
+    await this.patientService.getEmployeeWithPRIAsync(employeePRI).then(async data => {
+      if (data['entry']) {
+        employeeWithPRI = data;
+      } else {
+        await this.patientService.getUserWithPRIAsync(employeePRI).then(userData => {
+          if (userData['entry']) {
+            employeeWithPRI = userData;
+          }
+        });
+      }
+    }).catch(error => {
+      console.log(error);
+    });
+
     if (employeeWithPRI['entry']) {
       // An employee records exists with the same PRI
       this.showSuccessMessage = false;

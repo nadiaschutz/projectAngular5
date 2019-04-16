@@ -35,6 +35,10 @@ export class ReportingService {
       '/QuestionnaireResponse?identifier=SERVREQ&_include=QuestionnaireResponse:subject', {headers: this.getHeaders()}).toPromise();
   }
 
+  fetchTasks() {
+    return this.httpClient.get(environment.queryURI + '/Task', {headers: this.getHeaders()}).toPromise();
+  }
+
   getHeaders(): HttpHeaders {
     const headers = new HttpHeaders({
       Authorization: 'Bearer ' + this.oauthService.getAccessToken()

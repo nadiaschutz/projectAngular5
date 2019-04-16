@@ -196,9 +196,22 @@ export class NewAccountComponent implements OnInit {
   async createPractitioner() {
 
     const employeePRI = this.accountFormGroup.value.id;
-    const employeeWithPRI = await this.patientService.getEmployeeWithPRIAsync(employeePRI);
+    let employeeWithPRI = {};
+    await this.patientService.getEmployeeWithPRIAsync(employeePRI).then(async data => {
+      if (data['entry']) {
+        employeeWithPRI = data;
+      } else {
+        await this.patientService.getUserWithPRIAsync(employeePRI).then(userData => {
+          if (userData['entry']) {
+            employeeWithPRI = userData;
+          }
+        });
+      }
+    }).catch(error => {
+      console.log(error);
+    });
 
-    if (employeeWithPRI['entry']) {
+    if (employeeWithPRI !== {}) {
       // An employee records exists with the same PRI
       this.showSuccessMessage = false;
       this.showFailureMessage = true;
