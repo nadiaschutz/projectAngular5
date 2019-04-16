@@ -2,18 +2,21 @@
 
 
 
-  <!-- <div class="edit-button-row">
-    <button type="button" class="btn regular-dark-button float-right" (click)="viewDetailedContext()">
-      View Detailed Context
-    </button>
-  </div> -->
+<div class="margin-adjust">
+    <div class="edit-button-row">
+        <button type="button" class="btn regular-dark-button float-right" (click)="viewDetailedContext()">
+          View Detailed Context
+        </button>
+        <div class="main-header">
+          <h5>Document Management</h5>
+        </div>
+      </div>
+</div>
 
   <!-- <div>
-    &lt; Return to Work Screen
-  </div> -->
-  <div class="main-header">
-    <h5>Document Management</h5>
-  </div>
+          &lt; Return to Work Screen
+        </div> -->
+
 
 
   <div class="row top-row">
@@ -21,7 +24,7 @@
       <form [formGroup]="docFormGroup" #formDirective="ngForm">
         <div class="row">
           <label for="filename">Document Name</label>
-          <input type="text" name="filename" id="filename" formControlName="filename" class="form-control" 
+          <input type="text" name="filename" id="filename" formControlName="filename" class="form-control"
             placeholder="Enter Document Name">
           <div
             *ngIf="docFormGroup.controls['filename'].invalid && (docFormGroup.controls['filename'].touched || docFormGroup.controls['filename'].dirty)">
@@ -33,7 +36,7 @@
         </div>
         <div class="row">
           <label for="filetype">Select document category</label>
-          <select name="filetype" id="filetype" formControlName="filetype" class="form-control" >
+          <select name="filetype" id="filetype" formControlName="filetype" class="form-control">
             <option *ngFor="let fileSelection of fileTypeList" [value]="fileSelection.value">
               <span> {{fileSelection.viewValue}} </span>
             </option>
@@ -50,7 +53,7 @@
           <button class="btn regular-dark-button" (click)="addRequiredDocumentItemToChecklist()"
             [disabled]="!docFormGroup.valid" style="margin-right: 5px">
             Save Checklist Item to List</button>
-            <button class="btn regular-dark-button" (click)="resetForm()">
+          <button class="btn regular-dark-button" (click)="resetForm()">
             Cancel</button>
         </div>
       </form>
@@ -76,7 +79,7 @@
   </div> -->
 
   <div class="row">
-    Current Status: <span class="special-text"> {{displayDocStatus}}</span>  
+    Current Status: <span class="special-text"> {{displayDocStatus}}</span>
     <!-- table-hover -->
     <table class="table ">
       <thead class="header-table">
@@ -92,12 +95,16 @@
         </tr>
       </thead>
       <tbody class="body-table">
-        <tr *ngFor="let item of docListForTable" >
-          <td><span class="btn regular-button btn-file" [ngClass]="{'clickable': !item['documentReference'], 'disabled': item['documentReference']}" (change)='createEncounterObjectToLinkToEpisodeOfCare($event, item)'>
+        <tr *ngFor="let item of docListForTable">
+          <td><span class="btn regular-button btn-file"
+              [ngClass]="{'clickable': !item['documentReference'], 'disabled': item['documentReference']}"
+              (change)='createEncounterObjectToLinkToEpisodeOfCare($event, item)'>
               Upload<input type="file" [disabled]="item['documentReference']">
             </span>
           </td>
-          <td *ngIf="item['name']" [ngClass]="{'clickable': item['documentReference'], 'special-text': item['documentReference']}" (click)="getFileReference(item['documentReference'])">{{item['name']}}</td>
+          <td *ngIf="item['name']"
+            [ngClass]="{'clickable': item['documentReference'], 'special-text': item['documentReference']}"
+            (click)="getFileReference(item['documentReference'])">{{item['name']}}</td>
           <td *ngIf="!item['name']"> - </td>
           <td *ngIf="item['dateAdded']">{{item['dateAdded']}}</td>
           <td *ngIf="!item['dateAdded']"> - </td>
@@ -109,7 +116,8 @@
           <td *ngIf="!item['dateUploaded']"> - </td>
           <td *ngIf="item['uploadedBy']">{{item['uploadedBy']}}</td>
           <td *ngIf="!item['uploadedBy']"> - </td>
-          <td class="checbox-section "><input type="checkbox" [checked]="item['validated']" (change)='validateClinicalDocument(item)' [disabled]="!enableCheckboxForClinicians(item)"></td>
+          <td class="checbox-section "><input type="checkbox" [checked]="item['validated']"
+              (change)='validateClinicalDocument(item)' [disabled]="!enableCheckboxForClinicians(item)"></td>
         </tr>
       </tbody>
     </table>
