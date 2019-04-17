@@ -139,6 +139,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   documents;
   fileLink = [];
   documentReference = {};
+  prePlacement = false;
 
   disableInputsForReview = false;
   createdsuccessfully = false;
@@ -204,6 +205,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.prePlacement = JSON.parse(sessionStorage.getItem('prePlacement'));
 
     // sets the formId based on url (serv request || contact us pages )
     if (this.router.url.indexOf('/newservicerequest') > -1) {
@@ -752,6 +754,37 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           options.push(el1.valueCoding.display);
         });
         const enableWhen = this.populateEnableWhenObj(el);
+        if (this.prePlacement) {
+          if (el.code[0].code === 'PSOHPSERV' || el.code[0].code === 'ASSESTYPE') {
+            return {
+              type: 'input',
+              typeElem: el.code[1].code,
+              label: el.text,
+              name: el.linkId,
+              enableWhen: el.enableWhen ? enableWhen : false,
+              validation: undefined,
+              value: null,
+              elementClass: 'enable-when-show',
+            };
+          }
+          if (el.code[0].code === 'ASSESCAT') {
+            return {
+              type: 'select',
+              typeElem: el.code[1].code,
+              label: el.text,
+              name: el.linkId,
+              enableWhen: el.enableWhen ? enableWhen : false,
+              options: options,
+              flag: el.enableWhen ? false : true,
+              placeholder: 'Select an option',
+              validation: undefined,
+              required: el.required ? true : false,
+              // validation: [Validators.required],
+              value: null,
+              elementClass: 'enable-when-show',
+            };
+          }
+        }
 
         if (el.code[0].code === 'OHAGOCC' || el.code[0].code === 'ENVMODIF' || el.code[0].code === 'EXPMODIF') {
           console.log(el.code[0].code);
@@ -1000,6 +1033,13 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       this.form.setValue('AUTHOR', this.userName);
       this.form.setValue('USERDEPT', this.currentUserDepartment);
       this.form.setValue('DATECR', this.todayPiped);
+      if (this.servReqType === 'SERVREQ' && this.prePlacement) {
+        console.log(this.servReqType);
+        this.form.setDisabled('PSOHPSERV', true);
+        this.form.setValue('PSOHPSERV', 'Occupational Health Assessment');
+        this.form.setDisabled('ASSESTYPE', true);
+        this.form.setValue('ASSESTYPE', 'Pre-Placement');
+      }
     });
 
     // if you want to style 2 form fields per a row do these :
@@ -1015,6 +1055,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       // checks for form type and sets disabled particular fields
       if (this.servReqType === 'SERVREQ') {
         if (this.form.value.ASSESTYPE === 'Pre-Placement' && this.userRole === 'clientdept') {
+          console.log('elemOfConfig', elemOfConfig);
           this.form.setDisabled('USERDEPT', false);
         } else {
           this.form.setDisabled('USERDEPT', true);

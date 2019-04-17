@@ -949,4 +949,9 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     sessionStorage.setItem('patientSelected', JSON.stringify(piecesToSave));
     this.router.navigateByUrl('/dependentform');
   }
+
+  checkPrePlacement(e) {
+    this.prePlacement = e.target.checked;
+    sessionStorage.setItem('prePlacement', JSON.stringify(this.prePlacement));
+  }
 }

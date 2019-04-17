@@ -347,10 +347,23 @@
       </span>
     </section>
 
+    <section class="form-section"
+      *ngIf="(currentRole === 'clientdept' && selected['department']['valueString']  !== departmentOfUser)">
+
+      <label>
+        <input type='checkbox' [(ngModel)]="prePlacement" (change)="checkPrePlacement($event)"> Create Service Request
+        for
+        Pre-Placement
+      </label>
+    </section>
+
+
+
+
     <!-- buttons -->
-    <span
-      *ngIf="(currentRole === 'clientdept' && selected['department']['valueString']  === departmentOfUser) || currentRole !== 'clientdept'">
-      <button *ngIf="selected['employeeType']['valueString'] === 'Employee'" class="btn regular-dark-button"
+    <span *ngIf=" (currentRole==='clientdept' && selected['department']['valueString']===departmentOfUser) || currentRole
+          !=='clientdept'">
+      <button *ngIf=" selected['employeeType']['valueString']==='Employee'" class=" btn regular-dark-button"
         (click)="addDependent()" style='margin-right: 15px;'>
         Add a Dependent</button>
     </span>
@@ -361,6 +374,14 @@
       <button
         *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
         class="btn regular-dark-button" (click)="newServiceRequest()">Create a Service Request
+      </button>
+    </span>
+
+    <span *ngIf="(currentRole === 'clientdept' && selected['department']['valueString']  !== departmentOfUser)">
+      <button
+        *ngIf="selected['employeeType']['valueString'] === 'Employee' || selected['employeeType']['valueString'] === 'Dependent'"
+        class="btn regular-dark-button" (click)="newServiceRequest()" [disabled]='!prePlacement'>Create a Service
+        Request
       </button>
     </span>
 
