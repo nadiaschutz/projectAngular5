@@ -139,7 +139,7 @@ const routes: Routes = [
   { path: 'adminhome', component: AdminHomeScreenComponent, canActivate: [AuthGuardService] },
   { path: 'form-builder', component: FormBuilderComponent, canActivate: [AuthGuardService] },
   { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
-  { path: 'reporting', component: ReportingComponent, canActivate: [AuthGuardService] },
+  { path: 'data-extract', component: ReportingComponent, canActivate: [AuthGuardService] },
   { path: '', component: AuthComponent }
 ];
 
