@@ -47,6 +47,10 @@
     },
     {
       "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "CarePlan"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
       "argument": "Patient"
     },
     {
