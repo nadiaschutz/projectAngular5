@@ -321,9 +321,9 @@ export class DashboardComponent implements OnInit {
     if (this.roleInSession === 'superuser') {
       this.enableAll = true;
     }
-    if (this.roleInSession === 'businessuser' || 'clientdept') {
-      this.cursorClassEnables = false;
-    }
+    // if (this.roleInSession === 'businessuser' || 'clientdept') {
+    //   this.cursorClassEnables = false;
+    // }
   }
 
 
@@ -487,33 +487,22 @@ export class DashboardComponent implements OnInit {
   }
 
   routeToSummary(data) {
-    if (this.roleInSession === 'clientdept') {
-      if (this.departmentOfUser === data['department']) {
-        sessionStorage.setItem('patientSummaryId', data.id);
-        this.router.navigateByUrl('/employeesummary');
-      }
-    } else {
-      if (this.roleInSession !== 'businessuser') {
-        if (this.roleInSession !== 'clientdept') {
-          sessionStorage.setItem('patientSummaryId', data.id);
-          this.router.navigateByUrl('/employeesummary');
-        }
-      }
+
+    if (this.roleInSession !== 'businessuser') {
+
+      sessionStorage.setItem('patientSummaryId', data.id);
+      this.router.navigateByUrl('/employeesummary');
+
     }
   }
 
+
   showCursor(data) {
-    if (this.roleInSession === 'clientdept') {
-      if (this.departmentOfUser === data['department']) {
-        return true;
-      }
-    } else {
-      if (this.roleInSession !== 'businessuser') {
-        if (this.roleInSession !== 'clientdept') {
-          return true;
-        }
-      }
+    if (this.roleInSession !== 'businessuser') {
+      return true;
+
     }
+
   }
   newPSOHPButton() {
     this.router.navigate(['/psohpform']);

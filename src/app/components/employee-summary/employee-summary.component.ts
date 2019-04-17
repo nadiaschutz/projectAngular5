@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+
 import {
   FormBuilder,
   FormGroup,
@@ -43,6 +44,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   dependentArray = [];
   servceRequestDatas = [];
   cursorClassEnables;
+  prePlacement = false;
 
   // jobTitle;
 
@@ -50,6 +52,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
   districtOffices = [];
   deptName = [];
   deptBranch = [];
+  departmentOfUser;
+  currentEmplDept;
 
   jobLocationList: NameValueLookup[] = [];
   jobLocationListWithIdLookup = {};
@@ -144,6 +148,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
     }
 
     this.currentRole = sessionStorage.getItem('userRole');
+    this.departmentOfUser = sessionStorage.getItem('userDept');
+    console.log(this.departmentOfUser);
 
     this.datePickerConfig = Object.assign({},
       {
@@ -161,6 +167,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
           data => this.populatePatientArray(data),
           error => this.handleError(error)
         );
+
     } else if (!this.summaryId) {
       this.router.navigateByUrl('/dashboard');
     }
@@ -298,8 +305,16 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
           temp['department']['reference'] = extension.valueReference.reference;
           this.getNameFromReference(extension.valueReference.reference).then(name => {
             temp['department']['valueString'] = name;
+            console.log(temp['department']['valueString']);
           });
         }
+        // if (extension.valueReference) {
+
+        //   // temp['department']['reference'] = extension.valueReference.reference;
+        //     const temp1 = this.getNameFromReference(extension.valueReference.reference).toPromise();
+        //     const name = temp1;
+        //     console.log(name);
+        // }
       }
     });
     data['extension'].forEach(extension => {
@@ -396,6 +411,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
 
     this.selected = temp;
 
+
     sessionStorage.setItem('emplType', this.selected['employeeType']['valueString']);
 
     this.patientService
@@ -414,7 +430,8 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
 
 
 
-
+    this.currentEmplDept = this.selected.department.valueString;
+    console.log(this.currentEmplDept);
 
   }
 
@@ -475,6 +492,7 @@ export class EmployeeSummaryComponent implements OnInit, OnDestroy {
 
   routeToSummary(data) {
     this.selected = '';
+
     this.dependentArray = [];
     this.summaryId = data;
     this.userService.getSelectedID(data);
