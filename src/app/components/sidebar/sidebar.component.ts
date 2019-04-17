@@ -56,6 +56,6 @@ export class SidebarComponent implements OnInit {
   }
 
   reporting() {
-    this.router.navigateByUrl('/reporting');
+    this.router.navigateByUrl('/data-extract');
   }
 }
