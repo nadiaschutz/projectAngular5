@@ -50,6 +50,7 @@ export class MilestoneTrackingComponent implements OnInit {
       status: new FormControl(''),
       statusNote: new FormControl('')
     });
+    this.checkIfAssociatedMilestoneListExists();
   }
 
   changeMilestoneToSelected() {

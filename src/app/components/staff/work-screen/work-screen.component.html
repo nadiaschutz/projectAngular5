@@ -8,7 +8,7 @@
       </div>
 
       <div class="col-5">
-        <div *ngIf="clinicians.length>0" class="col clinician">
+        <!-- <div *ngIf="clinicians.length>0" class="col clinician">
           <div class="assign-clinician">
             <section class="form-inline">
               <label class="clinician-box-label"><strong>Clinician Assigned</strong></label>
@@ -26,7 +26,7 @@
               <button class="btn special-button" (click)="showClinicianButtons = !showClinicianButtons">Cancel</button>
             </section>
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="col-3">
         <div class="dropdown">
@@ -53,9 +53,8 @@
   <div class="row">
     <div class="card summary-top-card  summary-card-text">
       <div class="card-body summary-card-body">
-       
+       <app-milestone-tracking></app-milestone-tracking>
         <div class="timeline-row">
-
         </div>
         <div class="row summary-card-row-adjust" *ngIf="milestoneForDisplay">
 

@@ -91,6 +91,7 @@ export class DocumentManagementComponent implements OnInit {
             this.staffService.updateDocumentFile(doc['id'], JSON.stringify(doc)).subscribe(
               () => {
                 item['validated'] = true;
+                this.createCommunicationObjectForClinicianReviewedItem(item);
               },
               error => {
                 console.log(error);
@@ -726,6 +727,40 @@ export class DocumentManagementComponent implements OnInit {
         authorName = this.utilService.getNameFromResource(author);
         annotation.text = authorName + ' has added the required document for this checklist item at' + 
         this.utilService.getDate(annotation.time);
+        communication.note = new Array<FHIR.Annotation>();
+        communication.note.push(annotation);
+        this.staffService
+          .createCommunication(JSON.stringify(communication))
+          .subscribe(data => {
+            console.log(data);
+          });
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  createCommunicationObjectForClinicianReviewedItem(item) {
+    const communication = new FHIR.Communication();
+    const identifier = new FHIR.Identifier();
+
+    identifier.value = 'DOCUMENT-CHECKLIST-ITEM-'
+    + item['linkId'] + '-REVIEWED-' + this.episodeOfCareId;
+    communication.resourceType = 'Communication';
+
+    const episodeReference = new FHIR.Reference();
+    episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    communication.context = episodeReference;
+    communication.identifier = [identifier];
+    const annotation = new FHIR.Annotation();
+    annotation.time = new Date();
+
+    let authorName = null;
+    this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
+      author => {
+        authorName = this.utilService.getNameFromResource(author);
+        annotation.text = authorName + ' has reviewed the document at' + this.utilService.getDate(annotation.time);
         communication.note = new Array<FHIR.Annotation>();
         communication.note.push(annotation);
         this.staffService
