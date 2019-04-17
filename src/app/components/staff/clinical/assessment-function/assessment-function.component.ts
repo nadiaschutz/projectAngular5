@@ -55,6 +55,7 @@ export class AssessmentFunctionComponent implements OnInit {
   printFlag = false;
   twoAFlag = false;
   hideViewButtonFlag = false;
+  validateAssessmentCompleteScreenFlag = false;
 
   vaccStatus;
 
@@ -379,6 +380,10 @@ export class AssessmentFunctionComponent implements OnInit {
     printObj['employeeDept'] = this.serviceRequestSummary['employeeDept'];
     printObj['employeeBranch'] = this.serviceRequestSummary['employeeBranch'];
     this.printObjectForDisplay = printObj;
+  }
+
+  changeScreenToValidationScreen() {
+    this.validateAssessmentCompleteScreenFlag = !this.validateAssessmentCompleteScreenFlag;
   }
 
   switchClassesForButtons(name, value) {
