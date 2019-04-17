@@ -82,9 +82,9 @@ export class WorkScreenComponent implements OnInit {
 
   milestoneSelectionList = [
     { value: 'Validated', viewValue: 'Validated' },
-    { value: 'Assigned', viewValue: 'Assigned' },
+    { value: 'Assigned', viewValue: 'Assigned to Clinician' },
     { value: 'Scheduled', viewValue: 'Scheduled' },
-    { value: 'Work-Completed', viewValue: 'Work-Completed' },
+    { value: 'Work-Completed', viewValue: 'Clinical Work Completed' },
     { value: 'Closed', viewValue: 'Closed' }
   ];
 
@@ -1088,63 +1088,6 @@ export class WorkScreenComponent implements OnInit {
         this.milestoneObject = data;
       });
   }
-
-  /* Documents Functions */
-
-  downloadFile(incomingFile) {
-    const byteCharacters = atob(incomingFile['content']['attachment']['data']);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let index = 0; index < byteCharacters.length; index++) {
-      byteNumbers[index] = byteCharacters.charCodeAt(index);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {
-      type: incomingFile['content']['attachment']['contentType']
-    });
-
-    if (navigator.msSaveBlob) {
-      const filename = incomingFile['fileFullName'];
-      navigator.msSaveBlob(blob, filename);
-    } else {
-      const fileLink = document.createElement('a');
-      fileLink.href = URL.createObjectURL(blob);
-      fileLink.setAttribute('visibility', 'hidden');
-      fileLink.download = incomingFile['fileFullName'];
-      document.body.appendChild(fileLink);
-      fileLink.click();
-      document.body.removeChild(fileLink);
-    }
-  }
-
-  previewFile(incomingFile) {
-    const byteCharacters = atob(incomingFile['content']['attachment']['data']);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let index = 0; index < byteCharacters.length; index++) {
-      byteNumbers[index] = byteCharacters.charCodeAt(index);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], {
-      type: incomingFile['content']['attachment']['contentType']
-    });
-    const filename = incomingFile['fileFullName'];
-
-    if (navigator.msSaveBlob) {
-      navigator.msSaveBlob(blob, filename);
-    } else {
-      console.log(filename);
-      const fileLink = document.createElement('a');
-      fileLink.href = URL.createObjectURL(blob);
-      fileLink.name = filename;
-      fileLink.target = '_blank';
-      fileLink.setAttribute('download', filename);
-      window.open(fileLink.href);
-    }
-  }
-
-  /* Document Functions (end) */
-
 
   redirectToLabRequisition() {
     if (sessionStorage.getItem('userRole') === 'clinician') {
