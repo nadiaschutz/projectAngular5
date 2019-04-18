@@ -686,7 +686,7 @@ export class DocumentManagementComponent implements OnInit {
 
     categoryConcept.coding = [categoryCoding];
     communication.category = [categoryConcept];
-
+    communication.status = 'completed';
     const episodeReference = new FHIR.Reference();
     episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     communication.context = episodeReference;
@@ -729,6 +729,7 @@ export class DocumentManagementComponent implements OnInit {
 
     categoryConcept.coding = [categoryCoding];
     communication.category = [categoryConcept];
+    communication.status = 'completed';
 
     episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     communication.context = episodeReference;
@@ -766,6 +767,7 @@ export class DocumentManagementComponent implements OnInit {
     identifier.value = 'DOCUMENT-CHECKLIST-ITEM-'
     + item['linkId'] + '-VALIDATED-' + this.episodeOfCareId;
     communication.resourceType = 'Communication';
+    communication.status = 'completed';
 
     categoryCoding.system = 'https://bcip.smilecdr.com/fhir/documentcommunication';
     categoryCoding.code = 'DOCUMENT-CHECKLIST-ITEM-VALIDATED';
