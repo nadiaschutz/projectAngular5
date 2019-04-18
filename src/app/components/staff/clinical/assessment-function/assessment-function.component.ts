@@ -298,11 +298,11 @@ export class AssessmentFunctionComponent implements OnInit {
     );
   }
 
-  patchFormValueForButton(name, value) {
-    this.switchClassesForButtons(name, value);
-    this.assessmentFormGroup.patchValue({ [name]: value });
-    console.log(this.assessmentFormGroup.get(name).value);
-  }
+  // patchFormValueForButton(name, value) {
+  //   this.switchClassesForButtons(name, value);
+  //   this.assessmentFormGroup.patchValue({ [name]: value });
+  //   console.log(this.assessmentFormGroup.get(name).value);
+  // }
 
   returnInputValue(input) {
     return this.assessmentFormGroup.get(input).value;
@@ -386,15 +386,9 @@ export class AssessmentFunctionComponent implements OnInit {
     this.validateAssessmentCompleteScreenFlag = !this.validateAssessmentCompleteScreenFlag;
   }
 
-  switchClassesForButtons(name, value) {
-    if (name.includes('vaccineStatusReviewed') && value === 'Yes') {
-      this.vaccStatus = 'yes-no-button-selected';
-      this.vaccStatusUnSelected = 'yes-no-button';
-    }
-    if (name.includes('vaccineStatusReviewed') && value === 'No') {
-      this.vaccStatus = 'yes-no-button';
-      this.vaccStatusUnSelected = 'yes-no-button-selected';
-    }
+  validateNoAssessment() {
+    this.createCommunicationObjectForAssessments('noassess')
+
   }
   viewDetailedContext() {
     this.router.navigateByUrl('/staff/work-screen');
@@ -407,5 +401,57 @@ export class AssessmentFunctionComponent implements OnInit {
   changeFlagsForPrinting() {
     this.printFlag = !this.printFlag;
     this.hideViewButtonFlag = !this.hideViewButtonFlag;
+  }
+
+  changeMilestoneToWorkCompleted() {
+
+  }
+
+  createCommunicationObjectForAssessments(type: string) {
+    const communication = new FHIR.Communication();
+    const identifier = new FHIR.Identifier();
+
+    if (type === 'withassess') {
+      identifier.value = 'VALIDATED-WITH-ASSESSMENT-' + this.episodeOfCareId;
+    }
+    if (type === 'noassess') {
+      identifier.value = 'VALIDATED-NO-ASSESSMENT-' + this.episodeOfCareId;
+    }
+
+    communication.resourceType = 'Communication';
+
+    const episodeReference = new FHIR.Reference();
+    episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    communication.context = episodeReference;
+    communication.identifier = [identifier];
+    const annotation = new FHIR.Annotation();
+    annotation.time = new Date();
+
+    let authorName = null;
+    this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
+      author => {
+        authorName = this.utilService.getNameFromResource(author);
+        if (type === 'withassess') {
+          annotation.text = authorName + ' has validated that all clinical work for ' +  this.serviceRequestSummary['name']
+          + ' has been completed without filing an assessment at ' + this.utilService.getDate(annotation.time);
+        }
+        if (type === 'noassess') {
+          annotation.text = authorName + ' has validated that all clinical work for ' +  this.serviceRequestSummary['name']
+          + ' has been completed with an assessment result of: ' + this.returnInputValue('assessment') + ' at '
+          + this.utilService.getDate(annotation.time);
+        }
+        this.utilService.getDate(annotation.time);
+        communication.note = new Array<FHIR.Annotation>();
+        communication.note.push(annotation);
+        this.staffService
+          .createCommunication(JSON.stringify(communication))
+          .subscribe(data => {
+            console.log(data);
+          });
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 }

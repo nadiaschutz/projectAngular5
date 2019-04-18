@@ -96,7 +96,9 @@
             <span class="card-text">You are validating that all clinical work is completed without filing an assessment. If this is correct, you may click "Yes" to validate that all clinical work is completed.</span>
         </div>
         <div class="card-footer text-center card-footer-recolour">
-            2 days ago
+            <button class="btn regular-dark-button" (click)="validateNoAssessment()" >
+                Validate Clinical Work
+              </button>
           </div>
       </div>
     </div>
@@ -109,7 +111,8 @@
           Generate Printable Report
         </button>
         <button class="btn regular-dark-button" (click)="changeScreenToValidationScreen()" >
-          Validate Clinical Work
+          <span *ngIf="!validateAssessmentCompleteScreenFlag">Validate Clinical Work</span>
+          <span *ngIf="validateAssessmentCompleteScreenFlag">Cancel</span>
         </button>
       </div>
     </div>
