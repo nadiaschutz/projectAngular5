@@ -237,8 +237,11 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     this.clientId = sessionStorage.getItem('patientSummaryId');
 
 
-    if (!this.clientId) {
-      this.router.navigateByUrl('/dashboard');
+    if (this.servReqType === 'SERVREQ') {
+
+      if (!this.clientId) {
+        this.router.navigateByUrl('/dashboard');
+      }
     }
 
     console.log(this.dependentsList);
