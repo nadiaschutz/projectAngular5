@@ -632,13 +632,13 @@ export class WorkScreenComponent implements OnInit {
         }
         if (!element['answer']) {
           element['answer'] = [];
-          itemAnswer.valueDateTime = dateTime.format();
+          itemAnswer.valueDateTime = new Date();
           element['answer'].push(itemAnswer);
         }
         if (element['answer']) {
           element['answer'].forEach(timeFound => {
             if (timeFound['valueDateTime']) {
-              timeFound['valueDateTime'] = dateTime.format();
+              timeFound['valueDateTime'] = new Date();
             }
           });
         }

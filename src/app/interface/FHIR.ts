@@ -366,8 +366,8 @@ export class EnableWhen extends BackboneElement {
 export class Answer extends BackboneElement {
     valueDecimal: number;
     valueInteger: number;
-    valueDate: string;
-    valueDateTime: string;
+    valueDate: Date;
+    valueDateTime: Date;
     valueTime: string;
     valueString: string;
     valueUri: string;

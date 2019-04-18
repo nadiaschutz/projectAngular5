@@ -487,7 +487,7 @@ export class DocumentManagementComponent implements OnInit {
     item.linkId = this.documentCheckList['item'].length + 1;
     item.text = this.docFormGroup.get('filename').value;
 
-    time.valueDate = this.utilService.getCurrentDate();
+    time.valueDate = new Date();
 
     answer.valueCoding = new FHIR.Coding;
     answer.valueCoding.code = this.docFormGroup.get('filetype').value;

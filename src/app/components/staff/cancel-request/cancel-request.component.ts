@@ -259,7 +259,7 @@ export class CancelRequestComponent implements OnInit {
     const itemReason = new FHIR.Answer();
 
     const selectedStatus = 'Work-Completed';
-    itemTime.valueDate = this.utilService.getCurrentDate();
+    itemTime.valueDate = new Date();
     itemReason.valueString = this.returnInputValue('comment');
     this.statusObject['item'].forEach(element => {
       console.log(element['text']);

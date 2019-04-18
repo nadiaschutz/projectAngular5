@@ -37,10 +37,6 @@ export class MilestoneTrackingComponent implements OnInit {
     private staffService: StaffService,
     private utilService: UtilService,
     private formBuilder: FormBuilder,
-    private oAuthService: OAuthService,
-    private userService: UserService,
-    private milestoneTrackingService: MilestoneTrackingService,
-    private router: Router
   ) { }
 
   ngOnInit() {
@@ -64,7 +60,7 @@ export class MilestoneTrackingComponent implements OnInit {
         }
         if (!element['answer']) {
           element['answer'] = [];
-          itemAnswer.valueDateTime = dateTime.format();
+          itemAnswer.valueDateTime = new Date();
           element['answer'].push(itemAnswer);
         }
         if (element['answer']) {
