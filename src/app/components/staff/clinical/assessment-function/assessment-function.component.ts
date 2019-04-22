@@ -418,40 +418,48 @@ export class AssessmentFunctionComponent implements OnInit {
 
   createCommunicationObjectForAssessments(type: string) {
     const communication = new FHIR.Communication();
+    const payload = new FHIR.Payload;
     const identifier = new FHIR.Identifier();
+    const episodeReference = new FHIR.Reference();
+    const categoryConcept = new FHIR.CodeableConcept;
+    const categoryCoding = new FHIR.Coding;
+    const newDate = new Date();
+    let authorName = null;
 
+    categoryCoding.system = 'https://bcip.smilecdr.com/fhir/documentcommunication';
+
+
+    communication.status = 'completed';
     if (type === 'withassess') {
       identifier.value = 'VALIDATED-WITH-ASSESSMENT-' + this.episodeOfCareId;
+      categoryCoding.code = 'VALIDATED-WITH-ASSESSMENT';
     }
     if (type === 'noassess') {
       identifier.value = 'VALIDATED-NO-ASSESSMENT-' + this.episodeOfCareId;
+      categoryCoding.code = 'VALIDATED-NO-ASSESSMENT';
     }
 
+    categoryConcept.coding = [categoryCoding];
+    communication.category = [categoryConcept];
     communication.resourceType = 'Communication';
 
-    const episodeReference = new FHIR.Reference();
     episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     communication.context = episodeReference;
     communication.identifier = [identifier];
-    const annotation = new FHIR.Annotation();
-    annotation.time = new Date();
 
-    let authorName = null;
     this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
       author => {
         authorName = this.utilService.getNameFromResource(author);
         if (type === 'withassess') {
-          annotation.text = authorName + ' has validated that all clinical work for ' + this.serviceRequestSummary['name']
-            + ' has been completed without filing an assessment at ' + this.utilService.getDate(annotation.time);
+          payload.contentString = authorName + ' has validated that all clinical work for ' + this.serviceRequestSummary['name']
+            + ' has been completed without filing an assessment at ' + this.utilService.getDate(newDate);
         }
         if (type === 'noassess') {
-          annotation.text = authorName + ' has validated that all clinical work for ' + this.serviceRequestSummary['name']
+          payload.contentString = authorName + ' has validated that all clinical work for ' + this.serviceRequestSummary['name']
             + ' has been completed with an assessment result of: ' + this.returnInputValue('assessment') + ' at '
-            + this.utilService.getDate(annotation.time);
+            + this.utilService.getDate(newDate);
         }
-        this.utilService.getDate(annotation.time);
-        communication.note = new Array<FHIR.Annotation>();
-        communication.note.push(annotation);
+        communication.payload = [payload];
         this.staffService
           .createCommunication(JSON.stringify(communication))
           .subscribe(data => {

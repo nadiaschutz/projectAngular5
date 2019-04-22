@@ -691,8 +691,7 @@ export class DocumentManagementComponent implements OnInit {
     episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     communication.context = episodeReference;
     communication.identifier = [identifier];
-    const annotation = new FHIR.Annotation();
-    annotation.time = new Date();
+
 
     let authorName = null;
     this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
@@ -734,15 +733,15 @@ export class DocumentManagementComponent implements OnInit {
     episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     communication.context = episodeReference;
     communication.identifier = [identifier];
-    const annotation = new FHIR.Annotation();
-    annotation.time = new Date();
+    const newDate = new Date();
+
 
     let authorName = null;
     this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
       author => {
         authorName = this.utilService.getNameFromResource(author);
         payload.contentString = authorName + ' has added the required document for this checklist item at ' +
-        this.utilService.getDate(annotation.time);
+        this.utilService.getDate(newDate);
         communication.payload = [payload];
         this.staffService
           .createCommunication(JSON.stringify(communication))
@@ -778,15 +777,14 @@ export class DocumentManagementComponent implements OnInit {
     episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     communication.context = episodeReference;
     communication.identifier = [identifier];
-    const annotation = new FHIR.Annotation();
-    annotation.time = new Date();
+    const newDate = new Date();
 
     let authorName = null;
     this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
       author => {
         authorName = this.utilService.getNameFromResource(author);
         payload.contentString = authorName + ' has reviewed the clinical document at  ' +
-        this.utilService.getDate(annotation.time);
+        this.utilService.getDate(newDate);
         communication.payload = [payload];
         this.staffService
           .createCommunication(JSON.stringify(communication))
