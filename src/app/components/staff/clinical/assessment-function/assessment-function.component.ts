@@ -37,8 +37,8 @@ export class AssessmentFunctionComponent implements OnInit {
       value: 'MEETSREQ-PERM',
       viewValue: 'Meets Medical Requirements with Permanent Limiations'
     },
-    { value: 'MISSING-MED', viewValue: 'Does Not Meet Medical Requirements' },
-    { value: 'MEETSREQ_NO', viewValue: 'Missing Medical Information' },
+    { value: 'MEETSREQ_NO', viewValue: 'Does Not Meet Medical Requirements' },
+    { value: 'MISSING-MED', viewValue: 'Missing Medical Information' },
     { value: 'NOASSESMENT', viewValue: 'Unable to assess' }
   ];
 
