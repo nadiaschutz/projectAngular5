@@ -79,6 +79,7 @@ import { DependentComponent } from './components/dependent/dependent.component';
 import { ReportingComponent } from './components/reporting/reporting.component';
 import { AddNewClientDepartmentComponent } from './components/add-new-client-department/add-new-client-department.component';
 import { DocumentManagementComponent } from './components/document-management/document-management.component';
+import { MilestoneTrackingComponent } from './components/milestone-tracking/milestone-tracking.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -199,7 +200,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CancelRequestComponent,
     ReportingComponent,
     AddNewClientDepartmentComponent,
-    DocumentManagementComponent
+    DocumentManagementComponent,
+    MilestoneTrackingComponent
 
   ],
   imports: [

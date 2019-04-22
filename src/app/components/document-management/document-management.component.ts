@@ -91,6 +91,7 @@ export class DocumentManagementComponent implements OnInit {
             this.staffService.updateDocumentFile(doc['id'], JSON.stringify(doc)).subscribe(
               () => {
                 item['validated'] = true;
+                this.createCommunicationObjectForItemValidated(item);
               },
               error => {
                 console.log(error);
@@ -224,8 +225,6 @@ export class DocumentManagementComponent implements OnInit {
       }
     }
   }
-
-  
 
   saveItemToQResponse() {
     const itemToAdd = new FHIR.Item();
@@ -486,7 +485,7 @@ export class DocumentManagementComponent implements OnInit {
     item.linkId = this.documentCheckList['item'].length + 1;
     item.text = this.docFormGroup.get('filename').value;
 
-    time.valueDate = this.utilService.getCurrentDate();
+    time.valueDate = new Date();
 
     answer.valueCoding = new FHIR.Coding;
     answer.valueCoding.code = this.docFormGroup.get('filetype').value;
@@ -675,24 +674,31 @@ export class DocumentManagementComponent implements OnInit {
   createCommunicationObjectForCheclistItemCreation(item) {
     const communication = new FHIR.Communication();
     const identifier = new FHIR.Identifier();
+    const payload = new FHIR.Payload;
 
     identifier.value = 'DOCUMENT-CHECKLIST-ITEM-' + item['linkId'] + '-' + this.episodeOfCareId;
     communication.resourceType = 'Communication';
 
+    const categoryConcept = new FHIR.CodeableConcept;
+    const categoryCoding = new FHIR.Coding;
+    categoryCoding.system = 'https://bcip.smilecdr.com/fhir/documentcommunication';
+    categoryCoding.code = 'DOCUMENT-CHECKLIST-ITEM-CREATED';
+
+    categoryConcept.coding = [categoryCoding];
+    communication.category = [categoryConcept];
+    communication.status = 'completed';
     const episodeReference = new FHIR.Reference();
     episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     communication.context = episodeReference;
     communication.identifier = [identifier];
-    const annotation = new FHIR.Annotation();
-    annotation.time = new Date();
+
 
     let authorName = null;
     this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
       author => {
         authorName = this.utilService.getNameFromResource(author);
-        annotation.text = authorName + ' has added the following required documents item: ' + item['text'];
-        communication.note = new Array<FHIR.Annotation>();
-        communication.note.push(annotation);
+        payload.contentString = authorName + ' has added the following required documents item: ' + item['text'];
+        communication.payload = [payload];
         this.staffService
           .createCommunication(JSON.stringify(communication))
           .subscribe(data => {
@@ -708,26 +714,35 @@ export class DocumentManagementComponent implements OnInit {
   createCommunicationObjectForCheclistItemUpdate(item) {
     const communication = new FHIR.Communication();
     const identifier = new FHIR.Identifier();
+    const episodeReference = new FHIR.Reference();
+    const categoryConcept = new FHIR.CodeableConcept;
+    const categoryCoding = new FHIR.Coding;
+    const payload = new FHIR.Payload;
 
     identifier.value = 'DOCUMENT-CHECKLIST-ITEM-'
     + item['linkId'] + '-UPDATE-' + this.episodeOfCareId;
     communication.resourceType = 'Communication';
 
-    const episodeReference = new FHIR.Reference();
+    categoryCoding.system = 'https://bcip.smilecdr.com/fhir/documentcommunication';
+    categoryCoding.code = 'DOCUMENT-CHECKLIST-ITEM-UPDATED';
+
+    categoryConcept.coding = [categoryCoding];
+    communication.category = [categoryConcept];
+    communication.status = 'completed';
+
     episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     communication.context = episodeReference;
     communication.identifier = [identifier];
-    const annotation = new FHIR.Annotation();
-    annotation.time = new Date();
+    const newDate = new Date();
+
 
     let authorName = null;
     this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
       author => {
         authorName = this.utilService.getNameFromResource(author);
-        annotation.text = authorName + ' has added the required document for this checklist item at' + 
-        this.utilService.getDate(annotation.time);
-        communication.note = new Array<FHIR.Annotation>();
-        communication.note.push(annotation);
+        payload.contentString = authorName + ' has added the required document for this checklist item at ' +
+        this.utilService.getDate(newDate);
+        communication.payload = [payload];
         this.staffService
           .createCommunication(JSON.stringify(communication))
           .subscribe(data => {
@@ -739,6 +754,54 @@ export class DocumentManagementComponent implements OnInit {
       }
     );
   }
+
+  createCommunicationObjectForItemValidated(item) {
+    const communication = new FHIR.Communication();
+    const identifier = new FHIR.Identifier();
+    const episodeReference = new FHIR.Reference();
+    const categoryConcept = new FHIR.CodeableConcept;
+    const categoryCoding = new FHIR.Coding;
+    const payload = new FHIR.Payload;
+
+    identifier.value = 'DOCUMENT-CHECKLIST-ITEM-'
+    + item['linkId'] + '-VALIDATED-' + this.episodeOfCareId;
+    communication.resourceType = 'Communication';
+    communication.status = 'completed';
+
+    categoryCoding.system = 'https://bcip.smilecdr.com/fhir/documentcommunication';
+    categoryCoding.code = 'DOCUMENT-CHECKLIST-ITEM-VALIDATED';
+
+    categoryConcept.coding = [categoryCoding];
+    communication.category = [categoryConcept];
+
+    episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    communication.context = episodeReference;
+    communication.identifier = [identifier];
+    const newDate = new Date();
+
+    let authorName = null;
+    this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
+      author => {
+        authorName = this.utilService.getNameFromResource(author);
+        payload.contentString = authorName + ' has reviewed the clinical document at  ' +
+        this.utilService.getDate(newDate);
+        communication.payload = [payload];
+        this.staffService
+          .createCommunication(JSON.stringify(communication))
+          .subscribe(data => {
+            console.log(data);
+          });
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+
+
+
+
   viewDetailedContext() {
     this.router.navigateByUrl('/staff/work-screen');
   }

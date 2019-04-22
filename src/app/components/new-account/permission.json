@@ -47,10 +47,6 @@
     },
     {
       "permission": "FHIR_READ_ALL_OF_TYPE",
-      "argument": "CarePlan"
-    },
-    {
-      "permission": "FHIR_READ_ALL_OF_TYPE",
       "argument": "Patient"
     },
     {
@@ -64,6 +60,10 @@
     {
       "permission": "FHIR_READ_ALL_OF_TYPE",
       "argument": "Questionnaire"
+    },
+    {
+      "permission": "FHIR_READ_ALL_OF_TYPE",
+      "argument": "CarePlan"
     },
     {
       "permission": "FHIR_READ_ALL_OF_TYPE",

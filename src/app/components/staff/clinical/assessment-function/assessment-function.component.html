@@ -23,7 +23,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" *ngIf="!validateAssessmentCompleteScreenFlag">
       <div class="card assessment-card">
         <div class="card-body">
           <form [formGroup]="assessmentFormGroup" class="center-align">
@@ -89,13 +89,30 @@
         </div>
       </div>
     </div>
+
+    <div class="row" *ngIf="validateAssessmentCompleteScreenFlag">
+      <div class="card assessment-card">
+        <div class="card-body">
+            <span class="card-text">You are validating that all clinical work is completed without filing an assessment. If this is correct, you may click "Yes" to validate that all clinical work is completed.</span>
+        </div>
+        <div class="card-footer text-center card-footer-recolour">
+            <button class="btn regular-dark-button" (click)="validateNoAssessment()" >
+                Validate Clinical Work
+              </button>
+          </div>
+      </div>
+    </div>
     <div class="row">
       <div class="col button-row">
         <button class="btn regular-dark-button margin-right-20" (click)="createEncounter()" [disabled]="!assessmentFormGroup.valid">
           Save Assessment Report
         </button>
-        <button class="btn regular-dark-button" (click)="generatePageToPrint()" [disabled]="!assessmentFormGroup.valid">
+        <button class="btn regular-dark-button margin-right-20" (click)="generatePageToPrint()" [disabled]="!assessmentFormGroup.valid">
           Generate Printable Report
+        </button>
+        <button class="btn regular-dark-button" (click)="changeScreenToValidationScreen()" >
+          <span *ngIf="!validateAssessmentCompleteScreenFlag">Validate Clinical Work</span>
+          <span *ngIf="validateAssessmentCompleteScreenFlag">Cancel</span>
         </button>
       </div>
     </div>

@@ -7,19 +7,21 @@ import { Router } from '@angular/router';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import * as jspdf from 'jspdf';
 import * as html2canvas from 'html2canvas';
+import * as moment from 'moment';
+
 @Component({
   selector: 'app-assessment-function',
   templateUrl: './assessment-function.component.html',
   styleUrls: ['./assessment-function.component.scss']
 })
 export class AssessmentFunctionComponent implements OnInit {
+
   assessmentFormGroup: FormGroup;
+
   minDate: Date;
   maxDate: Date;
 
-  episodeOfCare;
-  serviceRequestSummary;
-  episodeOfCareId;
+
   performerList = [
     { value: 'PSOHP', viewValue: 'PSOHP' },
     { value: 'EXTERNAL', viewValue: 'External Health Provider' }
@@ -49,12 +51,18 @@ export class AssessmentFunctionComponent implements OnInit {
   observationForDisplay;
   encounterForDisplay;
   printObjectForDisplay;
+  milestoneObject;
+  milestoneForDisplay;
+  episodeOfCare;
+  serviceRequestSummary;
+  episodeOfCareId;
 
   buttonSelected = false;
   assessmentSavedFlag = false;
   printFlag = false;
   twoAFlag = false;
   hideViewButtonFlag = false;
+  validateAssessmentCompleteScreenFlag = false;
 
   vaccStatus;
 
@@ -81,6 +89,8 @@ export class AssessmentFunctionComponent implements OnInit {
         showWeekNumbers: false
       }
     );
+
+    this.checkIfAssociatedMilestoneListExists();
 
     this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
 
@@ -150,7 +160,7 @@ export class AssessmentFunctionComponent implements OnInit {
     this.staffService
       .getAnyFHIRObjectByCustomQuery(
         'QuestionnaireResponse?identifier=SERVREQ&context=' +
-          this.episodeOfCare['id']
+        this.episodeOfCare['id']
       )
       .subscribe(
         questionnaireFound => {
@@ -293,15 +303,17 @@ export class AssessmentFunctionComponent implements OnInit {
       },
       () => {
         this.assessmentSavedFlag = true;
+        this.changeMilestoneToWorkCompleted();
+        this.createCommunicationObjectForAssessments('withassess');
       }
     );
   }
 
-  patchFormValueForButton(name, value) {
-    this.switchClassesForButtons(name, value);
-    this.assessmentFormGroup.patchValue({ [name]: value });
-    console.log(this.assessmentFormGroup.get(name).value);
-  }
+  // patchFormValueForButton(name, value) {
+  //   this.switchClassesForButtons(name, value);
+  //   this.assessmentFormGroup.patchValue({ [name]: value });
+  //   console.log(this.assessmentFormGroup.get(name).value);
+  // }
 
   returnInputValue(input) {
     return this.assessmentFormGroup.get(input).value;
@@ -316,17 +328,17 @@ export class AssessmentFunctionComponent implements OnInit {
     if (this.printFlag === true) {
       const data = document.getElementById('print');
       html2canvas(data).then(canvas => {
-      // Few necessary setting options
-      const imgWidth = 190;
-      const pageHeight = 350;
-      const imgHeight = canvas.height * imgWidth / canvas.width;
-      const heightLeft = imgHeight;
+        // Few necessary setting options
+        const imgWidth = 190;
+        const pageHeight = 350;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        const heightLeft = imgHeight;
 
-      const contentDataURL = canvas.toDataURL('image/png');
-      const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
-      const position = 0;
-      pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
-      pdf.save('Diagnostics Test.pdf'); // Generated PDF
+        const contentDataURL = canvas.toDataURL('image/png');
+        const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+        const position = 0;
+        pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
+        pdf.save('Diagnostics Test.pdf'); // Generated PDF
       });
     }
 
@@ -381,16 +393,16 @@ export class AssessmentFunctionComponent implements OnInit {
     this.printObjectForDisplay = printObj;
   }
 
-  switchClassesForButtons(name, value) {
-    if (name.includes('vaccineStatusReviewed') && value === 'Yes') {
-      this.vaccStatus = 'yes-no-button-selected';
-      this.vaccStatusUnSelected = 'yes-no-button';
-    }
-    if (name.includes('vaccineStatusReviewed') && value === 'No') {
-      this.vaccStatus = 'yes-no-button';
-      this.vaccStatusUnSelected = 'yes-no-button-selected';
-    }
+  changeScreenToValidationScreen() {
+    this.validateAssessmentCompleteScreenFlag = !this.validateAssessmentCompleteScreenFlag;
   }
+
+
+  validateNoAssessment() {
+    this.createCommunicationObjectForAssessments('noassess');
+    this.changeMilestoneToWorkCompleted();
+  }
+
   viewDetailedContext() {
     this.router.navigateByUrl('/staff/work-screen');
   }
@@ -402,5 +414,109 @@ export class AssessmentFunctionComponent implements OnInit {
   changeFlagsForPrinting() {
     this.printFlag = !this.printFlag;
     this.hideViewButtonFlag = !this.hideViewButtonFlag;
+  }
+
+  createCommunicationObjectForAssessments(type: string) {
+    const communication = new FHIR.Communication();
+    const payload = new FHIR.Payload;
+    const identifier = new FHIR.Identifier();
+    const episodeReference = new FHIR.Reference();
+    const categoryConcept = new FHIR.CodeableConcept;
+    const categoryCoding = new FHIR.Coding;
+    const newDate = new Date();
+    let authorName = null;
+
+    categoryCoding.system = 'https://bcip.smilecdr.com/fhir/documentcommunication';
+
+
+    communication.status = 'completed';
+    if (type === 'withassess') {
+      identifier.value = 'VALIDATED-WITH-ASSESSMENT-' + this.episodeOfCareId;
+      categoryCoding.code = 'VALIDATED-WITH-ASSESSMENT';
+    }
+    if (type === 'noassess') {
+      identifier.value = 'VALIDATED-NO-ASSESSMENT-' + this.episodeOfCareId;
+      categoryCoding.code = 'VALIDATED-NO-ASSESSMENT';
+    }
+
+    categoryConcept.coding = [categoryCoding];
+    communication.category = [categoryConcept];
+    communication.resourceType = 'Communication';
+
+    episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    communication.context = episodeReference;
+    communication.identifier = [identifier];
+
+    this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
+      author => {
+        authorName = this.utilService.getNameFromResource(author);
+        if (type === 'withassess') {
+          payload.contentString = authorName + ' has validated that all clinical work for ' + this.serviceRequestSummary['name']
+            + ' has been completed without filing an assessment at ' + this.utilService.getDate(newDate);
+        }
+        if (type === 'noassess') {
+          payload.contentString = authorName + ' has validated that all clinical work for ' + this.serviceRequestSummary['name']
+            + ' has been completed with an assessment result of: ' + this.returnInputValue('assessment') + ' at '
+            + this.utilService.getDate(newDate);
+        }
+        communication.payload = [payload];
+        this.staffService
+          .createCommunication(JSON.stringify(communication))
+          .subscribe(data => {
+            console.log(data);
+          });
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  checkIfAssociatedMilestoneListExists() {
+    this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
+      if (data) {
+        data['entry'].forEach(entry => {
+          this.milestoneObject = entry['resource'];
+        });
+      }
+    });
+  }
+
+
+  changeMilestoneToWorkCompleted() {
+    const itemAnswer = new FHIR.Answer();
+    const dateTime = moment();
+
+    this.milestoneObject['item'].forEach(element => {
+      if (element['linkId'] === 'Work-Completed') {
+        if (!element['text']) {
+          element['text'] = '';
+        }
+        if (!element['answer']) {
+          element['answer'] = [];
+          itemAnswer.valueDateTime = new Date();
+          element['answer'].push(itemAnswer);
+        }
+        if (element['answer']) {
+          element['answer'].forEach(timeFound => {
+            if (timeFound['valueDateTime']) {
+              timeFound['valueDateTime'] = dateTime.format();
+            }
+          });
+        }
+      }
+    });
+    this.staffService
+      .updateStatusList(
+        this.milestoneObject['id'],
+        JSON.stringify(this.milestoneObject)
+      )
+      .subscribe(data => {
+        console.log(data);
+        this.milestoneObject = data;
+      },
+        error => {
+          console.log(error);
+        });
   }
 }
