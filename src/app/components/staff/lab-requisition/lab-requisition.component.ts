@@ -7,9 +7,9 @@ import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms'
 import { environment } from '../../../../environments/environment';
 import * as jspdf from 'jspdf';
 import * as html2canvas from 'html2canvas';
-import {PatientService} from '../../../service/patient.service';
+import { PatientService } from '../../../service/patient.service';
 import { formatDate } from '@angular/common';
-import {ActivatedRoute} from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
 
@@ -19,14 +19,14 @@ import { Router } from '@angular/router';
   styleUrls: ['./lab-requisition.component.scss']
 })
 export class LabRequisitionComponent implements OnInit {
-    consultationClinicianName: any;
-    consultationClinicianEmail: any;
-    diagnosticsClinicianEmail: any;
-    diagnosticsClinicianName: any;
+  consultationClinicianName: any;
+  consultationClinicianEmail: any;
+  diagnosticsClinicianEmail: any;
+  diagnosticsClinicianName: any;
   printData = {
-      assignTo: null,
-      speciality: null,
-      instructions: null
+    assignTo: null,
+    speciality: null,
+    instructions: null
   };
   id_token_claims_obj = JSON.parse(sessionStorage.getItem('id_token_claims_obj'));
   userName = sessionStorage.getItem('userName');
@@ -34,28 +34,28 @@ export class LabRequisitionComponent implements OnInit {
   listOfPatient: any;
   selectedPatient: any;
   specialities = [
-      'Anaesthesia',
-      'Dermatology',
-      'Emergency medicine',
-      'Cardiac Surgery',
-      'Family medicine',
-      'Internal medicine',
-      'Neurology',
-      'Obstetrics and Gynecology',
-      'Ophthalmology',
-      'Orthopedic surgery',
-      'Otolaryngology',
-      'Oral and Maxillofacial Surgery',
-      'Pediatrics',
-      'Podiatry',
-      'Psychiatry',
-      'Radiology (diagnostic)',
-      'Surgery (general)',
-      'Urology',
-      'Neurosurgery',
-      'Plastic surgery',
-      'Gastroenterology',
-      'Pulmonology'
+    'Anaesthesia',
+    'Dermatology',
+    'Emergency medicine',
+    'Cardiac Surgery',
+    'Family medicine',
+    'Internal medicine',
+    'Neurology',
+    'Obstetrics and Gynecology',
+    'Ophthalmology',
+    'Orthopedic surgery',
+    'Otolaryngology',
+    'Oral and Maxillofacial Surgery',
+    'Pediatrics',
+    'Podiatry',
+    'Psychiatry',
+    'Radiology (diagnostic)',
+    'Surgery (general)',
+    'Urology',
+    'Neurosurgery',
+    'Plastic surgery',
+    'Gastroenterology',
+    'Pulmonology'
   ];
   episodeOfCareId = null;
   requisitionType = '';
@@ -71,39 +71,39 @@ export class LabRequisitionComponent implements OnInit {
   currentPractitionerFHIRIDInSession;
   patients: any;
   clinician_id: any;
-    listQuestionary: any;
-    questionaryData: any;
-    eocId: any;
-    assessmentType: any;
+  listQuestionary: any;
+  questionaryData: any;
+  eocId: any;
+  assessmentType: any;
 
   constructor(private staffService: StaffService,
-              private patientService: PatientService,
-              private route: ActivatedRoute,
-              private router: Router,
-              private userService: UserService,
-              private utilService: UtilService,
-              private formBuilder: FormBuilder) { }
+    private patientService: PatientService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private userService: UserService,
+    private utilService: UtilService,
+    private formBuilder: FormBuilder) { }
 
   ngOnInit() {
-      this.route.params.subscribe(params => {
-          this.episodeOfCareId = params['eocId'];
+    this.route.params.subscribe(params => {
+      this.episodeOfCareId = params['eocId'];
 
 
-          this.staffService.getLabTestQuestionnaire().subscribe(data => {
-              this.processQuestionnaire(data);
-              this.fetchAllClinicians();
-              this.staffService.getIncludedItemsForEpisodeOfCare(this.episodeOfCareId).subscribe(episodeOfCareAndRelatedData => {
+      this.staffService.getLabTestQuestionnaire().subscribe(data => {
+        this.processQuestionnaire(data);
+        this.fetchAllClinicians();
+        this.staffService.getIncludedItemsForEpisodeOfCare(this.episodeOfCareId).subscribe(episodeOfCareAndRelatedData => {
 
-                  this.processPatientDetails(episodeOfCareAndRelatedData);
-              });
-          });
-          for (let i = 0; i < 34; i++) {
-              this.checkboxArray.push('item: ' + i);
-          }
-
-
-
+          this.processPatientDetails(episodeOfCareAndRelatedData);
+        });
       });
+      for (let i = 0; i < 34; i++) {
+        this.checkboxArray.push('item: ' + i);
+      }
+
+
+
+    });
 
 
 
@@ -111,13 +111,13 @@ export class LabRequisitionComponent implements OnInit {
 
 
 
-   /* if (sessionStorage.getItem('userDept') !== null) {
-      this.getPatientByDepartment();
-    }*/
+    /* if (sessionStorage.getItem('userDept') !== null) {
+       this.getPatientByDepartment();
+     }*/
 
     this.todayDate = this.utilService.getCurrentDate();
     if (this.id_token_claims_obj) {
-     this.clinician_id = this.id_token_claims_obj.sub;
+      this.clinician_id = this.id_token_claims_obj.sub;
     }
 
   }
@@ -128,7 +128,7 @@ export class LabRequisitionComponent implements OnInit {
         this.patient = this.utilService.getPatientJsonObjectFromPatientFhirObject(element.resource);
       }
       if (element.resource.resourceType === 'EpisodeOfCare') {
-          this.getQuestionnaireResponse(element.resource.resourceType , element.resource.id);
+        this.getQuestionnaireResponse(element.resource.resourceType, element.resource.id);
       }
     });
   }
@@ -141,7 +141,7 @@ export class LabRequisitionComponent implements OnInit {
       if (element.item) {
         temp['items'] = new Array();
         element.item.forEach(items => {
-          temp['items'].push({id: items['linkId'], text: items['text'], checked: false});
+          temp['items'].push({ id: items['linkId'], text: items['text'], checked: false });
         });
       }
       this.labTestArray.push(temp);
@@ -153,8 +153,10 @@ export class LabRequisitionComponent implements OnInit {
       if (data['entry']) {
         data['entry'].forEach(element => {
           const clinician = element['resource'];
-          this.clinicians.push({id: clinician['id'],
-          name: this.utilService.getNameFromResource(clinician)});
+          this.clinicians.push({
+            id: clinician['id'],
+            name: this.utilService.getNameFromResource(clinician)
+          });
           // this.cliniciansWithId[clinician.id] = clinician;
         });
       }
@@ -165,8 +167,8 @@ export class LabRequisitionComponent implements OnInit {
     if (this.requisitionType === 'Medical Information' || 'Consultation') {
       this.consultationFormGroup = this.formBuilder.group({
 
-          consultationClinicianEmail: new FormControl(''),
-          consultationClinicianName: new FormControl(''),
+        consultationClinicianEmail: new FormControl(''),
+        consultationClinicianName: new FormControl(''),
         speciality: new FormControl(''),
         instructions: new FormControl('')
       });
@@ -189,9 +191,9 @@ export class LabRequisitionComponent implements OnInit {
     episodeOfCareReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
     procedureRequest.context = episodeOfCareReference;
 
-   /* const performerReference = new FHIR.Reference();
-    performerReference.reference = 'Practitioner/' + this.consultationFormGroup.get('assignTo').value.id;
-    procedureRequest.performer = performerReference;*/
+    /* const performerReference = new FHIR.Reference();
+     performerReference.reference = 'Practitioner/' + this.consultationFormGroup.get('assignTo').value.id;
+     procedureRequest.performer = performerReference;*/
 
     const annotation = new FHIR.Annotation;
     annotation.text = this.consultationFormGroup.get('instructions').value;
@@ -207,89 +209,89 @@ export class LabRequisitionComponent implements OnInit {
     procedureRequest.identifier = [identifier];
 
 
-      const extension = [];
+    const extension = [];
 
 
-      if (this.consultationClinicianName) {
-          const consultationClinicianName = {
-              'url': 'http://nohis.gc.ca/external-clinician-name',
-              'valueString': this.consultationClinicianName
-          };
-          extension.push(consultationClinicianName);
-      }
-      if (this.consultationClinicianEmail) {
-          const email = {
-              'url': 'http://nohis.gc.ca/external-clinician-email',
-              'valueString': this.consultationClinicianEmail
-          };
-          extension.push(email);
-      }
+    if (this.consultationClinicianName) {
+      const consultationClinicianName = {
+        'url': 'http://nohis.gc.ca/external-clinician-name',
+        'valueString': this.consultationClinicianName
+      };
+      extension.push(consultationClinicianName);
+    }
+    if (this.consultationClinicianEmail) {
+      const email = {
+        'url': 'http://nohis.gc.ca/external-clinician-email',
+        'valueString': this.consultationClinicianEmail
+      };
+      extension.push(email);
+    }
 
 
 
 
-      const cloanProcedureRequest =  JSON.parse(JSON.stringify(procedureRequest));
+    const cloanProcedureRequest = JSON.parse(JSON.stringify(procedureRequest));
 
-      cloanProcedureRequest['extension'] = extension;
+    cloanProcedureRequest['extension'] = extension;
 
 
 
     this.staffService.saveProcedureRequest(JSON.stringify(cloanProcedureRequest)).subscribe(data => {
 
-        if (data) {
-            const context = data['context'].reference;
+      if (data) {
+        const context = data['context'].reference;
 
 
-            this.staffService.getDocumentsChecklistLab(context).subscribe( dataItem => {
+        this.staffService.getDocumentsChecklistLab(context).subscribe(dataItem => {
 
-                let resource: any;
-                if (dataItem && dataItem['entry'] && dataItem['entry'][0]) {
-                    resource = dataItem['entry'][0].resource;
+          let resource: any;
+          if (dataItem && dataItem['entry'] && dataItem['entry'][0]) {
+            resource = dataItem['entry'][0].resource;
 
-                    if (resource && resource['item']) {
-                        const req = {
-                            'linkId': resource['item'].length + 1,
-                            'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                           
-                        } ;
+            if (resource && resource['item']) {
+              const req = {
+                'linkId': resource['item'].length + 1,
+                'text': this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
 
-                        resource['item'].push(req);
+              };
 
-                    } else {
-                        resource['item'] = [{
-                            'linkId': '1',
-                            'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                           
-                        }];
-                    }
+              resource['item'].push(req);
 
-                    const udateDocId = resource['id'];
+            } else {
+              resource['item'] = [{
+                'linkId': '1',
+                'text': this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
 
-                    this.staffService.updateDocumentFile(udateDocId , resource).subscribe(
-                      updatedDocItem => {
-                        console.log(updatedDocItem);
-                      },
-                      error => {
-                        console.log(error);
-                      },
-                      () => {
-                        this.requisitionType = '';
-                        this.consultationClinicianEmail = null;
-                        this.consultationClinicianName  = null;
-                        this.labTestArray = [];
-                        this.printData.instructions = null;
-                        this.printData.speciality = null;
-                      }
-                      );
+              }];
+            }
 
-                }
+            const udateDocId = resource['id'];
 
+            this.staffService.updateDocumentFile(udateDocId, resource).subscribe(
+              updatedDocItem => {
+                console.log(updatedDocItem);
+              },
+              error => {
+                console.log(error);
+              },
+              () => {
+                this.requisitionType = '';
+                this.consultationClinicianEmail = null;
+                this.consultationClinicianName = null;
+                this.labTestArray = [];
+                this.printData.instructions = null;
+                this.printData.speciality = null;
+              }
+            );
 
-
-            });
+          }
 
 
-        }
+
+        });
+
+
+      }
     });
   }
 
@@ -351,73 +353,73 @@ export class LabRequisitionComponent implements OnInit {
 
     const extension = [];
 
-      if (this.diagnosticsClinicianName) {
-          const diagnosticsClinicianName = {
-              'url': 'http://nohis.gc.ca/external-clinician-name',
-              'valueString': this.diagnosticsClinicianName
-          };
-          extension.push(diagnosticsClinicianName);
-      }
-      if (this.diagnosticsClinicianEmail) {
-          const email = {
-              'url': 'http://nohis.gc.ca/external-clinician-email',
-              'valueString': this.diagnosticsClinicianEmail
-          };
-          extension.push(email);
-      }
+    if (this.diagnosticsClinicianName) {
+      const diagnosticsClinicianName = {
+        'url': 'http://nohis.gc.ca/external-clinician-name',
+        'valueString': this.diagnosticsClinicianName
+      };
+      extension.push(diagnosticsClinicianName);
+    }
+    if (this.diagnosticsClinicianEmail) {
+      const email = {
+        'url': 'http://nohis.gc.ca/external-clinician-email',
+        'valueString': this.diagnosticsClinicianEmail
+      };
+      extension.push(email);
+    }
 
 
-      const cloanProcedureRequest =  JSON.parse(JSON.stringify(procedureRequest));
+    const cloanProcedureRequest = JSON.parse(JSON.stringify(procedureRequest));
 
-      cloanProcedureRequest['extension'] = extension;
+    cloanProcedureRequest['extension'] = extension;
 
 
     this.staffService.saveProcedureRequest(JSON.stringify(cloanProcedureRequest)).subscribe(data => {
 
 
-        if (data) {
-            const context = data['context'].reference;
+      if (data) {
+        const context = data['context'].reference;
 
-            this.staffService.getDocumentsChecklistLab(context).subscribe( dataItem => {
+        this.staffService.getDocumentsChecklistLab(context).subscribe(dataItem => {
 
-                let resource: any;
-                if (dataItem && dataItem['entry'] && dataItem['entry'][0]) {
-                    resource = dataItem['entry'][0].resource;
+          let resource: any;
+          if (dataItem && dataItem['entry'] && dataItem['entry'][0]) {
+            resource = dataItem['entry'][0].resource;
 
-                    if (resource && resource['item']) {
-                        const req = {
-                            'linkId': resource['item'].length + 1,
-                            'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            
-                        } ;
+            if (resource && resource['item']) {
+              const req = {
+                'linkId': resource['item'].length + 1,
+                'text': this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
 
-                        resource['item'].push(req);
+              };
 
-                    } else {
-                        resource['item'] = [{
-                            'linkId': '1',
-                            'text':  this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
-                            
-                        }];
-                    }
+              resource['item'].push(req);
 
-                    const udateDocId = resource['id'];
+            } else {
+              resource['item'] = [{
+                'linkId': '1',
+                'text': this.requisitionType + ' - ' + moment().format('MMM DD YYYY'),
 
-                    this.staffService.updateDocumentFile(udateDocId , resource).subscribe( dataItem => {
-                        this.requisitionType = '';
-                        this.diagnosticsClinicianEmail = null;
-                        this.diagnosticsClinicianName  = null;
-                        this.labTestArray = [];
-                        this.printData.instructions = null;
-                        this.printData.speciality = null;
+              }];
+            }
 
-                    });
-                }
+            const udateDocId = resource['id'];
+
+            this.staffService.updateDocumentFile(udateDocId, resource).subscribe(dataItem => {
+              this.requisitionType = '';
+              this.diagnosticsClinicianEmail = null;
+              this.diagnosticsClinicianName = null;
+              this.labTestArray = [];
+              this.printData.instructions = null;
+              this.printData.speciality = null;
 
             });
+          }
+
+        });
 
 
-        }
+      }
 
     });
   }
@@ -425,92 +427,92 @@ export class LabRequisitionComponent implements OnInit {
   printToPDF() {
     const data = document.getElementById('print');
     html2canvas(data).then(canvas => {
-    // Few necessary setting options
-    const imgWidth = 190;
-    const pageHeight = 350;
-    const imgHeight = canvas.height * imgWidth / canvas.width;
-    const heightLeft = imgHeight;
+      // Few necessary setting options
+      const imgWidth = 190;
+      const pageHeight = 350;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const heightLeft = imgHeight;
 
-    const contentDataURL = canvas.toDataURL('image/png');
-    const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
-    const position = 0;
-    pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
-    pdf.save('Diagnostics Test.pdf'); // Generated PDF
+      const contentDataURL = canvas.toDataURL('image/png');
+      const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+      const position = 0;
+      pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
+      pdf.save('Diagnostics Test.pdf'); // Generated PDF
     });
   }
 
 
-    handleError(error) {
-        console.log(error);
-    }
+  handleError(error) {
+    console.log(error);
+  }
 
 
 
-    getDate(dateTime) {
-        return formatDate(new Date(dateTime), 'MMM d, y', 'en');
-    }
+  getDate(dateTime) {
+    return formatDate(new Date(dateTime), 'MMM d, y', 'en');
+  }
 
 
-    getQuestionnaireResponse(resourceType , resourseId) {
+  getQuestionnaireResponse(resourceType, resourseId) {
 
-        this.patientService.QuestionnaireResponse(resourceType , resourseId).subscribe(
-            data => {
+    this.patientService.QuestionnaireResponse(resourceType, resourseId).subscribe(
+      data => {
 
-                this.questionaryData = data;
+        this.questionaryData = data;
 
 
-                if (this.questionaryData && this.questionaryData.entry && this.questionaryData.entry.length > 0) {
-                    this.listQuestionary = this.questionaryData.entry;
-                    if (this.listQuestionary && this.listQuestionary.length > 0) {
+        if (this.questionaryData && this.questionaryData.entry && this.questionaryData.entry.length > 0) {
+          this.listQuestionary = this.questionaryData.entry;
+          if (this.listQuestionary && this.listQuestionary.length > 0) {
 
-                      for (const questionnaire of this.listQuestionary) {
-                        const qr = questionnaire['resource'];
-                        if (qr['item']) {
-                          qr.item.forEach(item => {
-                            if (item['linkId'] === 'PSOHPSERV') {
-                              for (const answer of item['answer']) {
-                                if (answer['valueCoding']) {
-                                  this.assessmentType = answer['valueCoding']['display'];
-                                }
-                              }
-                            }
-                          });
-                        }
+            for (const questionnaire of this.listQuestionary) {
+              const qr = questionnaire['resource'];
+              if (qr['item']) {
+                qr.item.forEach(item => {
+                  if (item['linkId'] === 'PSOHPSERV') {
+                    for (const answer of item['answer']) {
+                      if (answer['valueCoding']) {
+                        this.assessmentType = answer['valueCoding']['display'];
                       }
-                       
                     }
+                  }
+                });
+              }
+            }
+
+          }
 
 
 
 
 
-                }
+        }
 
-            },
-            error => this.handleError(error)
-        );
+      },
+      error => this.handleError(error)
+    );
 
-    }
+  }
 
 
-    printConsutationMadicalInfo(name) {
-        const data = document.getElementById('print2');
-        html2canvas(data).then(canvas => {
-            // Few necessary setting options
-            const imgWidth = 190;
-            const pageHeight = 350;
-            const imgHeight = canvas.height * imgWidth / canvas.width;
-            const heightLeft = imgHeight;
+  printConsutationMadicalInfo(name) {
+    const data = document.getElementById('print2');
+    html2canvas(data).then(canvas => {
+      // Few necessary setting options
+      const imgWidth = 190;
+      const pageHeight = 350;
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+      const heightLeft = imgHeight;
 
-            const contentDataURL = canvas.toDataURL('image/png');
-            const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
-            const position = 0;
-            pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
-            pdf.save( name + '.pdf'); // Generated PDF
-        });
-    }
+      const contentDataURL = canvas.toDataURL('image/png');
+      const pdf = new jspdf('p', 'mm', 'a4'); // A4 size page of PDF
+      const position = 0;
+      pdf.addImage(contentDataURL, 'PNG', 10, position, imgWidth, imgHeight);
+      pdf.save(name + '.pdf'); // Generated PDF
+    });
+  }
 
-    viewDetailedContext() {
-      this.router.navigateByUrl('/staff/work-screen');
-    }
+  viewDetailedContext() {
+    this.router.navigateByUrl('/staff/work-screen');
+  }
 }

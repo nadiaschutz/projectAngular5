@@ -553,6 +553,14 @@ select:-webkit-autofill:focus {
     display: inline-block;
 }
 
+.card-footer-recolour {
+    background-color: white;
+}
+
+.card-footer-recolour-clear {
+    background-color: white;
+}
+
 /* responsive styling for medium devices */
 // @media screen and (max-width: 992px) {
 //     .show-medium {

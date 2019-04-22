@@ -90,10 +90,11 @@ export class AssessmentFunctionComponent implements OnInit {
       }
     );
 
-    this.checkIfAssociatedMilestoneListExists();
 
     this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
-
+    if (this.episodeOfCareId) {
+      this.checkIfAssociatedMilestoneListExists();
+    }
     this.assessmentFormGroup = this.formBuilder.group({
       performerType: new FormControl(''),
       examDate: new FormControl(''),
@@ -231,46 +232,50 @@ export class AssessmentFunctionComponent implements OnInit {
 
     observation.component = [];
 
+
     if (this.returnInputValue('assessment')) {
       const component = new FHIR.Component();
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
-      for (const currentObj in this.assessmentList) {
+      this.assessmentList.forEach(currentObj => {
         if (this.returnInputValue('assessment') === currentObj['value']) {
+          console.log('found2');
+
           componentCoding.display = currentObj['viewValue'];
           componentCoding.code = currentObj['value'];
           componentCoding.system = 'ASSESSMENT';
-
           componentCode.coding = [];
           componentCode.coding.push(componentCoding);
           component.code = componentCode;
           observation.component.push(component);
         }
-      }
+      });
     }
 
     if (this.returnInputValue('vaccineStatusReviewed')) {
       const component = new FHIR.Component();
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
-      for (const currentObj in this.vaccineReviewChoices) {
+      this.vaccineReviewChoices.forEach(currentObj => {
         if (
           this.returnInputValue('vaccineStatusReviewed') === currentObj['value']
         ) {
           componentCoding.display = currentObj['viewValue'];
           componentCoding.code = 'VACCINE_STATUS_REVIEWED';
           componentCoding.system = 'vaccineStatusReviewed';
-
           componentCode.coding = [];
+
           componentCode.coding.push(componentCoding);
           component.code = componentCode;
           observation.component.push(component);
         }
-      }
+      });
     }
 
-    performer.reference =
-      'Practitioner/' + sessionStorage.getItem('userFHIRID');
+    if (this.returnInputValue('performerType') === 'PSOHP') {
+      performer.reference =
+        'Practitioner/' + sessionStorage.getItem('userFHIRID');
+    }
     subject.reference = this.episodeOfCare['patient']['reference'];
 
     console.log(this.returnInputValue('examDate'));
@@ -292,21 +297,21 @@ export class AssessmentFunctionComponent implements OnInit {
     observation.context = context;
     observation.comment = this.assessmentFormGroup.get('comment').value;
     this.observationForDisplay = JSON.stringify(observation, undefined, 2);
-    console.log(observation);
+    console.log(JSON.stringify(observation));
 
-    this.staffService.saveAssessment(JSON.stringify(observation)).subscribe(
-      assessment => {
-        console.log(assessment);
-      },
-      error => {
-        console.log(error);
-      },
-      () => {
-        this.assessmentSavedFlag = true;
-        this.changeMilestoneToWorkCompleted();
-        this.createCommunicationObjectForAssessments('withassess');
-      }
-    );
+    // this.staffService.saveAssessment(JSON.stringify(observation)).subscribe(
+    //   assessment => {
+    //     console.log(assessment);
+    //   },
+    //   error => {
+    //     console.log(error);
+    //   },
+    //   () => {
+    //     this.assessmentSavedFlag = true;
+    //     this.changeMilestoneToWorkCompleted();
+    //     this.createCommunicationObjectForAssessments('withassess');
+    //   }
+    // );
   }
 
   // patchFormValueForButton(name, value) {
@@ -475,6 +480,7 @@ export class AssessmentFunctionComponent implements OnInit {
   checkIfAssociatedMilestoneListExists() {
     this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
       if (data) {
+        console.log(data)
         data['entry'].forEach(entry => {
           this.milestoneObject = entry['resource'];
         });

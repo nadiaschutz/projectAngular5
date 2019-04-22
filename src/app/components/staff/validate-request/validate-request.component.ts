@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { formatDate } from '@angular/common';
 import { TitleCasePipe } from '@angular/common';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-validate-request',
@@ -22,7 +23,6 @@ export class ValidateRequestComponent implements OnInit {
     private staffService: StaffService,
     private utilService: UtilService,
     private formBuilder: FormBuilder,
-    private oAuthService: OAuthService,
     private userService: UserService,
     private router: Router
   ) { }
@@ -31,10 +31,16 @@ export class ValidateRequestComponent implements OnInit {
   validateFormGroup: FormGroup;
 
   onSuccess = false;
+  clickToContinue = false;
 
-
+  milestoneObject;
+  episodeOfCareId;
   ngOnInit() {
+    this.validateFormGroup = this.formBuilder.group({
+      comment: new FormControl('')
+    });
 
+    this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
 
     this.processServiceRequestForSummary();
   }
@@ -48,7 +54,7 @@ export class ValidateRequestComponent implements OnInit {
     this.staffService
       .getAnyFHIRObjectByCustomQuery(
         'QuestionnaireResponse?identifier=SERVREQ&context=' +
-          this.returnEoC()
+        this.returnEoC()
       )
       .subscribe(
         questionnaireFound => {
@@ -102,6 +108,99 @@ export class ValidateRequestComponent implements OnInit {
           console.log(error);
         }
       );
+  }
+
+  checkIfAssociatedMilestoneListExists() {
+    this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
+      if (data) {
+        console.log(data);
+        data['entry'].forEach(entry => {
+          this.milestoneObject = entry['resource'];
+        });
+      }
+    });
+  }
+
+  changeMileStoneToValidated() {
+    const itemAnswer = new FHIR.Answer();
+    const dateTime = moment();
+
+    this.milestoneObject['item'].forEach(element => {
+      if (element['linkId'] === 'Validated') {
+        if (!element['text']) {
+          element['text'] = '';
+        }
+        if (!element['answer']) {
+          element['answer'] = [];
+          itemAnswer.valueDateTime = new Date();
+          element['answer'].push(itemAnswer);
+        }
+        if (element['answer']) {
+          element['answer'].forEach(timeFound => {
+            if (timeFound['valueDateTime']) {
+              timeFound['valueDateTime'] = dateTime.format();
+            }
+          });
+        }
+      }
+    });
+    this.staffService
+      .updateStatusList(
+        this.milestoneObject['id'],
+        JSON.stringify(this.milestoneObject)
+      )
+      .subscribe(data => {
+        console.log(data);
+        this.milestoneObject = data;
+      },
+        error => {
+          console.log(error);
+        },
+        () => {
+          this.createCommunicationObjectForValidatedMilestone();
+        });
+  }
+
+  createCommunicationObjectForValidatedMilestone() {
+    const communication = new FHIR.Communication();
+    const identifier = new FHIR.Identifier();
+    const episodeReference = new FHIR.Reference();
+    const categoryConcept = new FHIR.CodeableConcept;
+    const categoryCoding = new FHIR.Coding;
+    const payload = new FHIR.Payload;
+
+    identifier.value = 'MILESTONE-UDPATE-' + this.episodeOfCareId;
+    communication.resourceType = 'Communication';
+    communication.status = 'completed';
+
+    categoryCoding.system = 'https://bcip.smilecdr.com/fhir/documentcommunication';
+    categoryCoding.code = 'DOCUMENT-CHECKLIST-ITEM-VALIDATED';
+
+    categoryConcept.coding = [categoryCoding];
+    communication.category = [categoryConcept];
+
+    episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
+    communication.context = episodeReference;
+    communication.identifier = [identifier];
+    const newDate = new Date();
+
+    let authorName = null;
+    this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
+      author => {
+        authorName = this.utilService.getNameFromResource(author);
+        payload.contentString = authorName + ' has validated the work order and moved the milestone to Validated at ' +
+        this.utilService.getDate(newDate);
+        communication.payload = [payload];
+        this.staffService
+          .createCommunication(JSON.stringify(communication))
+          .subscribe(data => {
+            console.log(data);
+          });
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 
   viewDetailedContext() {

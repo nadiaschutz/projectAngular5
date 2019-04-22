@@ -287,6 +287,49 @@ export class CancelRequestComponent implements OnInit {
       });
   }
 
+
+  createCommunicationObjectForClosedMilestone() {
+    const communication = new FHIR.Communication();
+    const identifier = new FHIR.Identifier();
+    const episodeReference = new FHIR.Reference();
+    const categoryConcept = new FHIR.CodeableConcept;
+    const categoryCoding = new FHIR.Coding;
+    const payload = new FHIR.Payload;
+
+    identifier.value = 'MILESTONE-UDPATE-' + this.episodeOfCare['id'];
+    communication.resourceType = 'Communication';
+    communication.status = 'completed';
+
+    categoryCoding.system = 'https://bcip.smilecdr.com/fhir/documentcommunication';
+    categoryCoding.code = 'DOCUMENT-CHECKLIST-ITEM-VALIDATED';
+
+    categoryConcept.coding = [categoryCoding];
+    communication.category = [categoryConcept];
+
+    episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCare['id'];
+    communication.context = episodeReference;
+    communication.identifier = [identifier];
+    const newDate = new Date();
+
+    let authorName = null;
+    this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
+      author => {
+        authorName = this.utilService.getNameFromResource(author);
+        payload.contentString = authorName + ' has closed the work order and moved the milestone to Closed at ' +
+        this.utilService.getDate(newDate);
+        communication.payload = [payload];
+        this.staffService
+          .createCommunication(JSON.stringify(communication))
+          .subscribe(data => {
+            console.log(data);
+          });
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
   viewDetailedContext() {
     this.router.navigateByUrl('/staff/work-screen');
   }
