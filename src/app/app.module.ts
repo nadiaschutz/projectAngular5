@@ -80,6 +80,7 @@ import { ReportingComponent } from './components/reporting/reporting.component';
 import { AddNewClientDepartmentComponent } from './components/add-new-client-department/add-new-client-department.component';
 import { DocumentManagementComponent } from './components/document-management/document-management.component';
 import { MilestoneTrackingComponent } from './components/milestone-tracking/milestone-tracking.component';
+import { ValidateRequestComponent } from './components/staff/validate-request/validate-request.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -105,16 +106,7 @@ const routes: Routes = [
     },
   },
   { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
-  // {
-  //   path: 'newadvicerequest',
-  //   component: NewServiceRequestNoClientComponent,
-  //   resolve: {
-  //     fields: ContactUsFormResolverService,
-  //     departments: DepartmentListResolverService,
-  //     servreq: NewServReqService
-  //   },
-  //   canActivate: [AuthGuardService]
-  // },
+  { path: 'staff/validate-request', component: ValidateRequestComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService] },
   { path: 'district-office-add', component: DistrictOfficeAddComponent, canActivate: [AuthGuardService] },
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
@@ -201,7 +193,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ReportingComponent,
     AddNewClientDepartmentComponent,
     DocumentManagementComponent,
-    MilestoneTrackingComponent
+    MilestoneTrackingComponent,
+    ValidateRequestComponent
 
   ],
   imports: [

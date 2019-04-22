@@ -1108,6 +1108,11 @@ export class WorkScreenComponent implements OnInit {
     this.router.navigateByUrl('/staff/cancel-request');
   }
 
+  redirectToValidateScreen() {
+    this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
+    this.router.navigateByUrl('/staff/validate-request');
+  }
+
   redirectToScheduler() {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
       this.router.navigateByUrl('/staff/clinical/scheduler');

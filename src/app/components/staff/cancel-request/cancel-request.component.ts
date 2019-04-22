@@ -17,7 +17,6 @@ import { TitleCasePipe } from '@angular/common';
   styleUrls: ['./cancel-request.component.scss']
 })
 export class CancelRequestComponent implements OnInit {
-  cancelFormGroup: FormGroup;
 
   constructor(
     private staffService: StaffService,
@@ -27,6 +26,8 @@ export class CancelRequestComponent implements OnInit {
     private userService: UserService,
     private router: Router
   ) {}
+
+  cancelFormGroup: FormGroup;
 
   statusObject;
   episodeOfCare;
@@ -236,10 +237,6 @@ export class CancelRequestComponent implements OnInit {
     console.log(JSON.stringify(communication, undefined, 2));
   }
 
-  viewDetailedContext() {
-    this.router.navigateByUrl('/staff/work-screen');
-  }
-
   changeStatusToWorkCompleted() {
     this.staffService
       .getStatusList(this.episodeOfCare['id'])
@@ -288,5 +285,9 @@ export class CancelRequestComponent implements OnInit {
         console.log(data);
         this.statusObject = data;
       });
+  }
+
+  viewDetailedContext() {
+    this.router.navigateByUrl('/staff/work-screen');
   }
 }
