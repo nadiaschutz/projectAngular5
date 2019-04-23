@@ -223,11 +223,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     if (this.router.url.indexOf('/newservicerequest') > -1) {
       this.formId = 'TEST4';
       this.servReqType = 'SERVREQ';
-      console.log('1', this.servReqType, this.formId);
     } else {
       this.formId = '1953';
       this.servReqType = 'CONTUS';
-      console.log('2', this.servReqType, this.formId);
     }
 
     this.userLRO = JSON.parse(sessionStorage.getItem('userLRO'));
@@ -503,8 +501,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   createItemToSend(id, givenName, famName) {
 
     if (this.servReqType === 'SERVREQ') {
-      console.log('1', this.servReqType, this.formId);
-
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
         questionnaire: {
@@ -526,7 +522,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       };
 
     } else {
-      console.log('2', this.servReqType, this.formId);
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
         questionnaire: {
