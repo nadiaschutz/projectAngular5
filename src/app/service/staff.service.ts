@@ -266,7 +266,7 @@ export class StaffService {
   }
 
   getStatusList(context) {
-    return this.http.get(environment.queryURI + '/QuestionnaireResponse?context=' + context + '&identifier=STATUS', {
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse?context=' + context + '&identifier=MILESTONE', {
       headers: this.getHeaders()
     });
   }

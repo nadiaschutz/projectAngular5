@@ -1070,7 +1070,7 @@ export class WorkScreenComponent implements OnInit {
     milestoneItemSix.answer = [statusItemAnswer];
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
-    statusIdentifier.value = 'STATUS';
+    statusIdentifier.value = 'MILESTONE';
 
     statusQResponse.resourceType = 'QuestionnaireResponse';
     statusQResponse.identifier = statusIdentifier;
