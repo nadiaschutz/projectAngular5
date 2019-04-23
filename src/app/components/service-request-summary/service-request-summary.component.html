@@ -3,7 +3,7 @@
         <h5>Service Request Summary Page</h5>
         <h6>service request > Service Request Summary Page > {{serviceRequestID}}</h6>
     </div>
-    <div *ngIf="serviceRequestObject.length > 0 && !showSuccessMessage && serviceRequestID">
+    <div>
         <div class="button-section">
             <!-- <button (click)="deleteServiceRequest()" class="btn special-button">
                     Delete
@@ -19,149 +19,14 @@
           <input disabled=true class="form-control field-box-name" placeholder="{{item.value | titlecase}}"/>
         </div>
       </div> -->
-        <section class="form-section">
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">Service Request Id</label>
-                    <input readonly=true placeholder="{{ newArr.ServiceRequestId }}"
-                        class="form-control field-box-name">
-                </div>
-
-                <div class="col-6">
-                    <label class="label-name">Date Created</label>
-                    <input readonly=true placeholder="{{ newArr.Datecreated }}" class="form-control field-box-name">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">Created By</label>
-                    <input readonly=true placeholder="{{ newArr.CreatedBy }}" class="form-control field-box-name">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">First Name</label>
-                    <input disabled=true placeholder="{{ newArr.FirstName }}" class="form-control field-box-name">
-                </div>
-                <div class="col-6">
-                    <label class="label-name">Last Name</label>
-                    <input disabled=true placeholder="{{ newArr.LastName }}" class="form-control field-box-name">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">Date of Birth</label>
-                    <input disabled=true placeholder="{{ newArr.DateofBirth }}" class="form-control field-box-name">
-                </div>
-                <div class="col-6">
-                    <label class="label-name">Employee PRI</label>
-                    <input disabled=true placeholder="{{ newArr.EmployeePRI }}" class="form-control field-box-name">
-                </div>
-            </div>
-        </section>
-        <section class="form-section">
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">PSOHP Service</label>
-                    <input disabled=true placeholder="{{ newArr.PSOHPService }}" class="form-control field-box-name">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">Employing Department Name</label>
-                    <input disabled=true placeholder="{{ newArr.EmployingDepartmentName }}"
-                        class="form-control field-box-name">
-                </div>
-                <div class="col-6">
-                    <label class="label-name">Employing Department Location</label>
-                    <input disabled=true placeholder="{{ newArr.EmployingDepartmentBranch }}"
-                        class="form-control field-box-name">
-                </div>
-
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">Submitting Department</label>
-                    <input disabled=true placeholder="{{ newArr.SubmittingDepartment }}"
-                        class="form-control field-box-name">
-                </div>
-                <div class="col-6">
-                    <label class="label-name">Receiving Department</label>
-                    <input disabled=true placeholder="{{ newArr.ReceivingDepartment }}"
-                        class="form-control field-box-name">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">Regional Office for Processing</label>
-                    <input disabled=true placeholder="{{ newArr.RegionalOfficeforProcessing }}"
-                        class="form-control field-box-name">
-                </div>
-                <div class="col-6">
-                    <label class="label-name">Job Title</label>
-                    <input disabled=true placeholder="{{ newArr.JobTitle }}" class="form-control field-box-name">
-                </div>
-            </div>
-
-        </section>
-        <section class="form-section">
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">Instructions regarding the request</label>
-                    <input disabled=true placeholder="{{ newArr.Instructionsregardingtherequest }}"
-                        class="form-control field-box-name">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">OHAG Occupation</label>
-                    <input disabled=true placeholder="{{ newArr.OHAGOccupation }}" class="form-control field-box-name">
-                </div>
-                <div class="col-6">
-                    <label class="label-name">OHAG Environment Modifier</label>
-                    <input disabled=true placeholder="{{ newArr.OHAGEnvironmentalModifier }}"
-                        class="form-control field-box-name">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">OHAG Exposure Modifier</label>
-                    <input disabled=true placeholder="{{ newArr.OHAGExposureModifier }}"
-                        class="form-control field-box-name">
-                </div>
-            </div>
 
 
-        </section>
-        <section class="form-section">
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">Note for Employee availability for appointment</label>
-                    <input disabled=true placeholder="{{ newArr.NoteforEmployeeavailabilityforappointment }}"
-                        class="form-control field-box-name">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-6">
-                    <label class="label-name">Instructions regarding the request</label>
-                    <input disabled=true placeholder="{{ newArr.Instructionsregardingtherequest }}"
-                        class="form-control field-box-name">
-                </div>
-                <div class="col-6">
-                    <label class="label-name">Status</label>
-                    <input disabled=true placeholder="{{ newArr.status }}" class="form-control field-box-name">
-                </div>
-            </div>
-        </section>
+        <div>
+            <dynamic-form [config]="config" #form="dynamicForm" (submit)="submit($event)">
+            </dynamic-form>
+            <!-- {{ form.valid }}
+            {{ form.value | json }} -->
+        </div>
 
         <section class="form-section" *ngIf="documentForServiceRequest">
             <div class="col-12-custom">
