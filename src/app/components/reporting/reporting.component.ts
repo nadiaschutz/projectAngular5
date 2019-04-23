@@ -791,7 +791,7 @@ export class ReportingComponent implements OnInit {
             }
             // Assessment Cat
             const statusArray = {};
-            if (questionnaireResponse.identifier.value === 'STATUS') {
+            if (questionnaireResponse.identifier.value === 'MILESTONE') {
               questionnaireResponse['item'].forEach(statusItem => {
                 if (statusItem.answer) {
                   statusItem.answer.forEach(answer => {

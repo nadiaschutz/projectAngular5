@@ -24,8 +24,6 @@ export class AdminHomeScreenService {
   }
 
   getQRStatuses(eocIds) {
-    // https://bcip.smilecdr.com/fhir-request/QuestionnaireResponse?context=EpisodeOfCare/13123&identifier=STATUS
-
     const loggedInUserId = sessionStorage.getItem('userFHIRID');
 
     let obj = Object.assign({}, eocIds, { 'context.care-manager': loggedInUserId });
@@ -49,7 +47,7 @@ export class AdminHomeScreenService {
 
       const query = {
         context: extractEOCIds,
-        identifier: 'STATUS'
+        identifier: 'MILESTONE'
       };
 
       return this.getQRStatuses(query);
