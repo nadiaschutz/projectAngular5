@@ -371,6 +371,13 @@ export class WorkScreenComponent implements OnInit {
           }
         }
       }
+      if (item['linkId'] === 'PSOHPCODE') {
+        for (const answer of item['answer']) {
+          if (answer['valueCoding']) {
+            this.summary['psohpCode'] = answer['valueCoding']['display'];
+          }
+        }
+      }
       if (item['linkId'] === 'OHAGOCC') {
         for (const answer of item['answer']) {
           if (answer['valueCoding']) {

@@ -56,7 +56,7 @@
         <app-milestone-tracking></app-milestone-tracking>
         <div class="timeline-row">
         </div>
-        <div class="row summary-card-row-adjust" *ngIf="milestoneForDisplay">
+        <!-- <div class="row summary-card-row-adjust" *ngIf="milestoneForDisplay">
 
           <div class="col">
 
@@ -110,23 +110,25 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
         <div class="row summary-card-row-adjust">
-          <div class="col-5">
-            Service Request: {{summary['psohpService']}}
+          <div class="summary-item">
+            <label class="top-item-label">Name</label>
+            <span class="bottom-item-label" *ngIf="summary">{{summary['clientName'] | titlecase}}</span>
           </div>
-          <div class="col-3">
-            Service Request ID: {{summary['serviceRequestId']}}
+          <div class="summary-item">
+            <label class="top-item-label">Service Request ID</label>
+            <span class="bottom-item-label" *ngIf="summary">{{summary['serviceRequestId']}}</span>
+          </div>
+          <div class="summary-item">
+            <label class="top-item-label">Service</label>
+            <span class="bottom-item-label" *ngIf="summary">{{summary['psohpService']}}</span>
+          </div>
+          <div class="summary-item">
+            <label class="top-item-label">Employee PRI</label>
+            <span class="bottom-item-label" *ngIf="summary">{{summary['employeePRI']}}</span>
           </div>
 
-        </div>
-        <div class="row summary-card-row-adjust">
-          <div class="col-5" *ngIf="summary['employeePRI']">
-            Employee: {{summary['clientName'] | titlecase}}
-          </div>
-          <div class="col-3" *ngIf="summary['employeePRI']">
-            PRI: {{summary['employeePRI']}}
-          </div>
         </div>
       </div>
     </div>
@@ -414,9 +416,9 @@
       </div>
       <div class="card">
         <div class="card-body">
-          <label class="card-title"><strong>Functions Card</strong></label>
-            <button class="btn milestone-menu-button" style="min-width: 100%" (click)="redirectToValidateScreen()">Validate Order</button>
-            <button class="btn milestone-menu-button" style="min-width: 100%" (click)="redirectToCloseScreen()">Close Order</button>
+          <label class="card-title"><strong>Validate Work Order</strong></label>
+          <button class="btn milestone-menu-button" style="min-width: 100%"
+            (click)="redirectToValidateScreen()">Validate Order</button>
         </div>
       </div>
 
