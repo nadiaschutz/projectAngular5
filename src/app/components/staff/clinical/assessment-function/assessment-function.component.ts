@@ -297,21 +297,21 @@ export class AssessmentFunctionComponent implements OnInit {
     observation.context = context;
     observation.comment = this.assessmentFormGroup.get('comment').value;
     this.observationForDisplay = JSON.stringify(observation, undefined, 2);
-    console.log(JSON.stringify(observation));
+    // console.log(JSON.stringify(observation));
 
-    // this.staffService.saveAssessment(JSON.stringify(observation)).subscribe(
-    //   assessment => {
-    //     console.log(assessment);
-    //   },
-    //   error => {
-    //     console.log(error);
-    //   },
-    //   () => {
-    //     this.assessmentSavedFlag = true;
-    //     this.changeMilestoneToWorkCompleted();
-    //     this.createCommunicationObjectForAssessments('withassess');
-    //   }
-    // );
+    this.staffService.saveAssessment(JSON.stringify(observation)).subscribe(
+      assessment => {
+        console.log(assessment);
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        this.assessmentSavedFlag = true;
+        this.changeMilestoneToWorkCompleted();
+        this.createCommunicationObjectForAssessments('withassess');
+      }
+    );
   }
 
   // patchFormValueForButton(name, value) {
