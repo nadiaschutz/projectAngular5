@@ -20,6 +20,7 @@ import { Router } from '@angular/router';
                     (change) = "f($event.target.checked)"
                     (change)='callMe($event.target.value, config.name)'
                     [ngModel]="config.value"
+                    [checked] = 'config.value'
                     [formControlName]="config.name"
                     >
                     <label class="form-check-label">
