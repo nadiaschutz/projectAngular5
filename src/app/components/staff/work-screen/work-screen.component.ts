@@ -1064,9 +1064,7 @@ export class WorkScreenComponent implements OnInit {
 
     milestoneItemSix.linkId = 'Received';
     // milestoneItemSix.text = 'Received at ' + this.summary['serviceRequestSubmittedDate'];
-    statusItemAnswer.valueCoding.code = this.utilService.getCurrentDateTime();
-    statusItemAnswer.valueCoding.system = 'https://bcip.smilecdr.com/fhir/WorkOrderMlestone';
-    statusItemAnswer.valueCoding.display = 'Received at ' + this.utilService.getCurrentDateTime();
+    statusItemAnswer.valueDateTime = new Date();
     milestoneItemSix.answer = [statusItemAnswer];
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
