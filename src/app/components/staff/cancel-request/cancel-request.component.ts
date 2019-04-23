@@ -31,7 +31,7 @@ export class CancelRequestComponent implements OnInit {
   serviceRequestSummary;
   episodeOfCareId;
   onSuccess = false;
-
+  milestoneObject;
   cancelReasonList = [
     { value: 'REASON_ONE', viewValue: 'As requested by the Employee' },
     {
@@ -66,11 +66,22 @@ export class CancelRequestComponent implements OnInit {
           console.log(error);
         },
         () => {
+          this.checkIfAssociatedMilestoneListExists();
           this.processServiceRequestForSummary();
-          this.changeStatusToWorkCompleted();
         }
       );
 
+  }
+
+  checkIfAssociatedMilestoneListExists() {
+    this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
+      if (data) {
+        console.log(data);
+        data['entry'].forEach(entry => {
+          this.milestoneObject = entry['resource'];
+        });
+      }
+    });
   }
 
   processServiceRequestForSummary() {
@@ -253,38 +264,35 @@ export class CancelRequestComponent implements OnInit {
 
   changeStatusToWorkCompleted() {
     const itemAnswer = new FHIR.Answer();
-    const itemTime = new FHIR.Answer();
-    const itemReason = new FHIR.Answer();
+    const dateTime = new Date();
 
-    const selectedStatus = 'Work-Completed';
-    itemTime.valueDate = new Date();
-    itemReason.valueString = this.returnInputValue('comment');
-    this.statusObject['item'].forEach(element => {
-      console.log(element['text']);
-
-      if (element['text'] === selectedStatus) {
-        itemAnswer.valueBoolean = true;
-
-        element['answer'] = [];
-        element['answer'][0] = itemAnswer;
-        element['answer'][1] = itemTime;
-        element['answer'][2] = itemReason;
-        console.log('matched', element['answer']);
-      }
-      if (element['text'] !== selectedStatus) {
-        element['answer'] = [];
-
-        console.log('unmatched', element['answer']);
+    this.milestoneObject['item'].forEach(element => {
+      if (element['linkId'] === 'Work-Completed') {
+        if (!element['text']) {
+          element['text'] = '';
+        }
+        if (!element['answer']) {
+          element['answer'] = [];
+          itemAnswer.valueDateTime = dateTime;
+          element['answer'].push(itemAnswer);
+        }
+        if (element['answer']) {
+          element['answer'].forEach(timeFound => {
+            if (timeFound['valueDateTime']) {
+              timeFound['valueDateTime'] = dateTime;
+            }
+          });
+        }
       }
     });
     this.staffService
       .updateStatusList(
-        this.statusObject['id'],
-        JSON.stringify(this.statusObject)
+        this.milestoneObject['id'],
+        JSON.stringify(this.milestoneObject)
       )
       .subscribe(data => {
         console.log(data);
-        this.statusObject = data;
+        this.milestoneObject = data;
       });
   }
 
@@ -296,6 +304,8 @@ export class CancelRequestComponent implements OnInit {
     const categoryConcept = new FHIR.CodeableConcept;
     const categoryCoding = new FHIR.Coding;
     const payload = new FHIR.Payload;
+
+    this.episodeOfCare['status'] = 'finished';
 
     identifier.value = 'MILESTONE-UDPATE-' + this.episodeOfCare['id'];
     communication.resourceType = 'Communication';
@@ -324,6 +334,16 @@ export class CancelRequestComponent implements OnInit {
           .subscribe(data => {
             console.log(data);
           });
+          this.staffService.updateEpisodeOfCare(this.episodeOfCare['id'], JSON.stringify(this.episodeOfCare)).subscribe(
+            data => {
+              if (data) {
+                console.log('This SR is now closed.');
+              }
+            },
+            error => {
+              console.log(error);
+            }
+          );
       },
       error => {
         console.log(error);

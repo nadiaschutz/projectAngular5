@@ -374,7 +374,7 @@ export class WorkScreenComponent implements OnInit {
       if (item['linkId'] === 'PSOHPCODE') {
         for (const answer of item['answer']) {
           if (answer['valueCoding']) {
-            this.summary['psohpCode'] = answer['valueCoding']['display'];
+            this.summary['psohpCode'] = answer['valueCoding']['code'];
           }
         }
       }
@@ -774,7 +774,7 @@ export class WorkScreenComponent implements OnInit {
   }
 
   openTaskForm() {
-    this.showTaskForm = true;
+    this.showTaskForm = !this.showTaskForm;
     this.showNoteForm = false;
     this.showNewTool = false;
     this.taskFormGroup = this.formBuilder.group({
@@ -782,6 +782,9 @@ export class WorkScreenComponent implements OnInit {
       assignTo: new FormControl(''),
       instruction: new FormControl('')
     });
+    if (!this.showTaskForm) {
+      this.taskFormGroup.reset();
+    }
   }
 
   openNoteForm() {
