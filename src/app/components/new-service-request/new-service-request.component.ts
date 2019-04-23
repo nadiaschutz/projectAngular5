@@ -135,6 +135,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   clientGivenName = null;
   clientFamilyName = null;
   clientBoD = null;
+  userFHIRId = '';
 
   documents;
   fileLink = [];
@@ -173,6 +174,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     status: null,
     subject: null,
     authored: null,
+    author: null,
     item: []
   };
 
@@ -217,6 +219,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     }
     this.userLRO = JSON.parse(sessionStorage.getItem('userLRO'));
     this.userRole = sessionStorage.getItem('userRole');
+    this.userFHIRId = sessionStorage.getItem('userFHIRID');
     console.log('userRole', this.userRole);
     this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
     console.log(this.formCreated);
@@ -492,6 +495,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         },
         status: 'in-progress',
         authored: new Date,
+        author: {
+          reference: 'Practitioner/' + this.userFHIRId
+        },
         identifier: {
           value: 'SERVREQ'
         },
@@ -510,6 +516,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         },
         status: 'in-progress',
         authored: new Date,
+        author: {
+          reference: 'Practitioner/' + this.userFHIRId
+        },
         identifier: {
           value: 'SERVREQ'
         },
@@ -593,7 +602,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   // turns questionarie data into arr of form fields (shows those fields on the form)
   /**
-  if you get an error on dynamic-form.components.ts, there are 95% chances that the issue is not in dynamic-form.components.ts but in data representation, or data absence ===> look into getFormData(data){}
+  if you get an error on dynamic-form.components.ts,
+  there are 95% chances that the issue is not in dynamic-form.components.ts
+  but in data representation, or data absence ===> look into getFormData(data){}
   **/
   getFormData(data) {
     this.qrequest = data.item;

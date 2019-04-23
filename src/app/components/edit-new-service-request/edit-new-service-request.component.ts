@@ -55,9 +55,11 @@ export class EditNewServiceRequestComponent implements OnInit {
     status: null,
     subject: null,
     authored: null,
+    author: null,
     item: []
   };
 
+  userFHIRId;
 
 
   items: Item[];
@@ -80,6 +82,7 @@ export class EditNewServiceRequestComponent implements OnInit {
 
   ngOnInit() {
     // get response id
+    this.userFHIRId = sessionStorage.getItem('userFHIRID');
     this.questionnaireService.newResponseIdSubject.subscribe(
       data => this.getQuestionnaireResponseId(data),
       error => this.getQuestionnaireResponseIdError(error)

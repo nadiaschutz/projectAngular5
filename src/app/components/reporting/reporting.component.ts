@@ -51,13 +51,15 @@ export class ReportingComponent implements OnInit {
   showFullLogTypes = false;
   episodeOfCareList = [];
   questionnaireResponseList = [];
-  patientsList = [];
+  patientsList = {};
+  organizationsList = {};
   carePlanList = [];
   practitionerList = [];
   diagnosticsTestList = [];
   consultationList = [];
   medicalInformationList = [];
   associatedEoCAndQResponseIds = [];
+  observation = {};
 
   assesmentTypeList: NameValueLookup[] = [];
   assesmentCatList: NameValueLookup[] = [];
@@ -340,7 +342,7 @@ export class ReportingComponent implements OnInit {
   }
 
   async buildQueryParameters() {
-    let searchParameters = '?_include=*&_revinclude=*';
+    let searchParameters = '?_include=*&_revinclude=*&_revinclude:recurse=Observation:context';
     const region = this.reportingFormGroup.value.region;
     if (region) {
       searchParameters += '&patient:Patient.branch.psohpRegion.name=' + region;
@@ -499,7 +501,7 @@ export class ReportingComponent implements OnInit {
           this.questionnaireResponseList.push(element.resource);
         }
         if (element.resource.resourceType === 'Patient') {
-          this.patientsList.push(element.resource);
+          // this.patientsList.push(element.resource);
         }
         if (element.resource.resourceType === 'Practitioner') {
           this.practitionerList.push(element.resource);
@@ -569,13 +571,16 @@ export class ReportingComponent implements OnInit {
         this.questionnaireResponseList.push(element.resource);
       }
       if (element.resource.resourceType === 'Patient') {
-        this.patientsList.push(element.resource);
+        this.patientsList[element.resource.id] = element.resource;
       }
       if (element.resource.resourceType === 'Practitioner') {
         this.practitionerList.push(element.resource);
       }
       if (element.resource.resourceType === 'CarePlan') {
         this.carePlanList.push(element.resource);
+      }
+      if (element.resource.resourceType === 'Organization') {
+        this.organizationsList[element.resource.id] = element.resource;
       }
     });
     this.processCarePlan();
@@ -673,7 +678,7 @@ export class ReportingComponent implements OnInit {
         this.questionnaireResponseList.push(element.resource);
       }
       if (element.resource.resourceType === 'Patient') {
-        this.patientsList.push(element.resource);
+        this.patientsList[element.resource.id] = element.resource;
       }
       if (element.resource.resourceType === 'Practitioner') {
         this.practitionerList.push(element.resource);
@@ -681,19 +686,81 @@ export class ReportingComponent implements OnInit {
       if (element.resource.resourceType === 'CarePlan') {
         this.carePlanList.push(element.resource);
       }
+      if (element.resource.resourceType === 'Organization') {
+        this.organizationsList[element.resource.id] = element.resource;
+      }
+      if (element.resource.resourceType === 'Observation') {
+        this.observation = element.resource;
+      }
     });
     this.processServiceRequestData();
   }
 
-  processServiceRequestData() {
+  async processServiceRequestData() {
     this.episodeOfCareList.forEach(episode => {
-      const temp = {};
+      const resultObj = {};
       const episodeOfCareId = episode.id;
       if (episodeOfCareId) {
-        temp['Service Request Id'] = episode.id;
-        this.questionnaireResponseList.forEach(questionnaireResponse => {
+        const temp = {};
+        const patientId = this.utilService.getIdFromReference(episode.patient.reference);
+        const patient = this.patientsList[patientId];
+        patient.extension.forEach(extension => {
+          if (extension.url === 'https://bcip.smilecdr.com/fhir/employeetype') {
+            if (extension.value === 'Employee') {
+              temp['Client Type'] = '1';
+            }
+            if (extension.value === 'Dependent') {
+              temp['Client Type'] = '2';
+            }
+          }
+        });
+        // Assessment Code and Exam by code from Observation
+        if (this.observation !== {}) {
+          if (this.observation['performer']) {
+            temp['Exam Done by Code'] = '2';
+          }
+          if (this.observation['component']) {
+            this.observation['component'].forEach(observationComponent => {
+              if (observationComponent.code.coding[0].system === 'ASSESSMENT') {
+                if (observationComponent.code.coding[0].code === 'MEETSREQ') {
+                  temp['Assessment Code'] = '1';
+                }
+                if (observationComponent.code.coding[0].code === 'MEETSREQ_NO') {
+                  temp['Assessment Code'] = '2';
+                }
+                if (observationComponent.code.coding[0].code === 'MISSING-MED') {
+                  temp['Assessment Code'] = '3';
+                }
+                if (observationComponent.code.coding[0].code === 'NOASSESMENT') {
+                  temp['Assessment Code'] = '4';
+                }
+              }
+            });
+          }
+        }
+        this.questionnaireResponseList.forEach(async questionnaireResponse => {
           if (questionnaireResponse.context.reference.includes(episodeOfCareId)) {
             if (questionnaireResponse.identifier.value === 'SERVREQ') {
+              // Fetch Charge Back and Branch from Author of QR of SERVREQ type
+              if (questionnaireResponse.author) {
+                const authorFHIRId = this.utilService.getIdFromReference(questionnaireResponse.author.reference);
+                const practitionerRoles = await this.reportingService.fetchPractitionerRolesWithPractitionerIdAsync(authorFHIRId);
+                if (practitionerRoles['entry']) {
+                  practitionerRoles['entry'].forEach(practitionerRoleElement => {
+                    const practitionerRole = practitionerRoleElement.resource;
+                    if (practitionerRole.specialty) {
+                      practitionerRole.specialty.forEach(specialty => {
+                        if (specialty.coding[0].system === 'https://bcip.smilecdr.com/fhir/clientchargeback') {
+                          temp['Charge Back'] = '1';
+                        }
+                      });
+                    }
+                    if (practitionerRole.location) {
+                      temp['Submitting Department Branch'] = this.utilService.getIdFromReference(practitionerRole.location[0].reference);
+                    }
+                  });
+                }
+              }
               this.associatedEoCAndQResponseIds[episodeOfCareId] = questionnaireResponse.id;
               questionnaireResponse['item'].forEach(item => {
                 if (item.linkId === 'PSOHPSERV') {
@@ -705,26 +772,131 @@ export class ReportingComponent implements OnInit {
                 if (item.linkId === 'OHAGOCC') {
                   temp['OHAG Occupation'] = item.answer[0].valueCoding.display;
                 }
-              });
-            }
-            if (questionnaireResponse.identifier.value === 'STATUS') {
-              questionnaireResponse['item'].forEach(statusItem => {
-                if (statusItem.answer) {
-                  if (statusItem.answer[1] && statusItem.answer[1]['valueDate']) {
-                    temp[statusItem.text] = statusItem.answer[1].valueDate;
-                  } else {
-                    temp[statusItem.text] = '';
-                  }
-                } else {
-                  temp[statusItem.text] = '';
+                if (item.linkId === 'ASSESTYPE') {
+                  temp['Assessment Type'] = item.answer[0].valueCoding.display;
+                }
+                if (item.linkId === 'ASSESCAT') {
+                  temp['Assessment Category'] = item.answer[0].valueCoding.display;
+                }
+                if (item.linkId === 'USERDEPT') {
+                  temp['Submitting Department'] = item.answer[0].valueCoding.display;
+                }
+                if (item.linkId === 'REGOFFICE') {
+                  temp['PSOHP Region'] = item.answer[0].valueCoding.display;
+                }
+                if (item.linkId === 'OHAGOCC') {
+                  temp['OHAG Occupation'] = item.answer[0].valueCoding.display;
                 }
               });
             }
+            // Assessment Cat
+            const statusArray = {};
+            if (questionnaireResponse.identifier.value === 'STATUS') {
+              questionnaireResponse['item'].forEach(statusItem => {
+                if (statusItem.answer) {
+                  statusItem.answer.forEach(answer => {
+                    if (answer.valueCoding && answer.valueCoding.system === 'https://bcip.smilecdr.com/fhir/WorkOrderMlestone') {
+                      statusArray[statusItem.linkId] = answer.valueCoding.code.substring(0, answer.valueCoding.code.indexOf(','));
+                    }
+                  });
+                }
+              });
+            }
+            // Build resut object
+            resultObj['Service Request Id'] = episode.id;
+            if (temp['Psohp Service']) {
+              resultObj['Psohp Service'] = temp['Psohp Service'];
+            } else {
+              resultObj['Psohp Service'] = '';
+            }
+            if (temp['Assessment Type']) {
+              resultObj['Assessment Type'] = temp['Assessment Type'];
+            } else {
+              resultObj['Assessment Type'] = '';
+            }
+            if (temp['Assessment Category']) {
+              resultObj['Assessment Category'] = temp['Assessment Category'];
+            } else {
+              resultObj['Assessment Category'] = '';
+            }
+            // Region, department, and Branch
+            if (temp['PSOHP Region']) {
+              resultObj['PSOHP Region'] = temp['PSOHP Region'];
+            } else {
+              resultObj['PSOHP Region'] = '';
+            }
+            if (temp['Submitting Department']) {
+              resultObj['Submitting Department'] = temp['Submitting Department'];
+            } else {
+              resultObj['Submitting Department'] = '';
+            }
+            if (temp['Submitting Department Branch']) {
+              resultObj['Submitting Department Branch'] = temp['Submitting Department Branch'];
+            } else {
+              resultObj['Submitting Department Branch'] = '';
+            }
+            if (temp['Charge Back']) {
+              resultObj['Charge Back'] = temp['Charge Back'];
+            } else {
+              resultObj['Charge Back'] = '2';
+            }
+            if (temp['Client Type']) {
+              resultObj['Client Type'] = temp['Client Type'];
+            }
+            // OHAG Occupation
+            if (temp['OHAG Occupation']) {
+              resultObj['OHAG Occupation'] = temp['OHAG Occupation'];
+            } else {
+              resultObj['OHAG Occupation'] = '';
+            }
+            // Set status and dates
+            if (statusArray['Received']) {
+              resultObj['Received'] = statusArray['Received'];
+            } else {
+              resultObj['Received'] = '';
+            }
+            if (statusArray['Validated']) {
+              resultObj['Validated'] = statusArray['Validated'];
+            } else {
+              resultObj['Validated'] = '';
+            }
+            if (statusArray['Assigned']) {
+              resultObj['Assigned'] = statusArray['Assigned'];
+            } else {
+              resultObj['Assigned'] = '';
+            }
+            if (statusArray['Scheduled']) {
+              resultObj['Scheduled'] = statusArray['Scheduled'];
+            } else {
+              resultObj['Scheduled'] = '';
+            }
+            if (statusArray['Work-Completed']) {
+              resultObj['Work Completed'] = statusArray['Work-Completed'];
+            } else {
+              resultObj['Work Completed'] = '';
+            }
+            if (statusArray['Closed']) {
+              resultObj['Closed'] = statusArray['Closed'];
+            } else {
+              resultObj['Closed'] = '';
+            }
+            // Assessment code and exam done by code
+            if (temp['Assessment Code']) {
+              resultObj['Assessment Code'] = temp['Assessment Code'];
+            } else {
+              resultObj['Assessment Code'] = '';
+            }
+            if (temp['Exam Done by Code']) {
+              resultObj['Exam Done by Code'] = temp['Exam Done by Code'];
+            } else {
+              resultObj['Exam Done by Code'] = '';
+            }
           }
         });
-        this.serviceRequestData.push(temp);
+        this.serviceRequestData.push(resultObj);
       }
     });
+    console.log(this.serviceRequestData);
     this.exportToCSV(this.serviceRequestData);
   }
 

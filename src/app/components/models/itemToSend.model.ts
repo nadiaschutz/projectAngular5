@@ -10,5 +10,6 @@ export interface ItemToSend {
   };
   identifier?: any;
   authored: any;
+  author: any;
   item: any[];
 }
