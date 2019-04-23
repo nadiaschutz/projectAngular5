@@ -27,7 +27,7 @@ export class ValidateRequestComponent implements OnInit {
   validateFormGroup: FormGroup;
 
   onSuccess = false;
-  clickToContinue = false;
+  onError = false;
 
   milestoneObject;
   episodeOfCareId;
@@ -35,6 +35,7 @@ export class ValidateRequestComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       this.episodeOfCareId = params['eocId'];
+      this.checkIfAssociatedMilestoneListExists();
     });
     this.validateFormGroup = this.formBuilder.group({
       comment: new FormControl('')
@@ -153,9 +154,11 @@ export class ValidateRequestComponent implements OnInit {
       },
         error => {
           console.log(error);
+          this.onError = !this.onError;
         },
         () => {
           this.createCommunicationObjectForValidatedMilestone();
+          this.onSuccess = !this.onSuccess;
         });
   }
 
