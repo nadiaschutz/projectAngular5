@@ -118,7 +118,7 @@ const routes: Routes = [
   { path: 'clientsummary/:clientId', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/work-screen/:eocId', component: WorkScreenComponent, canActivate: [AuthGuardService] },
   { path: 'staff/lab-requisition/:eocId', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
   { path: 'staff/cancel-request/:eocId', component: CancelRequestComponent, canActivate: [AuthGuardService] },
   { path: 'staff/clinical/immunization-screen/:eocId', component: ImmunizationScreenComponent, canActivate: [AuthGuardService] },

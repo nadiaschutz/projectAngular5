@@ -600,7 +600,7 @@ export class WorkScreenComponent implements OnInit {
       .subscribe(
         data => {
           if (data) {
-            if (data['total'] > 0) {
+            if (data['entry']) {
               data['entry'].forEach(element => {
                 const individualEntry = element['resource'];
                 const temp = {};
@@ -1108,7 +1108,7 @@ export class WorkScreenComponent implements OnInit {
       this.router.navigateByUrl('/staff/clinical/assessment-screen/'  + this.episodeOfCareId);
   }
 
-  redirectToCloseScreen () {
+  redirectToCancelScreen () {
     this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
     this.router.navigateByUrl('/staff/cancel-request/' + this.episodeOfCareId);
   }

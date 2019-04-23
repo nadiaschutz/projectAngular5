@@ -205,6 +205,6 @@ export class ValidateRequestComponent implements OnInit {
   }
 
   viewDetailedContext() {
-    this.router.navigateByUrl('/staff/work-screen');
+    this.router.navigateByUrl('/staff/work-screen/' + this.episodeOfCareId);
   }
 }

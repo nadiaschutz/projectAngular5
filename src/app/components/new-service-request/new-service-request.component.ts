@@ -363,7 +363,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   async createEpisodeOfCare(questionnaireResponse) {
     const episodeOfCare = new FHIR.EpisodeOfCare();
     episodeOfCare.resourceType = 'EpisodeOfCare';
-    episodeOfCare.status = 'planned';
+    episodeOfCare.status = 'waitlist';
 
     const type = new FHIR.CodeableConcept();
     type.text = 'Episode of Care';
