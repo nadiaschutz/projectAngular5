@@ -3,13 +3,9 @@ import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
 import { UserService } from '../../../service/user.service';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { Router } from '@angular/router';
-import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { formatDate } from '@angular/common';
-import { TitleCasePipe } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-cancel-request',
@@ -24,7 +20,8 @@ export class CancelRequestComponent implements OnInit {
     private formBuilder: FormBuilder,
     private oAuthService: OAuthService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   cancelFormGroup: FormGroup;
@@ -32,7 +29,7 @@ export class CancelRequestComponent implements OnInit {
   statusObject;
   episodeOfCare;
   serviceRequestSummary;
-
+  episodeOfCareId;
   onSuccess = false;
 
   cancelReasonList = [
@@ -47,6 +44,10 @@ export class CancelRequestComponent implements OnInit {
     { value: 'REASON_SIX', viewValue: 'Other (please call your PSOHP office for details)' },
   ];
   ngOnInit() {
+
+    this.route.params.subscribe(params => {
+      this.episodeOfCareId = params['eocId'];
+    });
     this.cancelFormGroup = this.formBuilder.group({
       cancelReason: new FormControl(''),
       comment: new FormControl('')

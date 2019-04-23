@@ -446,13 +446,6 @@ export class LabRequisitionComponent implements OnInit {
     console.log(error);
   }
 
-
-
-  getDate(dateTime) {
-    return formatDate(new Date(dateTime), 'MMM d, y', 'en');
-  }
-
-
   getQuestionnaireResponse(resourceType, resourseId) {
 
     this.patientService.QuestionnaireResponse(resourceType, resourseId).subscribe(

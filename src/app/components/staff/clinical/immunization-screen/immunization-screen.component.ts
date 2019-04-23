@@ -3,13 +3,11 @@ import { StaffService } from '../../../../service/staff.service';
 import { UtilService } from '../../../../service/util.service';
 import { UserService } from '../../../../service/user.service';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { formatDate } from '@angular/common';
-import { TitleCasePipe } from '@angular/common';
 @Component({
   selector: 'app-immunization-screen',
   templateUrl: './immunization-screen.component.html',
@@ -31,7 +29,7 @@ export class ImmunizationScreenComponent implements OnInit {
   newNoteValue;
   selectedVaccine;
   serviceRequestSummary;
-
+  eocId;
 
   clinicalQuestionnaireArray = [];
   administeredVaccines = [];
@@ -48,7 +46,8 @@ export class ImmunizationScreenComponent implements OnInit {
     private staffService: StaffService,
     private utilService: UtilService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.minDate = new Date();
     this.maxDate = new Date();
@@ -62,6 +61,9 @@ export class ImmunizationScreenComponent implements OnInit {
   ];
 
   ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.eocId = params['eocId'];
+    });
     this.datePickerConfig = Object.assign(
       {},
       {

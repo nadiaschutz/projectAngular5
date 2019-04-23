@@ -3,13 +3,8 @@ import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
 import { UserService } from '../../../service/user.service';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../interface/FHIR';
-import { OAuthService } from 'angular-oauth2-oidc';
-import { Router } from '@angular/router';
-import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { formatDate } from '@angular/common';
-import { TitleCasePipe } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 
 @Component({
@@ -24,7 +19,8 @@ export class ValidateRequestComponent implements OnInit {
     private utilService: UtilService,
     private formBuilder: FormBuilder,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   serviceRequestSummary;
@@ -36,11 +32,13 @@ export class ValidateRequestComponent implements OnInit {
   milestoneObject;
   episodeOfCareId;
   ngOnInit() {
+
+    this.route.params.subscribe(params => {
+      this.episodeOfCareId = params['eocId'];
+    });
     this.validateFormGroup = this.formBuilder.group({
       comment: new FormControl('')
     });
-
-    this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
 
     this.processServiceRequestForSummary();
   }

@@ -3,7 +3,7 @@ import { StaffService } from '../../../../service/staff.service';
 import { UtilService } from '../../../../service/util.service';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import * as FHIR from '../../../../interface/FHIR';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import * as jspdf from 'jspdf';
 import * as html2canvas from 'html2canvas';
@@ -72,7 +72,8 @@ export class AssessmentFunctionComponent implements OnInit {
     private staffService: StaffService,
     private utilService: UtilService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.minDate = new Date();
     this.maxDate = new Date();
@@ -81,6 +82,11 @@ export class AssessmentFunctionComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.route.params.subscribe(params => {
+      this.episodeOfCareId = params['eocId'];
+    });
+
     this.datePickerConfig = Object.assign(
       {},
       {
@@ -90,8 +96,6 @@ export class AssessmentFunctionComponent implements OnInit {
       }
     );
 
-
-    this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
     if (this.episodeOfCareId) {
       this.checkIfAssociatedMilestoneListExists();
     }
@@ -480,7 +484,7 @@ export class AssessmentFunctionComponent implements OnInit {
   checkIfAssociatedMilestoneListExists() {
     this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
       if (data) {
-        console.log(data)
+        console.log(data);
         data['entry'].forEach(entry => {
           this.milestoneObject = entry['resource'];
         });

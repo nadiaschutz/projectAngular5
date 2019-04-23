@@ -5,7 +5,7 @@ import { UserService } from '../../service/user.service';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import * as FHIR from '../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import * as moment from 'moment';
 
 @Component({
@@ -20,7 +20,9 @@ export class DocumentManagementComponent implements OnInit {
     private utilService: UtilService,
     private formBuilder: FormBuilder,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
+
   ) { }
 
   // documentChecklistItemsList = [];
@@ -56,7 +58,9 @@ export class DocumentManagementComponent implements OnInit {
 
   ngOnInit() {
 
-    this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
+    this.route.params.subscribe(params => {
+      this.episodeOfCareId = params['eocId'];
+    });
 
     this.currentProgressFormGroup = this.formBuilder.group({
       currentProgress: new FormControl('')

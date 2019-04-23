@@ -1098,17 +1098,17 @@ export class WorkScreenComponent implements OnInit {
 
   redirectToAssessment() {
       this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
-      this.router.navigateByUrl('/staff/clinical/assessment-screen');
+      this.router.navigateByUrl('/staff/clinical/assessment-screen/'  + this.episodeOfCareId);
   }
 
   redirectToCloseScreen () {
     this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
-    this.router.navigateByUrl('/staff/cancel-request');
+    this.router.navigateByUrl('/staff/cancel-request/' + this.episodeOfCareId);
   }
 
   redirectToValidateScreen() {
     this.staffService.setSelectedEpisodeId(this.episodeOfCareId);
-    this.router.navigateByUrl('/staff/validate-request');
+    this.router.navigateByUrl('/staff/validate-request/' + this.episodeOfCareId);
   }
 
   redirectToScheduler() {
@@ -1119,13 +1119,13 @@ export class WorkScreenComponent implements OnInit {
   redirectToAssessmentSelected(event) {
       console.log(event);
       if (event === 'IMMUNIZATION') {
-        this.router.navigateByUrl('/staff/clinical/immunization-screen');
+        this.router.navigateByUrl('/staff/clinical/immunization-screen/' + this.episodeOfCareId);
       }
       if (event === 'AUDIOGRAM') {
         this.router.navigateByUrl('/staff/audiogram/' + this.episodeOfCareId);
       }
       if (event === 'DOCUMENTS') {
-        this.router.navigateByUrl('/staff/document-management');
+        this.router.navigateByUrl('/staff/document-management/' + this.episodeOfCareId);
       }
       if (event === 'TURBTEST') {
       }
