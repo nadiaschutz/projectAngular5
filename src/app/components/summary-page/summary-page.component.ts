@@ -49,6 +49,7 @@ export class SummaryPageComponent implements OnInit {
     status: null,
     subject: null,
     authored: null,
+    author: null,
     item: []
   };
 

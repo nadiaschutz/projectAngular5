@@ -211,7 +211,7 @@ export class NewAccountComponent implements OnInit {
       console.log(error);
     });
 
-    if (employeeWithPRI !== {}) {
+    if (employeeWithPRI['id']) {
       // An employee records exists with the same PRI
       this.showSuccessMessage = false;
       this.showFailureMessage = true;

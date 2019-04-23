@@ -35,6 +35,11 @@ export class ReportingService {
       '/QuestionnaireResponse?identifier=SERVREQ&_include=QuestionnaireResponse:subject', {headers: this.getHeaders()}).toPromise();
   }
 
+  fetchPractitionerRolesWithPractitionerIdAsync(practitionerId) {
+    return this.httpClient.get(environment.queryURI +
+      '/PractitionerRole?practitioner=' + practitionerId, {headers: this.getHeaders()}).toPromise();
+  }
+
   fetchTasks() {
     return this.httpClient.get(environment.queryURI + '/Task', {headers: this.getHeaders()}).toPromise();
   }
