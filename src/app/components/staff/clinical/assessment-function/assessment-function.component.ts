@@ -413,7 +413,7 @@ export class AssessmentFunctionComponent implements OnInit {
   }
 
   viewDetailedContext() {
-    this.router.navigateByUrl('/staff/work-screen');
+    this.router.navigateByUrl('/staff/work-screen/' + this.episodeOfCareId);
   }
 
   goToAppointmentScreen() {

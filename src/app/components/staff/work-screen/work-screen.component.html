@@ -28,21 +28,7 @@
           </div>
         </div> -->
       </div>
-      <div class="col-3">
-        <div class="dropdown">
-          <button class="btn clinical-button-list" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-            (click)="showNewTool = !showNewTool">
-            Functions
-          </button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" (click)="redirectToLabRequisition()">Requisitions</a>
-            <a class="dropdown-item" (click)="redirectToAssessment()">Assessments</a>
-            <a class="dropdown-item" (click)="redirectToAssessmentSelected('IMMUNIZATION')">Immunization</a>
-            <a class="dropdown-item" (click)="redirectToAssessmentSelected('AUDIOGRAM')">Audiogram</a>
-            <a class="dropdown-item" (click)="redirectToAssessmentSelected('DOCUMENTS')">Documents</a>
-          </div>
-        </div>
-      </div>
+
 
     </div>
 
@@ -135,14 +121,109 @@
   </div>
 
   <div class="row">
-    <h6 class="col-4">History</h6>
+    <h6 class="col-3">Actions</h6>
     <h6 class="col-5">Work List</h6>
-    <h6 class="col-3">Summary</h6>
+    <h6 class="col-4">History</h6>
   </div>
 
 
 
   <div class="row">
+    <!-- 3. Right fixed section -->
+
+    <div class="col-3">
+      <!-- 3a. Status of Care Plan -->
+
+      <!-- 3b. Summary: Client information -->
+      <!-- <div stickyThing marginTop="30" [spacer]="spacer"> -->
+
+      <div class="card">
+        <div class="card-body">
+          <label class="card-title"><strong>Assigned Admin(s)</strong></label>
+          <p>{{assignedAdmin}}</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <label class="card-title"><strong>Functions</strong></label>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="openTaskForm()">Tasks</button>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="openNoteForm()">Notes</button>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="redirectToLabRequisition()">Requisitions</button>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="redirectToAssessment()">Assessments</button>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="redirectToAssessmentSelected('IMMUNIZATION')">Immunization</button>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="redirectToAssessmentSelected('AUDIOGRAM')">Audiogram</button>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="redirectToAssessmentSelected('DOCUMENTS')">Documents</button>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="redirectToScheduler()">Appointments</button>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="redirectToValidateScreen()">Validate Order</button>
+          <button class="btn milestone-menu-button margin-top" style="min-width: 100%"
+            (click)="redirectToCancelScreen()">Cancel
+            Order</button>
+        </div>
+      </div>
+
+      <div class="card" *ngIf="dependentList.length > 0">
+        <div class="card-body">
+          <label class="card-title"><strong>Dependent(s)</strong></label>
+          <div *ngFor="let dependent of dependentList">
+            <p class="card-text" *ngIf="dependent.dep_clientName">
+              <strong>Name: </strong> {{dependent.dep_clientName}}
+            </p>
+            <p class="card-text dependentDOB" *ngIf="dependent.dep_clientDOB">
+              <strong>Birth Date: </strong> {{dependent.dep_clientDOB}}
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- </div> -->
+    </div>
+
+
+    <!-- 2. Care Plan section, shown only when needed -->
+
+    <div class="col-5">
+      <div class="search-box">
+        <div class="text-center update-section">
+          <div *ngIf="enableWorkListUpdate">
+            <button class="btn special-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update TO
+              DO List</button>
+          </div>
+          <div *ngIf="!enableWorkListUpdate">
+            <button class="btn regular-button function-buttons col-4 button-padding"
+              (click)="cancelCarePlanUpdate()">Cancel
+              Changes</button>
+            <button class="btn regular-button function-buttons col-4 button-padding" (click)="saveCarePlan()">Save
+              Changes</button>
+
+          </div>
+        </div>
+
+
+        <div *ngFor="let item of carePlanActivities; let i = index">
+          <label>
+            <table>
+              <tr>
+                <td> <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)"
+                    [disabled]='enableWorkListUpdate' id="i"></td>
+                <td class="checklist-desc"> <span class="checklist-label">{{item.description}}</span></td>
+
+              </tr>
+            </table>
+
+
+          </label>
+        </div>
+      </div>
+      <!-- </div> -->
+    </div>
 
     <!-- 1. History -->
     <div class="col-4">
@@ -165,22 +246,7 @@
               <a class="nav-link" [ngClass]="{ 'active':activeTab==='documents'}" data-toggle="tab"
                 (click)="displayOnlyDocs()">Docs</a>
             </li>
-            <li>
-              <div class="dropdown">
-                <button class="btn new-function-button" data-toggle="dropdown" aria-haspopup="true"
-                  aria-expanded="false" (click)="showNewTool = !showNewTool">
-                  New
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item" (click)="openTaskForm()">Task</a>
-                  <a class="dropdown-item" (click)="openNoteForm()">Note</a>
-                  <!-- <a class="dropdown-item" (click)="openDocForm()">Document</a> -->
-                  <a class="dropdown-item" (click)="redirectToScheduler()">Appointments</a>
-                  <!-- <a class="dropdown-item" *ngIf="showClinicalFunctions"
-                            (click)="redirectToAssessmentSelected('TURBTEST')">Tuberculosis</a> -->
-                </div>
-              </div>
-            </li>
+
           </ul>
 
         </div>
@@ -219,7 +285,7 @@
                   class="form-control" required placeholder="Enter">
                 <div
                   *ngIf="taskFormGroup.controls['description'].invalid
-                               && (taskFormGroup.controls['description'].touched || taskFormGroup.controls['description'].dirty)">
+                             && (taskFormGroup.controls['description'].touched || taskFormGroup.controls['description'].dirty)">
                   <div class="error-message">
                     Title cannot be empty
                   </div>
@@ -237,7 +303,7 @@
                 </select>
                 <div
                   *ngIf="taskFormGroup.controls['assignTo'].invalid
-                               && (taskFormGroup.controls['assignTo'].touched || taskFormGroup.controls['assignTo'].dirty)">
+                             && (taskFormGroup.controls['assignTo'].touched || taskFormGroup.controls['assignTo'].dirty)">
                   <div class="error-message">
                     Assignee cannot be empty
                   </div>
@@ -252,7 +318,7 @@
                   class="form-control" required placeholder="Enter">
                 <div
                   *ngIf="taskFormGroup.controls['instruction'].invalid
-                               && (taskFormGroup.controls['instruction'].touched || taskFormGroup.controls['instruction'].dirty)">
+                             && (taskFormGroup.controls['instruction'].touched || taskFormGroup.controls['instruction'].dirty)">
                   <div class="error-message">
                     Instructions cannot be blank
                   </div>
@@ -352,134 +418,6 @@
       </div>
     </div>
 
-    <!-- 2. Care Plan section, shown only when needed -->
-
-    <div class="col-5">
-      <!-- <div class="col-6">Worklist</div> -->
-      <!-- <div class="col-6">
-          <button class=" btn regular-button col-6 float-right">Update</button>
-
-        </div> -->
-      <!-- <button class=" btn regular-button col-6">Cancel Work Order</button> -->
-      <!-- <div #spacer></div>
-      <div #boundary> stickyThing [spacer]="spacer" [boundary]="boundary" -->
-
-      <div class="search-box">
-        <div class="text-center update-section">
-          <div *ngIf="enableWorkListUpdate">
-            <button class="btn special-button col-12 " (click)="enableWorkListUpdate = !enableWorkListUpdate">Update TO
-              DO List</button>
-          </div>
-          <div *ngIf="!enableWorkListUpdate">
-            <button class="btn regular-button function-buttons col-4 button-padding"
-              (click)="cancelCarePlanUpdate()">Cancel
-              Changes</button>
-            <button class="btn regular-button function-buttons col-4 button-padding" (click)="saveCarePlan()">Save
-              Changes</button>
-
-          </div>
-        </div>
-
-
-        <div *ngFor="let item of carePlanActivities; let i = index">
-          <label>
-            <table>
-              <tr>
-                <td> <input type="checkbox" [(ngModel)]="item.value" (change)="onChecklistChange(i)"
-                    [disabled]='enableWorkListUpdate' id="i"></td>
-                <td class="checklist-desc"> <span class="checklist-label">{{item.description}}</span></td>
-
-              </tr>
-            </table>
-
-
-          </label>
-        </div>
-      </div>
-      <!-- </div> -->
-    </div>
-
-
-    <!-- 3. Right fixed section -->
-
-    <div class="col-3">
-      <!-- 3a. Status of Care Plan -->
-
-      <!-- 3b. Summary: Client information -->
-      <!-- <div stickyThing marginTop="30" [spacer]="spacer"> -->
-
-      <div class="card">
-        <div class="card-body">
-          <label class="card-title"><strong>Assigned Admin</strong></label>
-          <p>{{assignedAdmin}}</p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <label class="card-title"><strong>Validate Work Order</strong></label>
-          <button class="btn milestone-menu-button" style="min-width: 100%"
-            (click)="redirectToValidateScreen()">Validate Order</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-body">
-          <label class="card-title"><strong>Close Work Order</strong></label>
-          <button class="btn milestone-menu-button" style="min-width: 100%" (click)="redirectToCloseScreen()">Close
-            Order</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-body">
-          <label class="card-title"><strong>Summary</strong></label>
-          <p class="card-text" *ngIf="summary.clientName">
-            <strong>Client Name: </strong> {{summary.clientName}}
-          </p>
-          <p class="card-text" *ngIf="summary.clientDOB">
-            <strong>Client Date of Birth: </strong> {{summary.clientDOB}}
-          </p>
-          <p class="card-text" *ngIf="summary.clientDepartment">
-            <strong>Client Department: </strong> {{summary.clientDepartment}}
-          </p>
-          <p class="card-text" *ngIf="summary.jobTitle">
-            <strong>Job Title: </strong> {{summary.jobTitle}}
-          </p>
-          <p class="card-text" *ngIf="summary.clientBranch">
-            <strong>Client Branch: </strong> {{summary.clientBranch}}
-          </p>
-          <p class="card-text" *ngIf="summary.psohpService">
-            <strong>PSOHP Service: </strong> {{summary.psohpService}}
-          </p>
-          <p class="card-text" *ngIf="summary.submittingDepartment">
-            <strong>Submitting Department: </strong> {{summary.submittingDepartment}}
-          </p>
-          <p class="card-text" *ngIf="summary.receivingDepartment">
-            <strong>Receiving Department: </strong> {{summary.receivingDepartment}}
-          </p>
-          <p class="card-text" *ngIf="summary.ohagOccupation">
-            <strong>OHAG Occupation: </strong> {{summary.ohagOccupation}}
-          </p>
-          <p class="card-text" *ngIf="summary.regionalOffice">
-            <strong>Regional Office for Processing: </strong> {{summary.ohagEnvironmentalModifier}}
-          </p>
-        </div>
-      </div>
-
-      <div class="card" *ngIf="dependentList">
-        <div class="card-body">
-          <label class="card-title"><strong>Dependent(s)</strong></label>
-          <div *ngFor="let dependent of dependentList">
-            <p class="card-text" *ngIf="dependent.dep_clientName">
-              <strong>Name: </strong> {{dependent.dep_clientName}}
-            </p>
-            <p class="card-text dependentDOB" *ngIf="dependent.dep_clientDOB">
-              <strong>Birth Date: </strong> {{dependent.dep_clientDOB}}
-            </p>
-          </div>
-        </div>
-      </div>
-      <!-- </div> -->
-    </div>
 
 
   </div>

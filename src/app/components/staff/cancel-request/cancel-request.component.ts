@@ -224,7 +224,7 @@ export class CancelRequestComponent implements OnInit {
       data => {
         if (data) {
           console.log (data);
-          this.changeStatusToSelected();
+          this.changeStatusToWorkCompleted();
           this.onSuccess = true;
         }
       },
@@ -238,20 +238,20 @@ export class CancelRequestComponent implements OnInit {
     console.log(JSON.stringify(communication, undefined, 2));
   }
 
-  changeStatusToWorkCompleted() {
-    this.staffService
-      .getStatusList(this.episodeOfCare['id'])
-      .subscribe(data => {
-        if (data) {
-          data['entry'].forEach(element => {
-            const individualEntry = element['resource'];
-            this.statusObject = individualEntry;
-          });
-        }
-      });
-  }
+  // changeStatusToWorkCompleted() {
+  //   this.staffService
+  //     .getStatusList(this.episodeOfCare['id'])
+  //     .subscribe(data => {
+  //       if (data) {
+  //         data['entry'].forEach(element => {
+  //           const individualEntry = element['resource'];
+  //           this.statusObject = individualEntry;
+  //         });
+  //       }
+  //     });
+  // }
 
-  changeStatusToSelected() {
+  changeStatusToWorkCompleted() {
     const itemAnswer = new FHIR.Answer();
     const itemTime = new FHIR.Answer();
     const itemReason = new FHIR.Answer();
@@ -332,6 +332,7 @@ export class CancelRequestComponent implements OnInit {
   }
 
   viewDetailedContext() {
-    this.router.navigateByUrl('/staff/work-screen');
+    this.router.navigateByUrl('/staff/work-screen/' + this.episodeOfCareId);
   }
+
 }

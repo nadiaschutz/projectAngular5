@@ -203,7 +203,7 @@ export class ListPageComponent implements OnInit {
 
   setEOCID(data) {
     sessionStorage.setItem('selectedEpisodeId', data);
-    this.router.navigateByUrl('/staff/work-screen');
+    this.router.navigateByUrl('/staff/work-screen/' + data);
   }
 
   getClientName(patientReference: string) {
@@ -297,6 +297,7 @@ export class ListPageComponent implements OnInit {
           'episodeOfCareId'
         ];
         const episode = this.episodesOfCareList[selectedEpisodeOfCareId];
+        episode['status'] = 'active';
         console.log(this.selectedEpisodeAdmin);
         if (this.selectedEpisodeAdmin !== 'none') {
           const careManagerReference = new FHIR.Reference();
