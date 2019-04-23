@@ -3,13 +3,9 @@ import { StaffService } from '../../../service/staff.service';
 import { UtilService } from '../../../service/util.service';
 import { UserService } from '../../../service/user.service';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import * as FHIR from '../../../interface/FHIR';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { Router } from '@angular/router';
-import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { formatDate } from '@angular/common';
-import { TitleCasePipe } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-cancel-request',
@@ -17,7 +13,6 @@ import { TitleCasePipe } from '@angular/common';
   styleUrls: ['./cancel-request.component.scss']
 })
 export class CancelRequestComponent implements OnInit {
-  cancelFormGroup: FormGroup;
 
   constructor(
     private staffService: StaffService,
@@ -25,13 +20,16 @@ export class CancelRequestComponent implements OnInit {
     private formBuilder: FormBuilder,
     private oAuthService: OAuthService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
+
+  cancelFormGroup: FormGroup;
 
   statusObject;
   episodeOfCare;
   serviceRequestSummary;
-
+  episodeOfCareId;
   onSuccess = false;
 
   cancelReasonList = [
@@ -46,6 +44,10 @@ export class CancelRequestComponent implements OnInit {
     { value: 'REASON_SIX', viewValue: 'Other (please call your PSOHP office for details)' },
   ];
   ngOnInit() {
+
+    this.route.params.subscribe(params => {
+      this.episodeOfCareId = params['eocId'];
+    });
     this.cancelFormGroup = this.formBuilder.group({
       cancelReason: new FormControl(''),
       comment: new FormControl('')
@@ -236,10 +238,6 @@ export class CancelRequestComponent implements OnInit {
     console.log(JSON.stringify(communication, undefined, 2));
   }
 
-  viewDetailedContext() {
-    this.router.navigateByUrl('/staff/work-screen');
-  }
-
   changeStatusToWorkCompleted() {
     this.staffService
       .getStatusList(this.episodeOfCare['id'])
@@ -288,5 +286,52 @@ export class CancelRequestComponent implements OnInit {
         console.log(data);
         this.statusObject = data;
       });
+  }
+
+
+  createCommunicationObjectForClosedMilestone() {
+    const communication = new FHIR.Communication();
+    const identifier = new FHIR.Identifier();
+    const episodeReference = new FHIR.Reference();
+    const categoryConcept = new FHIR.CodeableConcept;
+    const categoryCoding = new FHIR.Coding;
+    const payload = new FHIR.Payload;
+
+    identifier.value = 'MILESTONE-UDPATE-' + this.episodeOfCare['id'];
+    communication.resourceType = 'Communication';
+    communication.status = 'completed';
+
+    categoryCoding.system = 'https://bcip.smilecdr.com/fhir/documentcommunication';
+    categoryCoding.code = 'DOCUMENT-CHECKLIST-ITEM-VALIDATED';
+
+    categoryConcept.coding = [categoryCoding];
+    communication.category = [categoryConcept];
+
+    episodeReference.reference = 'EpisodeOfCare/' + this.episodeOfCare['id'];
+    communication.context = episodeReference;
+    communication.identifier = [identifier];
+    const newDate = new Date();
+
+    let authorName = null;
+    this.staffService.getPractitionerByID(sessionStorage.getItem('userFHIRID')).subscribe(
+      author => {
+        authorName = this.utilService.getNameFromResource(author);
+        payload.contentString = authorName + ' has closed the work order and moved the milestone to Closed at ' +
+        this.utilService.getDate(newDate);
+        communication.payload = [payload];
+        this.staffService
+          .createCommunication(JSON.stringify(communication))
+          .subscribe(data => {
+            console.log(data);
+          });
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
+  viewDetailedContext() {
+    this.router.navigateByUrl('/staff/work-screen');
   }
 }

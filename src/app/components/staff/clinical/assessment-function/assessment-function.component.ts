@@ -3,7 +3,7 @@ import { StaffService } from '../../../../service/staff.service';
 import { UtilService } from '../../../../service/util.service';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import * as FHIR from '../../../../interface/FHIR';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import * as jspdf from 'jspdf';
 import * as html2canvas from 'html2canvas';
@@ -37,8 +37,8 @@ export class AssessmentFunctionComponent implements OnInit {
       value: 'MEETSREQ-PERM',
       viewValue: 'Meets Medical Requirements with Permanent Limiations'
     },
-    { value: 'MISSING-MED', viewValue: 'Does Not Meet Medical Requirements' },
-    { value: 'MEETSREQ_NO', viewValue: 'Missing Medical Information' },
+    { value: 'MEETSREQ_NO', viewValue: 'Does Not Meet Medical Requirements' },
+    { value: 'MISSING-MED', viewValue: 'Missing Medical Information' },
     { value: 'NOASSESMENT', viewValue: 'Unable to assess' }
   ];
 
@@ -72,7 +72,8 @@ export class AssessmentFunctionComponent implements OnInit {
     private staffService: StaffService,
     private utilService: UtilService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.minDate = new Date();
     this.maxDate = new Date();
@@ -81,6 +82,11 @@ export class AssessmentFunctionComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.route.params.subscribe(params => {
+      this.episodeOfCareId = params['eocId'];
+    });
+
     this.datePickerConfig = Object.assign(
       {},
       {
@@ -90,10 +96,9 @@ export class AssessmentFunctionComponent implements OnInit {
       }
     );
 
-    this.checkIfAssociatedMilestoneListExists();
-
-    this.episodeOfCareId = sessionStorage.getItem('selectedEpisodeId');
-
+    if (this.episodeOfCareId) {
+      this.checkIfAssociatedMilestoneListExists();
+    }
     this.assessmentFormGroup = this.formBuilder.group({
       performerType: new FormControl(''),
       examDate: new FormControl(''),
@@ -231,46 +236,50 @@ export class AssessmentFunctionComponent implements OnInit {
 
     observation.component = [];
 
+
     if (this.returnInputValue('assessment')) {
       const component = new FHIR.Component();
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
-      for (const currentObj in this.assessmentList) {
+      this.assessmentList.forEach(currentObj => {
         if (this.returnInputValue('assessment') === currentObj['value']) {
+          console.log('found2');
+
           componentCoding.display = currentObj['viewValue'];
           componentCoding.code = currentObj['value'];
           componentCoding.system = 'ASSESSMENT';
-
           componentCode.coding = [];
           componentCode.coding.push(componentCoding);
           component.code = componentCode;
           observation.component.push(component);
         }
-      }
+      });
     }
 
     if (this.returnInputValue('vaccineStatusReviewed')) {
       const component = new FHIR.Component();
       const componentCode = new FHIR.CodeableConcept();
       const componentCoding = new FHIR.Coding();
-      for (const currentObj in this.vaccineReviewChoices) {
+      this.vaccineReviewChoices.forEach(currentObj => {
         if (
           this.returnInputValue('vaccineStatusReviewed') === currentObj['value']
         ) {
           componentCoding.display = currentObj['viewValue'];
           componentCoding.code = 'VACCINE_STATUS_REVIEWED';
           componentCoding.system = 'vaccineStatusReviewed';
-
           componentCode.coding = [];
+
           componentCode.coding.push(componentCoding);
           component.code = componentCode;
           observation.component.push(component);
         }
-      }
+      });
     }
 
-    performer.reference =
-      'Practitioner/' + sessionStorage.getItem('userFHIRID');
+    if (this.returnInputValue('performerType') === 'PSOHP') {
+      performer.reference =
+        'Practitioner/' + sessionStorage.getItem('userFHIRID');
+    }
     subject.reference = this.episodeOfCare['patient']['reference'];
 
     console.log(this.returnInputValue('examDate'));
@@ -292,7 +301,7 @@ export class AssessmentFunctionComponent implements OnInit {
     observation.context = context;
     observation.comment = this.assessmentFormGroup.get('comment').value;
     this.observationForDisplay = JSON.stringify(observation, undefined, 2);
-    console.log(observation);
+    // console.log(JSON.stringify(observation));
 
     this.staffService.saveAssessment(JSON.stringify(observation)).subscribe(
       assessment => {
@@ -475,6 +484,7 @@ export class AssessmentFunctionComponent implements OnInit {
   checkIfAssociatedMilestoneListExists() {
     this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
       if (data) {
+        console.log(data);
         data['entry'].forEach(entry => {
           this.milestoneObject = entry['resource'];
         });

@@ -80,6 +80,7 @@ import { ReportingComponent } from './components/reporting/reporting.component';
 import { AddNewClientDepartmentComponent } from './components/add-new-client-department/add-new-client-department.component';
 import { DocumentManagementComponent } from './components/document-management/document-management.component';
 import { MilestoneTrackingComponent } from './components/milestone-tracking/milestone-tracking.component';
+import { ValidateRequestComponent } from './components/staff/validate-request/validate-request.component';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -105,16 +106,7 @@ const routes: Routes = [
     },
   },
   { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
-  // {
-  //   path: 'newadvicerequest',
-  //   component: NewServiceRequestNoClientComponent,
-  //   resolve: {
-  //     fields: ContactUsFormResolverService,
-  //     departments: DepartmentListResolverService,
-  //     servreq: NewServReqService
-  //   },
-  //   canActivate: [AuthGuardService]
-  // },
+  { path: 'staff/validate-request/:eocId', component: ValidateRequestComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService] },
   { path: 'district-office-add', component: DistrictOfficeAddComponent, canActivate: [AuthGuardService] },
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
@@ -128,18 +120,17 @@ const routes: Routes = [
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
   { path: 'staff/work-screen', component: WorkScreenComponent, canActivate: [AuthGuardService] },
   { path: 'staff/lab-requisition/:eocId', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/cancel-request', component: CancelRequestComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/clinical/immunization-screen', component: ImmunizationScreenComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/cancel-request/:eocId', component: CancelRequestComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/clinical/immunization-screen/:eocId', component: ImmunizationScreenComponent, canActivate: [AuthGuardService] },
   { path: 'staff/audiogram/:eocId', component: AudiogramComponent, canActivate: [AuthGuardService] },
   { path: 'staff/audiogram/new/:eocId', component: AudiogramNewComponent, canActivate: [AuthGuardService] },
   { path: 'staff/audiogram/detail/:eocId', component: AudiogramDetailComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/clinical/assessment-screen', component: AssessmentFunctionComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/clinical/assessment-screen/:eocId', component: AssessmentFunctionComponent, canActivate: [AuthGuardService] },
   { path: 'staff/clinical/scheduler', component: SchedulerComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/document-management', component: DocumentManagementComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/document-management/:eocId', component: DocumentManagementComponent, canActivate: [AuthGuardService] },
   { path: 'demo', component: DemoComponent, canActivate: [AuthGuardService] },
   { path: 'adminhome', component: AdminHomeScreenComponent, canActivate: [AuthGuardService] },
   { path: 'form-builder', component: FormBuilderComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/lab-requisition', component: LabRequisitionComponent, canActivate: [AuthGuardService] },
   { path: 'data-extract', component: ReportingComponent, canActivate: [AuthGuardService] },
   { path: '', component: AuthComponent }
 ];
@@ -201,7 +192,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ReportingComponent,
     AddNewClientDepartmentComponent,
     DocumentManagementComponent,
-    MilestoneTrackingComponent
+    MilestoneTrackingComponent,
+    ValidateRequestComponent
 
   ],
   imports: [
