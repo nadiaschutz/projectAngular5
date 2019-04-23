@@ -81,6 +81,7 @@ import { AddNewClientDepartmentComponent } from './components/add-new-client-dep
 import { DocumentManagementComponent } from './components/document-management/document-management.component';
 import { MilestoneTrackingComponent } from './components/milestone-tracking/milestone-tracking.component';
 import { ValidateRequestComponent } from './components/staff/validate-request/validate-request.component';
+import { ServiceRequestSummaryService } from './service/service-request-summary.service';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -97,16 +98,24 @@ const routes: Routes = [
     },
   },
   {
+    path: 'service-request-summary',
+    component: ServiceRequestSummaryComponent,
+    canActivate: [AuthGuardService],
+    resolve: {
+      data: ServiceRequestSummaryService
+    }
+  },
+  { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
+  { path: 'staff/validate-request/:eocId', component: ValidateRequestComponent, canActivate: [AuthGuardService] },
+  {
     path: 'newadvicerequest',
     component: NewServiceRequestComponent,
     canActivate: [AuthGuardService],
     resolve: {
       fields: NewServReqService,
       departments: DepartmentListResolverService
-    },
+    }
   },
-  { path: 'edit-service-request', component: EditNewServiceRequestComponent, canActivate: [AuthGuardService] },
-  { path: 'staff/validate-request/:eocId', component: ValidateRequestComponent, canActivate: [AuthGuardService] },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService] },
   { path: 'district-office-add', component: DistrictOfficeAddComponent, canActivate: [AuthGuardService] },
   { path: 'summary', component: SummaryPageComponent, canActivate: [AuthGuardService] },
@@ -116,7 +125,6 @@ const routes: Routes = [
   { path: 'addnewclientdepartment', component: AddNewClientDepartmentComponent, canActivate: [AuthGuardService] },
   { path: 'assigntasks', component: TasklistComponent, canActivate: [AuthGuardService] },
   { path: 'clientsummary/:clientId', component: ClientOnsubmitSummaryComponent, canActivate: [AuthGuardService] },
-  { path: 'service-request-summary', component: ServiceRequestSummaryComponent, canActivate: [AuthGuardService] },
   { path: 'staff/list-page', component: ListPageComponent, canActivate: [AuthGuardService] },
   { path: 'staff/work-screen/:eocId', component: WorkScreenComponent, canActivate: [AuthGuardService] },
   { path: 'staff/lab-requisition/:eocId', component: LabRequisitionComponent, canActivate: [AuthGuardService] },

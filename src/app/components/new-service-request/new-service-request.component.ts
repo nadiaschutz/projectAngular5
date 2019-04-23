@@ -140,6 +140,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   documents;
   fileLink = [];
   documentReference = {};
+  regionalOffices;
   prePlacement = false;
 
   disableInputsForReview = false;
@@ -207,16 +208,28 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.prePlacement = JSON.parse(sessionStorage.getItem('prePlacement'));
+    // this.userService.fetchAllRegionalOffices.
+
+
+    // data => this.regionalOffices = data.fields,
+    // error => this.handleError(error)
+
+    // this.questionnaireService.newDocumentSubject.subscribe(
+    //   data => this.getDocument(data),
+    //   error => this.handleError(error)
+    // );
 
     // sets the formId based on url (serv request || contact us pages )
     if (this.router.url.indexOf('/newservicerequest') > -1) {
       this.formId = 'TEST4';
       this.servReqType = 'SERVREQ';
+      console.log('1', this.servReqType, this.formId);
     } else {
       this.formId = '1953';
       this.servReqType = 'CONTUS';
+      console.log('2', this.servReqType, this.formId);
     }
+
     this.userLRO = JSON.parse(sessionStorage.getItem('userLRO'));
     this.userRole = sessionStorage.getItem('userRole');
     this.userFHIRId = sessionStorage.getItem('userFHIRID');
@@ -229,6 +242,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       this.dependentsList = JSON.parse(depList);
     }
 
+    this.prePlacement = JSON.parse(sessionStorage.getItem('prePlacement'));
 
     this.clientGivenName = sessionStorage.getItem('emplGiven');
     this.clientFamilyName = sessionStorage.getItem('emplFam');
@@ -355,7 +369,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         console.error(error);
       });
       this.formCreated = true;
-      this.createEpisodeOfCare(questionnaireResponse);
+      if (this.servReqType !== 'CONTUS') {
+        this.createEpisodeOfCare(questionnaireResponse);
+      }
     }
 
   }
@@ -487,6 +503,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   createItemToSend(id, givenName, famName) {
 
     if (this.servReqType === 'SERVREQ') {
+      console.log('1', this.servReqType, this.formId);
 
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
@@ -509,6 +526,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       };
 
     } else {
+      console.log('2', this.servReqType, this.formId);
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
         questionnaire: {
@@ -768,6 +786,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           options.push(el1.valueCoding.display);
         });
         const enableWhen = this.populateEnableWhenObj(el);
+        // only for preplacemt for a client from a different department
         if (this.prePlacement) {
           if (el.code[0].code === 'PSOHPSERV' || el.code[0].code === 'ASSESTYPE') {
             return {
@@ -817,6 +836,23 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             value: null,
             elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           };
+          // } else if (el.code[0].code === 'REGOFFICE') {
+          //   return {
+          //     type: 'select',
+          //     typeElem: el.code[1].code,
+          //     label: el.text,
+          //     name: el.linkId,
+          //     enableWhen: el.enableWhen ? enableWhen : false,
+          //     options: options,
+          //     flag: el.enableWhen ? false : true,
+          //     placeholder: 'Select an option',
+          //     validation: undefined,
+          //     required: el.required ? true : false,
+          //     // validation: [Validators.required],
+          //     value: null,
+          //     elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          //   };
+
         } else {
           return {
             type: 'select',
