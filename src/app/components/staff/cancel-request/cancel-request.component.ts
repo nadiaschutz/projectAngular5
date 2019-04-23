@@ -22,11 +22,10 @@ export class CancelRequestComponent implements OnInit {
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   cancelFormGroup: FormGroup;
 
-  statusObject;
   episodeOfCare;
   serviceRequestSummary;
   episodeOfCareId;
@@ -47,29 +46,31 @@ export class CancelRequestComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       this.episodeOfCareId = params['eocId'];
+      this.staffService
+        .getAnyFHIRObjectByCustomQuery(
+          'EpisodeOfCare/' + this.episodeOfCareId
+        )
+        .subscribe(
+          data => {
+            console.log('asdasd', data)
+            if (data) {
+              this.episodeOfCare = data;
+            }
+          },
+          error => {
+            console.log(error);
+          },
+          () => {
+            this.checkIfAssociatedMilestoneListExists();
+            this.processServiceRequestForSummary();
+          }
+        );
     });
     this.cancelFormGroup = this.formBuilder.group({
       cancelReason: new FormControl(''),
       comment: new FormControl('')
     });
-    this.staffService
-      .getAnyFHIRObjectByCustomQuery(
-        'EpisodeOfCare/' + sessionStorage.getItem('selectedEpisodeId')
-      )
-      .subscribe(
-        data => {
-          if (data) {
-            this.episodeOfCare = data;
-          }
-        },
-        error => {
-          console.log(error);
-        },
-        () => {
-          this.checkIfAssociatedMilestoneListExists();
-          this.processServiceRequestForSummary();
-        }
-      );
+
 
   }
 
@@ -89,7 +90,7 @@ export class CancelRequestComponent implements OnInit {
     this.staffService
       .getAnyFHIRObjectByCustomQuery(
         'QuestionnaireResponse?identifier=SERVREQ&context=' +
-          this.episodeOfCare['id']
+        this.episodeOfCare['id']
       )
       .subscribe(
         questionnaireFound => {
@@ -234,7 +235,7 @@ export class CancelRequestComponent implements OnInit {
     this.staffService.createCommunication(JSON.stringify(communication)).subscribe(
       data => {
         if (data) {
-          console.log (data);
+          console.log(data);
           this.changeStatusToWorkCompleted();
           this.onSuccess = true;
         }
@@ -249,25 +250,26 @@ export class CancelRequestComponent implements OnInit {
     console.log(JSON.stringify(communication, undefined, 2));
   }
 
-  // changeStatusToWorkCompleted() {
-  //   this.staffService
-  //     .getStatusList(this.episodeOfCare['id'])
-  //     .subscribe(data => {
-  //       if (data) {
-  //         data['entry'].forEach(element => {
-  //           const individualEntry = element['resource'];
-  //           this.statusObject = individualEntry;
-  //         });
-  //       }
-  //     });
-  // }
+  updateEpisodeOfCareToFinished() {
+    this.episodeOfCare['status'] = 'finished';
+    this.staffService.updateEpisodeOfCare(this.episodeOfCareId, JSON.stringify(this.episodeOfCare)).subscribe(
+      data => {
+        if (data) {
+          console.log('This SR is now closed.');
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
 
   changeStatusToWorkCompleted() {
     const itemAnswer = new FHIR.Answer();
     const dateTime = new Date();
 
     this.milestoneObject['item'].forEach(element => {
-      if (element['linkId'] === 'Work-Completed') {
+      if (element['linkId'] === 'Closed') {
         if (!element['text']) {
           element['text'] = '';
         }
@@ -293,6 +295,8 @@ export class CancelRequestComponent implements OnInit {
       .subscribe(data => {
         console.log(data);
         this.milestoneObject = data;
+        this.createCommunicationObjectForClosedMilestone();
+        this.updateEpisodeOfCareToFinished();
       });
   }
 
@@ -305,7 +309,6 @@ export class CancelRequestComponent implements OnInit {
     const categoryCoding = new FHIR.Coding;
     const payload = new FHIR.Payload;
 
-    this.episodeOfCare['status'] = 'finished';
 
     identifier.value = 'MILESTONE-UDPATE-' + this.episodeOfCare['id'];
     communication.resourceType = 'Communication';
@@ -327,23 +330,13 @@ export class CancelRequestComponent implements OnInit {
       author => {
         authorName = this.utilService.getNameFromResource(author);
         payload.contentString = authorName + ' has closed the work order and moved the milestone to Closed at ' +
-        this.utilService.getDate(newDate);
+          this.utilService.getDate(newDate);
         communication.payload = [payload];
         this.staffService
           .createCommunication(JSON.stringify(communication))
           .subscribe(data => {
             console.log(data);
           });
-          this.staffService.updateEpisodeOfCare(this.episodeOfCare['id'], JSON.stringify(this.episodeOfCare)).subscribe(
-            data => {
-              if (data) {
-                console.log('This SR is now closed.');
-              }
-            },
-            error => {
-              console.log(error);
-            }
-          );
       },
       error => {
         console.log(error);
