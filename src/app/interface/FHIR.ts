@@ -1262,6 +1262,44 @@ export class Immunization extends Resource implements Serializable<Immunization>
     }
 }
 
+export class CommunicationRequest extends Resource implements Serializable<CommunicationRequest> {
+
+    identifier: Identifier[];
+    basedOn: Reference[];
+    replaces: Reference[];
+    groupIdentifier: Identifier;
+    status: string;
+    category: CodeableConcept[];
+    priority: string;
+    medium: CodeableConcept[];
+    subject: Reference;
+    recipent: Reference[];
+    topic: Reference[];
+    context: Reference[];
+    payload: Payload[];
+    occurrenceDateTime: Date;
+    occurrencePeriod: Period;
+    authoredOn: Date;
+    sender: Reference;
+    requester: Requester;
+    reasonCode: CodeableConcept[];
+    reasonReference: Reference[];
+    note: Annotation[];
+
+    deserialize(jsonObject: any): CommunicationRequest {
+        const that = this;
+        Object.entries(jsonObject).forEach(function (value) {
+            if (!(typeof value[1] === 'object')) {
+                that[value[0]] = value[1];
+            } else {
+                (that[value[0]].deserialize(value[1]));
+            }
+        });
+        return this;
+    }
+}
+
+
 export class AuditEvent extends Resource implements Serializable<AuditEvent> {
 
     type: Coding;
