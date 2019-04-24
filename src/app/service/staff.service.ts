@@ -68,6 +68,10 @@ export class StaffService {
     return this.http.post(environment.queryURI + '/CarePlan', carePlanData, {headers: this.getPostHeaders()}).toPromise();
   }
 
+  saveCommunicationRequestAsync(commReqdata) {
+    return this.http.post(environment.queryURI + '/CommunicationRequest/', commReqdata, {headers: this.getPostHeaders()}).toPromise();
+  }
+
   getCarePlan(id) {
     return this.http.get<FHIR.CarePlan>(environment.queryURI + '/CarePlan/' + id, {headers: this.getHeaders()});
   }

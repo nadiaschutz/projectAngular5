@@ -225,7 +225,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       this.servReqType = 'SERVREQ';
     } else {
       this.formId = '1953';
-      this.servReqType = 'CONTUS';
+      this.servReqType = 'ADCOIN';
     }
 
     this.userLRO = JSON.parse(sessionStorage.getItem('userLRO'));
@@ -367,10 +367,38 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         console.error(error);
       });
       this.formCreated = true;
-      if (this.servReqType !== 'CONTUS') {
+      if (this.servReqType !== 'ADCOIN') {
         this.createEpisodeOfCare(questionnaireResponse);
+      } else {
+        const psohpServiceType = this.getServiceTypeFromQuestionnaireResponse(questionnaireResponse);
+        this.createCommunicationRequest(questionnaireResponse['id'], psohpServiceType);
       }
+
     }
+
+  }
+
+  async createCommunicationRequest(questionnaireResponse, psohpServiceType) {
+    const commRequest = new FHIR.CommunicationRequest;
+    const topic = new FHIR.Reference;
+    const requester = new FHIR.Requester;
+    const requesterReference = new FHIR.Reference;
+
+    requesterReference.reference = 'Practitioner/' + sessionStorage.getItem('userFHIRID');
+    requester.agent = requesterReference;
+
+    topic.reference = 'QuestionnaireResponse/' + questionnaireResponse;
+
+    commRequest.resourceType = 'CommunicationRequest';
+    commRequest.status = 'draft';
+    commRequest.authoredOn = new Date();
+    commRequest.topic = [topic];
+    commRequest.requester = requester;
+
+    const createdCommRequest = await this.staffService.saveCommunicationRequestAsync(JSON.stringify(commRequest)).catch(error => {
+      console.error(error);
+    });
+    this.createCarePlanAdcoin(createdCommRequest, psohpServiceType);
 
   }
 
@@ -428,6 +456,41 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           episodeOfCareReference.reference =
             'EpisodeOfCare/' + episodeOfCare.id;
           carePlan.context = episodeOfCareReference;
+
+          carePlan.activity = carePlanTemplate['activity'];
+          carePlan.description = carePlanTemplate['description'];
+          carePlan.identifier = carePlanTemplate['identifier'];
+
+          console.log(carePlan);
+          const createdCarePlan = await this.staffService.saveCarePlanAsync(JSON.stringify(carePlan)).catch(error => {
+            console.error(error);
+          });
+          console.log(createdCarePlan);
+        }
+      }
+    }
+  }
+
+  async createCarePlanAdcoin(commRequest, psohpServiceType) {
+    if (psohpServiceType.length > 0) {
+      const carePlanTemplates = await this.staffService.fetchAllCarePlanTemplatesAsync();
+      for (const carePlanTemplateEntry of carePlanTemplates['entry']) {
+        const carePlanTemplate = carePlanTemplateEntry.resource;
+        if (psohpServiceType === carePlanTemplate['identifier'][0]['value']) {
+          console.log(psohpServiceType);
+          const carePlan = new FHIR.CarePlan();
+          const subject = new FHIR.Reference();
+          const supportingInfo = new FHIR.Reference;
+
+          subject.reference = 'Group/16054';
+
+          carePlan.resourceType = 'CarePlan';
+          carePlan.status = 'active';
+          carePlan.intent = 'plan';
+          carePlan.subject = subject;
+
+          supportingInfo.reference = commRequest['resourceType'] + '/' + commRequest['id'];
+          carePlan.supportingInfo = [supportingInfo];
 
           carePlan.activity = carePlanTemplate['activity'];
           carePlan.description = carePlanTemplate['description'];
@@ -965,7 +1028,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     console.log('CONFIG AFTER DEPENDENTS PUSH', this.configuration);
 
     // styling and buttons
-    if (this.servReqType === 'CONTUS') {
+    if (this.servReqType === 'ADCOIN') {
       this.configuration.push(
         {
           type: 'doc',
