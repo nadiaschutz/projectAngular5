@@ -20,7 +20,7 @@ export class QrequestService {
   }
 
   getServReqForClient(query: string) {
-    const header = this.getHeaders();
+    const header = this.getNoCacheHeaders();
     return this.http.get(environment.queryURI + '/QuestionnaireResponse?subject=Patient/' + query, { headers: header });
     // tslint:disable-next-line:max-line-length
     // return this.http.get(environment.queryURI + '/QuestionnaireResponse?subject=Patient/' + query + '&identifier=SERVREQ', { headers: header });
@@ -29,6 +29,15 @@ export class QrequestService {
   getHeaders(): HttpHeaders {
     const header = new HttpHeaders().set('Authorization', 'Bearer ' + this.oauthService.getAccessToken());
     return header;
+  }
+
+  getNoCacheHeaders() {
+    const headers = new HttpHeaders({
+      'Content-Type' : 'application/json',
+      'Authorization': 'Bearer ' + this.oauthService.getAccessToken(),
+      'Cache-Control': 'no-cache'
+    });
+    return headers;
   }
 
   getAllQuestionnaireResponseData(id: string) {

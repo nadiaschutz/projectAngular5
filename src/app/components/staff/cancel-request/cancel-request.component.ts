@@ -22,16 +22,15 @@ export class CancelRequestComponent implements OnInit {
     private userService: UserService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   cancelFormGroup: FormGroup;
 
-  statusObject;
   episodeOfCare;
   serviceRequestSummary;
   episodeOfCareId;
   onSuccess = false;
-
+  milestoneObject;
   cancelReasonList = [
     { value: 'REASON_ONE', viewValue: 'As requested by the Employee' },
     {
@@ -47,30 +46,43 @@ export class CancelRequestComponent implements OnInit {
 
     this.route.params.subscribe(params => {
       this.episodeOfCareId = params['eocId'];
+      this.staffService
+        .getAnyFHIRObjectByCustomQuery(
+          'EpisodeOfCare/' + this.episodeOfCareId
+        )
+        .subscribe(
+          data => {
+            console.log('asdasd', data)
+            if (data) {
+              this.episodeOfCare = data;
+            }
+          },
+          error => {
+            console.log(error);
+          },
+          () => {
+            this.checkIfAssociatedMilestoneListExists();
+            this.processServiceRequestForSummary();
+          }
+        );
     });
     this.cancelFormGroup = this.formBuilder.group({
       cancelReason: new FormControl(''),
       comment: new FormControl('')
     });
-    this.staffService
-      .getAnyFHIRObjectByCustomQuery(
-        'EpisodeOfCare/' + sessionStorage.getItem('selectedEpisodeId')
-      )
-      .subscribe(
-        data => {
-          if (data) {
-            this.episodeOfCare = data;
-          }
-        },
-        error => {
-          console.log(error);
-        },
-        () => {
-          this.processServiceRequestForSummary();
-          this.changeStatusToWorkCompleted();
-        }
-      );
 
+
+  }
+
+  checkIfAssociatedMilestoneListExists() {
+    this.staffService.getStatusList(this.episodeOfCareId).subscribe(data => {
+      if (data) {
+        console.log(data);
+        data['entry'].forEach(entry => {
+          this.milestoneObject = entry['resource'];
+        });
+      }
+    });
   }
 
   processServiceRequestForSummary() {
@@ -78,7 +90,7 @@ export class CancelRequestComponent implements OnInit {
     this.staffService
       .getAnyFHIRObjectByCustomQuery(
         'QuestionnaireResponse?identifier=SERVREQ&context=' +
-          this.episodeOfCare['id']
+        this.episodeOfCare['id']
       )
       .subscribe(
         questionnaireFound => {
@@ -223,7 +235,7 @@ export class CancelRequestComponent implements OnInit {
     this.staffService.createCommunication(JSON.stringify(communication)).subscribe(
       data => {
         if (data) {
-          console.log (data);
+          console.log(data);
           this.changeStatusToWorkCompleted();
           this.onSuccess = true;
         }
@@ -238,53 +250,53 @@ export class CancelRequestComponent implements OnInit {
     console.log(JSON.stringify(communication, undefined, 2));
   }
 
-  // changeStatusToWorkCompleted() {
-  //   this.staffService
-  //     .getStatusList(this.episodeOfCare['id'])
-  //     .subscribe(data => {
-  //       if (data) {
-  //         data['entry'].forEach(element => {
-  //           const individualEntry = element['resource'];
-  //           this.statusObject = individualEntry;
-  //         });
-  //       }
-  //     });
-  // }
+  updateEpisodeOfCareToFinished() {
+    this.episodeOfCare['status'] = 'finished';
+    this.staffService.updateEpisodeOfCare(this.episodeOfCareId, JSON.stringify(this.episodeOfCare)).subscribe(
+      data => {
+        if (data) {
+          console.log('This SR is now closed.');
+        }
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
 
   changeStatusToWorkCompleted() {
     const itemAnswer = new FHIR.Answer();
-    const itemTime = new FHIR.Answer();
-    const itemReason = new FHIR.Answer();
+    const dateTime = new Date();
 
-    const selectedStatus = 'Work-Completed';
-    itemTime.valueDate = new Date();
-    itemReason.valueString = this.returnInputValue('comment');
-    this.statusObject['item'].forEach(element => {
-      console.log(element['text']);
-
-      if (element['text'] === selectedStatus) {
-        itemAnswer.valueBoolean = true;
-
-        element['answer'] = [];
-        element['answer'][0] = itemAnswer;
-        element['answer'][1] = itemTime;
-        element['answer'][2] = itemReason;
-        console.log('matched', element['answer']);
-      }
-      if (element['text'] !== selectedStatus) {
-        element['answer'] = [];
-
-        console.log('unmatched', element['answer']);
+    this.milestoneObject['item'].forEach(element => {
+      if (element['linkId'] === 'Closed') {
+        if (!element['text']) {
+          element['text'] = '';
+        }
+        if (!element['answer']) {
+          element['answer'] = [];
+          itemAnswer.valueDateTime = dateTime;
+          element['answer'].push(itemAnswer);
+        }
+        if (element['answer']) {
+          element['answer'].forEach(timeFound => {
+            if (timeFound['valueDateTime']) {
+              timeFound['valueDateTime'] = dateTime;
+            }
+          });
+        }
       }
     });
     this.staffService
       .updateStatusList(
-        this.statusObject['id'],
-        JSON.stringify(this.statusObject)
+        this.milestoneObject['id'],
+        JSON.stringify(this.milestoneObject)
       )
       .subscribe(data => {
         console.log(data);
-        this.statusObject = data;
+        this.milestoneObject = data;
+        this.createCommunicationObjectForClosedMilestone();
+        this.updateEpisodeOfCareToFinished();
       });
   }
 
@@ -296,6 +308,7 @@ export class CancelRequestComponent implements OnInit {
     const categoryConcept = new FHIR.CodeableConcept;
     const categoryCoding = new FHIR.Coding;
     const payload = new FHIR.Payload;
+
 
     identifier.value = 'MILESTONE-UDPATE-' + this.episodeOfCare['id'];
     communication.resourceType = 'Communication';
@@ -317,7 +330,7 @@ export class CancelRequestComponent implements OnInit {
       author => {
         authorName = this.utilService.getNameFromResource(author);
         payload.contentString = authorName + ' has closed the work order and moved the milestone to Closed at ' +
-        this.utilService.getDate(newDate);
+          this.utilService.getDate(newDate);
         communication.payload = [payload];
         this.staffService
           .createCommunication(JSON.stringify(communication))

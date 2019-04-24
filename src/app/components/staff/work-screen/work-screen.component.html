@@ -106,9 +106,13 @@
             <label class="top-item-label">Service Request ID</label>
             <span class="bottom-item-label" *ngIf="summary">{{summary['serviceRequestId']}}</span>
           </div>
-          <div class="summary-item">
+          <div class="summary-item" *ngIf="!summary['psohpCode']">
             <label class="top-item-label">Service</label>
             <span class="bottom-item-label" *ngIf="summary">{{summary['psohpService']}}</span>
+          </div>
+          <div class="summary-item" *ngIf="!summary['psohpService']">
+            <label class="top-item-label">Assessment</label>
+            <span class="bottom-item-label" *ngIf="summary">{{summary['psohpCode']}}</span>
           </div>
           <div class="summary-item">
             <label class="top-item-label">Employee PRI</label>

@@ -374,7 +374,7 @@ export class WorkScreenComponent implements OnInit {
       if (item['linkId'] === 'PSOHPCODE') {
         for (const answer of item['answer']) {
           if (answer['valueCoding']) {
-            this.summary['psohpCode'] = answer['valueCoding']['display'];
+            this.summary['psohpCode'] = answer['valueCoding']['code'];
           }
         }
       }
@@ -774,7 +774,7 @@ export class WorkScreenComponent implements OnInit {
   }
 
   openTaskForm() {
-    this.showTaskForm = true;
+    this.showTaskForm = !this.showTaskForm;
     this.showNoteForm = false;
     this.showNewTool = false;
     this.taskFormGroup = this.formBuilder.group({
@@ -782,6 +782,9 @@ export class WorkScreenComponent implements OnInit {
       assignTo: new FormControl(''),
       instruction: new FormControl('')
     });
+    if (!this.showTaskForm) {
+      this.taskFormGroup.reset();
+    }
   }
 
   openNoteForm() {
@@ -1064,9 +1067,7 @@ export class WorkScreenComponent implements OnInit {
 
     milestoneItemSix.linkId = 'Received';
     // milestoneItemSix.text = 'Received at ' + this.summary['serviceRequestSubmittedDate'];
-    statusItemAnswer.valueCoding.code = this.utilService.getCurrentDateTime();
-    statusItemAnswer.valueCoding.system = 'https://bcip.smilecdr.com/fhir/WorkOrderMlestone';
-    statusItemAnswer.valueCoding.display = 'Received at ' + this.utilService.getCurrentDateTime();
+    statusItemAnswer.valueDateTime = new Date();
     milestoneItemSix.answer = [statusItemAnswer];
     statusReference.reference = 'Questionnaire/13064';
     statusContextReference.reference = 'EpisodeOfCare/' + this.episodeOfCareId;
