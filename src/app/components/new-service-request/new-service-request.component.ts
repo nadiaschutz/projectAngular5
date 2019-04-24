@@ -17,6 +17,7 @@ import { PatientService } from 'src/app/service/patient.service';
 import { formatDate } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { StaffService } from '../../service/staff.service';
+import { AdminHomeScreenService } from 'src/app/service/admin-home-screen.service';
 
 import * as FHIR from '../../interface/FHIR';
 import { link } from 'fs';
@@ -123,6 +124,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   config: FieldConfig[] = [];
 
   departmentList = [];
+  branchList = [];
+  distrOfficeList = [];
   currentUserDepartment;
 
   formId;
@@ -202,22 +205,30 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     private patientService: PatientService,
     private oauthService: OAuthService,
     private datePipe: DatePipe,
-    private staffService: StaffService
+    private staffService: StaffService,
+    private adminHomeScreenService: AdminHomeScreenService
   ) {
 
   }
 
   ngOnInit() {
-    // this.userService.fetchAllRegionalOffices.
+    this.userService.fetchAllRegionalOffices().subscribe(
+      data => this.getBranches(data),
+      error => this.handleError(error)
+    );
+
+    // /**
+    // * Initializes list for district offices on our system
+    // */
+    // this.userService
+    //   .fetchAllDistrictOffices()
+    //   .subscribe(
+    //     data => this.populateDistrictOffices(data),
+    //     error => this.handleError(error)
+    //   );
 
 
-    // data => this.regionalOffices = data.fields,
-    // error => this.handleError(error)
 
-    // this.questionnaireService.newDocumentSubject.subscribe(
-    //   data => this.getDocument(data),
-    //   error => this.handleError(error)
-    // );
 
     // sets the formId based on url (serv request || contact us pages )
     if (this.router.url.indexOf('/newservicerequest') > -1) {
@@ -832,17 +843,20 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
         const options = [];
         // sets this.options for Code
-        el.option.forEach(el1 => {
-          this.options.push(
-            {
-              display: el1.valueCoding.display,
-              code: el1.valueCoding.code
-            }
-          );
-        });
-        el.option.forEach(el1 => {
-          options.push(el1.valueCoding.display);
-        });
+        if (el.option) {
+          el.option.forEach(el1 => {
+            this.options.push(
+              {
+                display: el1.valueCoding.display,
+                code: el1.valueCoding.code
+              }
+            );
+          });
+
+          el.option.forEach(el1 => {
+            options.push(el1.valueCoding.display);
+          });
+        }
         const enableWhen = this.populateEnableWhenObj(el);
         // only for preplacemt for a client from a different department
         if (this.prePlacement) {
@@ -894,22 +908,39 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             value: null,
             elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           };
-          // } else if (el.code[0].code === 'REGOFFICE') {
-          //   return {
-          //     type: 'select',
-          //     typeElem: el.code[1].code,
-          //     label: el.text,
-          //     name: el.linkId,
-          //     enableWhen: el.enableWhen ? enableWhen : false,
-          //     options: options,
-          //     flag: el.enableWhen ? false : true,
-          //     placeholder: 'Select an option',
-          //     validation: undefined,
-          //     required: el.required ? true : false,
-          //     // validation: [Validators.required],
-          //     value: null,
-          //     elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-          //   };
+        } else if (el.code[0].code === 'REGOFFICE') {
+          return {
+            type: 'select',
+            typeElem: el.code[1].code,
+            label: el.text,
+            name: el.linkId,
+            enableWhen: el.enableWhen ? enableWhen : false,
+            options: this.branchList, // TODO NOWrename to region office
+            flag: el.enableWhen ? false : true,
+            placeholder: 'Select an option',
+            validation: undefined,
+            required: el.required ? true : false,
+            // validation: [Validators.required],
+            value: null,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          };
+
+        } else if (el.code[0].code === 'DISTROFFICE') {
+          return {
+            type: 'select',
+            typeElem: el.code[1].code,
+            label: el.text,
+            name: el.linkId,
+            enableWhen: el.enableWhen ? enableWhen : false,
+            options: this.distrOfficeList,
+            flag: el.enableWhen ? false : true,
+            placeholder: 'Select an option',
+            validation: undefined,
+            required: el.required ? true : false,
+            // validation: [Validators.required],
+            value: null,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          };
 
         } else {
           return {
@@ -1159,6 +1190,35 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   // checks FHIR data for items with enableWhen and changes show/hide class on the form based on enableWhen options
   public checkEnableWhen(value, index) {
     // console.log(this.form.value.ASSESTYPE);
+    if (index === 'REGOFFICE') {
+
+      if (value !== '') {
+        console.log(value);
+        // get job locations dropdown items
+        this.distrOfficeList = [];
+        this.adminHomeScreenService.getDistrictOffices(value)
+          .subscribe(locations => {
+            console.log(locations['entry']);
+            if (locations['entry']) {
+
+              locations['entry'].forEach(distrOffice => {
+                this.distrOfficeList.push(distrOffice['resource']['name']);
+              });
+            }
+            this.config.forEach(elemOfConfigs => {
+              if (elemOfConfigs.name === 'DISTROFFICE') {
+                elemOfConfigs.options = this.distrOfficeList;
+              }
+            });
+            console.log(this.distrOfficeList);
+          },
+            (err) => {
+              console.log('District locations list error => ', err);
+            });
+      }
+
+    }
+
     this.config.forEach(elemOfConfig => {
       // checks for form type and sets disabled particular fields
       if (this.servReqType === 'SERVREQ') {
@@ -1170,6 +1230,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           this.form.setValue('USERDEPT', this.currentUserDepartment);
         }
       }
+
+
 
       if (elemOfConfig.enableWhen) {
         for (const formElem of elemOfConfig.enableWhen) {
@@ -1253,7 +1315,50 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         }
       }
     });
+  }
 
+
+
+  // onChanges(): void {
+  //   // listen to one particular field for form change
+  //   this.accountFormGroup.get('departmentName')
+  //     .valueChanges
+  //     .subscribe(val => {
+  //       if (val !== '') {
+  //         console.log(val);
+  //         // get job locations dropdown items
+  //         this.adminHomeScreenService.getDistrictOffices({ organization: val })
+  //           .subscribe(locations => {
+  //             this.jobLocationList = this.extractKeyValuePairsFromBundle(locations);
+  //             this.accountFormGroup.get('departmentBranch').enable();
+  //             console.log(this.jobLocationList);
+  //           },
+  //             (err) => {
+  //               console.log('Job locations list error => ', err);
+  //             });
+  //       } else {
+  //         this.accountFormGroup.get('departmentBranch').disable();
+  //         this.jobLocationList = [];
+  //       }
+  //     });
+  // }
+
+  getBranches(data) {
+    if (data.entry) {
+      data.entry.forEach(branch => {
+        this.branchList.push(branch.resource.name);
+      });
+    }
+    console.log(this.branchList);
+  }
+
+  populateDistrictOffices(data: any) {
+    if (data.entry) {
+      data.entry.forEach(el => {
+        this.distrOfficeList.push(el.resource);
+      });
+    }
+    console.log(this.distrOfficeList);
   }
 
 
