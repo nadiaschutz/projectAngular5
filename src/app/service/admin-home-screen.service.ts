@@ -96,7 +96,6 @@ export class AdminHomeScreenService {
     );
   }
 
-<<<<<<< Updated upstream
   getDistrictLocations(queryObj?) {
     let obj = {};
 
@@ -115,7 +114,6 @@ export class AdminHomeScreenService {
       { headers: this.getHeaders() }
     );
   }
-=======
   getDistrictOffices(query) {
     return this.http.get(
       environment.queryURI + '/Location??identifier=psohp-location&organization.name=' + query,
@@ -124,7 +122,6 @@ export class AdminHomeScreenService {
   }
 
 
->>>>>>> Stashed changes
 
   getJobLocationsClientDept(query) {
     return this.http.get(
@@ -179,13 +176,8 @@ export class AdminHomeScreenService {
   }
 
   encodeData(obj) {
-<<<<<<< Updated upstream
-    return Object.keys(obj).map(function(key) {
-      if (key.indexOf('dup-') === -1){
-=======
     return Object.keys(obj).map(function (key) {
-      if (key.indexOf('dup-') == -1) {
->>>>>>> Stashed changes
+      if (key.indexOf('dup-') === -1) {
         return [key, obj[key]].map(encodeURIComponent).join('=');
       } else {
         let tempKey = key;
