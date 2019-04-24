@@ -20,7 +20,6 @@ import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { deLocale } from 'ngx-bootstrap/locale';
 import { NullTemplateVisitor } from '@angular/compiler';
-import { e } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-serv-req-main',
@@ -572,44 +571,6 @@ export class ServReqMainComponent implements OnInit {
     }
   }
 
-  setUpPatientDisplayName(data: any) {
-    this.patientService.getPatientDataByID(data['id']).subscribe()
-  } 
-  // getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
-  //   let result = '-';
-  //   if (serviceRequestObj.item) {
-  //     serviceRequestObj.item.forEach(item => {
-  //       if (item.text === text) {
-  //         if (item['answer']) {
-  //           if (item.answer[0].valueString.indexOf('-') > 0) {
-  //             if (dashNum === 1) {
-  //               result = item.answer[0].valueString.substring(
-  //                 0,
-  //                 item.answer[0].valueString.indexOf('-')
-  //               );
-  //             }
-  //             if (dashNum === 2) {
-  //               result = item.answer[0].valueString.substring(
-  //                 item.answer[0].valueString.indexOf('-') + 1
-  //               );
-  //               result = result.substring(0, result.indexOf('-'));
-  //             }
-  //           } else {
-  //             result = item.answer[0].valueString;
-  //           }
-  //         }
-  //       }
-  //     });
-  //   }
-  //   return result;
-  // }
-
-  // getLinkValueFromObject2(serviceRequestObj, text: string): string {
-  //   const result = '-';
-  //   if (serviceRequestObj.item) {
-  //   }
-  //   return result;
-  // }
 
   getClientName(servReqobj) {
     let result = '-';
