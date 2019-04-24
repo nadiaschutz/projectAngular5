@@ -108,7 +108,6 @@ export class AdminHomeScreenService {
     // // console.log('Query Obj for getJobLocations =>', this.encodeData(obj));
 
     const query = queryObj['organization'];
-    console.log('lol', query);
 
     return this.http.get(
       environment.queryURI + '/Location?identifier=psohp-location&organization=' + query,

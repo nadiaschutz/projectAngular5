@@ -169,7 +169,6 @@ export class NewAccountComponent implements OnInit {
       .valueChanges
       .subscribe(val => {
         if (val !== '') {
-          console.log('haha' , { organization: val });
           // get job locations dropdown items
           this.adminHomeScreenService.getDistrictLocations({ organization: val })
             .subscribe(locations => {
