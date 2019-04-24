@@ -97,12 +97,12 @@ export class NewAccountComponent implements OnInit {
     /**
      * Initializes list for district offices on our system
      */
-    this.userService
-      .fetchAllDistrictOffices()
-      .subscribe(
-        data => this.populateDistrictOffices(data),
-        error => this.handleError(error)
-      );
+    // this.userService
+    //   .fetchAllDistrictOffices()
+    //   .subscribe(
+    //     data => this.populateDistrictOffices(data),
+    //     error => this.handleError(error)
+    //   );
 
     this.accountFormGroup = this.fb.group({
       given: new FormControl('', [
@@ -162,6 +162,27 @@ export class NewAccountComponent implements OnInit {
         } else {
           this.accountFormGroup.get('departmentBranch').disable();
           this.jobLocationList = [];
+        }
+      });
+
+      this.accountFormGroup.get('regionalOffice')
+      .valueChanges
+      .subscribe(val => {
+        if (val !== '') {
+          console.log('haha' , { organization: val });
+          // get job locations dropdown items
+          this.adminHomeScreenService.getDistrictLocations({ organization: val })
+            .subscribe(locations => {
+              this.districtOffices = this.extractKeyValuePairsFromBundle(locations);
+              this.accountFormGroup.get('districtOffice').enable();
+              console.log(this.districtOffices);
+            },
+            (err) => {
+              console.log('Job locations list error => ', err);
+            });
+          } else {
+          this.accountFormGroup.get('districtOffice').disable();
+          this.districtOffices = [];
         }
       });
   }

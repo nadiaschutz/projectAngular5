@@ -96,6 +96,25 @@ export class AdminHomeScreenService {
     );
   }
 
+  getDistrictLocations(queryObj?) {
+    let obj = {};
+
+    if (queryObj) {
+      obj = { type: 'organization', ...queryObj };
+    } else {
+      obj = { type: 'organization' };
+    }
+
+    // // console.log('Query Obj for getJobLocations =>', this.encodeData(obj));
+
+    const query = queryObj['organization'];
+    console.log('lol', query);
+
+    return this.http.get(
+      environment.queryURI + '/Location?identifier=psohp-location&organization=' + query,
+      { headers: this.getHeaders() }
+    );
+  }
 
   getJobLocationsClientDept(query) {
     return this.http.get(
@@ -151,7 +170,7 @@ export class AdminHomeScreenService {
 
   encodeData(obj) {
     return Object.keys(obj).map(function(key) {
-      if (key.indexOf('dup-') == -1){
+      if (key.indexOf('dup-') === -1){
         return [key, obj[key]].map(encodeURIComponent).join('=');
       } else {
         let tempKey = key;
