@@ -810,20 +810,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         }
 
 
-        if (this.regionalOfficeList) {
-          this.regionalOfficeList.forEach(el2 => {
-            this.options.push(
-              {
-                display: el2.name,
-                code: el2.id
-              }
-            );
-            options.push(el2.name);
-          });
-        }
-
-
-
         const enableWhen = this.populateEnableWhenObj(el);
         // only for preplacemt for a client from a different department
         if (this.prePlacement) {
@@ -874,6 +860,17 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           };
         } else if (el.code[0].code === 'REGOFFICE') {
+          if (this.regionalOfficeList) {
+            this.regionalOfficeList.forEach(el2 => {
+              this.options.push(
+                {
+                  display: el2.name,
+                  code: el2.id
+                }
+              );
+              options.push(el2.name);
+            });
+          }
           return {
             type: 'select',
             typeElem: el.code[1].code,
