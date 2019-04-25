@@ -20,7 +20,6 @@ import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { deLocale } from 'ngx-bootstrap/locale';
 import { NullTemplateVisitor } from '@angular/compiler';
-import { e } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-serv-req-main',
@@ -91,8 +90,9 @@ export class ServReqMainComponent implements OnInit {
   servRequest: ServRequest = {
     id: null,
     date: null,
-    PSOHP_service: null,
+    psohpService: null,
     assessmentType: null,
+    assessmentCat: null,
     department: null,
     region: null,
     createdBy: null,
@@ -102,9 +102,6 @@ export class ServReqMainComponent implements OnInit {
 
   servRequests: ServRequest[];
   servRequestsArray = [];
-
-
-
 
   myString;
   str = null;
@@ -284,8 +281,9 @@ export class ServReqMainComponent implements OnInit {
       ...this.servRequest,
       id: el.id,
       date: el.authored,
-      PSOHP_service: this.getServiceType(el),
+      psohpService: this.getServiceType(el),
       assessmentType: this.getAssessmentType(el),
+      assessmentCat: this.getCategoryType(el),
       department: this.getDepartment(el),
       region: this.getRegion(el),
       createdBy: this.getCreatedBy(el),
@@ -414,41 +412,38 @@ export class ServReqMainComponent implements OnInit {
     console.log(error);
   }
 
-  getServiceType(serviceRequestObj): string {
-    let result: any;
-    result = '-';
+  getServiceType(serviceRequestObj) {
+    let result = '-';
     if (serviceRequestObj.item) {
-      if (
-        serviceRequestObj.questionnaire &&
-        serviceRequestObj.questionnaire.reference === 'Questionnaire/1953'
-      ) {
-        serviceRequestObj.item.forEach(item => {
-          if (item.text === 'PSOHP Service') {
-            if (item['answer']) {
-              result = item.answer[0].valueString.substring(
-                item.answer[0].valueString.indexOf('(') + 1,
-                item.answer[0].valueString.length
-              );
-              result = result.substring(0, result.length - 1);
-            }
-          }
-        });
-      } else {
-        result = this.getAnswer('PSOHPSERV', serviceRequestObj);
-      }
+      serviceRequestObj.item.forEach(item => {
+        if (item.linkId === 'PSOHPSERV') {
+          result = this.getAnswer('PSOHPSERV', serviceRequestObj);
+        }
+        if (item.linkId === 'SERVTP') {
+          result = this.getAnswer('SERVTP', serviceRequestObj);
+        }
+      });
+    }
+    return result;
+  }
+
+  getCategoryType(serviceRequestObj) {
+    let result = '-';
+    if (serviceRequestObj.item) {
+      serviceRequestObj.item.forEach(item => {
+        if (item.linkId.includes('ASSESCAT')) {
+          result = this.getAnswer(item.linkId, serviceRequestObj);
+        }
+      });
     }
     return result;
   }
 
   getDepartment(serviceRequestObj) {
-    let result: any;
-    result = '-';
+    let result = '-';
     if (serviceRequestObj.item) {
 
       result = this.getAnswer('USERDEPT', serviceRequestObj);
-
-
-
     }
 
     return result;
@@ -458,24 +453,12 @@ export class ServReqMainComponent implements OnInit {
   getAssessmentType(serviceRequestObj) {
     let result: any;
     result = '-';
-    if (
-      serviceRequestObj.questionnaire &&
-      serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST4'
-    ) {
-      if (serviceRequestObj.item) {
-        result = this.getAnswer('ASSESTYPE', serviceRequestObj);
-      } else {
-        return result;
+    serviceRequestObj.item.forEach(item => {
+      if (item.linkId.includes('ASSESTYPE')) {
+        result = this.getAnswer(item.linkId, serviceRequestObj);
       }
+    });
 
-    } else if (
-      serviceRequestObj.questionnaire &&
-      serviceRequestObj.questionnaire.reference === 'Questionnaire/1953'
-    ) {
-      return result;
-    } else {
-      return result;
-    }
     return result;
   }
 
@@ -572,44 +555,6 @@ export class ServReqMainComponent implements OnInit {
     }
   }
 
-  setUpPatientDisplayName(data: any) {
-    this.patientService.getPatientDataByID(data['id']).subscribe()
-  } 
-  // getLinkValueFromObject(serviceRequestObj, text: string, dashNum): string {
-  //   let result = '-';
-  //   if (serviceRequestObj.item) {
-  //     serviceRequestObj.item.forEach(item => {
-  //       if (item.text === text) {
-  //         if (item['answer']) {
-  //           if (item.answer[0].valueString.indexOf('-') > 0) {
-  //             if (dashNum === 1) {
-  //               result = item.answer[0].valueString.substring(
-  //                 0,
-  //                 item.answer[0].valueString.indexOf('-')
-  //               );
-  //             }
-  //             if (dashNum === 2) {
-  //               result = item.answer[0].valueString.substring(
-  //                 item.answer[0].valueString.indexOf('-') + 1
-  //               );
-  //               result = result.substring(0, result.indexOf('-'));
-  //             }
-  //           } else {
-  //             result = item.answer[0].valueString;
-  //           }
-  //         }
-  //       }
-  //     });
-  //   }
-  //   return result;
-  // }
-
-  // getLinkValueFromObject2(serviceRequestObj, text: string): string {
-  //   const result = '-';
-  //   if (serviceRequestObj.item) {
-  //   }
-  //   return result;
-  // }
 
   getClientName(servReqobj) {
     let result = '-';

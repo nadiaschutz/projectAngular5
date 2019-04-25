@@ -9,8 +9,9 @@ export interface Item {
 export interface ServRequest {
     id: string;
     date: string;
-    PSOHP_service: string;
+    psohpService: string;
     assessmentType: string;
+    assessmentCat: string;
     department: string;
     region: string;
     createdBy: string;

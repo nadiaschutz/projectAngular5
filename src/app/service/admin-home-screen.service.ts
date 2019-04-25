@@ -4,10 +4,10 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { environment } from '../../environments/environment';
 
 import { tap, mergeMap } from 'rxjs/operators';
-import { Observable , of, merge } from 'rxjs';
+import { Observable, of, merge } from 'rxjs';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AdminHomeScreenService {
 
@@ -16,8 +16,8 @@ export class AdminHomeScreenService {
   getAllQRIncludeRefs() {
     const loggedInUserId = sessionStorage.getItem('userFHIRID');
 
-    return this.http.get(environment.queryURI + '/QuestionnaireResponse?_include:recurse=*&identifier=SERVREQ&context.care-manager=' 
-    + loggedInUserId, { headers: this.getHeaders() })
+    return this.http.get(environment.queryURI + '/QuestionnaireResponse?_include:recurse=*&identifier=SERVREQ&context.care-manager='
+      + loggedInUserId, { headers: this.getHeaders() })
       .pipe(
         mergeMap((qrs) => this.getAndAddStatusForQRs(qrs))
       );
@@ -32,8 +32,8 @@ export class AdminHomeScreenService {
     // console.log('Original for getQRStatuses =>', eocIds);
     // console.log('Query Obj for getQRStatuses =>', this.encodeData(obj));
 
-    return this.http.post(environment.queryURI + '/QuestionnaireResponse/_search', query, 
-    { headers: this.getHeaders().append('Content-Type', 'application/x-www-form-urlencoded') }).toPromise();
+    return this.http.post(environment.queryURI + '/QuestionnaireResponse/_search', query,
+      { headers: this.getHeaders().append('Content-Type', 'application/x-www-form-urlencoded') }).toPromise();
   }
 
   getStatusForQRs(bundle) {
@@ -59,14 +59,14 @@ export class AdminHomeScreenService {
     const loggedInUserId = sessionStorage.getItem('userFHIRID');
 
     return this.http.get(environment.queryURI + '/Task?' +
-    '&owner=Practitioner/' + loggedInUserId + '&status=ready&_include=*', { headers: this.getHeaders() });
+      '&owner=Practitioner/' + loggedInUserId + '&status=ready&_include=*', { headers: this.getHeaders() });
   }
 
   getAllQRTaskIncludeRefs() {
     const loggedInUserId = sessionStorage.getItem('userFHIRID');
 
     return this.http.get(environment.queryURI + '/EpisodeOfCare?_has:QuestionnaireResponse:context:identifier=SERVREQ' +
-    '&care-manager=Practitioner/' + loggedInUserId + '&_revinclude=Task:context&_include=*', { headers: this.getHeaders() });
+      '&care-manager=Practitioner/' + loggedInUserId + '&_revinclude=Task:context&_include=*', { headers: this.getHeaders() });
   }
 
   getDepartmentNames() {
@@ -82,7 +82,7 @@ export class AdminHomeScreenService {
     if (queryObj) {
       obj = { type: 'DEPTBRANCH', ...queryObj };
     } else {
-      obj = { type: 'DEPTBRANCH' }
+      obj = { type: 'DEPTBRANCH' };
     }
 
     // console.log('Query Obj for getJobLocations =>', this.encodeData(obj));
@@ -168,8 +168,8 @@ export class AdminHomeScreenService {
   }
 
   encodeData(obj) {
-    return Object.keys(obj).map(function(key) {
-      if (key.indexOf('dup-') === -1){
+    return Object.keys(obj).map(function (key) {
+      if (key.indexOf('dup-') === -1) {
         return [key, obj[key]].map(encodeURIComponent).join('=');
       } else {
         let tempKey = key;
@@ -180,7 +180,7 @@ export class AdminHomeScreenService {
   }
 
   extractStatusFromStatusQR(statusFHIRObj) {
-    if (statusFHIRObj && statusFHIRObj.resource && statusFHIRObj.resource.item 
+    if (statusFHIRObj && statusFHIRObj.resource && statusFHIRObj.resource.item
       && Array.isArray(statusFHIRObj.resource.item) && statusFHIRObj.resource.item.length > 0) {
       const obj = statusFHIRObj.resource;
       const status = this.sortMilestone(obj);
@@ -199,7 +199,7 @@ export class AdminHomeScreenService {
         }
       });
       console.log(arr);
-      arr.sort(function(a, b) {
+      arr.sort(function (a, b) {
         if (a['answer'] && b['answer']) {
           if (a['answer'][0]['valueDateTime'] && b['answer'][0]['valueDateTime']) {
             return (
@@ -223,8 +223,8 @@ export class AdminHomeScreenService {
 
     if (statusBundle && statusBundle['entry'] && Array.isArray(statusBundle['entry']) && statusBundle['entry'].length > 0) {
       qrs['entry'] = qrs['entry'].map(qr => {
-        const matchedStatusItem = statusBundle['entry'].find(statusItem => 
-          statusItem.resource && statusItem.resource.context && qr.resource && qr.resource.context 
+        const matchedStatusItem = statusBundle['entry'].find(statusItem =>
+          statusItem.resource && statusItem.resource.context && qr.resource && qr.resource.context
           && qr.resource.context.reference && statusItem.resource.context.reference == qr.resource.context.reference);
 
         const statusStr = this.extractStatusFromStatusQR(matchedStatusItem);  // can be status text or null
