@@ -453,24 +453,12 @@ export class ServReqMainComponent implements OnInit {
   getAssessmentType(serviceRequestObj) {
     let result: any;
     result = '-';
-    if (
-      serviceRequestObj.questionnaire &&
-      serviceRequestObj.questionnaire.reference === 'Questionnaire/TEST4'
-    ) {
-      if (serviceRequestObj.item) {
-        result = this.getAnswer('ASSESTYPE', serviceRequestObj);
-      } else {
-        return result;
+    serviceRequestObj.item.forEach(item => {
+      if (item.linkId.includes('ASSESTYPE')) {
+        result = this.getAnswer(item.linkId, serviceRequestObj);
       }
+    });
 
-    } else if (
-      serviceRequestObj.questionnaire &&
-      serviceRequestObj.questionnaire.reference === 'Questionnaire/1953'
-    ) {
-      return result;
-    } else {
-      return result;
-    }
     return result;
   }
 
