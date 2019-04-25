@@ -82,6 +82,7 @@ import { DocumentManagementComponent } from './components/document-management/do
 import { MilestoneTrackingComponent } from './components/milestone-tracking/milestone-tracking.component';
 import { ValidateRequestComponent } from './components/staff/validate-request/validate-request.component';
 import { ServiceRequestSummaryService } from './service/service-request-summary.service';
+import { RegionalOfficesResolverService } from './service/regional-offices-resolver.service';
 
 const routes: Routes = [
   { path: 'employeeform', component: EmployeeComponent, canActivate: [AuthGuardService] },
@@ -94,7 +95,8 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
     resolve: {
       fields: NewServReqService,
-      departments: DepartmentListResolverService
+      departments: DepartmentListResolverService,
+      offices: RegionalOfficesResolverService
     },
   },
   {
@@ -113,7 +115,8 @@ const routes: Routes = [
     canActivate: [AuthGuardService],
     resolve: {
       fields: NewServReqService,
-      departments: DepartmentListResolverService
+      departments: DepartmentListResolverService,
+      offices: RegionalOfficesResolverService
     }
   },
   { path: 'district-office', component: DistrictOfficeComponent, canActivate: [AuthGuardService] },

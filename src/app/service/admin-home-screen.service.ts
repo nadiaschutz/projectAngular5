@@ -114,9 +114,12 @@ export class AdminHomeScreenService {
       { headers: this.getHeaders() }
     );
   }
+
+
+
   getDistrictOffices(query) {
     return this.http.get(
-      environment.queryURI + '/Location??identifier=psohp-location&organization.name=' + query,
+      environment.queryURI + '/Location?identifier=psohp-location&organization=' + query,
       { headers: this.getHeaders() }
     );
   }
