@@ -4,6 +4,7 @@ import { Field } from './field.interface';
 import { FieldConfig } from './field-config.interface';
 import * as FHIR from '../../interface/FHIR';
 import { QuestionnaireService } from '../../service/questionnaire.service';
+import { element } from '@angular/core/src/render3/instructions';
 
 interface HTMLAnchorElement {
   download: string;
@@ -71,7 +72,6 @@ interface HTMLAnchorElement {
                     </div>
                     </section>
                     </div>
-
   `
 })
 export class DocComponent implements Field {
@@ -83,6 +83,8 @@ export class DocComponent implements Field {
 
 
   documents = [];
+  documentId = null;
+  documentList = [];
   itemReference;
   enableFlag = false;
   allowPreviewFlag = false;
@@ -175,7 +177,6 @@ export class DocComponent implements Field {
       that.questionnaireService.postDataFile(JSON.stringify(documentReference)).subscribe(
         data => {
           that.retrieveDocuments(data),
-            // this where the reference is createed. change the link id for each....WORK HERE
             that.createItemReferenceObject(data);
         }
       );
@@ -192,13 +193,14 @@ export class DocComponent implements Field {
   createItemReferenceObject(data) {
     const obj: string = data.id;
 
-    this.itemReference = {
-      linkId: '30',
-      // text: obj.content[0].attachment.title,
-      text: 'Document',
-      answer: 'DocumentReference/' + obj
-    };
-
+    this.itemReference = this.documents.map((document, index) => {
+      return {
+        linkId: 'DOCUMENT' + (index + 1),
+        text: 'Document',
+        answer: 'DocumentReference/' + document['id']
+      };
+    }
+    );
     this.questionnaireService.shareDocument(this.itemReference);
   }
 
@@ -251,7 +253,7 @@ export class DocComponent implements Field {
   }
   // check if it does anything
   previewFile(incomingFile) {
-    console.log(incomingFile)
+    console.log(incomingFile);
     const byteCharacters = atob(incomingFile['content'][0]['attachment']['data']);
     const byteNumbers = new Array(byteCharacters.length);
     for (let index = 0; index < byteCharacters.length; index++) {
