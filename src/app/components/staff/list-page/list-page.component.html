@@ -1,128 +1,124 @@
-
-<div class="main-header">
+<div class="container">
+  <div class="main-header">
     <h5>Work List</h5>
   </div>
 
-  <div class="container">
 
-    <div id="tabs" #tabs>
-      <ul class="nav nav-pills">
-        <li class="nav-item">
-          <a class="nav-link active" [ngClass]="{ 'active':activeTab==='serviceRequest'}" (click)="serviceRequest('serviceRequest')"
-              data-toggle="tab">Service Requests</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab"
-              (click)="task('task')">Tasks</a>
-        </li>
-      </ul>
-    </div>
-    
+
+  <div id="tabs" #tabs>
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link active" [ngClass]="{ 'active':activeTab==='serviceRequest'}"
+          (click)="serviceRequest('serviceRequest')" data-toggle="tab">Service Requests</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [ngClass]="{ 'active':activeTab==='task'}" data-toggle="tab"
+          (click)="task('task')">Tasks</a>
+      </li>
+    </ul>
+  </div>
+
   <section *ngIf="activeTab === 'serviceRequest'" class="section">
-  <h6 class="sub-header">Service Requests</h6>
-  <div class="row" *ngIf="admins.length > 0" style="margin-left: 8px;">
-        <label style="margin-top: 10px; margin-right: 10px;">Assign an Admin</label>
-        <select class="form-control border-bottom" name="selectedEpisodeAdmin"
-        [(ngModel)]="selectedEpisodeAdmin">
-          <option [ngValue]="null">Select an admin</option>
-          <option [value]="'none'">None</option>
-          <option *ngFor="let admin of admins" [value]="admin.id">{{admin.value}}</option>
-        </select>
-      
-        <button (click)="assignEpisodeOfCare()" class="btn special-button">Assign</button>
-  </div>
+    <h6 class="sub-header">Service Requests</h6>
+    <div class="row" *ngIf="admins.length > 0" style="margin-left: 8px;">
+      <label style="margin-top: 10px; margin-right: 10px;">Assign an Admin</label>
+      <select class="form-control border-bottom" name="selectedEpisodeAdmin" [(ngModel)]="selectedEpisodeAdmin">
+        <option [ngValue]="null">Select an admin</option>
+        <option [value]="'none'">None</option>
+        <option *ngFor="let admin of admins" [value]="admin.id">{{admin.value}}</option>
+      </select>
 
-  <div class="table-container" style="margin-top: 25px">
-    <table class="officeList table  table-hover">
-      <thead class="header-table">
-        <th>
-            <input type="checkbox" (change)="selectAllEpisodes()" 
-            [(ngModel)]="selectAllEpisodesCheck">
-        </th>
-        <th>Service Request ID</th>
-        <th>Client Name</th>
-        <th>Assessment Type</th>
-        <th>Client Department</th>
-        <th>Assigned to</th>
-        <th>Status</th>
-        <th>Total Days in Queue</th>
-        <th>Go to Work Screen</th>
-        <!-- <th>Action</th> -->
-        <!-- <th>Work</th> -->
-      </thead>
-      <tbody class="body-table">
-        <tr *ngFor="let result of episodeResultList; let i = index">
-          <td>
-            <input type="checkbox" [(ngModel)]="selectedEpisodes[i]" value="i">
-          </td>
-          <td>{{result.questionnaireResponseId}}</td>
-          <td>{{result.clientName}}</td>
-          <td>{{result.serviceAssessmentType}}</td>
-          <td>{{result.clientDepartment}}</td>
-          <td>{{result.careManager}}</td>
-          <td>{{result.status}}</td>
-          <td>{{result.daysInQueue}}</td>
-          <td>
-            <button class="btn special-button" (click)="setEOCID(result.episodeOfCareId)"
-            [disabled]="result.careManager==='Unassigned'">Work Screen</button>
-          </td>
-          <!-- <td>
-            <button (click)="release(result.episodeOfCareId)" class="special-button">Release</button>
-          </td> -->
-          <!-- <td>
-            <button (click)="goToWorkScreen()" class="special-button">Work Screen</button>
-          </td> -->
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<section *ngIf="activeTab === 'task'" class="section">
-      <h6 class="sub-header">Task Lists</h6>
-      <div class="row" *ngIf="admins.length > 0" style="margin-left: 8px;">
-          <label style="margin-top: 10px; margin-right: 10px;">Assign an Admin</label>
-          <select class="form-control border-bottom" name="selectedTaskAdmin"
-          [(ngModel)]="selectedTaskAdmin">
-            <option [ngValue]="null">Select an admin</option>
-            <option *ngFor="let admin of admins" [value]="admin.id">{{admin.value}}</option>
-          </select>
-        
-          <button (click)="assignTaskToAdmin()" class="btn special-button">Assign</button>
+      <button (click)="assignEpisodeOfCare()" class="btn special-button">Assign</button>
     </div>
 
     <div class="table-container" style="margin-top: 25px">
-        <table class="officeList table  table-hover">
-            <thead class="header-table">
-              <th>
-                  <input type="checkbox" (change)="selectAllTasks()" 
-                    [(ngModel)]="selectAllTasksCheck">
-              </th>
-              <th>ID</th>
-              <th>Service Request ID</th>
-              <th>Description</th>
-              <th>Priority</th>
-              <th>Created On</th>
-              <th>Assigned To</th>
-              <th>Status</th>
-              <th>Total Days in Queue</th>
-            </thead>
-            <tbody class="body-table">
-              <tr *ngFor="let task of taskResultList; let i = index;">
-                <td>
-                  <input type="checkbox" [(ngModel)]="selectedTasks[i]" value="i">
-                </td>
-                <td>{{task.id}}</td>
-                <td>{{task.serviceRequestId}}</td>
-                <td>{{task.description}}</td>
-                <td>{{task.priority}}</td>
-                <td>{{task.from}}</td>
-                <td>{{task.owner}}</td>
-                <td>{{task.status}}</td>
-                <td>{{task.dateCreated}}</td>
-              </tr>
-            </tbody>
-        </table>
+      <table class="officeList table  table-hover">
+        <thead class="header-table">
+          <th>
+            <input type="checkbox" (change)="selectAllEpisodes()" [(ngModel)]="selectAllEpisodesCheck">
+          </th>
+          <th>Service Request ID</th>
+          <th>Client Name</th>
+          <th>Assessment Type</th>
+          <th>Client Department</th>
+          <th>Assigned to</th>
+          <th>Status</th>
+          <th>Total Days in Queue</th>
+          <th>Go to Work Screen</th>
+          <!-- <th>Action</th> -->
+          <!-- <th>Work</th> -->
+        </thead>
+        <tbody class="body-table">
+          <tr *ngFor="let result of episodeResultList; let i = index">
+            <td>
+              <input type="checkbox" [(ngModel)]="selectedEpisodes[i]" value="i">
+            </td>
+            <td>{{result.questionnaireResponseId}}</td>
+            <td>{{result.clientName}}</td>
+            <td>{{result.serviceAssessmentType}}</td>
+            <td>{{result.clientDepartment}}</td>
+            <td>{{result.careManager}}</td>
+            <td>{{result.status}}</td>
+            <td>{{result.daysInQueue}}</td>
+            <td>
+              <button class="btn special-button" (click)="setEOCID(result.episodeOfCareId)"
+                [disabled]="result.careManager==='Unassigned'">Work Screen</button>
+            </td>
+            <!-- <td>
+            <button (click)="release(result.episodeOfCareId)" class="special-button">Release</button>
+          </td> -->
+            <!-- <td>
+            <button (click)="goToWorkScreen()" class="special-button">Work Screen</button>
+          </td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section *ngIf="activeTab === 'task'" class="section">
+    <h6 class="sub-header">Task Lists</h6>
+    <div class="row" *ngIf="admins.length > 0" style="margin-left: 8px;">
+      <label style="margin-top: 10px; margin-right: 10px;">Assign an Admin</label>
+      <select class="form-control border-bottom" name="selectedTaskAdmin" [(ngModel)]="selectedTaskAdmin">
+        <option [ngValue]="null">Select an admin</option>
+        <option *ngFor="let admin of admins" [value]="admin.id">{{admin.value}}</option>
+      </select>
+
+      <button (click)="assignTaskToAdmin()" class="btn special-button">Assign</button>
+    </div>
+
+    <div class="table-container" style="margin-top: 25px">
+      <table class="officeList table  table-hover">
+        <thead class="header-table">
+          <th>
+            <input type="checkbox" (change)="selectAllTasks()" [(ngModel)]="selectAllTasksCheck">
+          </th>
+          <th>ID</th>
+          <th>Service Request ID</th>
+          <th>Description</th>
+          <th>Priority</th>
+          <th>Created On</th>
+          <th>Assigned To</th>
+          <th>Status</th>
+          <th>Total Days in Queue</th>
+        </thead>
+        <tbody class="body-table">
+          <tr *ngFor="let task of taskResultList; let i = index;">
+            <td>
+              <input type="checkbox" [(ngModel)]="selectedTasks[i]" value="i">
+            </td>
+            <td>{{task.id}}</td>
+            <td>{{task.serviceRequestId}}</td>
+            <td>{{task.description}}</td>
+            <td>{{task.priority}}</td>
+            <td>{{task.from}}</td>
+            <td>{{task.owner}}</td>
+            <td>{{task.status}}</td>
+            <td>{{task.dateCreated}}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
   </section>

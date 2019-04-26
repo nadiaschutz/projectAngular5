@@ -115,6 +115,17 @@ export class AdminHomeScreenService {
     );
   }
 
+
+
+  getDistrictOffices(query) {
+    return this.http.get(
+      environment.queryURI + '/Location?identifier=psohp-location&organization=' + query,
+      { headers: this.getHeaders() }
+    );
+  }
+
+
+
   getJobLocationsClientDept(query) {
     return this.http.get(
       environment.queryURI + '/Location?organization=' + query,

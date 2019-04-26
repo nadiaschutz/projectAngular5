@@ -17,6 +17,7 @@ import { PatientService } from 'src/app/service/patient.service';
 import { formatDate } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { StaffService } from '../../service/staff.service';
+import { AdminHomeScreenService } from 'src/app/service/admin-home-screen.service';
 
 import * as FHIR from '../../interface/FHIR';
 import { link } from 'fs';
@@ -123,6 +124,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   config: FieldConfig[] = [];
 
   departmentList = [];
+  regionalOfficeList = [];
+  distrOfficeList = [];
   currentUserDepartment;
 
   formId;
@@ -202,22 +205,16 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     private patientService: PatientService,
     private oauthService: OAuthService,
     private datePipe: DatePipe,
-    private staffService: StaffService
+    private staffService: StaffService,
+    private adminHomeScreenService: AdminHomeScreenService
   ) {
 
   }
 
   ngOnInit() {
-    // this.userService.fetchAllRegionalOffices.
-
-
-    // data => this.regionalOffices = data.fields,
-    // error => this.handleError(error)
-
-    // this.questionnaireService.newDocumentSubject.subscribe(
-    //   data => this.getDocument(data),
-    //   error => this.handleError(error)
-    // );
+    this.activatedRoute.data.subscribe(data => this.getRegionalOfficesData(data.offices));
+    this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
+    this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
 
     // sets the formId based on url (serv request || contact us pages )
     if (this.router.url.indexOf('/newservicerequest') > -1) {
@@ -244,8 +241,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     this.clientGivenName = sessionStorage.getItem('emplGiven');
     this.clientFamilyName = sessionStorage.getItem('emplFam');
-    this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
-    this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
+
     this.userName = sessionStorage.getItem('userName');
     this.currentUserDepartment = sessionStorage.getItem('userDept');
     this.createdsuccessfully = false;
@@ -677,6 +673,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
 
+
   // turns questionarie data into arr of form fields (shows those fields on the form)
   /**
   if you get an error on dynamic-form.components.ts,
@@ -688,12 +685,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     console.log('QREQ', this.qrequest);
 
     this.configuration = this.qrequest.map(el => {
-      // text
-      // if (el.type === 'text') {
       if (el.code[1].code === 'PHONE') {
         const formField = this.textInput(el);
         const enableWhen = this.populateEnableWhenObj(el);
-
         formField['placeholder'] = 'type your phone';
         formField['validation'] = el.enableWhen ? [
           Validators.pattern(
@@ -705,18 +699,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
             )
           ];
-        // formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-        // formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
         formField['enableWhen'] = el.enableWhen ? enableWhen : false;
         formField['required'] = el.required ? true : false;
         formField['value'] = null;
         formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
         return formField;
-
-
       } else if (el.code[1].code === 'DATE') {
-
-
         const enableWhen = this.populateEnableWhenObj(el);
         return {
           type: 'date',
@@ -732,9 +720,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           value: null
         };
-
       } else if (el.code[1].code === 'TEXT') {
-
         if (el.code[0].code === 'AUTHOR') {
           const formField = this.textInput(el);
           formField['readonly'] = true;
@@ -748,7 +734,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         } else if (el.code[0].code === 'USERDEPT') {
           if (this.userRole === 'clientdept') {
             const options = this.departmentList;
-
             const enableWhen = this.populateEnableWhenObj(el);
 
             return {
@@ -761,9 +746,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               flag: el.enableWhen ? false : true,
               placeholder: 'Select an option',
               required: el.required ? true : false,
-              // validation: el.enableWhen ? [Validators.required] : null,
               validation: el.enableWhen ? undefined : [Validators.required],
-              // validation: [Validators.required],
               value: null,
               elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
               disable: true
@@ -783,67 +766,51 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           formField['required'] = el.required ? true : false;
           formField['enableWhen'] = el.enableWhen ? enableWhen : false;
           formField['value'] = null;
-
           formField['flag'] = el.enableWhen ? false : true;
           formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
-          // flag: el.enableWhen ? false : true,
           return formField;
         }
 
       } else if (el.code[1].code === 'EMAIL') {
-
-
         const enableWhen = this.populateEnableWhenObj(el);
-
         const formField = this.textInput(el);
         formField['placeholder'] = 'type your email';
         formField['validation'] = el.enableWhen ? [Validators.email] : [Validators.required, Validators.email];
         formField['required'] = el.required ? true : false;
         formField['enableWhen'] = el.enableWhen ? enableWhen : false;
         formField['value'] = null;
-
         formField['flag'] = el.enableWhen ? false : true;
         formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
-        // flag: el.enableWhen ? false : true,
         return formField;
 
-
       } else if (el.code[1].code === 'COMMENT') {
-
-
         const enableWhen = this.populateEnableWhenObj(el);
-
         const formField = this.commentInput(el);
         formField['placeholder'] = 'type your text';
         formField['validation'] = undefined;
         formField['enableWhen'] = el.enableWhen ? enableWhen : false;
-        // formField['enableWhenQ'] = el.enableWhen ? el.enableWhen[0].question : false;
-        // formField['enableWhenA'] = el.enableWhen ? el.enableWhen[0].answerCoding.display : false;
         formField['value'] = null;
         formField['required'] = el.required ? true : false;
         formField['flag'] = el.enableWhen ? false : true;
-
         formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
-
-        // flag: el.enableWhen ? false : true,
         return formField;
 
       } else if (el.code[1].code === 'SELECT') {
-
-
         const options = [];
         // sets this.options for Code
-        el.option.forEach(el1 => {
-          this.options.push(
-            {
-              display: el1.valueCoding.display,
-              code: el1.valueCoding.code
-            }
-          );
-        });
-        el.option.forEach(el1 => {
-          options.push(el1.valueCoding.display);
-        });
+        if (el.option) {
+          el.option.forEach(el1 => {
+            this.options.push(
+              {
+                display: el1.valueCoding.display,
+                code: el1.valueCoding.code
+              }
+            );
+            options.push(el1.valueCoding.display);
+          });
+        }
+
+
         const enableWhen = this.populateEnableWhenObj(el);
         // only for preplacemt for a client from a different department
         if (this.prePlacement) {
@@ -871,7 +838,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               placeholder: 'Select an option',
               validation: undefined,
               required: el.required ? true : false,
-              // validation: [Validators.required],
               value: null,
               elementClass: 'enable-when-show',
             };
@@ -891,26 +857,51 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             placeholder: 'Select an option',
             validation: undefined,
             required: el.required ? true : false,
-            // validation: [Validators.required],
             value: null,
             elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           };
-          // } else if (el.code[0].code === 'REGOFFICE') {
-          //   return {
-          //     type: 'select',
-          //     typeElem: el.code[1].code,
-          //     label: el.text,
-          //     name: el.linkId,
-          //     enableWhen: el.enableWhen ? enableWhen : false,
-          //     options: options,
-          //     flag: el.enableWhen ? false : true,
-          //     placeholder: 'Select an option',
-          //     validation: undefined,
-          //     required: el.required ? true : false,
-          //     // validation: [Validators.required],
-          //     value: null,
-          //     elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-          //   };
+        } else if (el.code[0].code === 'REGOFFICE') {
+          if (this.regionalOfficeList) {
+            this.regionalOfficeList.forEach(el2 => {
+              this.options.push(
+                {
+                  display: el2.name,
+                  code: el2.id
+                }
+              );
+              options.push(el2.name);
+            });
+          }
+          return {
+            type: 'select',
+            typeElem: el.code[1].code,
+            label: el.text,
+            name: el.linkId,
+            enableWhen: el.enableWhen ? enableWhen : false,
+            options: options,
+            flag: el.enableWhen ? false : true,
+            placeholder: 'Select an option',
+            validation: undefined,
+            required: el.required ? true : false,
+            value: null,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          };
+
+        } else if (el.code[0].code === 'DISTROFFICE') {
+          return {
+            type: 'select',
+            typeElem: el.code[1].code,
+            label: el.text,
+            name: el.linkId,
+            enableWhen: el.enableWhen ? enableWhen : false,
+            options: this.distrOfficeList,
+            flag: el.enableWhen ? false : true,
+            placeholder: 'Select an option',
+            validation: undefined,
+            required: el.required ? true : false,
+            value: null,
+            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+          };
 
         } else {
           return {
@@ -924,7 +915,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             placeholder: 'Select an option',
             validation: el.enableWhen ? undefined : [Validators.required],
             required: el.required ? true : false,
-            // validation: [Validators.required],
             value: null,
             elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
           };
@@ -932,7 +922,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       } else if (el.code[1].code === 'BOOL') {
         const enableWhen = this.populateEnableWhenObj(el);
         if (el.code[0].code === 'DEPENDINV') {
-          // console.log(this.dependentsList);
           if (this.dependentsList.length < 1) {
             return {
               type: 'checkbox',
@@ -990,17 +979,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             name: el.linkId,
             typeElem: el.code[1].code,
             enableWhen: el.enableWhen ? enableWhen : false,
-            // enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-            // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
             elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-
-            // placeholder: 'Select an option',
-            // validation: el.enableWhen ? null : [Validators.required],
             value: el.enableWhen ? null : false,
           };
         }
-
-
       }
     });
 
@@ -1018,8 +1000,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             label: dependent.family + ' ' + dependent.given,
             enableWhen: enableWhen,
             elementClass: 'enable-when-hide',
-            // placeholder: 'Select an option',
-            // validation: el.enableWhen ? null : [Validators.required],
             value: false,
           }
         );
@@ -1100,9 +1080,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       inputType: 'text',
       name: data.linkId,
       readonly: false,
-      typeElem: data.code[1].code,
-      // enableWhenQ: data.enableWhen ? data.enableWhen[0].question : false,
-      // enableWhenA: data.enableWhen ? data.enableWhen[0].answerCoding.code : false,
+      typeElem: data.code[1].code
     });
   }
 
@@ -1159,8 +1137,35 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   // checks FHIR data for items with enableWhen and changes show/hide class on the form based on enableWhen options
   public checkEnableWhen(value, index) {
-    // console.log(this.form.value.ASSESTYPE);
+    if (index === 'REGOFFICE') {
+      if (value !== '') {
+        // get district office dropdown items
+        this.distrOfficeList = [];
+        if (this.regionalOfficeList) {
+          this.regionalOfficeList.forEach(el => {
+            if (el.name === value) {
+              this.adminHomeScreenService.getDistrictOffices(el.id)
+                .subscribe(locations => {
+                  if (locations['entry']) {
+                    locations['entry'].forEach(distrOffice => {
+                      this.distrOfficeList.push(distrOffice['resource']['name']);
+                    });
+                  }
+                },
+                  (err) => {
+                    console.log('District locations list error => ', err);
+                  });
+            }
+          });
+        }
+      }
+
+    }
+
     this.config.forEach(elemOfConfig => {
+      if (elemOfConfig.name === 'DISTROFFICE') {
+        elemOfConfig.options = this.distrOfficeList;
+      }
       // checks for form type and sets disabled particular fields
       if (this.servReqType === 'SERVREQ') {
         if (this.form.value.ASSESTYPE === 'Pre-Placement' && this.userRole === 'clientdept') {
@@ -1171,6 +1176,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           this.form.setValue('USERDEPT', this.currentUserDepartment);
         }
       }
+
+
 
       if (elemOfConfig.enableWhen) {
         for (const formElem of elemOfConfig.enableWhen) {
@@ -1254,8 +1261,21 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         }
       }
     });
-
   }
+
+
+  getRegionalOfficesData(data) {
+    console.log(data);
+    if (data['entry']) {
+      data['entry'].forEach(branch => {
+        this.regionalOfficeList.push({
+          name: branch.resource.name,
+          id: branch.resource.id
+        });
+      });
+    }
+  }
+
 
 
   handleError(error) {
