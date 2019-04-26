@@ -16,6 +16,8 @@ import * as uuid from 'uuid';
 import { formatDate } from '@angular/common';
 import * as FHIR from '../../interface/FHIR';
 
+
+
 export interface AccountType {
   value: string;
   viewValue: string;
@@ -58,7 +60,8 @@ export class EmployeeComponent implements OnInit {
     'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
     'Northwest Territories', 'Nova Scotia', 'Nunavut', 'Ontario',
     'Prince Edward Island', 'Quebec', 'Saskatchewan', 'Yukon'];
-
+  countries;
+  addressCountry;
 
   minDate: Date;
   maxDate: Date;
@@ -94,6 +97,10 @@ export class EmployeeComponent implements OnInit {
   ];
 
   ngOnInit() {
+    // sets countries list
+    const { getCode, getNames } = require('country-list');
+    this.countries = getNames();
+
 
     this.showSuccessMessage = false;
     this.showFailureMessage = false;
@@ -133,7 +140,7 @@ export class EmployeeComponent implements OnInit {
       Validators.minLength(6),
       Validators.maxLength(6)
       ]),
-      addressCountry: new FormControl('', [Validators.required]),
+      addressCountry: new FormControl('Canada', [Validators.required]),
       language: new FormControl('', Validators.required),
       id: new FormControl('', [
         Validators.minLength(9),

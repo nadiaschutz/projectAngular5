@@ -155,7 +155,13 @@
           </div>
           <div class="col-6">
             <label for="addressCountry">Country (Required)</label>
-            <input type="text" class="form-control" formControlName="addressCountry" id="addressCountry" required>
+            <select class="form-control" formControlName="addressCountry" id="addressCountry" required>
+              <!-- <option value="">(Select)</option> -->
+              <option *ngFor="let country of countries" [value]="country">
+                {{country}}
+              </option>
+            </select>
+
             <div class="invalid-feedback">
               Cannot be blank
             </div>
