@@ -165,7 +165,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   };
 
   // itemToSend: FHIR.QuestionnaireResponse;
-  itemReference;
+  itemReference = [];
 
   itemsToSend = [];
 
@@ -539,7 +539,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     // pushing document into items arr
     if (this.itemReference) {
-      this.items.push(this.itemReference);
+      this.itemReference.forEach(ref => {
+        this.items.push(ref);
+      });
     }
 
 
@@ -658,15 +660,14 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             ]
           };
         }
-
       }
-
-
     });
   }
 
   getDocument(data) {
-    this.itemReference = data;
+    data.forEach(document => {
+      this.itemReference.push(document);
+    });
   }
 
 

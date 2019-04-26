@@ -23,7 +23,14 @@ export class QuestionnaireService {
   public newDocumentSubject = new BehaviorSubject<Object>(null);
   newDocumentSubject$ = this.newDocumentSubject.asObservable();
 
-  constructor(private http: HttpClient, private oauthService: OAuthService) {}
+
+  public newDocumentIdSubject = new BehaviorSubject<Object>(null);
+  newDocumentIdSubject$ = this.newDocumentIdSubject.asObservable();
+
+  public newDocumentListSubject = new BehaviorSubject<Object>(null);
+  newDocumentListSubject$ = this.newDocumentListSubject.asObservable();
+
+  constructor(private http: HttpClient, private oauthService: OAuthService) { }
 
   getForm(query: string) {
     // tslint:disable-next-line:max-line-length
@@ -42,7 +49,7 @@ export class QuestionnaireService {
   getResponse(query: string) {
     // tslint:disable-next-line:max-line-length
     return this.http.get(
-      environment.queryURI + '/QuestionnaireResponse/' + query ,
+      environment.queryURI + '/QuestionnaireResponse/' + query,
       { headers: this.getHeaders() }
     );
   }
@@ -113,5 +120,15 @@ export class QuestionnaireService {
     this.newDocumentSubject.next(data);
     console.log('newDocument from service');
     console.log(data);
+  }
+
+  shareDocumentList(data) {
+    this.newDocumentListSubject.next(data);
+    console.log('newDocumentList from service', data);
+  }
+
+  shareDocumentId(data) {
+    this.newDocumentIdSubject.next(data);
+    console.log('newDocumentId from service', data);
   }
 }
