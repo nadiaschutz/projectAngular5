@@ -78,6 +78,12 @@ export class DynamicFormComponent implements OnInit, OnChanges {
     return group;
   }
 
+  /**
+if you get an error on dynamic-form.components.ts,
+there are 95% chances that the issue is not in dynamic-form.components.ts
+but in data representation, or data absence ===> look into getFormData(data){}
+**/
+
   createControl(fields: FieldConfig) {
     const { disabled, validation, value } = fields;
     return this.fb.control({ disabled, value }, validation);

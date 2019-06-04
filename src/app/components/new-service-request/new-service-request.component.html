@@ -1,11 +1,7 @@
 <div class="container">
-
-
   <div class="main-header" *ngIf="servReqType === 'SERVREQ'">
     <h6>service request > new service request > {{clientGivenName + ' ' +
       clientFamilyName}}</h6>
-    <!-- <h6>service request > {{clientGivenName + ' ' + clientFamilyName}} > review service
-      request before submission</h6> -->
   </div>
 
   <div class="main-header" *ngIf="servReqType === 'ADCOIN'">
@@ -13,203 +9,19 @@
     <h6>service request > new advice consulation</h6>
   </div>
 
-
-  <!-- <div class="main-header">
-    <h5>Service Request Form</h5>
-    <h6 *ngIf="!disableInputsForReview">service request > new service request > {{clientGivenName + ' ' +
-      clientFamilyName}}</h6>
-    <h6 *ngIf="disableInputsForReview">service request > {{clientGivenName + ' ' + clientFamilyName}} > review service
-      request before submission</h6>
-  </div> -->
-
-
-
-
-
-  <!-- <div *ngIf="createdsuccessfully">
-    <div class="row">
-      <div class="alert alert-success">
-        <strong>Service Request for {{clientGivenName + ' ' + clientFamilyName}} created Successfully</strong>
-      </div>
-    </div>
-    <div class="row">
-      <button class="btn regular-button" type="button" (click)="backToDashboard()">Back to List of Clients</button>
-    </div>
-  </div> -->
-
-
-  <!-- try [for]="value.text"...
-  and value.text has to be the id of the input element or what element you have there -->
-  <!-- <form #serReqForm="ngForm"> -->
-  <!-- <form #serReqForm="ngForm" *ngIf="!createdsuccessfully"> -->
-
-
   <section class="form-section">
-
-
-    <!-- <div> -->
+    <!-- dynamic forms starts-->
     <div *ngIf='!formCreated'>
       <dynamic-form [config]="config" #form="dynamicForm" (submit)="submit($event)">
       </dynamic-form>
       <!-- {{ form.valid }}
       {{ form.value | json }} -->
     </div>
+    <!-- dynamic forms ends-->
+
     <div *ngIf='formCreated'>
       <p>Your Service Request was created Successfully</p>
       <button class="btn regular-button" type="button" (click)="onOk()">OK</button>
     </div>
-    <!-- <div *ngFor="let question of questionsList; let i =index" class="col-12-custom">
-        <div *ngIf="question.length > 1">
-          <div *ngFor="let eachItem of question ; let x = index">
-            <div *ngIf="eachItem['type']==='choice'">
-              <label>{{eachItem.text}}</label>
-              <select class="form-control border-bottom" name='{{eachItem.text}}' (change)='checkingEnableWhen($event.target.value, i)'
-                [(ngModel)]="eachItem.answer" disabled="{{disableInputsForReview}}">
-                <option [ngValue]="null"></option>
-                <option *ngFor="let object of eachItem['option']" [value]='object.valueCoding.code'>
-
-                  {{object.valueCoding.code}}
-                </option>
-              </select>
-            </div>
-
-            <div *ngIf="eachItem['type']==='text' && eachItem['enabled']">
-              <label>{{eachItem.text}}</label>
-              <textarea type="text" [(ngModel)]="eachItem.answer" name='{{eachItem.text}}' class="form-control"
-                placeholder="type your text" rows="1" required disabled="{{disableInputsForReview}}"></textarea>
-            </div>
-
-          </div>
-        </div>
-        <div *ngIf="question.length === 1">
-
-          <div *ngIf="question[0]['type']==='choice'">
-            <label>{{question[0].text}}</label>
-            <select class="form-control border-bottom" name='{{question[0].text}}' (change)='checkingEnableWhen($event.target.value, i)'
-              [(ngModel)]="question[0].answer" disabled="{{disableInputsForReview}}">
-              <option [ngValue]="null"></option>
-              <option *ngFor="let object of question[0]['option']" [value]='object.valueCoding.code'>
-
-                {{object.valueCoding.code}}
-              </option>
-            </select>
-          </div>
-
-          <div class="form-check" *ngIf="question[0].type==='boolean'">
-            <input class="form-check-input" type="checkbox" name="{{question[0].text}}" value="" id="defaultCheck1"
-              [(ngModel)]="question[0].answer" disabled="{{disableInputsForReview}}">
-            <label class="form-check-label" for="defaultCheck1">
-              {{question[0].text}}
-            </label>
-          </div>
-
-          <div class="form-group" *ngIf="question[0].type==='text' && question[0].text !== 'Created By'">
-
-            <label>{{question[0].text}}</label>
-            <textarea type="text" [(ngModel)]="question[0].answer" name='{{question[0].text}}' class="form-control"
-              placeholder="type your text" rows="1" required disabled="{{disableInputsForReview}}"></textarea>
-          </div>
-
-          <div class="form-group" *ngIf="question[0].type==='text' && question[0].text === 'Created By'">
-
-            <label>{{question[0].text}}</label>
-            <textarea type="text" [(ngModel)]="question[0].answer" name='{{question[0].text}}' class="form-control"
-              placeholder="type your text" rows="1" required disabled="{{disableInputsForReview}}"></textarea>
-          </div>
-
-
-          <div class="form-group" *ngIf="question[0].type==='open-choice'">
-
-            <label>{{question[0].text}}</label>
-            <textarea type="text" [(ngModel)]="question[0].answer" name='{{question[0].text}}' class="form-control"
-              placeholder="type your text" rows="1" required disabled="{{disableInputsForReview}}"></textarea>
-          </div>
-
-        </div>
-      </div> -->
 
   </section>
-
-  <!-- {{questionsList}}
-
-    <section class="form-section">
-      <div class="table-list">
-        <div class="col-12-custom" *ngIf="!disableInputsForReview">
-          <div class='header'>
-            <h6>documents</h6>
-          </div>
-          <div class="button-section">
-            <span class="btn regular-button btn-file" (change)='addDocument($event)'>
-              Add Documents <input type="file">
-            </span>
-          </div>
-          <div>
-            <table class="table">
-              <thead class="header-table">
-                <tr>
-                  <th scope="col">#ID</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Document Name</th>
-                  <th scope="col">Document Type</th>
-                  <th scope="col">File Type</th>
-                  <th scope="col">File Size</th>
-
-                </tr>
-              </thead>
-              <tbody class="body-table">
-                <tr *ngIf="documents">
-                  <td>{{documents.id}}</td>
-                  <td>{{documents.content[0].attachment.creation | date: 'dd/MM/yyyy'}}</td>
-                  <td>{{documents.content[0].attachment.title }}</td>
-                  <td>{{documents.type.text }}</td>
-                  <td>{{documents.content[0].attachment.contentType }}</td>
-                  <td>{{documents.content[0].attachment.size }}</td>
-                </tr>
-              </tbody> -->
-  <!-- <tbody *ngIf="documents !==null">
-                              <tr *ngFor="let q of servRequests">
-                                <td>{{q.resource.id}}</td>
-                                <td>{{q.resource.authored | date: 'dd/MM/yyyy'}}</td>
-                                <td>{{q}}</td>
-                                <td>{{q}}</td>
-                                <td>{{q}}</td>
-                                <td>{{q}}</td>
-                                <td>{{q.resource.subject.display}}</td>
-                                <td>{{q.resource.status}}</td>
-                              </tr>
-                            </tbody> -->
-  <!-- </table>
-          </div>
-        </div>
-      </div>
-    </section> -->
-
-
-  <!-- <div class="button-section-line line">
-      <button class="btn regular-button" type="button" (click)="onNext()" *ngIf="!disableInputsForReview">Next</button>
-      <button class="btn regular-button" type="button" (click)="onEdit()" *ngIf="disableInputsForReview">Edit</button>
-      <button class="btn regular-button" type="button" (click)="onSave()">Submit</button>
-      <button class="btn regular-button" type="button" (click)="onCancel()">Cancel</button>
-    </div> -->
-  <!-- </form> -->
-
-
-  <!--   
-    <br>
-    <br>
-    <br>
-    
- Angular/form: {{serReqForm.value | json }}
-    <br>
-    <br>
-    {{item | json }}
-    <br>
-    <br>
-    
-    {{items | json }}
-    
-    <br>
-    <br>
-    Model/qrequest: {{qrequest | json}} -->
-  <!-- <button class="button button-primary" (click)="deserializethis(object.valueCoding.code)">Click me!</button> -->
-</div>

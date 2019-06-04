@@ -940,7 +940,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               type: 'checkbox',
               label: el.text,
               name: el.linkId,
-              typeElem: el.code[1].code,
+               typeElem: el.code[1].code,
               enableWhen: el.enableWhen ? enableWhen : false,
               elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
               value: el.enableWhen ? null : false,
