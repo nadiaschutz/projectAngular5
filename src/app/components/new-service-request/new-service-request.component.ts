@@ -1,42 +1,22 @@
 import { Component, OnInit, ViewChild, SkipSelf, AfterViewInit } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { OAuthService } from 'angular-oauth2-oidc';
-import { UserService } from '../../service/user.service';
 import { TranslateService } from '@ngx-translate/core';
-import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-
 import { QuestionnaireService } from '../../service/questionnaire.service';
 import { Item } from '../models/item.model';
-import { Element } from '../models/element.model';
-import { forEach } from '@angular/router/src/utils/collection';
 import { ItemToSend } from '../models/itemToSend.model';
-import { PatientService } from 'src/app/service/patient.service';
 import { formatDate } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { StaffService } from '../../service/staff.service';
 import { AdminHomeScreenService } from 'src/app/service/admin-home-screen.service';
-
 import * as FHIR from '../../interface/FHIR';
-import { link } from 'fs';
-
 
 // for custom form components to work
 import { Validators } from '@angular/forms';
 import { Field } from '../dynamic-forms/field.interface';
 import { FieldConfig } from '../dynamic-forms/field-config.interface';
 import { DynamicFormComponent } from '../dynamic-forms/dynamic-form.component';
-import { CustomValidator } from '../dynamic-forms/custom-validator';
-import { FileDetector } from 'protractor';
-import { ValueAddress, ValueCoding } from 'src/app/interface/organization';
-import { element } from '@angular/core/src/render3/instructions';
-import { e } from '@angular/core/src/render3';
-import { runInThisContext } from 'vm';
-import { IfStmt } from '@angular/compiler';
-import { DraggableItemService } from 'ngx-bootstrap';
-import { filter } from 'rxjs/operators';
+
 
 class TextInput {
   static create(event: FieldConfig) {
@@ -46,19 +26,29 @@ class TextInput {
       inputType: event.inputType,
       name: event.name,
       typeElem: event.typeElem,
+      readonly: event.readonly,
+      required: event.required,
+      value: event.value,
+      flag: event.flag,
+      elementClass: event.elementClass,
+      enableWhen: event.enableWhen,
+      validation: event.validation
     };
   }
 }
 
-
-class CommentInput {
+class Checkbox {
   static create(event: FieldConfig) {
     return {
       type: event.type,
       label: event.label,
-      inputType: event.inputType,
       name: event.name,
       typeElem: event.typeElem,
+      required: event.required,
+      enableWhen: event.enableWhen,
+      elementClass: event.elementClass,
+      value: event.value,
+      disabled: event.disabled,
     };
   }
 }
@@ -67,10 +57,18 @@ class SelectField {
   static create(event: FieldConfig) {
     return {
       type: event.type,
-      label: event.label,
-      inputType: event.inputType,
-      name: event.name,
       typeElem: event.typeElem,
+      label: event.label,
+      name: event.name,
+      enableWhen: event.enableWhen,
+      options: event.options,
+      flag: event.flag,
+      placeholder: event.placeholder,
+      required: event.required,
+      validation: event.validation,
+      value: event.value,
+      elementClass: event.elementClass,
+      disabled: event.disabled,
     };
   }
 }
@@ -83,35 +81,7 @@ class SelectField {
   providers: [DatePipe]
 })
 export class NewServiceRequestComponent implements OnInit, AfterViewInit {
-  // @ViewChild('advReqForm') form: NgForm;
-  // serviceRequestResponce: ServiceRequestResponce = {
-  // };
 
-  // tslint:disable-next-line:max-line-length
-  // listOfCode = ['HACAT1', 'HACAT2', 'HACAT3', 'FTWORK', 'SUBUYB', 'SUREMG', 'SUSURB', 'THSOTT', 'THPPC1', 'THPPC3', 'THCRC1', 'THCRC3', 'THREC3', 'IMREVW'];
-  // listOfCodes = [
-  //   ['HA', 'PREP', 'HACAT1'],
-  //   ['HA', 'PREP', 'HACAT2'],
-  //   ['HA', 'PREP', 'HACAT3'],
-  //   ['HA', 'PERIOD', 'HACAT1'],
-  //   ['HA', 'PERIOD', 'HACAT2'],
-  //   ['HA', 'PERIOD', 'HACAT3'],
-
-  //   ['SUPER', 'SUBUYB'],
-  //   ['SUPER', 'SUREMG'],
-  //   ['SUPER', 'SUSURB'],
-
-  //   ['PTH', 'THSOTT'],
-  //   ['PTH', 'THPPC1'],
-  //   ['PTH', 'THPPC3'],
-  //   ['PTH', 'THCRC1'],
-  //   ['PTH', 'THCRC3'],
-  //   ['PTH', 'THREC3'],
-
-  //   ['FTWORK'],
-  //   ['IMREVW']
-
-  // ];
   options = [];
 
   style = 'col-11';
@@ -191,6 +161,8 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     code: null
   };
 
+  phoneValidatorCustom = '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$';
+
 
   trackByEl(index: number, el: any): string {
     return el.linkId;
@@ -201,20 +173,13 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     private questionnaireService: QuestionnaireService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private userService: UserService,
-    private patientService: PatientService,
-    private oauthService: OAuthService,
     private datePipe: DatePipe,
     private staffService: StaffService,
     private adminHomeScreenService: AdminHomeScreenService
-  ) {
-
-  }
+  ) {}
 
   ngOnInit() {
-    this.activatedRoute.data.subscribe(data => this.getRegionalOfficesData(data.offices));
-    this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
-    this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
+    this.getAllFormDataBeforeLoadingPage();
 
     // sets the formId based on url (serv request || contact us pages )
     if (this.router.url.indexOf('/newservicerequest') > -1) {
@@ -225,52 +190,32 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       this.servReqType = 'ADCOIN';
     }
 
-    this.userLRO = JSON.parse(sessionStorage.getItem('userLRO'));
-    this.userRole = sessionStorage.getItem('userRole');
-    this.userFHIRId = sessionStorage.getItem('userFHIRID');
-    console.log('userRole', this.userRole);
-    this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
-    console.log(this.formCreated);
-    this.employeeType = sessionStorage.getItem('emplType');
-    if (this.employeeType === 'Employee') {
-      const depList = sessionStorage.getItem('dependents');
-      this.dependentsList = JSON.parse(depList);
-    }
+    this.setVarsFromSessionStorage();
 
-    this.prePlacement = JSON.parse(sessionStorage.getItem('prePlacement'));
-
-    this.clientGivenName = sessionStorage.getItem('emplGiven');
-    this.clientFamilyName = sessionStorage.getItem('emplFam');
-
-    this.userName = sessionStorage.getItem('userName');
-    this.currentUserDepartment = sessionStorage.getItem('userDept');
-    this.createdsuccessfully = false;
-    this.clientId = sessionStorage.getItem('patientSummaryId');
-
-
+    //returns to homepage if no clientId
     if (this.servReqType === 'SERVREQ') {
-
       if (!this.clientId) {
         this.router.navigateByUrl('/dashboard');
       }
     }
-
     console.log(this.dependentsList);
   }
 
-  // adds a wrapper div to the form fields for styling
-  wrap() {
-    const x = $('.field-holder-2 form-input');
-    for (let i = 0; i < x.length; i++) {
-      $(x[i]).wrap('<div class=\'' + this.style + '\'></div>');
-    }
-  }
+  getAllFormDataBeforeLoadingPage(){
+    this.activatedRoute.data.subscribe(data => this.getRegionalOfficesData(data.offices));
+    this.activatedRoute.data.subscribe(data => this.populateDeptNames(data.departments));
+    this.activatedRoute.data.subscribe(data => this.getFormData(data.fields));
+  };
 
-  // adds division to the form fields for styling
-  addDiv() {
-    const sections = $('.dynamic-form .' + this.style);
-    for (let i = 0; i < sections.length; i += 2) {
-      sections.slice(i, i + 2).wrapAll('<div class=\'row\'></div>');
+  getRegionalOfficesData(data) {
+    console.log(data);
+    if (data['entry']) {
+      data['entry'].forEach(branch => {
+        this.regionalOfficeList.push({
+          name: branch.resource.name,
+          id: branch.resource.id
+        });
+      });
     }
   }
 
@@ -283,6 +228,26 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     });
   }
 
+  setVarsFromSessionStorage(){
+    this.userLRO = JSON.parse(sessionStorage.getItem('userLRO'));
+    this.userRole = sessionStorage.getItem('userRole');
+    this.userFHIRId = sessionStorage.getItem('userFHIRID');
+    console.log('userRole', this.userRole);
+    this.todayPiped = this.datePipe.transform(new Date(), 'dd-MM-yyyy');
+    console.log(this.formCreated);
+    this.employeeType = sessionStorage.getItem('emplType');
+    if (this.employeeType === 'Employee') {
+      const depList = sessionStorage.getItem('dependents');
+      this.dependentsList = JSON.parse(depList);
+    }
+    this.prePlacement = JSON.parse(sessionStorage.getItem('prePlacement'));
+    this.clientGivenName = sessionStorage.getItem('emplGiven');
+    this.clientFamilyName = sessionStorage.getItem('emplFam');
+    this.userName = sessionStorage.getItem('userName');
+    this.currentUserDepartment = sessionStorage.getItem('userDept');
+    this.createdsuccessfully = false;
+    this.clientId = sessionStorage.getItem('patientSummaryId');
+  };
 
 
   onCancel() {
@@ -313,7 +278,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         });
       });
     }
-
 
     // assigns Code and Answer to items
     this.items.forEach(indivElem => {
@@ -369,9 +333,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         const psohpServiceType = this.getServiceTypeFromQuestionnaireResponse(questionnaireResponse);
         this.createCommunicationRequest(questionnaireResponse['id'], psohpServiceType);
       }
-
     }
-
   }
 
   async createCommunicationRequest(questionnaireResponse, psohpServiceType) {
@@ -503,7 +465,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
   getServiceTypeFromQuestionnaireResponse(questionnaireResponse) {
-
     let serviceType = '';
     if (questionnaireResponse['item']) {
       questionnaireResponse.item.forEach(item => {
@@ -519,7 +480,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       console.log('buggy one', questionnaireResponse);
     }
     return serviceType;
-
   }
 
   backToDashboard() {
@@ -532,15 +492,12 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       data => this.getDocument(data),
       error => this.handleError(error)
     );
-
     // pushing document into items arr
     if (this.itemReference) {
       this.itemReference.forEach(ref => {
         this.items.push(ref);
       });
     }
-
-
     // creating itemToSend
     this.createItemToSend(this.clientId, this.clientGivenName, this.clientFamilyName);
     this.mapItemToItems();
@@ -550,7 +507,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           this.createItemToSend(depend.id, depend.given, depend.family);
         }
       });
-
     }
     // adding extra items to itemToSend.item[]
     this.mapItemToItems();
@@ -558,40 +514,37 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
 
-
   createItemToSend(id, givenName, famName) {
-
     if (this.servReqType === 'SERVREQ') {
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
         questionnaire: {
-          reference: 'Questionnaire/' + this.formId
+          reference: `Questionnaire/${this.formId}`
         },
         status: 'in-progress',
         authored: new Date,
         author: {
-          reference: 'Practitioner/' + this.userFHIRId
+          reference: `Practitioner/${this.userFHIRId}`
         },
         identifier: {
           value: 'SERVREQ'
         },
         subject: {
-          reference: 'Patient/' + id,
-          display: givenName + ' ' + famName
+          reference: `Patient/${id}`,
+          display: `${givenName} ${famName}`
         },
         item: []
       };
-
     } else {
       this.itemToSend = {
         resourceType: 'QuestionnaireResponse',
         questionnaire: {
-          reference: 'Questionnaire/' + this.formId
+          reference: `Questionnaire/${this.formId}`
         },
         status: 'in-progress',
         authored: new Date,
         author: {
-          reference: 'Practitioner/' + this.userFHIRId
+          reference: `Practitioner/${this.userFHIRId}`
         },
         identifier: {
           value: 'SERVREQ'
@@ -599,10 +552,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         item: []
       };
     }
-
-
     this.itemsToSend.push(this.itemToSend);
-
   }
 
 
@@ -616,44 +566,16 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             linkId: el.linkId,
             text: el.text,
             answer:
-              el.text === 'Document' ? [
-                {
-                  valueReference: {
-                    reference: el.answer
-                  }
-                }
-              ] :
+              el.text === 'Document' ? [{valueReference: {reference: el.answer}}] :
                 typeof (el.answer) === 'boolean' ? [
-                  {
-                    valueCoding: {
-                      code: el.code,
-                      system: el.system,
-                      display: el.answer
-                    }
-                  }
+                  {valueCoding: {code: el.code, system: el.system, display: el.answer}}
                 ] :
-                  typeof (el.answer) === 'string' ? [
-                    {
-                      valueCoding: {
-                        code: el.code,
-                        system: el.system,
-                        display: el.answer
-                      }
-                    }
-                  ] :
-                    null
+                  typeof (el.answer) === 'string' ? [{valueCoding: {code: el.code,system: el.system,display: el.answer}}] : null
           };
         } else {
           return {
             linkId: el.linkId,
-            answer: [
-              {
-                valueCoding: {
-                  code: el.code,
-                  system: el.system,
-                }
-              }
-            ]
+            answer: [{valueCoding: {code: el.code,system: el.system,}}]
           };
         }
       }
@@ -667,12 +589,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
 
-
   handleErrorClientError(error) {
     console.log(error);
   }
-
-
 
   // turns questionarie data into arr of form fields (shows those fields on the form)
   /**
@@ -686,115 +605,58 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
     this.configuration = this.qrequest.map(el => {
       if (el.code[1].code === 'PHONE') {
-        const formField = this.textInput(el);
         const enableWhen = this.populateEnableWhenObj(el);
+        const formField = this.textInput(el, enableWhen);
         formField['placeholder'] = 'type your phone';
         formField['validation'] = el.enableWhen ? [
-          Validators.pattern(
-            '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-          )
-        ] : [
-            Validators.required,
-            Validators.pattern(
-              '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
-            )
+          Validators.pattern(this.phoneValidatorCustom)] : [
+            Validators.required, Validators.pattern(this.phoneValidatorCustom)
           ];
-        formField['enableWhen'] = el.enableWhen ? enableWhen : false;
-        formField['required'] = el.required ? true : false;
-        formField['value'] = null;
-        formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
         return formField;
       } else if (el.code[1].code === 'DATE') {
         const enableWhen = this.populateEnableWhenObj(el);
-        return {
-          type: 'date',
-          typeElem: el.code[1].code,
-          label: el.text,
-          inputType: 'text',
-          placeholder: 'datepicker',
-          name: el.linkId,
-          enableWhen: el.enableWhen ? enableWhen : false,
-          required: el.required ? true : false,
-          // enableWhenQ: el.enableWhen ? el.enableWhen[0].question : false,
-          // enableWhenA: el.enableWhen ? el.enableWhen[0].answerCoding.display : false,
-          elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-          value: null
-        };
+        const formField = this.textInput(el, enableWhen);
+        formField['type'] = 'date';
+        formField['placeholder'] = 'datepicker';
+        return formField;
       } else if (el.code[1].code === 'TEXT') {
         if (el.code[0].code === 'AUTHOR') {
-          const formField = this.textInput(el);
+          const formField = this.textInput(el, undefined);
           formField['readonly'] = true;
-          formField['required'] = el.required ? true : false;
           return formField;
         } else if (el.code[0].code === 'DATECR') {
-          const formField = this.textInput(el);
+          const formField = this.textInput(el, undefined);
           formField['readonly'] = true;
-          formField['required'] = el.required ? true : false;
           return formField;
         } else if (el.code[0].code === 'USERDEPT') {
           if (this.userRole === 'clientdept') {
             const options = this.departmentList;
             const enableWhen = this.populateEnableWhenObj(el);
-
-            return {
-              type: 'select',
-              typeElem: el.code[1].code,
-              label: el.text,
-              name: el.linkId,
-              enableWhen: el.enableWhen ? enableWhen : false,
-              options: options,
-              flag: el.enableWhen ? false : true,
-              placeholder: 'Select an option',
-              required: el.required ? true : false,
-              validation: el.enableWhen ? undefined : [Validators.required],
-              value: null,
-              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-              disable: true
-            };
+            const formField = this.selectField(el, options, enableWhen);
+            return formField;
           } else {
-            const formField = this.textInput(el);
-            formField['readonly'] = true;
-            formField['required'] = el.required ? true : false;
+            const formField = this.textInput(el, undefined);
+            // formField['readonly'] = true;
             return formField;
           }
-
         } else {
-          const formField = this.textInput(el);
           const enableWhen = this.populateEnableWhenObj(el);
+          const formField = this.textInput(el, enableWhen);
           formField['placeholder'] = 'type your text';
-          formField['validation'] = el.enableWhen ? undefined : [Validators.required];
-          formField['required'] = el.required ? true : false;
-          formField['enableWhen'] = el.enableWhen ? enableWhen : false;
-          formField['value'] = null;
-          formField['flag'] = el.enableWhen ? false : true;
-          formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
           return formField;
         }
-
       } else if (el.code[1].code === 'EMAIL') {
         const enableWhen = this.populateEnableWhenObj(el);
-        const formField = this.textInput(el);
+        const formField = this.textInput(el, enableWhen);
         formField['placeholder'] = 'type your email';
         formField['validation'] = el.enableWhen ? [Validators.email] : [Validators.required, Validators.email];
-        formField['required'] = el.required ? true : false;
-        formField['enableWhen'] = el.enableWhen ? enableWhen : false;
-        formField['value'] = null;
-        formField['flag'] = el.enableWhen ? false : true;
-        formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
         return formField;
-
       } else if (el.code[1].code === 'COMMENT') {
         const enableWhen = this.populateEnableWhenObj(el);
-        const formField = this.commentInput(el);
-        formField['placeholder'] = 'type your text';
+        const formField = this.textInput(el, enableWhen);
+        formField['type'] = 'comment';
         formField['validation'] = undefined;
-        formField['enableWhen'] = el.enableWhen ? enableWhen : false;
-        formField['value'] = null;
-        formField['required'] = el.required ? true : false;
-        formField['flag'] = el.enableWhen ? false : true;
-        formField['elementClass'] = el.enableWhen ? 'enable-when-hide' : 'enable-when-show';
         return formField;
-
       } else if (el.code[1].code === 'SELECT') {
         const options = [];
         // sets this.options for Code
@@ -810,56 +672,28 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           });
         }
 
-
         const enableWhen = this.populateEnableWhenObj(el);
+
         // only for preplacemt for a client from a different department
         if (this.prePlacement) {
           if (el.code[0].code === 'PSOHPSERV' || el.code[0].code === 'ASSESTYPE') {
-            return {
-              type: 'input',
-              typeElem: el.code[1].code,
-              label: el.text,
-              name: el.linkId,
-              enableWhen: el.enableWhen ? enableWhen : false,
-              validation: undefined,
-              value: null,
-              elementClass: 'enable-when-show',
-            };
+            const formField = this.textInput(el, enableWhen);
+            formField['validation'] = undefined;
+            formField['elementClass'] = 'enable-when-show';
+            return formField;
           }
           if (el.code[0].code === 'ASSESCAT') {
-            return {
-              type: 'select',
-              typeElem: el.code[1].code,
-              label: el.text,
-              name: el.linkId,
-              enableWhen: el.enableWhen ? enableWhen : false,
-              options: options,
-              flag: el.enableWhen ? false : true,
-              placeholder: 'Select an option',
-              validation: undefined,
-              required: el.required ? true : false,
-              value: null,
-              elementClass: 'enable-when-show',
-            };
+            const formField = this.selectField(el, options, enableWhen);
+            formField['validation'] = undefined;
+            formField['elementClass'] = 'enable-when-show';
+            return formField;
           }
         }
-
         if (el.code[0].code === 'OHAGOCC' || el.code[0].code === 'ENVMODIF' || el.code[0].code === 'EXPMODIF') {
           console.log(el.code[0].code);
-          return {
-            type: 'select',
-            typeElem: el.code[1].code,
-            label: el.text,
-            name: el.linkId,
-            enableWhen: el.enableWhen ? enableWhen : false,
-            options: options,
-            flag: el.enableWhen ? false : true,
-            placeholder: 'Select an option',
-            validation: undefined,
-            required: el.required ? true : false,
-            value: null,
-            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-          };
+          const formField = this.selectField(el, options, enableWhen);
+          formField['validation'] = undefined;
+          return formField;
         } else if (el.code[0].code === 'REGOFFICE') {
           if (this.regionalOfficeList) {
             this.regionalOfficeList.forEach(el2 => {
@@ -872,116 +706,46 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
               options.push(el2.name);
             });
           }
-          return {
-            type: 'select',
-            typeElem: el.code[1].code,
-            label: el.text,
-            name: el.linkId,
-            enableWhen: el.enableWhen ? enableWhen : false,
-            options: options,
-            flag: el.enableWhen ? false : true,
-            placeholder: 'Select an option',
-            validation: undefined,
-            required: el.required ? true : false,
-            value: null,
-            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-          };
-
+          const formField = this.selectField(el, options, enableWhen);
+          formField['validation'] = undefined;
+          return formField;
         } else if (el.code[0].code === 'DISTROFFICE') {
-          return {
-            type: 'select',
-            typeElem: el.code[1].code,
-            label: el.text,
-            name: el.linkId,
-            enableWhen: el.enableWhen ? enableWhen : false,
-            options: this.distrOfficeList,
-            flag: el.enableWhen ? false : true,
-            placeholder: 'Select an option',
-            validation: undefined,
-            required: el.required ? true : false,
-            value: null,
-            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-          };
-
+          const formField = this.selectField(el, this.distrOfficeList, enableWhen);
+          formField['validation'] = undefined;
+          return formField;
         } else {
-          return {
-            type: 'select',
-            typeElem: el.code[1].code,
-            label: el.text,
-            name: el.linkId,
-            enableWhen: el.enableWhen ? enableWhen : false,
-            options: options,
-            flag: el.enableWhen ? false : true,
-            placeholder: 'Select an option',
-            validation: el.enableWhen ? undefined : [Validators.required],
-            required: el.required ? true : false,
-            value: null,
-            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-          };
+          const formField = this.selectField(el, options, enableWhen);
+          formField['validation'] = undefined;
+          return formField;
         }
       } else if (el.code[1].code === 'BOOL') {
         const enableWhen = this.populateEnableWhenObj(el);
+
         if (el.code[0].code === 'DEPENDINV') {
           if (this.dependentsList.length < 1) {
-            return {
-              type: 'checkbox',
-              label: el.text + ' (Disabled)',
-              name: el.linkId,
-              typeElem: el.code[1].code,
-              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-              value: el.enableWhen ? null : false,
-              disabled: true
-            };
-
+            const formField = this.checkbox(el, enableWhen);
+            formField['disabled'] = true;
+            formField['label'] = el.text + ' (Disabled)';
+            return formField;
           } else if (this.dependentsList.length > 0) {
             console.log('this.dependentsList.length > 0');
-
-            return {
-              type: 'checkbox',
-              label: el.text,
-              name: el.linkId,
-               typeElem: el.code[1].code,
-              enableWhen: el.enableWhen ? enableWhen : false,
-              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-              value: el.enableWhen ? null : false,
-              disabled: false
-            };
+            const formField = this.checkbox(el, enableWhen);
+            return formField;
           }
         } else if (el.code[0].code === 'LROREQ') {
           if (!this.userLRO) {
             console.log('!this.userLro');
-            return {
-              type: 'checkbox',
-              label: el.text + ' (Disabled)',
-              name: el.linkId,
-              typeElem: el.code[1].code,
-              enableWhen: el.enableWhen ? enableWhen : false,
-              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-              value: el.enableWhen ? null : false,
-              disabled: true
-            };
+            const formField = this.checkbox(el, enableWhen);
+            formField['disabled'] = true;
+            formField['label'] = el.text + ' (Disabled)';
+            return formField;
           } else {
-            return {
-              type: 'checkbox',
-              label: el.text,
-              name: el.linkId,
-              typeElem: el.code[1].code,
-              enableWhen: el.enableWhen ? enableWhen : false,
-              elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-              value: el.enableWhen ? null : false,
-              disabled: false
-            };
+            const formField = this.checkbox(el, enableWhen);
+            return formField;
           }
         } else {
-          return {
-            type: 'checkbox',
-            label: el.text,
-            name: el.linkId,
-            typeElem: el.code[1].code,
-            enableWhen: el.enableWhen ? enableWhen : false,
-            elementClass: el.enableWhen ? 'enable-when-hide' : 'enable-when-show',
-            value: el.enableWhen ? null : false,
-          };
+          const formField = this.checkbox(el, enableWhen);
+          return formField;
         }
       }
     });
@@ -1026,6 +790,7 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         }
       );
     }
+
     this.configuration.push(
       {
         type: 'line',
@@ -1038,11 +803,9 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
       }
     );
 
-
-
     this.config = this.configuration;
 
-    // maping part of the data from the server to this.items
+    // mapping part of the data from the server to this.items
     this.items = this.qrequest.map(el => ({
       ...this.item,
       linkId: el.linkId,
@@ -1071,42 +834,57 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
 
-
-
-  textInput(data) {
+  textInput(data, enableWhen) {
     return TextInput.create({
       type: 'input',
       label: data.text,
       inputType: 'text',
       name: data.linkId,
       readonly: false,
-      typeElem: data.code[1].code
+      typeElem: data.code[1].code,
+      required: data.required ? true : false,
+      value: null,
+      flag: data.enableWhen ? false : true,
+      elementClass: data.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+      enableWhen: data.enableWhen ? enableWhen : false,
+      validation: data.enableWhen ? undefined : [Validators.required],
     });
   }
 
-  commentInput(data) {
-    return CommentInput.create({
-      type: 'comment',
+  checkbox(data, enableWhen) {
+    return Checkbox.create({
+      type: 'checkbox',
       label: data.text,
       name: data.linkId,
-      typeElem: data.code[1].code
+      typeElem: data.code[1].code,
+      required: data.required ? true : false,
+      enableWhen: data.enableWhen ? enableWhen : false,
+      elementClass: data.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+      value: data.enableWhen ? null : false,
+      disabled: false
     });
   }
 
 
-  selectField(data) {
+  selectField(data, opt, enableWhen) {
     return SelectField.create({
       type: 'select',
       typeElem: data.code[1].code,
       label: data.text,
-      inputType: 'text',
-      placeholder: 'Select an option',
       name: data.linkId,
-      validation: [Validators.required]
+      enableWhen: data.enableWhen ? enableWhen : false,
+      options: opt,
+      flag: data.enableWhen ? false : true,
+      placeholder: 'Select an option',
+      required: data.required ? true : false,
+      validation: data.enableWhen ? undefined : [Validators.required],
+      value: null,
+      elementClass: data.enableWhen ? 'enable-when-hide' : 'enable-when-show',
+      disabled: false
     });
   }
 
-  // setting function. sets values and the form after form showing up on page
+  // setting function. sets values and the form after form is rendered on page
   ngAfterViewInit() {
     setTimeout(() => {
       let previousValid = this.form.valid;
@@ -1128,10 +906,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         this.form.setValue('ASSESTYPE', 'Pre-Placement');
       }
     });
-
-    // if you want to style 2 form fields per a row do these :
-    // this.wrap();
-    // this.addDiv();
   }
 
 
@@ -1159,7 +933,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
           });
         }
       }
-
     }
 
     this.config.forEach(elemOfConfig => {
@@ -1177,8 +950,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
         }
       }
 
-
-
       if (elemOfConfig.enableWhen) {
         for (const formElem of elemOfConfig.enableWhen) {
           // checks the form field(index) with code of the question
@@ -1186,22 +957,19 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
             // checks the field answer  with code of the answer
             if (value === formElem.enableWhenA) {
               elemOfConfig.elementClass = 'enable-when-show';
-              // elemOfConfig.flag = true;
               if (elemOfConfig.typeElem !== 'BOOL') {
-
-
                 if (elemOfConfig.typeElem === 'PHONE') {
                   if (elemOfConfig.required) {
                     this.form.setRequired(elemOfConfig.name, [
                       Validators.required,
                       Validators.pattern(
-                        '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
+                        this.phoneValidatorCustom
                       )
                     ]);
                   } else {
                     this.form.setRequired(elemOfConfig.name, [
                       Validators.pattern(
-                        '^[(]{0,1}[0-9]{3}[)]{0,1}[-s.]{0,1}[0-9]{3}[-s.]{0,1}[0-9]{4}$'
+                        this.phoneValidatorCustom
                       )
                     ]);
                   }
@@ -1264,29 +1032,13 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   }
 
 
-  getRegionalOfficesData(data) {
-    console.log(data);
-    if (data['entry']) {
-      data['entry'].forEach(branch => {
-        this.regionalOfficeList.push({
-          name: branch.resource.name,
-          id: branch.resource.id
-        });
-      });
-    }
-  }
-
-
-
   handleError(error) {
     console.log(error);
   }
 
-
   // getting response from thr server on "next"
   handleSuccessOnSave(data) {
     console.log(data);
-
     this.formCreated = true;
   }
 
@@ -1297,6 +1049,4 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   handleErrorOnSave(error) {
     console.log(error);
   }
-
-
 }
