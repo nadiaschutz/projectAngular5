@@ -84,12 +84,10 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
   options = [];
 
-  style = 'col-11';
   configuration;
   userName;
   userRole;
   userLRO = false;
-  loaded = false;
   @ViewChild(DynamicFormComponent) form: DynamicFormComponent;
   config: FieldConfig[] = [];
 
@@ -102,44 +100,18 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   servReqType;
   formCreated = false;
 
-  responseId = null;
   clientId = null;
-  smileUserId = null;
   clientGivenName = null;
   clientFamilyName = null;
-  clientBoD = null;
   userFHIRId = '';
-
-  documents;
-  fileLink = [];
-  documentReference = {};
-  regionalOffices;
   prePlacement = false;
-
-  disableInputsForReview = false;
   createdsuccessfully = false;
-
-  today = new Date();
   todayPiped;
-
-
-  dependents = false;
   employeeType;
   dependentsList = [];
-  dependentBoolean = false;
-  dependentNumber = null;
   qrequest: any;
 
-  questionsList = [];
-
-  submitingFormData: {
-    formId: any;
-    itemToSend: any;
-  };
-
-  // itemToSend: FHIR.QuestionnaireResponse;
   itemReference = [];
-
   itemsToSend = [];
 
   itemToSend: ItemToSend = {
@@ -153,7 +125,6 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
   };
 
   items: Item[];
-
   item: Item = {
     linkId: '',
     text: '',
