@@ -515,45 +515,25 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
 
 
   createItemToSend(id, givenName, famName) {
-    if (this.servReqType === 'SERVREQ') {
-      this.itemToSend = {
-        resourceType: 'QuestionnaireResponse',
-        questionnaire: {
-          reference: `Questionnaire/${this.formId}`
-        },
-        status: 'in-progress',
-        authored: new Date,
-        author: {
-          reference: `Practitioner/${this.userFHIRId}`
-        },
-        identifier: {
-          value: 'SERVREQ'
-        },
-        subject: {
-          reference: `Patient/${id}`,
-          display: `${givenName} ${famName}`
-        },
-        item: []
-      };
-    } else {
-      this.itemToSend = {
-        resourceType: 'QuestionnaireResponse',
-        questionnaire: {
-          reference: `Questionnaire/${this.formId}`
-        },
-        status: 'in-progress',
-        authored: new Date,
-        author: {
-          reference: `Practitioner/${this.userFHIRId}`
-        },
-        identifier: {
-          value: 'SERVREQ'
-        },
-        item: []
-      };
-    }
-    this.itemsToSend.push(this.itemToSend);
-  }
+    const thing = {
+         resourceType: 'QuestionnaireResponse',
+         questionnaire: {
+           reference: `Questionnaire/${this.formId}`
+         },
+         status: 'in-progress',
+         authored: new Date,
+         author: {
+           reference: `Practitioner/${this.userFHIRId}`
+         },
+         identifier: {
+           value: 'SERVREQ'
+         },
+         item: []
+     };
+     const subject = this.servReqType === 'SERVREQ' ? { subject: { reference: `Patient/${id}`, display: `${givenName} ${famName}` } } : null
+     this.itemToSend = this.servReqType === 'SERVREQ'? { ...thing, ...subject }: { ...thing}
+     this.itemsToSend.push(this.itemToSend);
+ }
 
 
   // takes items from items arr and pushes into itemToSend in digestible format
@@ -773,34 +753,13 @@ export class NewServiceRequestComponent implements OnInit, AfterViewInit {
     console.log('CONFIG AFTER DEPENDENTS PUSH', this.configuration);
 
     // styling and buttons
-    if (this.servReqType === 'ADCOIN') {
-      this.configuration.push(
-        {
-          type: 'doc',
-          elementClass: 'documents enable-when-hide',
-          name: 'doc'
-        }
-      );
-    } else {
-      this.configuration.push(
-        {
-          type: 'doc',
-          elementClass: 'documents enable-when-show',
-          name: 'doc'
-        }
-      );
-    }
+    const elementClass = this.servReqType === 'ADCOIN' ? 'documents enable-when-hide' : 'documents enable-when-show'
+    this.configuration.push({ type: 'doc', elementClass, name: 'doc'});
+
 
     this.configuration.push(
-      {
-        type: 'line',
-        name: 'line'
-      },
-      {
-        type: 'button',
-        name: 'submit',
-        label: 'Submit'
-      }
+      {type: 'line', name: 'line'},
+      {type: 'button',name: 'submit',label: 'Submit'}
     );
 
     this.config = this.configuration;
